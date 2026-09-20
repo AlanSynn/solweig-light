@@ -1,0 +1,50 @@
+.upstream/
+.venv*/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+build/
+dist/
+tests/fixtures/generated/
+reports/runs/
+
+# Reports retain concise provenance, protocols, source snapshots, and summaries.
+# Generated rasters, array dumps, compiled caches, and local environments stay
+# local; reproduction prerequisites and limits are documented in
+# docs/evidence_storage.md.
+reports/**/*.tif
+reports/**/*.tiff
+reports/**/*.npy
+reports/**/*.npz
+reports/**/*.nbc
+reports/**/*.nbi
+reports/**/*.pstats
+reports/**/*.dylib
+reports/**/*.so
+reports/**/*.whl
+reports/**/*.zip
+reports/**/*.tar
+reports/**/*.tar.gz
+reports/**/venv/
+reports/**/.venv/
+reports/**/__pycache__/
+reports/**/.pytest_cache/
+reports/**/jit/
+reports/**/geometry_cache/
+reports/**/.solweig-light/
+reports/**/output_folder/
+reports/**/processed_inputs/
+reports/**/tmp_*/
+reports/**/test_*current
+
+# The official UTCI source bundle is a frozen input, not a generated output.
+!reports/characterization/p8_utci_official_source/UTCI_Program_Code.zip
+
+# A few retained diagnostic captures contain millions of sampling rows.  Their
+# parent reports and manifests remain visible; these raw samples are local-only.
+reports/characterization/p8_portable_profile_v1/m1_admission/large/*_monitor/
+reports/characterization/p8_portable_profile_v1/cura_pipeline/large_results/remote_evidence/*/samples.json
+reports/characterization/p8_portable_profile_v1/cura_pipeline/large_results/final_verification_staging/evidence/*/samples.json
+reports/cura_p8_20260919T1215Z_a7c3/final_remote_cleanup/whole_tree_inventory.json
+reports/characterization/p8_portable_math_review/cura_glibc_audit/evidence/glibc_2.39.orig.tar.xz
