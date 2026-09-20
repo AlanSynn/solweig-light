@@ -20,6 +20,14 @@ part of a clone and cannot be reproduced from this document alone: rerunning a
 case may require the exact fixture, dependency environment, upstream commit,
 hardware, cache state, and remote input recorded by its own protocol.
 
+The local CPU optimization experiment additionally records its two large
+baseline sampling captures in
+[`storage_manifest.json`](../reports/characterization/local_cpu_optimization_v1/storage_manifest.json).
+Those captures remain local with verified hashes. The paired trial
+measurements, RSS JSONL samples, exact comparisons, protocols and source
+snapshots remain tracked; generated raster histories and wheel binaries
+follow the same local-only policy above.
+
 To review the prospective tracked set without adding files, run:
 
 ```sh

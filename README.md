@@ -7,8 +7,10 @@ Numba. The compatibility baseline is SOLWEIG-GPU commit
 The local own-met TIFF workflow runs without Torch or CUDA. It preserves the
 chronological model and streams output bands. Original CPU references verify
 24-step cases with cold/warm geometry, land cover, UHI and directional wind.
-This is a correctness-first implementation, not a completed release or a
-measured performance improvement.
+This is a correctness-first implementation, not a completed release. A local
+candidate-to-candidate optimization matrix passed independent promotion
+review. The reviewed source is integrated and passed installed-wheel
+verification.
 
 ## Development installation
 
@@ -75,8 +77,24 @@ review: 3,029 core, 78 optional and 34 forcing-only installed tests, with no ski
 [Core resource measurements](reports/p6_runtime_measurements.md) and
 [wind resource measurements](reports/p6_wind_measurements.md) record their
 source identities and small-workload limitations.
-Further kernel optimization, scientific coverage and the full performance
-matrix remain required. CUDA is unavailable on the development machine.
+
+An isolated exact optimization candidate based on checkpoint `8ca23d4`
+completed its matrix with all 50 same-host pairs exact against that checkpoint. The
+selected four-thread, 1,024-pixel-block setting had a 1.627 median paired
+baseline/candidate ratio in the primary geometry-warm cell; cold, first-use,
+single-thread and unchanged-default guards were measured separately. This is
+local Apple M1 Pro candidate-to-candidate evidence. It is neither an
+original-upstream speedup claim nor a P7/P8 completion claim. Independent
+review approved local integration; all 49 package files matched the qualified
+source and the final installed-wheel checks passed 97 tests without skips. See the
+[local CPU optimization report](reports/local_cpu_optimization.md) for the
+complete matrix, exactness evidence, review status and limitations.
+
+P7/P8 still require the full original-upstream and tuned-CPU matrix, larger
+2048/default-3600 or explicit memory-limit coverage, multi-day execution,
+final-source Linux evidence and hosted CI. CUDA is unavailable on the
+development machine. Four approved inherited scientific exceptions remain
+failed and documented; they do not close the remaining release gates.
 
 See [progress](docs/progress.md), [numerical contract](docs/numerical_contract.md),
 [model deviations](docs/model_deviations.md), `TASKS.yaml`, and

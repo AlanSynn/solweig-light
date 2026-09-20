@@ -182,6 +182,7 @@ work_packages:
       - exact horizon and hierarchical skip experiments where valid
       - angular moment reuse and layout experiments
       - UTCI specialization and optional extension experiments
+      - local CPU exact GVF scheduling, visibility decode reuse, persistent JIT caches, and execution-block experiments
       - recorded rejected and accepted approaches with workload crossovers
     gate:
       - Every promoted optimization passes the frozen numerical contract.

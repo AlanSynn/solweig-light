@@ -1022,3 +1022,158 @@ The authorized `solweig-portable-sleef-5a1d179d-v1` profile is integrated from t
 Rootreview discovered wide-domain NumPy fallback divergence in Linux's compiledscalar path. The isolated repair moved fallback to the actual PythonNumPy ufunc, retaining fullshape/layout/tail behavior and unchangedphysical SLEEFbranch; bothplatform source/wheel wide-domain regression and smallchronology checks pass. Priorlarge runs explicitly remain pre-fallback-repair evidence. Root checked exactoldmain hashes, copied onlynine reviewedsource/package-data files, added permanentprofiletests and CIcoverage, and launched post-copy tests. Detailed hashes and verification: `reports/characterization/p8_portable_profile_v1/integration/`. Newperformance claims and finalrelease gates still require the finalsource; noP7/P8completion is asserted. All newCuraownedroots were checksum-preserved and removed.
 
 Post-copy verification completed: 27 tests passed, zero failures/errors/skips, covering profile/domain/cache/checkpoint, persistent dispatcher caching and genuine chronological TIFF comparisons. JUnit/log hashes are bound in the promotion record.
+
+### Checkpoint committed; local CPU optimization resumed
+
+The user authorized committing the current work and maximizing local CPU
+performance while preserving identical mathematical results. Initial commit
+`8ca23d4` preserves the implementation, reference policy, scientific exceptions,
+verification records and reviewed optimization strategy. Large generated
+artifacts remain local under the documented evidence-storage policy; no
+historical evidence was deleted. P7 remains `in_progress` and P8 remains
+`pending`.
+
+The new experiment is recorded in
+[`local_cpu_optimization_v1/experiment_scope.md`](../reports/characterization/local_cpu_optimization_v1/experiment_scope.md).
+E0 requalified the final installed baseline on the local M1 Pro: both
+1024-square scenes passed 240 bands and 18 geometry fields against the original
+SLEEF references. Observed summed RSS was 1.410 GiB for dense1024 and 1.469 GiB
+for vegetation1024. Independent review verified the 48 source-file bindings,
+reference provenance, field-specific gates and output hashes; no speedup is
+inferred from these admission runs. Warmed current-source attribution again
+identified GVF gathering, longwave reduction, visibility decoding and residual
+compilation as useful targets. Independent isolated candidates cover existing GVF
+parallel dispatch, exact shared visibility decoding, and internal block size.
+Candidate arithmetic must preserve finite bits and signed zero, special masks,
+all carried state and artifact contracts. Existing original-reference gates
+are unchanged. Initial E1 component admission passed 216 tests; E2 v2 source
+review is accepted for executable qualification. Neither candidate is yet
+promoted or established as faster. Luna owns long numerical runs; other
+agents perform source-only work during the host reservation. The new evidence
+harness and correctness-trace unit checks passed 11 tests; candidate and real
+workflow qualification continue before performance selection.
+
+Executable candidate qualification now passes: E2 v2 has 653 tests with zero
+failures/errors/skips and all seven outputs match in each of three shortwave
+input modes. Five genuine small-scene runs cover the baseline at one and ten
+threads, E1, E2, and 4096-pixel blocks; their 72 chronological trace events
+match exactly, as do geometry, final state and published artifacts. The smoke
+matrix actually used the 256-square fixture and passed first-use, compiled
+geometry-cold and geometry-warm modes. Earlier relative-interpreter launch
+and comparison-caller shape errors remain retained as harness failures.
+
+Root verified admission/evidence hashes, raw trace equality and the 653-test
+JUnit, then froze the eight-cell, 24-pair diagnostic development protocol at
+SHA-256 `d6e4ba1bdc5da6612d8a90fb13d86bfa96f4ae56551f08b4a901f521d0308587`.
+Luna owns its execution and reports only completion or a blocker. No
+production optimization is promoted from this admission alone.
+
+An independent source review accepted the persistent-cache candidate's
+arithmetic and content-bound namespace design, but found defects in its
+unexecuted tests and example invocation paths. Those are being repaired in
+a separate packet before execution. The paired-statistics method correctly
+enumerates all 3,125 five-pair bootstrap resamples; review also requested
+stronger frozen-schedule/protocol-byte verification and deterministic joint
+budget/block selection. These analysis-tool repairs do not change the running
+measurement harness or protocol. Detailed local promotion requirements are
+recorded in `local_cpu_optimization_v1/promotion_method.md`.
+
+The first development matrix completed all 24 pairs with exact artifacts and
+state. Independent review recomputed the paired ratios from raw measurements:
+E1 at four threads has median baseline/candidate 1.235264 (absolute medians
+20.994899 s and 17.017141 s); block1024 at ten threads has paired median
+1.284231 (23.609702 s and 18.360547 s). These three-pair diagnostic results
+select experiments, not release speedups. E2 qualifies narrowly at ten threads
+(1.033104); its one-thread result (1.018263) is below the diagnostic 3% target.
+The 4096 setting is excluded from the bounded combined search because 1024 is
+within 3% in both tested budgets with a quarter of decode workspace. The
+analysis also records a failed relative-RSS guard for one-thread block4096;
+all trials remained within the absolute 12 GiB cap.
+
+E4v3 passed six source proofs, nine fresh-process cache/order/invalidation
+checks and 300 origin-bound subsystem tests for each isolated source. Both
+real chronological traces match all 72 baseline events and exact artifacts.
+Root read the retained stdout counts and verified the 74 development evidence
+hashes. The expanded statistics tests independently passed 21 cases with
+durable JUnit `statistics_qualification_v2.junit.xml`.
+
+The mechanically combined source has 49 files, eight changed/new paths, and
+inventory `dc6e151cfcd6c8bd476921e850666d22f6dfcd2237eb8b0afa649736002af0c6`.
+Independent review verified every file against its declared origin. Combined
+chronological/subsystem qualification precedes its six-setting development
+comparison (1/4/10 threads and 128/1024-pixel blocks). No production source or
+public runtime default has changed yet. Final promotion also requires actual
+unchanged-default guards, not only tests of the selected block setting.
+
+Combined admission passed 1,131 origin-bound tests with zero failures and
+three exact 72-event chronological traces at 1/128, 4/1024 and 10/1024
+thread/block settings. All 18 development pairs passed exact output,
+artifact and final-state checks. The predeclared minimum candidate-median
+rule selected four threads and a 1024-pixel block: separate baseline and
+candidate medians were 21.517622 s and 12.624037 s, with a median paired
+baseline/candidate ratio of 1.646599. These remain development results.
+
+Independent review accepted the ten-cell, 50-pair promotion protocol for
+execution only after permanent regressions, installed-wheel qualification
+and both final-source 1024-square admissions pass. The frozen protocol hash
+is `67725d57eb18c49535f7c32e11cc47b04a846e14e3ffbd5406f3cf9c6f8602af`.
+It retains the primary benefit and bootstrap gates, scene and startup guards,
+unchanged-default guards, exact numerical checks and absolute/relative RSS
+limits. Luna exclusively owns numerical execution; no optimized source has
+been integrated and neither P7 nor P8 is complete.
+
+Final installed admission now passes the reviewed prerequisites. All 49
+package files match the combined source and wheel. Both 1024-square scenes
+pass all 240 original-reference bands, exact baseline outputs/artifacts and
+final state, and the 18-field geometry gate through exact baseline geometry.
+Diagnostic candidate durations were 400.827 s (dense) and 341.365 s
+(vegetation), with sampled process-tree peaks of 1.518 and 1.485 GiB. These
+single admission runs do not establish a speedup; no large per-timestep trace
+was captured.
+
+The installed core attempt passed 3,320 cases and failed one harness test
+because it named checkout source after an installed-wheel guard had already
+imported the wheel. A test-only repair derives the active package path and
+preserves the required `AttributeError` assertion. All 18 tests in that file
+then passed with both installed guards, and the repaired case also passed
+against baseline source. Their union covers all original 3,321 cases without
+skips. Prior 3,303-case reruns excluded the entire file and are not presented
+as complete coverage. Original failures and the supplemental repair record
+are retained. Independent review accepted these prerequisites in
+`local_cpu_optimization_v1/reviews/final_qualification_review.json`.
+The frozen 50-pair promotion matrix is now delegated to Luna; production
+integration still awaits its complete results and independent review.
+
+### Local CPU optimization integrated with exact results
+
+The frozen promotion matrix completed all 50 pairs across ten configurations.
+Root and independent review recomputed the raw ratios, enumerated all 3,125
+bootstrap resamples per cell, verified 152 evidence hashes and checked all
+cache/source/cleanup, exactness and RSS gates. The primary geometry-warm
+256-square, 24-step case at four threads has separate medians 20.963946 s
+and 12.886704 s, with paired median baseline/candidate 1.626789 and geometric
+mean bootstrap 95% interval [1.593443, 1.648973]. All scene, one-thread,
+unchanged-default, geometry-cold and first-use guards passed. No startup
+tradeoff rule was triggered. Maximum observed summed RSS across the 100
+timed trials was 604,553,216 bytes; sampling and shared-page limitations
+remain explicit. These are local candidate-to-candidate measurements.
+
+After approval, root copied exactly eight source files and four permanent
+test/probe files from the admitted snapshot. They implement existing GVF
+pixel parallelism, exact duplicate visibility decode removal and content-bound
+persistent JIT caches. Explicit four-thread/1024-pixel execution is documented;
+public defaults and numerical policy remain unchanged. The installed-wheel CI
+configuration now includes the permanent regressions; hosted CI has not run.
+
+Final post-copy verification passed 97 tests with zero failures or skips,
+including genuine TIFF execution, the moved permanent tests and source-guard
+repair. All 49 repository, staged, wheel and installed files match the
+qualified source before and after tests. Requested and effective thread
+counts are 1, 4 and 10; Torch remained unloaded. Root verified the JUnit and
+source/wheel hashes. Commands and raw evidence are retained in
+`local_cpu_optimization_v1/integration/postcopy_v1/postcopy_report.json`.
+The measured scope and remaining gates are summarized in
+[`local_cpu_optimization.md`](../reports/local_cpu_optimization.md).
+P7 remains in progress and P8 remains pending; this local optimization does
+not establish the full upstream matrix, larger/default-3600 feasibility,
+multi-day coverage, final-source Linux qualification or release completion.

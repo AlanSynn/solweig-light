@@ -49,6 +49,8 @@ jobs:
         run: python -m pytest -p tests.helpers.installed_wheel_guard tests/differential/test_pipeline_reference.py -q
       - name: Verify angular boundaries, SVF arithmetic and analytic geometry
         run: python -m pytest -p tests.helpers.installed_wheel_guard tests/differential/test_p7_ground_view_angular.py tests/differential/test_p7_svf_annulus.py tests/scientific/test_geometry_analytic.py -q
+      - name: Verify exact local CPU optimizations
+        run: python -m pytest -p tests.helpers.installed_wheel_guard tests/differential/test_ground_view_dispatch_exact.py tests/unit/test_duplicate_visibility_decode.py tests/unit/test_exact_persistent_jit_cache.py -q
       - name: Verify cache, restart and bounded execution
         run: python -m pytest -p tests.helpers.installed_wheel_guard tests/integration/test_runtime_pipeline.py tests/unit/test_geometry_cache.py tests/unit/test_geometry_service.py tests/unit/test_persistence.py tests/unit/test_runtime.py tests/unit/test_identities.py tests/unit/test_persistent_jit_cache.py tests/unit/test_portable_profile.py -q
       - name: Verify CLI, public signatures and companion wheels

@@ -138,10 +138,12 @@ def test_return_code_outcome_and_job_failure_are_all_required(tmp_path):
     assert not HARNESS.execution_status({**measurement, "returncode": 1}, run, scene)["passed"]
 
 
-def test_child_failure_is_retained_as_job_failure(tmp_path, monkeypatch):
-    monkeypatch.syspath_prepend(str(ROOT / "src"))
+def test_child_failure_is_retained_as_job_failure(tmp_path):
+    import solweig_light
+
+    source = Path(solweig_light.__file__).resolve().parents[1]
     spec = {
-        "source": str(ROOT / "src"),
+        "source": str(source),
         "process_run": str(tmp_path),
         "entrypoint": "entrypoint_that_does_not_exist",
         "kwargs": {},

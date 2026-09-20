@@ -48,3 +48,5 @@ reports/characterization/p8_portable_profile_v1/cura_pipeline/large_results/remo
 reports/characterization/p8_portable_profile_v1/cura_pipeline/large_results/final_verification_staging/evidence/*/samples.json
 reports/cura_p8_20260919T1215Z_a7c3/final_remote_cleanup/whole_tree_inventory.json
 reports/characterization/p8_portable_math_review/cura_glibc_audit/evidence/glibc_2.39.orig.tar.xz
+reports/characterization/local_cpu_optimization_v1/e0/admission/dense1024/monitor_retry1/samples.json
+reports/characterization/local_cpu_optimization_v1/e0/admission/vegetation1024/monitor/samples.json
