@@ -21,6 +21,7 @@ profiles use the retained serial engine. Block size only bounds decode work.
 from dataclasses import dataclass
 from functools import lru_cache
 import inspect
+import os
 
 import numpy as np
 from numba import njit, prange
@@ -130,6 +131,16 @@ def _shortwave_visibility_blocks(shadow,vegetation,vegetation_building,diffuse,s
 _FUSED_TILE=32
 
 
+def _fused_enabled():
+    """Fused radiation route is opt-in: SOLWEIG_LIGHT_FUSED_RAD=1, default OFF.
+
+    Pipeline measurement showed the fused kernels regressing the radiation
+    stage, so the dispatch hooks keep the retained route armed unless the
+    environment explicitly requests the experimental path.
+    """
+    return os.environ.get('SOLWEIG_LIGHT_FUSED_RAD') == '1'
+
+
 def _packed_leaves(channel,allow_lazy=False):
     """Admitted packed leaves of a channel, or None when fusion is unsupported.
 
@@ -169,6 +180,8 @@ def _fused_guard(leaves,start,stop,patches):
 
 def _shortwave_fused_block(shadow,vegetation,vegetation_building,diffuse,start,stop,patches,sun,shade,lum,solid,cosine,directions,diff_gate,ref_gate,box_gate,surface_sun,surface_sh,box,parallel):
     """Fused ordered decode+reduce for one block; None selects the retained route."""
+    if not _fused_enabled():
+        return None
     from ..geometry.visibility_compiled import _descriptor, _preflight
     leaves=[_packed_leaves(channel,allow_lazy=index==3)
             for index,channel in enumerate((shadow,vegetation,vegetation_building,diffuse))]
@@ -197,6 +210,8 @@ def _shortwave_fused_block(shadow,vegetation,vegetation_building,diffuse,start,s
 
 def _longwave_fused_block(shadow,vegetation,vegetation_building,start,stop,patches,sun,shade,solid,sine,cosine,directions,gate,solar_gate,sky_down,sky_side,surface_sun,surface_sh,lup,reflection_factor,parallel):
     """Fused ordered decode+reduce for one block; None selects the retained route."""
+    if not _fused_enabled():
+        return None
     from ..geometry.visibility_compiled import _descriptor, _preflight
     leaves=[_packed_leaves(channel) for channel in (shadow,vegetation,vegetation_building)]
     if any(pair is None or len(pair)!=1 for pair in leaves):

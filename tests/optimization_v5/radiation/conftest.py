@@ -1,11 +1,15 @@
 """Shared builders for the P01 fused ordered decode+accumulate differential tests."""
 import contextlib
+import os
 
 import numba
 import numpy as np
 import pytest
 
 from solweig_light.geometry.visibility import LazyDiffVisibility, PackedVisibility, _EncodedPatch
+
+# The fused route is opt-in in production; this suite exists to exercise it.
+os.environ.setdefault('SOLWEIG_LIGHT_FUSED_RAD', '1')
 
 PATCHES = 153
 

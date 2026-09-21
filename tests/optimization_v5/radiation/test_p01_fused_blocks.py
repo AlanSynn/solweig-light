@@ -352,6 +352,33 @@ def test_fallback_and_admission():
     assert bitwise(block, reference)
 
 
+def test_fused_route_is_opt_in(monkeypatch):
+    """Default OFF: the fused route arms only under SOLWEIG_LIGHT_FUSED_RAD=1."""
+    rng = np.random.default_rng(59)
+    sh = packed(rng, 16, 16, 153, kinds_three)
+    start, stop = 0, 32
+    coefficients = sw_coefficients(np.random.default_rng(61), 153)
+    sun, shade = classes(np.random.default_rng(67), 256, 153)
+    lw = lw_coefficients(np.random.default_rng(71), 153, 256)
+    arguments = (sh, sh, sh, sh, start, stop, 153, sun[start:stop], shade[start:stop],
+                 coefficients['lum'], coefficients['solid'], coefficients['cosine'],
+                 coefficients['directions'], coefficients['diff_gate'], coefficients['ref_gate'],
+                 coefficients['box_gate'], coefficients['surface_sun'], coefficients['surface_sh'])
+    longwave = (sh, sh, sh, start, stop, 153, sun[start:stop], shade[start:stop], lw['solid'],
+                lw['sine'], lw['cosine'], lw['directions'], lw['gate'], lw['solar_gate'],
+                lw['sky_down'], lw['sky_side'], lw['sun_surface'], lw['shade_surface'],
+                lw['lup'], lw['factor'], True)
+    monkeypatch.delenv('SOLWEIG_LIGHT_FUSED_RAD', raising=False)
+    assert compiled._fused_enabled() is False
+    assert compiled._shortwave_fused_block(*arguments, False, True) is None
+    assert compiled._longwave_fused_block(*longwave) is None
+    monkeypatch.setenv('SOLWEIG_LIGHT_FUSED_RAD', '0')
+    assert compiled._fused_enabled() is False
+    monkeypatch.setenv('SOLWEIG_LIGHT_FUSED_RAD', '1')
+    assert compiled._fused_enabled() is True
+    assert compiled._shortwave_fused_block(*arguments, False, True) is not None
+
+
 def test_lazydiff_nondiffuse_channel_falls_back():
     """A lazy direct channel is never fused; only the diffuse stream may be a pair (C5-31).
 
