@@ -11,12 +11,14 @@ checkpoint `14e88876`).
   sha256 `8fe69a5831cb340ce72ce911be9ccbd50c8808f6dcaaa8d4c69c6506a05b2ad4`
   (built with `uv build --wheel` from clean tree at the frozen commit)
 - Isolated install: `site-packages/` (pip `--target`, `--no-deps`)
-- Installed check: `installed_check_dense256.json` — L2 chronological harness
-  (`evidence/l2/l2_chrono.py`, dense_urban_256, 24 steps, 153 patches, 10 save
-  flags, checkpoint_interval=1) executed with `PYTHONPATH` pointing at the
-  isolated `site-packages/`; import origin asserted inside the installed wheel;
-  torch not imported. Result: 23/23 artifacts bitwise-identical to the pristine
-  `REFERENCE_bfd9915e_dense256.json`. PASS.
+- Installed checks (both bitwise-PASS, 23/23 artifacts identical to the pristine
+  `REFERENCE_bfd9915e_dense256.json`, import origin asserted inside the
+  installed wheel, torch not imported):
+  - `installed_check_dense256.json` — CPython 3.12.13 (`.venv`)
+  - `installed_check_dense256_py311.json` — CPython 3.11.16 (`.venv-light`)
+  The py3.11 result doubles as a cross-interpreter bitwise check: the pristine
+  reference era and all campaign L2 gates ran under 3.12, and the 3.11 run
+  reproduces every artifact byte-identically.
 
 ## Parity reference for L4
 
@@ -40,7 +42,13 @@ met.txt are tracked.
 
 ## Environment
 
-`.venv` (CPython, macOS arm64, darwin 25.6.0), numba njit cache enabled, math
-profile `solweig-portable-sleef-5a1d179d-v1` (fingerprint
-`8e4d38460b61b0299e7c1d525c8499750dcd219ef01cc785d7496dbe1dcbef30`) — identical
-profile id/fingerprint as the v4 large runs.
+The final campaign (L4) executes under `.venv-light`
+(`/Users/alansynn/Workspace/solweig-light/.venv-light`, CPython 3.11.16, numpy
+2.4.6, numba 0.67.0, llvmlite 0.49.0, GDAL 3.13.0, macOS arm64 / Darwin
+25.6.0) — the dependency-identical environment that produced the v4 large
+reference. Under it the math profile reports the exact reference fingerprint
+`8e4d38460b61b0299e7c1d525c8499750dcd219ef01cc785d7496dbe1dcbef30`
+(`solweig-portable-sleef-5a1d179d-v1`); verified before the run. The campaign
+`.venv` (CPython 3.12.13) was used for development gates and is recorded by the
+3.12 installed check above. numba njit cache enabled (per-run `NUMBA_CACHE_DIR`
+in the harness, matching the v4 protocol so cold-JIT time is comparable).
