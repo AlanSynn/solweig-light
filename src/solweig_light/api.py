@@ -52,6 +52,49 @@ def calculate_svf(base_path: str, patch_option: int = 2, overwrite: bool = False
     return _calculate_svf(base_path, patch_option, overwrite, validate_existing=True)
 
 
+def _precompute_geometry_phase(directory, tiles, building, dem, trees, patch_option, runtime):
+    """Run the GEOMETRY construction phase concurrently before the serial
+    exports (C6-40 private adapter, ``solweig_light.runtime_phases``).
+
+    Each pending tile's numerical geometry is produced once through the
+    shared C6-10 recipe inside a native-thread-capped child process, under
+    C6-42 phase-aware memory admission, and results are published in the
+    original sorted tile order as a complete stage barrier (journal-first,
+    manifest-last).  The serial loop below then re-opens the ready store
+    handles as cache hits and keeps sole ownership of the legacy
+    TIFF/ZIP/NPZ artifact publication, so public outputs and their order
+    are unchanged.  Any admission or child failure raises the pipeline's
+    own public error before or instead of that loop, exactly as the serial
+    route would.
+    """
+    from osgeo import gdal
+
+    from .geometry.shadows import create_patches
+    from .runtime_phases import execute_geometry_phase, geometry_phase_jobs
+
+    patches = int(sum(create_patches(patch_option)[4]))
+    descriptors = []
+    for tile in tiles:
+        dataset = gdal.Open(building[tile])
+        try:
+            rows, cols = dataset.RasterYSize, dataset.RasterXSize
+        finally:
+            dataset = None
+        descriptors.append({
+            'tile': tile,
+            'paths': {'Building_DSM': building[tile], 'Trees': trees[tile], 'DEM': dem[tile]},
+            'rows': int(rows), 'cols': int(cols), 'patches': patches,
+        })
+    cache_root = Path(runtime.cache_dir) if runtime.cache_dir else directory / '.solweig-light' / 'cache'
+    execute_geometry_phase(
+        geometry_phase_jobs(descriptors, patch_option=patch_option,
+                            windchannels=1, block_pixels=runtime.block_pixels),
+        options=runtime,
+        publication_root=directory / '.solweig-light' / 'phases' / 'geometry',
+        store_root=cache_root,
+    )
+
+
 def _calculate_svf(base_path, patch_option, overwrite, *, validate_existing):
     from .geometry.service import prepare_geometry_exports
     from .runtime import get_runtime_options
@@ -87,10 +130,20 @@ def _calculate_svf(base_path, patch_option, overwrite, *, validate_existing):
             print(f'[WARNING] {len(missing)} Building_DSM tiles are missing matching {name} tiles.')
     print(f'[INFO] Found {len(common)} matching SVF tiles.')
     print(f'[INFO] Writing outputs to: {output}')
+    pending = []
     for tile in common:
         expected = [output / name for name in [f'SkyViewFactor_{tile}.tif', f'svfs_{tile}.zip', f'shadowmats_{tile}.npz']]
         if not validate_existing and not overwrite and all(path.exists() for path in expected):
             continue
+        pending.append(tile)
+    if len(pending) > 1 and runtime.workers > 1 and runtime.cache_enabled:
+        # C6-40 phase route: produce native geometry concurrently, in the
+        # original sorted order and as a barrier, before any export or
+        # simulation job starts.  workers == 1 and cache-disabled runs keep
+        # the serial route verbatim.
+        _precompute_geometry_phase(directory, pending, building, dem, trees,
+                                   patch_option, runtime)
+    for tile in pending:
         prepare_geometry_exports(directory, tile,
             {'Building_DSM': building[tile], 'Trees': trees[tile], 'DEM': dem[tile]},
             patch_option, overwrite=overwrite, runtime=runtime)

@@ -1,0 +1,94 @@
+C6-40 runtime phase adapter — commands, exit codes, hashes
+Worker: C6-40 (runtime_specialist). Model routing: GLM via Z.ai (no Claude/Opus involvement).
+Worktree: /Users/alansynn/Workspace/solweig-light-v6-phases (detached at 4b83452b, no branch created, no commit, no push).
+Python: /Users/alansynn/Workspace/solweig-light/.venv-light/bin/python (absolute, as required).
+Timing caveat: contended host; only correctness was asserted. No performance claims are made anywhere.
+
+== Deliverables (owned paths only) ==
+src/solweig_light/runtime_phases.py                     (NEW, private adapter module)
+tests/optimization_v6/phases/test_geometry_phase_adapter.py  (NEW, 17 tests)
+optimization_v6_continue/evidence/phases/C6-40_commands_and_hashes.txt   (this file)
+optimization_v6_continue/evidence/phases/C6-40_decision_matrix.md        (gate -> test matrix)
+optimization_v6_continue/evidence/phases/integration_recipe_C6-40.diff   (proposal, NOT applied)
+
+Nothing in src imports runtime_phases; api.py / pipeline.py / runtime*.py are untouched in this
+worktree (verified below with git status/diff).
+
+== Commands and exit codes ==
+
+# 1. Full suite, first stable run
+cd /Users/alansynn/Workspace/solweig-light-v6-phases && PYTHONPATH=src \
+  /Users/alansynn/Workspace/solweig-light/.venv-light/bin/python -m pytest \
+  tests/optimization_v6/phases/test_geometry_phase_adapter.py -q
+exit code 0 — "17 passed in 20.81s"
+
+# 2. Stability rerun (fresh processes; second-run store path exercises cache_hit=True)
+PYTHONPATH=src ... -m pytest tests/optimization_v6/phases/test_geometry_phase_adapter.py -q
+exit code 0 — "17 passed in 20.93s"
+
+# 3. Module inertness (gate: nothing imports it until wired)
+PYTHONPATH=src ... -c "import solweig_light.api, solweig_light.pipeline, solweig_light.runtime, solweig_light.runtime_worker, solweig_light.runtime_memory, sys; assert 'solweig_light.runtime_phases' not in sys.modules; print('inert-ok')"
+exit code 0 — "inert-ok"   (also asserted inside the suite by test_module_is_inert_until_wired)
+
+# 4. Worktree cleanliness (no branch, no commit, no integrator-owned edits)
+git -C /Users/alansynn/Workspace/solweig-light-v6-phases status --porcelain
+exit code 0 — exactly:
+?? optimization_v6_continue/evidence/phases/
+?? src/solweig_light/runtime_phases.py
+?? tests/optimization_v6/phases/
+git -C /Users/alansynn/Workspace/solweig-light-v6-phases diff --stat
+exit code 0 — empty (zero tracked-file modifications)
+git branch --show-current -> empty (detached HEAD); git rev-parse HEAD -> 4b83452ba7e83c4637c979a51351ea99c9001016
+
+# 5. Integration recipe applies cleanly against this worktree (validated, NOT applied)
+git apply --check optimization_v6_continue/evidence/phases/integration_recipe_C6-40.diff
+exit code 0 — APPLY_CHECK_OK (run twice, before and after header normalization)
+# Syntax validity of the post-patch api.py content:
+python -m py_compile <post-patch api.py scratch copy>
+exit code 0 — SCRATCH_SYNTAX_OK (scratch copy removed after check)
+
+== sha256 ==
+
+b425d79b12214203c8096eb61954be53784bbbccbee0438e2d7a6713cf2722dc  src/solweig_light/runtime_phases.py
+869b70ab180aa40e0cd61ba24470a51737ca310a7e7d653102187107610f2902  tests/optimization_v6/phases/test_geometry_phase_adapter.py
+b319ed09f179662cfcc01e2c5d15d3a8b411821b622e494d71f575d06bb2b2fd  optimization_v6_continue/evidence/phases/integration_recipe_C6-40.diff
+4daee864445e2aaa9dad715ace64917feb86bd7559201d131f7cbce2086c74d3  optimization_v6_continue/evidence/phases/C6-40_decision_matrix.md
+
+== C6-60 review condition F1 (post-approval fix, evidence only) ==
+
+Finding: the recipe's _precompute_geometry_phase used np.sum(...), but api.py has no
+module-level numpy import (its only `import numpy as np` is function-local to
+run_walls_aspect); first phase-route activation would raise NameError.
+Fix (reviewer-specified, exact): line 29 of the diff changed to the serial idiom
+`patches = int(sum(create_patches(patch_option)[4]))` (matches geometry/service.py:78/248).
+
+# Re-verification after the fix
+cd /Users/alansynn/Workspace/solweig-light-v6-phases && \
+  git apply --check optimization_v6_continue/evidence/phases/integration_recipe_C6-40.diff
+exit code 0 — APPLY_CHECK_OK_POST_F1
+# Full post-patch content check: diff applied with rc 0 onto a scratch copy of this
+# worktree, py_compile of the patched api.py rc 0, no 'np.' in the inserted helper,
+# helper contains the builtin-sum patch line.
+runtime_phases.py and tests were NOT touched (approved as-is); their hashes above are unchanged.
+Superseded pre-fix diff sha256: 8e91b2acbe61d29d2484c1a56b02bccc8ec3d41185891230f137454b21bc071c
+(this file is the provenance record itself and is excluded from its own hash set, per the
+m5 evidence convention; its content is fully determined by the commands above)
+
+== Notes for the reviewer ==
+- Test suite gates are labelled in-file: synthetic-gate tests use a stub worker module that
+  pins REAL numba (env-before-import + set_num_threads) and runs a real njit(parallel=True)
+  probe kernel at "kernel entry", but produces synthetic store payloads; the one end-to-end
+  real-scene test (test_real_scene_phase_matches_serial_production_bitwise) uses the real
+  producer on 3 tiles of tests/reference/small_original_cpu/scene (32x35 each, well under
+  the 96x96 ceiling) and compares the phase store manifest bitwise against an in-process
+  serial recipe.produce() reference.
+- Real-scene bitwise comparison detail: array fingerprints match after stripping the random
+  per-publication generation directory names; for visibility channels the entry-level
+  fingerprint hashes the JSON file bytes, which embed the random mkstemp payload filename,
+  so the test compares shape + patch table + the encoded payload digest (payload.sha256 —
+  exactly what GeometryStore validates when it re-opens a generation). All three channels'
+  payload sha256 values are identical between phase and serial production.
+- Failure-semantics tests assert the public error TYPE and MESSAGE equal the serial
+  pipeline's own (rebuilt via runtime._child_exception), never plain pickling, and that the
+  committed set is exactly the contiguous staged prefix below the numerically first recorded
+  failure.
