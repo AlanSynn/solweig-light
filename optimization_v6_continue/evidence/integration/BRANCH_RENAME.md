@@ -31,3 +31,20 @@ pull_request/workflow_dispatch). Pushing the renamed branch STARTS the CPU
 reference workflow on then-current state. Per BRANCH_AND_CI.md § CI and
 publication: required checks are read from the actual run on the pushed
 state; a skipped check is never reported as passed.
+
+## Push receipt (appended after execution)
+
+```
+git push -u origin perf/cpu-optimization
+  * [new branch]        perf/cpu-optimization -> perf/cpu-optimization
+  branch 'perf/cpu-optimization' set up to track 'origin/perf/cpu-optimization'.
+git push origin --delete perf/claude-glm53-cpu-v5
+  - [deleted]           perf/claude-glm53-cpu-v5
+git ls-remote --heads origin (post-operation)
+  14e88876  refs/heads/main
+  a90b10aa  refs/heads/perf/cpu-optimization
+```
+
+Remote now holds exactly two branches: main and perf/cpu-optimization.
+No protection errors; old ref deleted cleanly. CI run started by the push
+is observed on GitHub Actions, not pre-claimed here.
