@@ -1734,10 +1734,15 @@ from .ground_view import sunonsurface_2018a
 
 def gvf_2018a(wallsun, walls, buildings, scale, shadow, first, second, dirwalls, Tg, Tgwall, Ta, emis_grid, ewall, alb_grid, SBC, albedo_b, rows, cols, Twater, lc_grid, landcover):
     """Dispatch the identical ordered gather within the admitted CPU budget."""
-    from .ground_view import gvf_2018a as serial, gvf_2018a_parallel as parallel
+    from .ground_view import _gvf_fused, gvf_2018a as serial, gvf_2018a_parallel as parallel
     from ..runtime import get_runtime_options
-    function = parallel if get_runtime_options().threads_per_worker > 1 else serial
-    return function(wallsun, walls, buildings, scale, shadow, first, second, dirwalls, Tg, Tgwall, Ta, emis_grid, ewall, alb_grid, SBC, albedo_b, rows, cols, Twater, lc_grid, landcover)
+    threads = get_runtime_options().threads_per_worker
+    if threads > 1:
+        # C5-22 G03: fused row-block route; its guard union delegates anything
+        # unsupported (water-class Tg aliases, bush states, nonfinite steps)
+        # back to the exact per-direction full route.
+        return _gvf_fused(wallsun, walls, buildings, scale, shadow, first, second, dirwalls, Tg, Tgwall, Ta, emis_grid, ewall, alb_grid, SBC, albedo_b, rows, cols, Twater, lc_grid, landcover, parallel=True, block_rows=32)
+    return serial(wallsun, walls, buildings, scale, shadow, first, second, dirwalls, Tg, Tgwall, Ta, emis_grid, ewall, alb_grid, SBC, albedo_b, rows, cols, Twater, lc_grid, landcover)
 
 
 _serial_Kside_veg_v2022a = Kside_veg_v2022a
