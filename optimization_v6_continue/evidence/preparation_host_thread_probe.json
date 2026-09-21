@@ -1,0 +1,39 @@
+{
+  "schema": "sw6-thread-probes-v1",
+  "scope": "helper_execution_only",
+  "records": [
+    {
+      "requested_threads": 1,
+      "configured_pool_threads": 1,
+      "effective_thread_mask": 1,
+      "observed_probe_thread_ids": [
+        0
+      ],
+      "threading_layer": "omp",
+      "python": "3.13.5",
+      "numpy": "2.3.5",
+      "numba": "0.65.1",
+      "process_id": 1009,
+      "numba_env": "1",
+      "scope": "standalone_numba_probe_not_solweig_or_target_host_benchmark"
+    },
+    {
+      "requested_threads": 2,
+      "configured_pool_threads": 2,
+      "effective_thread_mask": 2,
+      "observed_probe_thread_ids": [
+        0,
+        1
+      ],
+      "threading_layer": "omp",
+      "python": "3.13.5",
+      "numpy": "2.3.5",
+      "numba": "0.65.1",
+      "process_id": 1010,
+      "numba_env": "2",
+      "scope": "standalone_numba_probe_not_solweig_or_target_host_benchmark"
+    }
+  ],
+  "solweig_executed": false,
+  "target_host_performance_claim": false
+}

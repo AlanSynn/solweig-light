@@ -1,0 +1,562 @@
+{
+  "schema": "solweig-claude-continuation-v6",
+  "status": "specification_only",
+  "integration_branch": "perf/claude-glm53-cpu-v5",
+  "known_checkpoint": "e7a2d6ec8594b234820e7783e0ca26d821de7f3d",
+  "worker_isolation": "detached_at_explicit_immutable_sha",
+  "artificial_agent_count_limit": null,
+  "artificial_token_limit": null,
+  "resource_policy": "global bounded local numerical tasks; exclusive benchmark",
+  "historical_spatial_cases": 2,
+  "target": {
+    "spatial_tiles": 24,
+    "timesteps_per_tile": 24,
+    "patches": 153,
+    "actual_shape": [
+      1024,
+      1024
+    ],
+    "seconds": 1800
+  },
+  "integration_services": {
+    "C6-60": "recurring independent per-immutable-patch review",
+    "C6-70": "integrate only selected READY and REVIEWED first-wave tasks, not every pending task",
+    "C6-99": "integrate only selected optional tasks after independent review; unselected remain not_selected",
+    "additional_dependencies": "selected immutable patch IDs are explicit in the live ledger; static DAG does not waive per-patch review"
+  },
+  "tasks": [
+    {
+      "id": "C6-00",
+      "title": "Same-branch source and provider inventory",
+      "status": "pending",
+      "depends_on": [],
+      "role": "coordinator",
+      "dossier": "DELEGATION.md",
+      "owned_paths": [
+        "optimization_v6_continue/evidence/inventory/"
+      ],
+      "completion_gate": [
+        "same branch and protected dirty files recorded",
+        "actual routes or unavailable labels"
+      ],
+      "requires_independent_review": false,
+      "conditional": false
+    },
+    {
+      "id": "C6-01",
+      "title": "Scope correction and actual thread harness",
+      "status": "pending",
+      "depends_on": [
+        "C6-00"
+      ],
+      "role": "evidence_owner",
+      "dossier": "dossiers/01_measurement_and_baseline.md",
+      "owned_paths": [
+        "tools/optimization_v6/threading/",
+        "optimization_v6_continue/evidence/measurement/"
+      ],
+      "completion_gate": [
+        "actual configured/effective masks recorded",
+        "two-case scope preserved and original target not falsely passed"
+      ],
+      "requires_independent_review": false,
+      "conditional": false
+    },
+    {
+      "id": "C6-02",
+      "title": "Tiny cold producer/key and phase census",
+      "status": "pending",
+      "depends_on": [
+        "C6-01"
+      ],
+      "role": "evidence_owner",
+      "dossier": "dossiers/02_common_geometry_recipe.md",
+      "owned_paths": [
+        "tests/optimization_v6/geometry_census/",
+        "optimization_v6_continue/evidence/census/"
+      ],
+      "completion_gate": [
+        "real producer count and actual normalized equivalence captured",
+        "no numerical mocks or large admission"
+      ],
+      "requires_independent_review": false,
+      "conditional": false
+    },
+    {
+      "id": "C6-03",
+      "title": "Stage live-memory and publication inventory",
+      "status": "pending",
+      "depends_on": [
+        "C6-00"
+      ],
+      "role": "runtime_specialist",
+      "dossier": "dossiers/04_phase_pool_and_memory.md",
+      "owned_paths": [
+        "optimization_v6_continue/evidence/memory/"
+      ],
+      "completion_gate": [
+        "raw/native/parent overlap budgeted",
+        "sorted partial-publication behavior mapped"
+      ],
+      "requires_independent_review": true,
+      "conditional": false
+    },
+    {
+      "id": "C6-10",
+      "title": "Common numerical geometry producer and identity",
+      "status": "pending",
+      "depends_on": [
+        "C6-02"
+      ],
+      "role": "numerical_implementer",
+      "dossier": "dossiers/02_common_geometry_recipe.md",
+      "owned_paths": [
+        "src/solweig_light/geometry/recipe.py",
+        "tests/optimization_v6/geometry_recipe/"
+      ],
+      "completion_gate": [
+        "source-bound all19-field parity",
+        "one supported cold production, zero warm, corrupted inputs rejected"
+      ],
+      "requires_independent_review": true,
+      "conditional": false
+    },
+    {
+      "id": "C6-20",
+      "title": "Anisotropic Lside private specialization",
+      "status": "pending",
+      "depends_on": [
+        "C6-01"
+      ],
+      "role": "numerical_implementer",
+      "dossier": "dossiers/03_demand_specific_radiation.md",
+      "owned_paths": [
+        "src/solweig_light/radiation/pipeline_demand.py",
+        "tests/optimization_v6/lside/"
+      ],
+      "completion_gate": [
+        "original four demanded operations",
+        "warning/error/full diagnostic fallback tested"
+      ],
+      "requires_independent_review": true,
+      "conditional": false
+    },
+    {
+      "id": "C6-21",
+      "title": "Cylinder longwave primary-output kernel",
+      "status": "pending",
+      "depends_on": [
+        "C6-01"
+      ],
+      "role": "numerical_implementer",
+      "dossier": "dossiers/03_demand_specific_radiation.md",
+      "owned_paths": [
+        "src/solweig_light/radiation/cylinder_longwave.py",
+        "tests/optimization_v6/cylinder_lw/"
+      ],
+      "completion_gate": [
+        "primary ordered accumulators equal",
+        "both sweeps/live state retained"
+      ],
+      "requires_independent_review": true,
+      "conditional": false
+    },
+    {
+      "id": "C6-22",
+      "title": "Cylinder shortwave narrow scratch",
+      "status": "pending",
+      "depends_on": [
+        "C6-01"
+      ],
+      "role": "numerical_implementer",
+      "dossier": "dossiers/03_demand_specific_radiation.md",
+      "owned_paths": [
+        "src/solweig_light/radiation/cylinder_shortwave.py",
+        "tests/optimization_v6/cylinder_sw/"
+      ],
+      "completion_gate": [
+        "seven public results retained",
+        "no box-only work under admitted profile"
+      ],
+      "requires_independent_review": true,
+      "conditional": false
+    },
+    {
+      "id": "C6-30",
+      "title": "Actual GVF source-expression preparation",
+      "status": "pending",
+      "depends_on": [
+        "C6-01"
+      ],
+      "role": "gvf_specialist",
+      "dossier": "dossiers/05_gvf_remaining_work.md",
+      "owned_paths": [
+        "src/solweig_light/radiation/gvf_prepared.py",
+        "tests/optimization_v6/gvf_prepare/"
+      ],
+      "completion_gate": [
+        "water pre/post and aliases exact",
+        "repeated expression count reduced"
+      ],
+      "requires_independent_review": true,
+      "conditional": false
+    },
+    {
+      "id": "C6-31",
+      "title": "Typed GVF block postprocess kernel",
+      "status": "pending",
+      "depends_on": [
+        "C6-01"
+      ],
+      "role": "gvf_specialist",
+      "dossier": "dossiers/05_gvf_remaining_work.md",
+      "owned_paths": [
+        "src/solweig_light/radiation/gvf_postprocess.py",
+        "tests/optimization_v6/gvf_postprocess/"
+      ],
+      "completion_gate": [
+        "all16 intermediate/5 return comparisons",
+        "original casts/comparison/zeroing order"
+      ],
+      "requires_independent_review": true,
+      "conditional": false
+    },
+    {
+      "id": "C6-40",
+      "title": "Native geometry precompute phase adapter",
+      "status": "pending",
+      "depends_on": [
+        "C6-10",
+        "C6-03"
+      ],
+      "role": "runtime_specialist",
+      "dossier": "dossiers/04_phase_pool_and_memory.md",
+      "owned_paths": [
+        "src/solweig_light/runtime_phases.py",
+        "tests/optimization_v6/phases/"
+      ],
+      "completion_gate": [
+        "ordered public errors/effects preserved",
+        "geometry barrier and actual thread caps"
+      ],
+      "requires_independent_review": true,
+      "conditional": false
+    },
+    {
+      "id": "C6-42",
+      "title": "Private phase memory admission",
+      "status": "pending",
+      "depends_on": [
+        "C6-03"
+      ],
+      "role": "runtime_specialist",
+      "dossier": "dossiers/04_phase_pool_and_memory.md",
+      "owned_paths": [
+        "src/solweig_light/runtime_memory.py",
+        "tests/optimization_v6/memory/"
+      ],
+      "completion_gate": [
+        "derived actual lifetime inventory",
+        "raw/cold worst case and native reserve safe"
+      ],
+      "requires_independent_review": true,
+      "conditional": false
+    },
+    {
+      "id": "C6-50",
+      "title": "Prepared multi-channel decoder",
+      "status": "pending",
+      "depends_on": [
+        "C6-01"
+      ],
+      "role": "decoder_specialist",
+      "dossier": "dossiers/06_decoder_and_radiation_preparation.md",
+      "owned_paths": [
+        "src/solweig_light/geometry/visibility_prepared.py",
+        "tests/optimization_v6/decoder/"
+      ],
+      "completion_gate": [
+        "raw/ternary/reserved/close/error order exact",
+        "no hidden whole payload copy"
+      ],
+      "requires_independent_review": true,
+      "conditional": false
+    },
+    {
+      "id": "C6-60",
+      "title": "Completion-triggered independent review service",
+      "status": "pending",
+      "depends_on": [
+        "C6-00"
+      ],
+      "role": "reviewer",
+      "dossier": "dossiers/09_integration_interfaces.md",
+      "owned_paths": [
+        "optimization_v6_continue/evidence/reviews/"
+      ],
+      "completion_gate": [
+        "immutable per-patch proof/code/evidence approval or rejection"
+      ],
+      "requires_independent_review": false,
+      "conditional": false
+    },
+    {
+      "id": "C6-70",
+      "title": "First-wave controlled integration",
+      "status": "pending",
+      "depends_on": [
+        "C6-02",
+        "C6-03"
+      ],
+      "role": "integrator",
+      "dossier": "dossiers/09_integration_interfaces.md",
+      "owned_paths": [
+        "src/solweig_light/api.py",
+        "src/solweig_light/pipeline.py",
+        "src/solweig_light/radiation/engine.py",
+        "src/solweig_light/identities.py",
+        "shared dispatch changes"
+      ],
+      "completion_gate": [
+        "each selected implementation reviewed by C6-60",
+        "affected actual small chronology gates passed"
+      ],
+      "requires_independent_review": true,
+      "conditional": false
+    },
+    {
+      "id": "C6-80",
+      "title": "Small cold/warm distinct-tile portfolio",
+      "status": "pending",
+      "depends_on": [
+        "C6-70"
+      ],
+      "role": "evidence_owner",
+      "dossier": "dossiers/01_measurement_and_baseline.md",
+      "owned_paths": [
+        "optimization_v6_continue/evidence/portfolio/"
+      ],
+      "completion_gate": [
+        "actual W/H and same-resource baseline/candidate",
+        "cold duplicate/export/simulation costs separated"
+      ],
+      "requires_independent_review": false,
+      "conditional": false
+    },
+    {
+      "id": "C6-81",
+      "title": "Residual choice, not more variants automatically",
+      "status": "pending",
+      "depends_on": [
+        "C6-80"
+      ],
+      "role": "coordinator",
+      "dossier": "dossiers/08_residual_strategy_register.md",
+      "owned_paths": [
+        "optimization_v6_continue/evidence/selection/"
+      ],
+      "completion_gate": [
+        "non-overlapping measured work model",
+        "selected optional scope recorded"
+      ],
+      "requires_independent_review": false,
+      "conditional": false
+    },
+    {
+      "id": "C6-90",
+      "title": "One-pass stored geometry export verifier",
+      "status": "pending",
+      "depends_on": [
+        "C6-81"
+      ],
+      "role": "storage_specialist",
+      "dossier": "dossiers/07_streaming_exact_validation.md",
+      "owned_paths": [
+        "src/solweig_light/cache/stream_verify.py",
+        "tests/optimization_v6/export_verify/"
+      ],
+      "completion_gate": [
+        "full CRC/schema/value/precedence retained",
+        "read amplification reduced"
+      ],
+      "requires_independent_review": true,
+      "conditional": true
+    },
+    {
+      "id": "C6-91",
+      "title": "Exact radiation preparation and aniLum",
+      "status": "pending",
+      "depends_on": [
+        "C6-81"
+      ],
+      "role": "numerical_implementer",
+      "dossier": "dossiers/06_decoder_and_radiation_preparation.md",
+      "owned_paths": [
+        "src/solweig_light/radiation/prepared_coefficients.py",
+        "tests/optimization_v6/rad_prepare/"
+      ],
+      "completion_gate": [
+        "original profile/typed terms",
+        "independent diffsh and ordered addition"
+      ],
+      "requires_independent_review": true,
+      "conditional": true
+    },
+    {
+      "id": "C6-92",
+      "title": "Remaining ray or GVF prefix optimization",
+      "status": "pending",
+      "depends_on": [
+        "C6-81"
+      ],
+      "role": "numerical_implementer",
+      "dossier": "dossiers/08_residual_strategy_register.md",
+      "owned_paths": [
+        "new isolated ray/gvf candidate modules",
+        "tests/optimization_v6/residual_numerics/"
+      ],
+      "completion_gate": [
+        "actual residual coverage justifies work",
+        "original guarded fallback and all outputs"
+      ],
+      "requires_independent_review": true,
+      "conditional": true
+    },
+    {
+      "id": "C6-93",
+      "title": "Ordered staged exports or tail scheduling",
+      "status": "pending",
+      "depends_on": [
+        "C6-81"
+      ],
+      "role": "runtime_specialist",
+      "dossier": "dossiers/04_phase_pool_and_memory.md",
+      "owned_paths": [
+        "new isolated phase publication helpers",
+        "tests/optimization_v6/phase_publication/"
+      ],
+      "completion_gate": [
+        "sorted error/commit frontier",
+        "bounded queues and same resources"
+      ],
+      "requires_independent_review": true,
+      "conditional": true
+    },
+    {
+      "id": "C6-94",
+      "title": "Profile-driven comfort/wind/storage residual",
+      "status": "pending",
+      "depends_on": [
+        "C6-81"
+      ],
+      "role": "numerical_implementer",
+      "dossier": "dossiers/08_residual_strategy_register.md",
+      "owned_paths": [
+        "selected isolated residual helpers",
+        "tests/optimization_v6/other/"
+      ],
+      "completion_gate": [
+        "selected dependency proof and baseline parity",
+        "not an unrequested workflow rewrite"
+      ],
+      "requires_independent_review": true,
+      "conditional": true
+    },
+    {
+      "id": "C6-99",
+      "title": "Selected final portfolio integration",
+      "status": "pending",
+      "depends_on": [
+        "C6-81"
+      ],
+      "role": "integrator",
+      "dossier": "dossiers/09_integration_interfaces.md",
+      "owned_paths": [
+        "shared integration files",
+        "optimization_v6_continue/evidence/integration/"
+      ],
+      "completion_gate": [
+        "all selected optional tasks reviewed or rejected",
+        "same branch updated and no public stubs"
+      ],
+      "requires_independent_review": true,
+      "conditional": false
+    },
+    {
+      "id": "C6-100",
+      "title": "Final freeze and small installed-wheel gate",
+      "status": "pending",
+      "depends_on": [
+        "C6-99"
+      ],
+      "role": "evidence_owner",
+      "dossier": "VALIDATION_POLICY.md",
+      "owned_paths": [
+        "optimization_v6_continue/evidence/freeze/"
+      ],
+      "completion_gate": [
+        "real target scope/reference plan/source/wheel/profile frozen",
+        "small true TIFF/state gates pass"
+      ],
+      "requires_independent_review": false,
+      "conditional": false
+    },
+    {
+      "id": "C6-101",
+      "title": "Single final actual 24-spatial-tile campaign",
+      "status": "pending",
+      "depends_on": [
+        "C6-100"
+      ],
+      "role": "evidence_owner",
+      "dossier": "VALIDATION_POLICY.md",
+      "owned_paths": [
+        "optimization_v6_continue/evidence/final/"
+      ],
+      "completion_gate": [
+        "actual spatial manifest and resource bounds",
+        "target once or explicit failed/unverified status"
+      ],
+      "requires_independent_review": false,
+      "conditional": false
+    },
+    {
+      "id": "C6-102",
+      "title": "Independent final evidence audit",
+      "status": "pending",
+      "depends_on": [
+        "C6-101"
+      ],
+      "role": "reviewer",
+      "dossier": "VALIDATION_POLICY.md",
+      "owned_paths": [
+        "optimization_v6_continue/evidence/final_review/"
+      ],
+      "completion_gate": [
+        "no band/spatial conflation",
+        "claim matches actual numeric/throughput scope"
+      ],
+      "requires_independent_review": false,
+      "conditional": false
+    },
+    {
+      "id": "C6-103",
+      "title": "Same-branch unmerged handover",
+      "status": "pending",
+      "depends_on": [
+        "C6-102"
+      ],
+      "role": "integrator",
+      "dossier": "BRANCH_AND_CI.md",
+      "owned_paths": [
+        "optimization_v6_continue/evidence/handover/"
+      ],
+      "completion_gate": [
+        "base/tip/diff/commands/evidence/limitations recorded",
+        "no push/PR/main merge/release"
+      ],
+      "requires_independent_review": true,
+      "conditional": false
+    }
+  ]
+}

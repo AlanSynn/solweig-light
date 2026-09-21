@@ -1,0 +1,33 @@
+test_detached_worker_base (test_packet.BranchTests.test_detached_worker_base) ... ok
+test_read_only_dirty_integration (test_packet.BranchTests.test_read_only_dirty_integration) ... ok
+test_wrong_branch_refused_unchanged (test_packet.BranchTests.test_wrong_branch_refused_unchanged) ... ok
+test_changed_chronology_rejected (test_packet.ContractTests.test_changed_chronology_rejected) ... ok
+test_duplicate_context_rejected (test_packet.ContractTests.test_duplicate_context_rejected) ... ok
+test_incomplete_tile_rejected (test_packet.ContractTests.test_incomplete_tile_rejected) ... ok
+test_missing_reference_unverified (test_packet.ContractTests.test_missing_reference_unverified) ... ok
+test_nan_elapsed_rejected (test_packet.ContractTests.test_nan_elapsed_rejected) ... ok
+test_omitted_output_rejected (test_packet.ContractTests.test_omitted_output_rejected) ... ok
+test_positive_record_scope_only (test_packet.ContractTests.test_positive_record_scope_only) ... ok
+test_synthetic_is_not_real_target (test_packet.ContractTests.test_synthetic_is_not_real_target) ... ok
+test_two_spatial_not_twenty_four (test_packet.ContractTests.test_two_spatial_not_twenty_four) ... ok
+test_actual_two_scene_arithmetic (test_packet.ModelTests.test_actual_two_scene_arithmetic) ... ok
+test_boolean_count_rejected (test_packet.ModelTests.test_boolean_count_rejected) ... ok
+test_cpu_overreservation (test_packet.ModelTests.test_cpu_overreservation) ... ok
+test_memory_overreservation (test_packet.ModelTests.test_memory_overreservation) ... ok
+test_negative_cost_rejected (test_packet.ModelTests.test_negative_cost_rejected) ... ok
+test_phase_sum (test_packet.ModelTests.test_phase_sum) ... ok
+test_serial_export_not_divided (test_packet.ModelTests.test_serial_export_not_divided) ... ok
+test_agents_no_implicit_worktree_or_permission_bypass (test_packet.PacketTests.test_agents_no_implicit_worktree_or_permission_bypass) ... ok
+test_dossiers_exist (test_packet.PacketTests.test_dossiers_exist) ... ok
+test_historical_catalog_preserved (test_packet.PacketTests.test_historical_catalog_preserved) ... ok
+test_no_model_provider_calls_in_helpers (test_packet.PacketTests.test_no_model_provider_calls_in_helpers) ... ok
+test_probe_preview_does_not_run_numba (test_packet.PacketTests.test_probe_preview_does_not_run_numba) ... ok
+test_sources_key_evidence (test_packet.PacketTests.test_sources_key_evidence) ... ok
+test_start_length_and_same_branch (test_packet.PacketTests.test_start_length_and_same_branch) ... ok
+test_task_dag (test_packet.PacketTests.test_task_dag) ... ok
+test_thread_environment_no_parent_mutation (test_packet.PacketTests.test_thread_environment_no_parent_mutation) ... ok
+
+----------------------------------------------------------------------
+Ran 28 tests in 1.266s
+
+OK

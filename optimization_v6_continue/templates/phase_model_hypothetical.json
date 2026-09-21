@@ -1,0 +1,37 @@
+{
+  "evidence_class": "hypothetical_not_fitted_to_stage_measurements",
+  "spatial_tiles": 24,
+  "cpu_budget": 8,
+  "memory_budget_gib": 12,
+  "parent_gib": 0.8,
+  "global_setup_seconds": 90,
+  "phases": [
+    {
+      "name": "single_shared_geometry_build",
+      "seconds_per_tile": 60,
+      "workers": 4,
+      "threads": 1,
+      "worker_gib": 2,
+      "implementation_gain": 1,
+      "inflation": 1.05
+    },
+    {
+      "name": "still_serial_verified_export",
+      "seconds_per_tile": 19.45,
+      "workers": 1,
+      "threads": 1,
+      "worker_gib": 2,
+      "implementation_gain": 1.5,
+      "inflation": 1
+    },
+    {
+      "name": "simulation_without_duplicate_geometry",
+      "seconds_per_tile": 160,
+      "workers": 4,
+      "threads": 2,
+      "worker_gib": 2,
+      "implementation_gain": 1.5,
+      "inflation": 1.15
+    }
+  ]
+}

@@ -1,0 +1,900 @@
+{
+  "schema": 1,
+  "status": "strategy_catalog_not_implemented",
+  "baseline_commit": "14e888760727583ef782a4dc0e7a5c7c6e6ff9d1",
+  "entries": [
+    {
+      "id": "R01",
+      "title": "SVF state projection and absorbing-state termination",
+      "equivalence": "guarded_exact",
+      "priority": "first",
+      "mechanism": "Keep the exact first step, then project f/sh/vs/vb to building/vegetation/ever-visible Boolean state. After an ordinary step reaches building=1, vegetation=0, the final three masks are invariant to the remaining finite samples.",
+      "admission_and_risks": "No positive bush; no NaN/Inf or unsupported intermediate behavior; preserve initial correction and decode outputs as 1-B, 1-V, 1-(E-V). The combined output can be 2. Do not use this proof for wall-height outputs.",
+      "cost_model": "Sample ratio 1/(1-q+q*lambda), where q is original-work-weighted absorbing-ray share and lambda is the retained fraction. Add guards, branch cost and SIMD divergence. No-occlusion scenes may gain nothing.",
+      "smallest_discriminator": "Capture all three original outputs, first-step-only and two-step cases, adversarial corners, negative heights, bit masks; measure retained sample counts before timing.",
+      "sources": [
+        "S02",
+        "S11"
+      ],
+      "relation_to_previous": "extends prior R",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "R02",
+      "title": "Certified non-contributing sky suffix",
+      "equivalence": "guarded_exact",
+      "priority": "first",
+      "mechanism": "Bound every remaining building/canopy/trunk sample using exact stored decrements and source maxima. Retain the initial exceptional steps; stop only when the bound proves the complete visibility projection invariant.",
+      "admission_and_risks": "Include out-of-domain +0 padding, nonmonotone stored decrement suffix minima, dtype rounding and signed-zero effects. Use strict conservative bounds unless ties are proved. Positive-bush and wall23 require separate proofs.",
+      "cost_model": "Visits sum_x,p min(L_p, certified_cut_x,p) plus O(P*L) preparation and optional O(log L) per-pixel search. R01 and R02 share removed suffixes: combine cuts with min, never multiply gains.",
+      "smallest_discriminator": "Exhaustive small actual schedules and high-datum/low-obstacle scenes; compare certificate to exhaustive original traversal and count proof failures.",
+      "sources": [
+        "S02"
+      ],
+      "relation_to_previous": "extends prior suffix certificate",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "R03",
+      "title": "Flat compiled hierarchy for provably irrelevant segments",
+      "equivalence": "guarded_exact_research",
+      "priority": "conditional",
+      "mechanism": "Use conservative multi-resolution height bounds over the exact discrete source addresses, with a packed iterative traversal rather than Python object recursion.",
+      "admission_and_risks": "A bound must include boundary values and every live state update. Preserve equality operand selection and raw/nonfinite fallback. Existing oblique translated-horizon shortcuts are not equivalent.",
+      "cost_model": "B_build + N*(node_visits*c_node + evaluated_samples*c_step) < N*L*c_step. A hierarchy is useful only when enough samples are skipped to repay construction and cache misses.",
+      "smallest_discriminator": "Separate building13 research from the actual vegetation23 path; full return tuples, node/sample counters and flat-terrain negative controls.",
+      "sources": [
+        "S02",
+        "S06",
+        "S13"
+      ],
+      "relation_to_previous": "additional",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "R04",
+      "title": "Hoist input-only global bush activation, then trace pixels independently",
+      "equivalence": "guarded_exact_research",
+      "priority": "conditional",
+      "mechanism": "The global branch A_k=max_x([canopy_temp_k(x)>a(x)]*bush(x))>0 depends on immutable inputs and the schedule, not on f/vs/vb/g. Compute the exact flag sequence first; then replay each pixel recurrence using A_k without step-wide barriers.",
+      "admission_and_risks": "For finite bush, scan only bush>0 sites to decide positivity. Otherwise retain the original complete NaN-poisoning reduction. Keep all g updates and the bush tail; building absorption does not permit discarding live bush work.",
+      "cost_model": "Activation cost O(L*N_b) on the admitted sparse finite domain instead of O(L*N) global scans, plus pixel tracing. Compare added prepass cost with eliminated barriers and scans.",
+      "smallest_discriminator": "Exact activation bits and final masks against the original step-major positive-bush implementation; negative/zero/nonfinite bush cases and worker-count variation.",
+      "sources": [
+        "S02"
+      ],
+      "relation_to_previous": "additional",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "R05",
+      "title": "Multi-state wall-shadow suffix certificate",
+      "equivalence": "guarded_exact_research",
+      "priority": "conditional",
+      "mechanism": "Prove a suffix cannot increase the current building/vegetation maxima or alter canopy/trunk crossing states, including previous-step decrements; replay only the final unchanged wall calculations.",
+      "admission_and_risks": "Wall23 returns quantities, not just binary shadows. Its volumeveg, previous height and wall sun/shade outputs invalidate the simple SVF building-absorption rule. No admission without an all-output proof.",
+      "cost_model": "Possible O(N*L) to O(N*L_live); actual bound tightness and query overhead determine benefit. No forecast before a cut-length census.",
+      "smallest_discriminator": "All wall23 outputs at exact angular boundaries and trunk/canopy gaps; compare against exhaustive traversal, never a building-only surrogate.",
+      "sources": [
+        "S06"
+      ],
+      "relation_to_previous": "additional",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "R06",
+      "title": "No-vegetation and uniform-region exact specializations",
+      "equivalence": "guarded_exact_research",
+      "priority": "conditional",
+      "mechanism": "Specialize the executed vegetation path when exact input predicates establish absent canopy/trunk/bush or a uniform block. Eliminate only states proved observationally redundant.",
+      "admission_and_risks": "Calling wall13 instead of wall23 is not automatically correct: initial indices, schedule arithmetic, padding and returns differ. Keep the wall23 schedule and prove its specialized recurrence.",
+      "cost_model": "Reduces field loads and comparisons per sample; gains depend on admitted-area fraction and memory/compute bottleneck, not vegetation file existence.",
+      "smallest_discriminator": "Zeros, signed zeros, absent vegetation on rooftops, negative terrain and exceptional first steps; test all original return fields.",
+      "sources": [
+        "S02",
+        "S06"
+      ],
+      "relation_to_previous": "additional",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "R07",
+      "title": "Ray microtiles and active-lane SIMD",
+      "equivalence": "guarded_exact",
+      "priority": "second",
+      "mechanism": "Run the original sample sequence over contiguous receiver lanes, with exclusive lane state. Batch rays/blocks to amortize launches; compact inactive lanes only if ownership/order remain exact.",
+      "admission_and_risks": "Irregular termination can waste vector lanes. Do not reorder samples within a receiver or infer translated-ray equivalence. Stage-global bush flags must already be established.",
+      "cost_model": "SIMD saves instruction overhead, but utilization approximately live_lane_steps/issued_lane_steps can dominate. Compare scalar early-exit versus SIMD masked execution, not only vector width.",
+      "smallest_discriminator": "Generated target assembly, lane utilization, exact serial/parallel comparisons; sparse and dense obstruction workloads.",
+      "sources": [
+        "S02",
+        "T02",
+        "T03"
+      ],
+      "relation_to_previous": "additional",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "R08",
+      "title": "Reuse exact schedules and complete shadow dispatch",
+      "equivalence": "guarded_exact",
+      "priority": "first",
+      "mechanism": "Reuse O(L) ray descriptors keyed by exact shape, scalar dtype/bits, family and termination policy; connect existing independent-pixel kernels to the admitted CPU budget where still serial.",
+      "admission_and_risks": "GVF addressing and some JIT caches already exist. Do not conflate sky and wall families, cache approximate angles, or count existing work as a new optimization.",
+      "cost_model": "Amortized preparation and startup reduction plus measured thread scaling. Larger CPU allocations are reported separately from equal-budget code improvements.",
+      "smallest_discriminator": "Fresh-process JIT cache tests, schedule hashes, original outputs, same total CPU reservation across worker configurations.",
+      "sources": [
+        "S02",
+        "S06",
+        "S07"
+      ],
+      "relation_to_previous": "partially existing; audit dispatch gaps",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "P01",
+      "title": "Compiled outer blocks, ordered pixel SIMD, fused visibility consumption",
+      "equivalence": "guarded_exact",
+      "priority": "first",
+      "mechanism": "Move block scheduling into native code; traverse patches in original order for each receiver while vectorizing independent pixels. Decode one patch microtile and immediately update accumulators rather than materializing four B-by-P float arrays.",
+      "admission_and_risks": "Preserve accumulator dtype, separate rounding nodes, scalar promotion, raw payloads, mapped-owner locks and exception preflight. Avoid too many live registers or hidden nested thread pools.",
+      "cost_model": "Workspace O(B*A+P) instead of O(B*P) for decoded cubes. Up to 32*N*P bytes of logical write/read for four float32 decoded arrays can be avoided per sweep, not necessarily DRAM bytes.",
+      "smallest_discriminator": "All SW/LW fields, mixed encodings, irregular final blocks, 1/multiple threads; assembly and per-memory-level traffic counters.",
+      "sources": [
+        "S03",
+        "S05",
+        "T02",
+        "T03"
+      ],
+      "relation_to_previous": "extends prior P",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "P02",
+      "title": "Exact categorical partial evaluation",
+      "equivalence": "guarded_exact",
+      "priority": "first",
+      "mechanism": "Evaluate the original typed expression E(coeff_t,p, discrete_state) for every allowed discrete state once per patch/timestep. Pixel kernels select that exact contribution and retain every original accumulation in order.",
+      "admission_and_risks": "Not a surrogate, interpolation or rounded-coefficient lookup. Tables store each separate contribution in its original dtype. Raw visibility and nonfinite-domain behavior retain an exact fallback.",
+      "cost_model": "Expression evaluations O(N*P*T) -> O(C*P*T), but selection/ordered additions remain O(N*P*T). Use stage fraction alpha and table overhead, not the N/C ratio, to predict stage speed.",
+      "smallest_discriminator": "All categories including combined=2, signed zero, 0*NaN, mixed scalar types and every original intermediate cast.",
+      "sources": [
+        "S03",
+        "S05",
+        "T01"
+      ],
+      "relation_to_previous": "extends prior P",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "P03",
+      "title": "Tile-lifetime tan(ASVF) and immutable angular factors",
+      "equivalence": "guarded_exact",
+      "priority": "first",
+      "mechanism": "Compute the same profile tan32(asvf) and genuinely invariant patch/cardinal coefficients once at their valid lifetime, then reuse them across SW/LW and timesteps.",
+      "admission_and_risks": "Fallback NumPy vector/tail behavior can be layout-sensitive. Restrict to the certified SLEEF domain or preserve fallback layout. Solar coefficients and atan classifications remain dynamic.",
+      "cost_model": "One float32 plane costs 4*N bytes. Benefit T*c_tan*N minus build/load cost; must include added working-set pressure.",
+      "smallest_discriminator": "Exact profile keys, cache invalidation, unsupported dtype/layout tests and cold/warm timings.",
+      "sources": [
+        "S03",
+        "S12"
+      ],
+      "relation_to_previous": "previously identified, not counted as new",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "P04",
+      "title": "Classification over exact distinct ASVF bit values",
+      "equivalence": "guarded_exact",
+      "priority": "second",
+      "mechanism": "Intern exact admissible ASVF bit patterns once per tile. For each timestep and patch evaluate the original classifier for U distinct inputs, then scatter classifications by IDs.",
+      "admission_and_risks": "Use bit identity, not tolerance, bins or decimal values. Signed zeros and NaN/raw classes require exact handling. Full classifier inputs, scalar dtype and math profile belong in identity.",
+      "cost_model": "O(N*P*T) transcendental evaluations -> O(U*P*T) plus O(N*P*T) cheap lookup/scatter. Benefit requires U much smaller than N and modest ID/table memory.",
+      "smallest_discriminator": "Unique-value census on real scenes; dense-random ASVF negative control; exact sun/shade equality including equality yielding neither class.",
+      "sources": [
+        "S03",
+        "S12"
+      ],
+      "relation_to_previous": "additional",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "P05",
+      "title": "Certified classifier threshold with uncertain-band fallback",
+      "equivalence": "guarded_exact_research",
+      "priority": "conditional",
+      "mechanism": "For a patch/time classifier, derive an interval enclosure of the implemented typed tan/add/atan/degree pipeline. Return a Boolean only when the entire enclosure lies on one side; evaluate the original expression in the uncertain band.",
+      "admission_and_risks": "Real-number monotonicity alone does not certify rounded SLEEF monotonicity. Need a rigorous bound for the implemented profile or an admitted exhaustive float-domain certificate. Preserve separate < and >, equality and nonfinite cases.",
+      "cost_model": "New cost N*P*T*(c_compare + q_uncertain*c_original) plus certificate construction. Useful only if q_uncertain and certificate overhead are small.",
+      "smallest_discriminator": "Adjacent floats around both boundaries, exact-equality values, exhaustive certified domain or checked interval proof. Unsupported intervals always fall back.",
+      "sources": [
+        "S03",
+        "S12",
+        "T01"
+      ],
+      "relation_to_previous": "additional",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "P06",
+      "title": "Exact visibility/classification signatures and ordered prefix sharing",
+      "equivalence": "guarded_exact_research",
+      "priority": "conditional",
+      "mechanism": "Group receivers with identical complete inputs for a radiation subexpression, or share ordered-prefix accumulator nodes with identical incoming state and exact contribution sequence. Compute shared results once, then scatter.",
+      "admission_and_risks": "Visibility alone is insufficient when ASVF, Lup or material/temperature differs. Include all live inputs; verify hash collisions by byte equality. Bound trie/group memory and stop at the first pixel-dependent input.",
+      "cost_model": "Full-row grouping replaces N ordered reductions with U reductions plus O(N) scatter. Prefix sharing costs O(E) unique edges rather than O(N*P), but can be worse if E approaches N*P.",
+      "smallest_discriminator": "Measure signature entropy and group/trie construction; perturb each dependency and test state/outputs bitwise. No quantization.",
+      "sources": [
+        "S03",
+        "S12"
+      ],
+      "relation_to_previous": "additional",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "P07",
+      "title": "Fuse aniLum with compatible shortwave visibility work",
+      "equivalence": "guarded_exact",
+      "priority": "second",
+      "mechanism": "Add a separate original-order aniLum accumulator to a traversal already reading the same visibility. Move it only across nodes with no data/state/error dependencies and retain the original multiplication/cast graph.",
+      "admission_and_risks": "Kdown consumes dRad; other radiation and ground-view stages have dependencies. This is not permission to reorder chronological state or share unrelated low-level diffsh objects.",
+      "cost_model": "Removes one independent visibility sweep and its materialization costs; derive combined work once with P01/P02, never multiply their savings.",
+      "smallest_discriminator": "Intermediate aniLum/dRad plus all output fields and state; independent dense diffsh fallback and scalar-type fixtures.",
+      "sources": [
+        "S03",
+        "S06",
+        "S08"
+      ],
+      "relation_to_previous": "previously identified",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "P08",
+      "title": "Reuse longwave decode and specialize identical nocturnal components",
+      "equivalence": "guarded_exact",
+      "priority": "second",
+      "mechanism": "Keep exact decoded categories or compact masks locally across the two required LW sweeps. Hoist nighttime coefficients that are exactly equal while retaining sky anisotropy and chronological updates.",
+      "admission_and_risks": "The reflected term uses completed sky accumulation and pixel Lup. Never replace LW with total SVF or skip nighttime. Cache keys include all coefficients and state-dependent inputs.",
+      "cost_model": "Reduces repeated decode/preparation and some coefficient arithmetic; two ordered mathematical sweeps may remain. Match emitted scratch to cache capacity.",
+      "smallest_discriminator": "Night/day transitions, low sun, varying Lup, leaf state, cloudy sky, SW-off but LW-active fixtures.",
+      "sources": [
+        "S03",
+        "S08"
+      ],
+      "relation_to_previous": "additional",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "P09",
+      "title": "Demand graph and admitted output-profile specialization",
+      "equivalence": "guarded_exact",
+      "priority": "conditional",
+      "mechanism": "Construct backward liveness from all requested artifacts, public returns, carried state, validation/error effects and trace mode. Omit only truly dead intermediates; specialize common cylinder/flag paths while retaining every live radiation contribution.",
+      "admission_and_risks": "Do not skip physics because a diagnostic save flag is off. Keep full low-level return contracts and a full-trace execution path. Validation side effects and alias writes are observable sinks.",
+      "cost_model": "Work/bytes removed equal the proven dead subgraph, not an assumed output percentage. No saving in all-output/full-trace profiles where values remain live.",
+      "smallest_discriminator": "All seven workflows, each flag combination, state equality, low-level full returns, and errors. Audit backward-slice edges explicitly.",
+      "sources": [
+        "S03",
+        "S06",
+        "S08"
+      ],
+      "relation_to_previous": "additional",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "P10",
+      "title": "Typed-profile specialization and optional native extension",
+      "equivalence": "guarded_exact_research",
+      "priority": "conditional",
+      "mechanism": "Build lean common-profile kernels rather than repeated inspect.signature and generic wrapper dispatch; consider a small C/C++ SIMD extension only when generated-code evidence shows persistent Numba limitations.",
+      "admission_and_risks": "Preserve NumPy fallback, package portability, explicit SLEEF FMA and all original arithmetic nodes. A language rewrite alone is not a performance argument.",
+      "cost_model": "Reduces dispatch or poor machine-code overhead; include compilation, wheel distribution and instruction-cache costs in first-use evaluation.",
+      "smallest_discriminator": "Installed-wheel CPU-only tests, scalar/array dtype matrix, unsupported-profile fallback, LLVM/assembly evidence and same-host pairs.",
+      "sources": [
+        "S03",
+        "S06",
+        "S12",
+        "T02"
+      ],
+      "relation_to_previous": "additional",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "G01",
+      "title": "First-blocker prefix plus exact repeated-add replay",
+      "equivalence": "guarded_exact",
+      "priority": "first",
+      "mechanism": "For finite binary building masks, precompute the first absorbing zero of f=min(f,b). Gather dynamic ground channels only before that blocker. Reconstruct continuing wall sums using tables A_c[n+1]=RN(A_c[n]+c), not n*c.",
+      "admission_and_risks": "Preserve persistent outside-slice samples, first-distance snapshots, all 16 intermediates and float32 count range. Nonbinary/nonfinite inputs and diverse per-pixel wall values retain fallback. Keep water source mutation separate.",
+      "cost_model": "Full N*D*R preparation plus T_d*N*D*(mean_prefix+h) instead of T_d*N*D*R, or skip static preparation for open scenes. O(N*D) blocker storage.",
+      "smallest_discriminator": "Exhaustive short binary paths, signed-zero/subnormal finite channels, first/second distances, water and no-occlusion negative controls.",
+      "sources": [
+        "S04"
+      ],
+      "relation_to_previous": "extends earlier GVF-prefix proposal",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "G02",
+      "title": "Prepare owned direction-invariant sources once",
+      "equivalence": "guarded_exact",
+      "priority": "first",
+      "mechanism": "Hoist buildings/materials, aspect radians and eligible dynamic emission/albedo fields out of the 18-direction loop, maintaining explicit immutable snapshots.",
+      "admission_and_risks": "The first Lup is prepared before the upstream water Tg mutation; later directions may observe changed Tg. Keep first/later snapshots or fall back. Read-only views of externally mutable arrays are not ownership.",
+      "cost_model": "Six per-direction source copies alone imply 2*6*4*N*D*T_d logical bytes. Shared preparation can reduce D-fold repetition, but memory hierarchy determines elapsed benefit.",
+      "smallest_discriminator": "All original _sun/_gvf outputs and mutated Tg, aliases, water class, direction ties and fallback dtypes.",
+      "sources": [
+        "S04"
+      ],
+      "relation_to_previous": "extends prior G",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "G03",
+      "title": "Fuse gather and postprocessing; retain only live receiver fields",
+      "equivalence": "guarded_exact",
+      "priority": "first",
+      "mechanism": "Consume gather sums in a block-local postprocessor and immediately update final total/cardinal outputs in original direction order; avoid writing 16 full intermediate planes.",
+      "admission_and_risks": "Keep each arithmetic/cast node, direction order, denominator conventions, keep masks and material mutation. Full intermediate tracing uses a diagnostic path.",
+      "cost_model": "Scratch O(16*N) -> O(A*B) for the affected stage; removes stores/loads but gather work may remain dominant.",
+      "smallest_discriminator": "Full intermediate comparison in diagnostic mode, all state and outputs in optimized mode, changed block size, parallel ownership and maximum RSS.",
+      "sources": [
+        "S04"
+      ],
+      "relation_to_previous": "extends prior G",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "G04",
+      "title": "Cache five static unshadowed-albedo GVF fields",
+      "equivalence": "guarded_exact",
+      "priority": "second",
+      "mechanism": "Build total/cardinal unshadowed-albedo fields in the original ordered recurrence and reuse only under complete immutable geometry/material/search-distance identity.",
+      "admission_and_risks": "The complete GVF radiance is dynamic and cannot be cached as geometry. Invalidation must include albedo, input bits, logical boundary, scale and algorithm profile.",
+      "cost_model": "Win when T_d*C_static > B_build + T_d*C_read. Five float32 maps cost 20*N bytes (20 MiB at 1024 squared).",
+      "smallest_discriminator": "Perturb every dependency, compare exact maps and multi-day states, include first-use build time and additional memory.",
+      "sources": [
+        "S04"
+      ],
+      "relation_to_previous": "extends prior G",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "G05",
+      "title": "Compact ordered transport descriptors, not reassociated sparse matmul",
+      "equivalence": "guarded_exact_research",
+      "priority": "conditional",
+      "mechanism": "Represent static blocker/face events and retained sample addresses compactly, then replay original ordered dynamic contributions. Share schedules and run boundaries instead of storing N*D*R full addresses.",
+      "admission_and_risks": "Standard CSR/BLAS/FFT may change floating-point grouping. Preserve out-of-slice history and each term/cast. Reject huge expanded index tables that exceed saved work.",
+      "cost_model": "Construction amortization versus eliminated address predicates; O(N*D) event data plus O(D*R) shared schedules is the preferred size target.",
+      "smallest_discriminator": "Count descriptor bytes, address operations and replay equivalence, including tiny tiles whose Python slices clip unusually.",
+      "sources": [
+        "S04"
+      ],
+      "relation_to_previous": "additional",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "G06",
+      "title": "Exact material/shadow emission-state tables",
+      "equivalence": "guarded_exact",
+      "priority": "second",
+      "mechanism": "Find repeated complete material/forcing/shadow input tuples for source emission expressions. Evaluate the original typed expression once per exact tuple and scatter the field.",
+      "admission_and_risks": "Use exact bit keys and all temperature parameters, shadow/transmittance values and first/later water state. Do not quantize Tg or merge nearby materials. Dynamic delayed radiance is not automatically categorical.",
+      "cost_model": "Expression cost O(N*T_d) -> O(U_material_state*T_d), plus O(N*T_d) scatter; useful only with low exact-state entropy.",
+      "smallest_discriminator": "Actual unique-tuple census; mixed materials, water, rare shadow states, signed zero and raw-value fallback.",
+      "sources": [
+        "S04",
+        "S08"
+      ],
+      "relation_to_previous": "additional",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "G07",
+      "title": "Interior addressing fast path and exact Boolean-channel counters",
+      "equivalence": "guarded_exact",
+      "priority": "second",
+      "mechanism": "Use branch-free prevalidated source offsets in the interior and the exact boundary recurrence on edges. Replace Boolean 0/1 accumulation with counters only where the float32 sequence is exactly represented, then restore the original numeric value.",
+      "admission_and_risks": "No halo truncation or changed logical domain. Count limits matter: repeated float32 +1 does not equal casting arbitrary large integers. Weighted emission/albedo sums cannot become count*value.",
+      "cost_model": "Interior fraction approx (max(0,n-2r)/n)^2 on square tiles; counter savings depend on loop instruction mix. Boundary-heavy tiny tiles should use fallback.",
+      "smallest_discriminator": "Integer-range boundary, every edge/corner, zero/one-sample rays and exact intermediate counts.",
+      "sources": [
+        "S04"
+      ],
+      "relation_to_previous": "additional",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "V01",
+      "title": "SVF patch consumption fusion with original annulus additions",
+      "equivalence": "guarded_exact",
+      "priority": "first",
+      "mechanism": "Prepare scalar weight sequences once, reuse patch planes, accumulate all 15 SVFs per receiver in exact patch/annulus order and encode completed visibility without retaining float cubes.",
+      "admission_and_risks": "Do not sum annulus weights first or multiply an accumulated weight. The builder must own captured bytes before scratch reuse; preserve directional corrections and output order.",
+      "cost_model": "Reduces O(N*P*annuli) materialization passes without changing addition count; scratch reuse and SIMD across pixels can help cold geometry.",
+      "smallest_discriminator": "All 19 outputs, irregular patch tables, clipping, raw visibility, exact weight node rounding and full required exports.",
+      "sources": [
+        "S14"
+      ],
+      "relation_to_previous": "extends prior geometry proposal",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "V02",
+      "title": "Block-local categorical/raw codec with uniform modes",
+      "equivalence": "guarded_exact",
+      "priority": "second",
+      "mechanism": "Add versioned constant-payload and block-local binary/ternary/raw storage, or sparse raw-bit exceptions, so one exceptional sample does not force an entire patch raw.",
+      "admission_and_risks": "Preserve every float32 bit, reserved-code failures, signed zeros, NaN payloads and old cache/legacy NPZ interoperability. Compression may increase metadata and branch costs.",
+      "cost_model": "For raw fraction e, approximate payload categorical_bits*N/8 + e*N*exception_bytes + metadata instead of 4*N per affected patch. Evaluate actual e and decode access locality.",
+      "smallest_discriminator": "Round-trip arbitrary uint32 bit patterns, sparse/dense exceptions, mapped close/read races, corrupt metadata and output schemas.",
+      "sources": [
+        "S05"
+      ],
+      "relation_to_previous": "extends codec discussion",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "V03",
+      "title": "Intern identical payloads and uniform spatial blocks",
+      "equivalence": "guarded_exact_research",
+      "priority": "conditional",
+      "mechanism": "Use hash-plus-byte comparison to share identical immutable encoded patch/block payloads or exact uniform regions; retain independent logical identities and masks.",
+      "admission_and_risks": "A hash is not an equality proof by itself. Do not merge nearly equal visibility or assume translated scene geometry has identical edge/solar behavior.",
+      "cost_model": "Benefit scales with duplicate payload fraction; hashing/metadata and random access can exceed storage savings. No gain expected for high-entropy scenes.",
+      "smallest_discriminator": "Duplicate-byte census, adversarial collisions, serialization round-trip and real decode throughput.",
+      "sources": [
+        "S05"
+      ],
+      "relation_to_previous": "additional",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "V04",
+      "title": "Sparse wall/aspect evaluation and exact filter reuse",
+      "equivalence": "guarded_exact",
+      "priority": "conditional",
+      "mechanism": "Reuse original rotated sparse filter offsets and evaluate only original wall locations. Improve layout and reuse while preserving angle order and strict score ties.",
+      "admission_and_risks": "A compiled sparse version may already exist. Audit before implementing; do not substitute gradient/Sobel orientations or change SciPy rotation semantics.",
+      "cost_model": "Costs scale with wall fraction and sparse filter cardinality, but filter construction and fallback-gradient work remain.",
+      "smallest_discriminator": "All wall/aspect fixtures, rotation ties, no-wall inputs and exact border behavior; cold preprocessing profile.",
+      "sources": [
+        "S14",
+        "S13"
+      ],
+      "relation_to_previous": "existing family: only implement an identified residual",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "V05",
+      "title": "Whole-stage out-of-core execution, not smaller model tiles",
+      "equivalence": "guarded_exact_research",
+      "priority": "conditional",
+      "mechanism": "Keep logical geometry and state on bounded backing storage; use owner-compute receiver blocks that read the full required context and obey stage barriers. Bound physical working sets, not only decoded visibility.",
+      "admission_and_risks": "mmap is not a resident-memory guarantee. Long shallow rays can touch the whole domain. Never change solar location, meteorological aggregation, overlap or output extent through block size.",
+      "cost_model": "Capacity grows with active workspace rather than all tiles. Additional page faults/I/O can reduce throughput; report a capacity result separately from acceleration.",
+      "smallest_discriminator": "Adversarial long rays, 2048/default-3600 or resource-limit outcomes, dirty-page/RSS measurements, cross-block state equality.",
+      "sources": [
+        "S07",
+        "S08"
+      ],
+      "relation_to_previous": "additional",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "V06",
+      "title": "Geometry lifecycle reuse and efficient mandatory legacy export",
+      "equivalence": "guarded_exact",
+      "priority": "second",
+      "mechanism": "Reuse the existing verified native geometry for repeated dates and stream legacy float32 members with bounded packing/compression work. Avoid regenerating identical immutable intermediates.",
+      "admission_and_risks": "Existing native cache already works. Required cold exports remain in cold timing; do not call skipped export work an exact default improvement. Verify complete dependency fingerprints.",
+      "cost_model": "Savings from avoided recomputation amortize across dates; export cost scales with the required serialized payload even when encoded native storage is small.",
+      "smallest_discriminator": "Cold/warm identical contracts, stale and corrupted caches, legacy consumer round-trips, cache-hit rates and export wall time.",
+      "sources": [
+        "S05",
+        "S08",
+        "S14"
+      ],
+      "relation_to_previous": "partly existing; optimize lifecycle residuals",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "F01",
+      "title": "UTCI exact typed-DAG partial evaluation",
+      "equivalence": "guarded_exact",
+      "priority": "conditional",
+      "mechanism": "Hoist weather-only typed subexpressions for uniform Ta/RH and reuse exact repeated powers/nodes without regrouping the polynomial. Compile the pointwise remaining DAG.",
+      "admission_and_risks": "The Horner rewrite previously failed its frozen gate. Do not reassociate terms, replace math profiles, clamp to a different validity range or make a new UTCI approximation.",
+      "cost_model": "Stage gain bounded by the weather-only fraction; UTCI has not been established as the dominant full-run cost. Profile before prioritizing.",
+      "smallest_discriminator": "Coefficient/source checksums, original term/cast behavior, adverse cancellation, missing inputs and final masks.",
+      "sources": [
+        "S08",
+        "S13"
+      ],
+      "relation_to_previous": "residual of an already compiled family",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "F02",
+      "title": "Evaluate terminal comfort only on valid receivers",
+      "equivalence": "guarded_exact",
+      "priority": "conditional",
+      "mechanism": "For outputs that are replaced by a fixed invalid mask and do not feed state/neighbor calculations, compute terminal comfort only at valid receivers; scatter original invalid values.",
+      "admission_and_risks": "Invalid output receivers can still obstruct others and contribute model state. Never prune geometry, TMRT fields needed elsewhere, or validations based solely on the UTCI output mask.",
+      "cost_model": "Terminal comfort work scales with valid fraction v instead of 1, plus index/scatter cost. It gives no equivalent reduction in radiation or shadow work.",
+      "smallest_discriminator": "All output flags, invalid-mask equality, buildings with strong neighbor effects, sentinel/nonfinite error behavior.",
+      "sources": [
+        "S08"
+      ],
+      "relation_to_previous": "additional",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "F03",
+      "title": "WBGT forcing preparation reuse without changing convergence",
+      "equivalence": "guarded_exact",
+      "priority": "conditional",
+      "mechanism": "Reuse uniform wet-bulb input preparations and immutable scalar coefficients across equivalent timelines; fuse eligible pointwise globe/selection operations in their original typed order.",
+      "admission_and_risks": "Preserve array-wide stopping and iteration counts; independent per-pixel early convergence may change results. No scientific change to shade selection or pressure/temperature units.",
+      "cost_model": "Benefit depends on whether WBGT is requested and how much of its cost is repeated forcing versus spatial evaluation.",
+      "smallest_discriminator": "All solver branches and convergence/failure fixtures, scalar/array inputs, missing values and original shade condition.",
+      "sources": [
+        "S08"
+      ],
+      "relation_to_previous": "additional",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "F04",
+      "title": "Exact forcing/solar preparation grouping",
+      "equivalence": "guarded_exact",
+      "priority": "second",
+      "mechanism": "Group only tiles/dates with exactly identical complete forcing/solar-preparation keys; reuse timezone machinery and parsed meteorology while preserving per-tile location and aggregation.",
+      "admission_and_risks": "Same hour or same nearest station is insufficient. Include coordinates, date/UTC conventions, altitude quirks, units, averaging order, leaf schedule and optional UHI policy.",
+      "cost_model": "O(K*T) preparation -> O(U*T)+O(K) dispatch where U is exact-key count. Setup benefit can matter for many small tiles; do not assume it dominates 1024-square runs.",
+      "smallest_discriminator": "DST/date rollover, distinct centroids, aggregation identities, own-met/ERA5/WRF parity and invalidation.",
+      "sources": [
+        "S08"
+      ],
+      "relation_to_previous": "additional",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "F05",
+      "title": "Load only selected directional wind planes",
+      "equivalence": "guarded_exact",
+      "priority": "second",
+      "mechanism": "After validating the complete directional-input contract, load/mmap the direction bins actually used in the timeline and reuse them lazily under bounded ownership.",
+      "admission_and_risks": "Unused missing files must still produce the original validation outcome when the contract requires all 12. Preserve nearest-bin ties, wind-from convention and the existing floor.",
+      "cost_model": "Resident wind storage about 4*N*U_d instead of 4*N*12; input hashing/metadata validation costs remain. U_d=12 has no capacity saving.",
+      "smallest_discriminator": "All direction bins, ties, unknown directions, missing unused files, shape/CRS mismatches and concurrent close safety.",
+      "sources": [
+        "S08"
+      ],
+      "relation_to_previous": "additional",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "F06",
+      "title": "Optional wind/input-construction common subexpressions",
+      "equivalence": "guarded_exact_research",
+      "priority": "conditional",
+      "mechanism": "For optional wind preprocessing, reuse exactly matching rotations, connected-component geometry and morphology descriptors across directions; bound direction-worker memory and retain source APIs.",
+      "admission_and_risks": "Network acquisition is outside the local preexisting-TIFF target unless explicitly included. Preserve labels, boundary fill, interpolation, roughness policy and dependency isolation.",
+      "cost_model": "Only benefits runs actually requesting these workflows. Include preprocessing in the target when enabled; no credit from omitting it.",
+      "smallest_discriminator": "Original optional workflow comparisons, missing dependency behavior, directional symmetry traps and actual preprocessing profiles.",
+      "sources": [
+        "S08"
+      ],
+      "relation_to_previous": "additional",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "S01",
+      "title": "Liveness-based memory admission with honest raw fallback",
+      "equivalence": "operational_exact",
+      "priority": "first",
+      "mechanism": "Model scene, state, real encoded payloads, per-stage peak workspace, native/JIT/GDAL caches and active writers. Admit jobs by simultaneous live bytes rather than summing mutually exclusive scratch.",
+      "admission_and_risks": "Do not replace worst-case accounting with two observed RSS samples, ignore mmap resident pages, or simply raise the RAM limit. Include a conservative safety reserve and out-of-core fallback.",
+      "cost_model": "Can permit larger W under the same physical budget. Memory saving is a scheduling enabler, not a multiplicative kernel speedup.",
+      "smallest_discriminator": "Actual allocations and process-tree memory under concurrent large/raw fixtures, bounded queue tests, failure before OOM and unchanged model outputs.",
+      "sources": [
+        "S07"
+      ],
+      "relation_to_previous": "additional",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "S02",
+      "title": "Persistent bounded worker processes",
+      "equivalence": "operational_exact",
+      "priority": "first",
+      "mechanism": "Initialize one worker/JIT/math environment, process sequential independent tile jobs, release tile state/handles/locks after each, and reuse only bounded immutable runtime resources.",
+      "admission_and_risks": "No retained tile history or stale state. Avoid unsafe fork after native thread initialization; use supported process startup. Retire leaking/fragmented workers at safe job boundaries.",
+      "cost_model": "Reduces K*(import+JIT_load) to W*(import+JIT_load) plus task dispatch. Large-tile savings may be modest; compare actual startup share.",
+      "smallest_discriminator": "Multiple heterogeneous tiles, cancellation, worker death, memory plateau and one-owner file lifecycle.",
+      "sources": [
+        "S07",
+        "T03"
+      ],
+      "relation_to_previous": "additional",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "S03",
+      "title": "Joint worker/thread/microtile optimization",
+      "equivalence": "operational_exact",
+      "priority": "first",
+      "mechanism": "Select W,H,B under one CPU/RAM budget using measured concurrency curves and disjoint tuning scenes. Explicitly account for writer/compression threads and hybrid-core behavior.",
+      "admission_and_risks": "W*H is a reservation, not a promise that all cores are equivalent or fully busy. Changing resources is not a same-resource speedup. No tuning on final evaluation results.",
+      "cost_model": "Ideal X=C/(p+C*s/W) before contention; actual t_tile(W,H,B) decides. Share-memory saturation and tail imbalance can reverse the ranking.",
+      "smallest_discriminator": "Fixed-budget 1x8,2x4,4x2 or hardware-supported equivalents, real concurrent times, thermal/order controls and memory peaks.",
+      "sources": [
+        "S07",
+        "T04",
+        "T05"
+      ],
+      "relation_to_previous": "additional",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "S04",
+      "title": "Memory-weighted longest-job-first tile scheduling",
+      "equivalence": "operational_exact",
+      "priority": "second",
+      "mechanism": "Use static input features or a calibrated cost estimator to order independent ready tiles, reducing the last slow-worker tail. Keep logical identities and final artifacts unchanged.",
+      "admission_and_risks": "Estimate only from tuning/calibration data. No priority policy may starve a tile, alter per-tile forcing, or bypass publication ordering requirements.",
+      "cost_model": "For heterogeneous jobs, greedy assignment can reduce makespan versus arbitrary order. Quantify idle-tail seconds; no benefit for identical jobs.",
+      "smallest_discriminator": "Unequal tile shapes/heights/vegetation, deterministic output mapping, fairness, cancellation and actual full-batch makespan.",
+      "sources": [
+        "S07",
+        "T05"
+      ],
+      "relation_to_previous": "additional",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "S05",
+      "title": "Stage-aware resource tokens and producer/consumer scheduling",
+      "equivalence": "operational_exact_research",
+      "priority": "conditional",
+      "mechanism": "Reserve resources separately for cold geometry, simulation and export; overlap independent tile stages while maintaining per-tile chronological and durability dependencies.",
+      "admission_and_risks": "Token acquisition must be deadlock-free, reserve transient memory and count native threads. No model timestep reordering. Static worker simplification may be faster to implement.",
+      "cost_model": "Steady-state throughput bounded by the slowest stage capacity, min_j(m_j/service_j), with startup/drain and shared bandwidth penalties.",
+      "smallest_discriminator": "Event-DAG validation, injected worker/writer failures, peak concurrent memory, no oversubscription and pipeline-drain latency.",
+      "sources": [
+        "S07",
+        "S08",
+        "T05"
+      ],
+      "relation_to_previous": "additional",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "S06",
+      "title": "Bounded asynchronous single-owner writer",
+      "equivalence": "operational_exact_research",
+      "priority": "conditional",
+      "mechanism": "Overlap completed-buffer output writes with independent computation using explicit buffer ownership and a small queue; commit checkpoint cursor only after writes and required durability acknowledgments.",
+      "admission_and_risks": "Never overwrite a queued buffer, share writable GDAL datasets, skip readback/fsync, or silently accept writer failure. Writer CPU and buffers count toward budgets.",
+      "cost_model": "Can approach max(compute,write) rather than compute+write only when resources permit overlap. Extra copies may erase the benefit.",
+      "smallest_discriminator": "Backpressure, buffer-reuse corruption, writer exception propagation, crash at each commit boundary and byte/metadata equality.",
+      "sources": [
+        "S09"
+      ],
+      "relation_to_previous": "additional",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "S07",
+      "title": "Content-addressed immutable checkpoint payload reuse",
+      "equivalence": "operational_exact_research",
+      "priority": "conditional",
+      "mechanism": "Reuse already durable unchanged state-map payloads across generations with generation manifests referencing immutable content; write and sync only new payloads while preserving every checkpoint boundary.",
+      "admission_and_risks": "Object identity/read-only flags are insufficient for mutable arrays. Prove owned versioned immutability or compare content. Keep corruption verification, GC pins, fsync and atomic cursor semantics.",
+      "cost_model": "State write bytes scale with changed distinct payloads rather than all state each step; hashing may still cost O(T*N). Most beneficial for unchanged nocturnal carried maps.",
+      "smallest_discriminator": "Interrupted reuse/publication/GC, content mutation, retained-reader lifetime, all state values and exact recovery at every original boundary.",
+      "sources": [
+        "S09"
+      ],
+      "relation_to_previous": "additional",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "S08",
+      "title": "TIFF/NPZ packing and compression tuning with schemas intact",
+      "equivalence": "operational_exact",
+      "priority": "second",
+      "mechanism": "Batch writes to useful storage blocks; reuse bounded export buffers and benchmark compatible compression settings when binary layout is not an API contract.",
+      "admission_and_risks": "Preserve decoded pixels, metadata, filenames, bands and required cold exports. Include compression CPU and actual disk writes/reads. Do not mislabel a changed output workload.",
+      "cost_model": "Lower syscall/compression/packing overhead or physical bytes. Original float32 payload for 24x24x1024^2x10 outputs is 22.5 GiB before metadata, cache/export/checkpoints.",
+      "smallest_discriminator": "Legacy reader round-trips, filesystem failure, all metadata, full end-to-end equal-output timing and writer CPU accounting.",
+      "sources": [
+        "S09",
+        "S11",
+        "S14"
+      ],
+      "relation_to_previous": "additional",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "S09",
+      "title": "Persistent JIT identity, bounded signatures and reusable scratch",
+      "equivalence": "operational_exact",
+      "priority": "second",
+      "mechanism": "Reuse verified compiled signatures and owned scratch inside persistent workers; compile unavoidable cold signatures once per appropriate cache identity and reserve JIT memory.",
+      "admission_and_risks": "Much JIT reuse already exists. No serial/parallel cache-key collisions, stale constants or platform-profile leakage. Warmup cost belongs inside first-use timing.",
+      "cost_model": "Eliminates residual compilation/allocations only where observed. Too many specialized kernels increase startup and instruction-cache footprint.",
+      "smallest_discriminator": "Fresh-process compile-order permutations, installed-wheel source hashes, read-only caches and first-use total time.",
+      "sources": [
+        "S07",
+        "S12",
+        "T03"
+      ],
+      "relation_to_previous": "partly existing; investigate residual only",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "S10",
+      "title": "Owned immutable input snapshots and shared verified preparation",
+      "equivalence": "operational_exact_research",
+      "priority": "conditional",
+      "mechanism": "Where the declared mutation contract permits it, read/verify input once into an owned immutable preparation object shared by independent consumers, avoiding duplicate parse/read/derivation.",
+      "admission_and_risks": "Do not replace content validation by mtime or remove input-change detection. Snapshot creation is timed; current public mutation/error semantics stay authoritative. Unsupported callers retain original checks.",
+      "cost_model": "Reduces duplicate reads/computation only if snapshot/verification cost is less than repetition. A memory mapping of a user-writable file is not immutable.",
+      "smallest_discriminator": "Input mutation at every validation boundary, failed snapshots, shared readers, file replacement and current exception contracts.",
+      "sources": [
+        "S07",
+        "S08",
+        "S09"
+      ],
+      "relation_to_previous": "additional",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "S11",
+      "title": "Instrumented dispatch census, lean hot-path validation and evidence reuse",
+      "equivalence": "operational_exact",
+      "priority": "first",
+      "mechanism": "Collect cheap per-stage aggregate counters and validated feature flags once; avoid repeated introspection/type scans when owned inputs cannot change. Reuse source-keyed test evidence for unchanged components.",
+      "admission_and_risks": "Never delete validations with observable error behavior or reuse evidence after a dependency/profile change. Profilers do not run during final paired timings.",
+      "cost_model": "Reduces Python/dispatch overhead and developer/agent work. Numerical runtime and development-token savings are reported separately.",
+      "smallest_discriminator": "Validation-call coverage, adversarial mutations, source/dependency hashing and profiler noninterference.",
+      "sources": [
+        "S03",
+        "S07",
+        "S11"
+      ],
+      "relation_to_previous": "additional",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "X01",
+      "title": "Fewer patches, pixels, timesteps or physical components",
+      "equivalence": "out_of_scope",
+      "priority": "quarantined",
+      "mechanism": "Coarsening, isotropic replacement, shorter arbitrary rays and vegetation simplification reduce the workload rather than optimize the same one.",
+      "admission_and_risks": "Requires an explicitly separate approximation product and scientific validation. Never promote as default compatibility optimization.",
+      "cost_model": "No speedup credited to the exact target.",
+      "smallest_discriminator": "Keep rejection visible in the ledger.",
+      "sources": [
+        "S11"
+      ],
+      "relation_to_previous": "excluded",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "X02",
+      "title": "Horner/reassociation, generic BLAS and angular moments without a new policy",
+      "equivalence": "real_equivalence_only",
+      "priority": "quarantined",
+      "mechanism": "Algebraic regrouping can preserve real-number equations while changing typed floating-point reductions. Previous Horner/moment experiments provide counterevidence.",
+      "admission_and_risks": "Default exact path disallows new reassociation/FMA/math-library substitutions. Existing frozen upstream tolerance is not permission to abandon a stronger candidate-to-candidate gate.",
+      "cost_model": "Any exploratory timing remains a separately authorized numerical-policy branch, not part of this goal.",
+      "smallest_discriminator": "Retain counterexamples and prior rejected experiments; do not relax gates.",
+      "sources": [
+        "S13",
+        "T01"
+      ],
+      "relation_to_previous": "excluded",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "X03",
+      "title": "Prefix sums, integral images or FFT replacing ordered GVF reductions",
+      "equivalence": "real_equivalence_only",
+      "priority": "quarantined",
+      "mechanism": "Window sums can be faster over real numbers but subtraction/reordered summation generally changes float32 bits; occlusion and persistent edge samples also break simple convolution assumptions.",
+      "admission_and_risks": "Only a proved exact-domain specialization could leave quarantine. Integer Boolean counters within range are already covered by G07.",
+      "cost_model": "No assumed O(1) per-pixel gain in the exact policy.",
+      "smallest_discriminator": "Adversarial cancellation, boundaries and occlusion counterexamples.",
+      "sources": [
+        "S04",
+        "T01"
+      ],
+      "relation_to_previous": "excluded",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "X04",
+      "title": "Parallel time scan or closed-form thermal recurrence",
+      "equivalence": "real_equivalence_only",
+      "priority": "quarantined",
+      "mechanism": "Affine scans/closed forms change intermediate rounding and often reset/branch behavior even when the real-valued recurrence is linear.",
+      "admission_and_risks": "Keep chronological state. A same-input/same-full-state memoization is possible but must replay all outputs and is not this shortcut.",
+      "cost_model": "No timeline-parallel speedup credited.",
+      "smallest_discriminator": "Find typed recurrence counterexamples and midnight/delay branch changes.",
+      "sources": [
+        "S08",
+        "T01"
+      ],
+      "relation_to_previous": "excluded",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "X05",
+      "title": "Naive inverse-trig thresholds or approximate direction/ASVF bins",
+      "equivalence": "not_proved_equivalent",
+      "priority": "quarantined",
+      "mechanism": "Replacing a rounded atan comparison with a real-number tangent inequality can flip decisions near the boundary; angle bins/quantization change exact ray sampling.",
+      "admission_and_risks": "Use P04 exact-value reuse or P05 certified bounds with fallback instead. Real monotonicity is insufficient.",
+      "cost_model": "No classifier speedup credited without a machine-level certificate.",
+      "smallest_discriminator": "Adjacent-float and equality tests against the pinned profile.",
+      "sources": [
+        "S12",
+        "T01"
+      ],
+      "relation_to_previous": "excluded",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "X06",
+      "title": "Subtracting a terrain datum or replacing oblique sample sequences",
+      "equivalence": "not_proved_equivalent",
+      "priority": "quarantined",
+      "mechanism": "Input height offsets and single-translation scan recurrences can change rounding, zero padding, termination and oblique discrete sample support.",
+      "admission_and_risks": "R02 proves noncontributing suffixes on original values instead. General horizon-scan reuse needs a new exact phase/sampling proof.",
+      "cost_model": "No height-range or O(N) horizon speedup credited merely from real geometry.",
+      "smallest_discriminator": "Signed-zero/negative-height/oblique counterexamples and previous failures.",
+      "sources": [
+        "S02",
+        "S13"
+      ],
+      "relation_to_previous": "excluded",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "X07",
+      "title": "Relaxing checkpoint/hash/durability or dropping requested artifacts",
+      "equivalence": "operational_change",
+      "priority": "quarantined",
+      "mechanism": "Changing checkpoint frequency, omitting verification or exports, or weakening input identity can shorten runtime but changes the product/benchmark contract.",
+      "admission_and_risks": "Keep original durability and outputs by default. A user-approved optional policy is labeled and benchmarked separately.",
+      "cost_model": "No benefit counted in the equal-contract goal.",
+      "smallest_discriminator": "Run failure-injection and schema checks to expose silent policy changes.",
+      "sources": [
+        "S09",
+        "S11"
+      ],
+      "relation_to_previous": "excluded",
+      "status": "proposed_not_production_verified"
+    },
+    {
+      "id": "X08",
+      "title": "GPU/remote/hardware substitution or whole-program language rewrite as proof",
+      "equivalence": "out_of_scope_or_unsubstantiated",
+      "priority": "quarantined",
+      "mechanism": "Different hardware/resources or a language name alone does not establish faster local CPU execution of the same computation.",
+      "admission_and_risks": "Native hot kernels are allowed under P10 when justified; GPU/distributed execution needs separate scope and hardware reporting.",
+      "cost_model": "No unmeasured device/core-count multiplication.",
+      "smallest_discriminator": "Record actual hardware and resource envelopes.",
+      "sources": [
+        "S07",
+        "T04"
+      ],
+      "relation_to_previous": "excluded",
+      "status": "proposed_not_production_verified"
+    }
+  ]
+}

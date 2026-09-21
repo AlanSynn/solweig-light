@@ -1,0 +1,41 @@
+{
+  "schema": "sw6-packet-checks-v1",
+  "scope": "handoff tools and schemas only; no SOLWEIG source imported",
+  "tests_run": 28,
+  "elapsed_test_seconds": 1.266,
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "outcome": "passed",
+  "command": "python -m unittest discover -s optimization_v6_continue/tests -v",
+  "preparation_python": "3.13.5",
+  "preparation_platform": "Linux-6.18.44-x86_64-with-glibc2.41",
+  "start_prompt_characters": 3974,
+  "task_count": 27,
+  "historical_strategy_count": 56,
+  "branch_changes_to_user_repository": false,
+  "production_code_changes": false,
+  "actual_solweig_kernels_executed": false,
+  "actual_tiff_pipeline_executed": false,
+  "target_machine_benchmark_executed": false,
+  "upstream_oracle_executed": false,
+  "claude_glm_opus_sessions_executed": false,
+  "standalone_numba_thread_probe": {
+    "file": "preparation_host_thread_probe.json",
+    "requested": [
+      1,
+      2
+    ],
+    "effective": [
+      1,
+      2
+    ],
+    "not_a_solweig_measurement": true
+  },
+  "conditional_model": {
+    "file": "hypothetical_phase_result.json",
+    "calibrated": false,
+    "not_a_speed_claim": true
+  },
+  "network_source_materialization": "attempt failed DNS; connector source inspection only"
+}

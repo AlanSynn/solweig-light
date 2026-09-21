@@ -1,0 +1,39 @@
+{
+  "schema": "sw6-hypothetical-phase-model-v1",
+  "input_evidence_class": "hypothetical_not_fitted_to_stage_measurements",
+  "output_class": "conditional_model_not_measured",
+  "spatial_tiles": 24,
+  "phases": [
+    {
+      "name": "single_shared_geometry_build",
+      "waves": 6,
+      "workers": 4,
+      "threads": 1,
+      "seconds": 378.0,
+      "reserved_gib": 8.8
+    },
+    {
+      "name": "still_serial_verified_export",
+      "waves": 24,
+      "workers": 1,
+      "threads": 1,
+      "seconds": 311.2,
+      "reserved_gib": 2.8
+    },
+    {
+      "name": "simulation_without_duplicate_geometry",
+      "waves": 6,
+      "workers": 4,
+      "threads": 2,
+      "seconds": 736.0,
+      "reserved_gib": 8.8
+    }
+  ],
+  "seconds": 1515.2,
+  "minutes": 25.253333333333334,
+  "tiles_per_minute": 0.9503695881731784,
+  "model_under_1800": true,
+  "observed_target_demonstrated": false,
+  "assumptions": "homogeneous tiles; phase barriers; no unmodeled overlap; explicit inflation includes thread/contended effects",
+  "caveat": "Do not use logical bytes as measured DRAM; model pass is not an executed target pass."
+}
