@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "recorded_at": "2026-09-20",
+  "coordinator_session": {
+    "client": "Claude Code 2.1.260",
+    "requested_model": "glm-5.3-flash (session reports GLM-5.3 family via Z.ai Anthropic-compatible endpoint)",
+    "configured_provider_host": "api.z.ai",
+    "base_url_path": "/api/anthropic",
+    "alias_mapping": {
+      "ANTHROPIC_DEFAULT_OPUS_MODEL": "glm-5.3",
+      "ANTHROPIC_DEFAULT_SONNET_MODEL": "glm-5.3-flash",
+      "ANTHROPIC_DEFAULT_HAIKU_MODEL": "glm-4.5-air"
+    },
+    "verification_source": "tools/preflight_local.py diagnostic (api_calls_made=false, backend_verified=false) plus live session tool use through the same configured route; environment printed only nonsecret host/alias names",
+    "effort": "session CLAUDE_CODE_EFFORT_LEVEL present; GLM published effort levels low/high/max; accepted backend level not directly observable, recorded as unknown rather than assumed"
+  },
+  "opus_route": {
+    "available": false,
+    "basis": [
+      "ANTHROPIC_DEFAULT_OPUS_MODEL=glm-5.3 on provider host api.z.ai: the opus alias is remapped to GLM exactly as MODEL_ROUTING.md C02/C03 warns; any model:opus subagent here is GLM, not Anthropic Opus",
+      "Single Claude config directory (~/.claude); no second authenticated Anthropic profile found on this host",
+      "No existing verified multi-provider gateway is configured in this session's environment"
+    ],
+    "consequence": "All numerical implementation, proof and review roles run on GLM routes under this coordinator and are labeled GLM review. Independent-reviewer independence is enforced by process (reviewer agent distinct from author agent, reviews bind to immutable source identities), not by provider. No Opus claim is made anywhere in evidence.",
+    "secret_handling": "No token/key values read, logged, copied, or written into this repository. Only host URL and alias metadata recorded."
+  },
+  "worker_routes": {
+    "native_subagents": "inherit coordinator route (Z.ai GLM); verified by one read-and-hash smoke per spawned worker batch",
+    "separate_opus_sessions": "not attempted: no separately authenticated Anthropic profile exists on this host; inventing account access is prohibited"
+  },
+  "capabilities": {
+    "background_tasks": true,
+    "completion_notifications": true,
+    "model_override_enum": ["sonnet", "opus", "haiku", "fable"],
+    "model_override_caveat": "all enum values resolve on the same Z.ai route with opus->glm-5.3; none selects Anthropic Opus"
+  }
+}
