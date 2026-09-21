@@ -1,0 +1,53 @@
+{
+ "schema": "sw6-thread-defect-demo-v1",
+ "claim": "The old portfolio harness set RuntimeOptions(threads_per_worker=H) in one process and called run_tile directly: the context var selects the GVF dispatch route but does NOT change Numba's native thread mask, so its H labels confound algorithm route and native parallelism.",
+ "method": "Real engine.gvf_2018a dispatch executed under each runtime_options context; ground_view leaf targets intercepted with recording sentinels (kernel body not executed; no inputs fabricated for numerics).",
+ "environment_inherited_thread_vars": {
+  "NUMBA_NUM_THREADS": null,
+  "OMP_NUM_THREADS": null,
+  "OPENBLAS_NUM_THREADS": null,
+  "MKL_NUM_THREADS": null,
+  "NUMEXPR_NUM_THREADS": null,
+  "VECLIB_MAXIMUM_THREADS": null,
+  "BLIS_NUM_THREADS": null
+ },
+ "numba_config_NUMBA_NUM_THREADS": 10,
+ "default_native_mask": 10,
+ "probes": [
+  {
+   "requested_threads_per_worker": 1,
+   "context_threads_per_worker_seen_by_engine": 1,
+   "native_mask_inside_context": 10,
+   "native_mask_before_context": 10,
+   "route_taken": "gvf_serial_full",
+   "route_exception": "gvf_serial_full"
+  },
+  {
+   "requested_threads_per_worker": 4,
+   "context_threads_per_worker_seen_by_engine": 4,
+   "native_mask_inside_context": 10,
+   "native_mask_before_context": 10,
+   "route_taken": "gvf_fused_g03",
+   "route_exception": "gvf_fused_g03"
+  }
+ ],
+ "positive_control_set_num_threads": {
+  "set_num_threads_called": true,
+  "mask_before": 10,
+  "mask_after": 2
+ },
+ "demonstrated": {
+  "native_mask_constant_across_contexts": true,
+  "route_flipped": true,
+  "defect_confirmed": true
+ },
+ "versions": {
+  "python": "3.11.16",
+  "numpy": "2.4.6",
+  "numba": "0.67.0",
+  "llvmlite": "0.49.0",
+  "machine": "arm64"
+ },
+ "module_origin": "/Users/alansynn/Workspace/solweig-light-v6-measure/src/solweig_light/radiation/engine.py",
+ "elapsed_s": 1.397
+}

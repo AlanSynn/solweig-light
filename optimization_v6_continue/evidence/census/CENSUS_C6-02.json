@@ -1,0 +1,386 @@
+{
+ "cache_disabled": {
+  "counts": {
+   "by_route_svf": {
+    "pipeline": 1,
+    "standalone": 1
+   },
+   "export_calls": 1,
+   "get_or_create_calls": 0,
+   "key_for_calls": 0,
+   "productions": 2,
+   "svf_calls": 2
+  },
+  "equivalence": {
+   "compared": [
+    "pipeline",
+    "standalone"
+   ],
+   "normalized_arrays_bitwise_equal": true,
+   "outputs_bitwise_equal": true,
+   "scalars_equal": true,
+   "verdict": "bitwise-identical-normalized-inputs-and-outputs"
+  },
+  "finding": "two productions remain (one per route, deliberate fallback); zero get_or_create/key_for calls; nothing persisted under .solweig-light/cache (export-manifests control files still written as part of the promised legacy export behavior)",
+  "store_tree_cache_entries": []
+ },
+ "cold": {
+  "counts": {
+   "by_route_svf": {
+    "pipeline": 1,
+    "standalone": 1
+   },
+   "export_calls": 1,
+   "get_or_create_calls": 2,
+   "key_for_calls": 2,
+   "productions": 2,
+   "svf_calls": 2
+  },
+  "equivalence": {
+   "compared": [
+    "pipeline",
+    "standalone"
+   ],
+   "normalized_arrays_bitwise_equal": true,
+   "outputs_bitwise_equal": true,
+   "scalars_equal": true,
+   "verdict": "bitwise-identical-normalized-inputs-and-outputs"
+  },
+  "export_calls": 1,
+  "identity_diff": {
+   "differing_shared_fields": [],
+   "only_in_pipeline": [],
+   "only_in_standalone": [
+    "construction",
+    "standalone_implementation"
+   ]
+  },
+  "identity_field_sets": {
+   "pipeline": [
+    "dependencies",
+    "implementation",
+    "inputs",
+    "math_profile",
+    "normalization",
+    "patch_arrays",
+    "patch_option",
+    "policy",
+    "upstream_commit"
+   ],
+   "standalone": [
+    "construction",
+    "dependencies",
+    "implementation",
+    "inputs",
+    "math_profile",
+    "normalization",
+    "patch_arrays",
+    "patch_option",
+    "policy",
+    "standalone_implementation",
+    "upstream_commit"
+   ]
+  },
+  "keys": {
+   "distinct": true,
+   "pipeline_bare_identity": "b5453f0026364e9ff5362b01eb7c2a0a2b7f06f46ee8aab0f4da67a8a264ad98",
+   "standalone_extended_identity": "e7ae9597ff67236055719a47b7d0c11262c74ca92cc8083721f7487ae62d279b"
+  },
+  "physical_duplicate": {
+   "native_cache_directories": [
+    "b5453f0026364e9ff5362b01eb7c2a0a2b7f06f46ee8aab0f4da67a8a264ad98",
+    "e7ae9597ff67236055719a47b7d0c11262c74ca92cc8083721f7487ae62d279b"
+   ],
+   "native_payload_bytes": 2314214,
+   "native_payload_files": 48
+  },
+  "processes": "standalone production in the parent (preprocess/exports stage); pipeline production in the tile worker child; both share the same store root <preprocess_dir>/.solweig-light/cache",
+  "store_calls": [
+   {
+    "cache_root": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-438/test_cold_then_warm_producer_c0/scene96/processed_inputs/.solweig-light/cache",
+    "caller": "pipeline.py:91",
+    "duration_s": 0.4366940000327304,
+    "hit": false,
+    "key": "b5453f0026364e9ff5362b01eb7c2a0a2b7f06f46ee8aab0f4da67a8a264ad98",
+    "producer_calls": 1,
+    "producer_duration_s": 0.4084198750788346,
+    "route": "pipeline"
+   },
+   {
+    "cache_root": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-438/test_cold_then_warm_producer_c0/scene96/processed_inputs/.solweig-light/cache",
+    "caller": "geometry/service.py:258",
+    "duration_s": 0.44862937496509403,
+    "hit": false,
+    "key": "e7ae9597ff67236055719a47b7d0c11262c74ca92cc8083721f7487ae62d279b",
+    "producer_calls": 1,
+    "producer_duration_s": 0.40732679096981883,
+    "route": "standalone"
+   }
+  ]
+ },
+ "commit": "e7a2d6ec8594b234820e7783e0ca26d821de7f3d",
+ "durations": {
+  "cache_disabled_total_s": 5.15,
+  "cold_total_s": 6.91,
+  "exports_s": {
+   "cold": [
+    0.13
+   ],
+   "warm_native_only": [
+    0.12
+   ]
+  },
+  "label": "census durations, not benchmark: single small 96x96 runs on a shared machine, not exclusive-lease timings; any timed comparison must go through the C6-01 isolated-child harness",
+  "note": "on this tiny scene one construction G is ~0.4s while preprocessing+walls+simulation dominate the total; the duplicate fraction f (and hence the C6-10 speedup) grows with scene size and must be re-estimated on dense256/1024 workloads",
+  "single_geometry_production_s": [
+   0.39,
+   0.39
+  ],
+  "warm_faithful_total_s": 3.94,
+  "warm_native_only_total_s": 4.24
+ },
+ "environment": {
+  "gdal": "3.13.3",
+  "native_threads": "parent NUMBA_NUM_THREADS=2 cap; tile worker children NUMBA_NUM_THREADS=1 via default RuntimeOptions",
+  "numba": "0.67.0",
+  "numpy": "2.4.6",
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "python": "3.11.16",
+  "venv": "/Users/alansynn/Workspace/solweig-light/.venv-light"
+ },
+ "equivalence_verdict": "bitwise-identical-normalized-inputs-and-outputs",
+ "field_audit_for_C6_10": {
+  "base_builder": "solweig_light/identities.py:40-59 geometry_identity(paths, patch_option)",
+  "base_fields": [
+   {
+    "cite": "identities.py:44",
+    "class": "numerical",
+    "field": "math_profile",
+    "verdict": "KEEP"
+   },
+   {
+    "cite": "identities.py:45",
+    "class": "provenance-constant (identical in both keys today)",
+    "field": "policy",
+    "verdict": "KEEP (unchanged; not part of the mismatch)"
+   },
+   {
+    "cite": "identities.py:45",
+    "class": "provenance-constant (identical in both keys today)",
+    "field": "upstream_commit",
+    "verdict": "KEEP (unchanged; not part of the mismatch)"
+   },
+   {
+    "cite": "identities.py:46-47",
+    "class": "numerical (raster bytes + GDAL metadata)",
+    "field": "inputs{Building_DSM,Trees,DEM}",
+    "verdict": "KEEP"
+   },
+   {
+    "cite": "identities.py:48; pipeline.py:166 hardcodes 2, api.py:94/209 threads the parameter",
+    "class": "numerical (sky-patch domain)",
+    "field": "patch_option",
+    "verdict": "KEEP (shared recipe must thread one value)"
+   },
+   {
+    "cite": "identities.py:49",
+    "class": "numerical (patch table fingerprints)",
+    "field": "patch_arrays",
+    "verdict": "KEEP"
+   },
+   {
+    "cite": "identities.py:50-52",
+    "class": "descriptive constants (identical in both keys today)",
+    "field": "normalization",
+    "verdict": "KEEP"
+   },
+   {
+    "cite": "identities.py:53-57 (identities.py, pipeline.py, radiation/_sleef_acos.py, radiation/_sleef_classifier.py, radiation/_math_profile.py, geometry/svf.py, geometry/shadows.py, geometry/sky_compiled.py, geometry/visibility.py, geometry/visibility_native.py)",
+    "class": "numerical (the shared producer closure)",
+    "field": "implementation",
+    "verdict": "KEEP"
+   },
+   {
+    "cite": "identities.py:58",
+    "class": "numerical",
+    "field": "dependencies{numpy,numba,GDAL}",
+    "verdict": "KEEP"
+   }
+  ],
+  "equivalence_relevant_producer_deltas_compared_bitwise": [
+   {
+    "pipeline": "pipeline.py:99-103",
+    "standalone": "geometry/service.py:64-70",
+    "what": "raster reads + float32 conversion"
+   },
+   {
+    "pipeline": "pipeline.py:128",
+    "standalone": "geometry/service.py:73",
+    "what": "negative-tree clamp"
+   },
+   {
+    "pipeline": "pipeline.py:129-130",
+    "standalone": "geometry/service.py:74-76",
+    "what": "tree+DEM and tree*.25+DEM, bush expression"
+   },
+   {
+    "pipeline": "pipeline.py:131-133",
+    "standalone": "geometry/service.py:77-80",
+    "what": "vegdsm/vegdsm2 (tree+a) with exact-equality zeroing"
+   },
+   {
+    "pipeline": "pipeline.py:134",
+    "standalone": "geometry/service.py:81",
+    "what": "amaxvalue = max(a.max(), (trees+DEM).max())"
+   },
+   {
+    "pipeline": "pipeline.py:108",
+    "standalone": "geometry/service.py:72",
+    "what": "scale = 1/pixel_size"
+   },
+   {
+    "pipeline": "pipeline.py:181 via pipeline.py:22 alias",
+    "standalone": "geometry/service.py:82 via svf.py:163-165",
+    "what": "single shared numerical producer svf_calculator_compact"
+   }
+  ],
+  "pipeline_side": [
+   {
+    "cite": "pipeline.py:166",
+    "fact": "bare geometry_key = geometry_identity(paths, 2)"
+   },
+   {
+    "cite": "pipeline.py:170-178",
+    "fact": "trusted_legacy extension only under legacy_cache_policy=trust (default recompute leaves the key bare)"
+   },
+   {
+    "cite": "pipeline.py:180-184,186-190",
+    "fact": "native lookup via produce_geometry"
+   }
+  ],
+  "standalone_extensions": [
+   {
+    "cite": "geometry/service.py:281",
+    "class": "operational/provenance label of the standalone export wrapper; no numerical content; consumed only by export-manifest comparison (service.py:142-144)",
+    "field": "identity['construction'] = 'standalone-svf-v1'",
+    "verdict": "MOVE-TO-EXPORT-IDENTITY"
+   },
+   {
+    "cite": "geometry/service.py:282",
+    "class": "hybrid today: service.py holds both the export wrapper AND the standalone normalization body _producer (service.py:62-83: float32 reads 64-70, clamp 73, height/trunkheight/bush 74-76, vegdem/vegdem2 zeroing 77-80, amaxvalue 81) which the shared implementation list does not cover",
+    "field": "identity['standalone_implementation'] = content_fingerprint(__file__)",
+    "verdict": "KEEP today; MOVE-TO-EXPORT-IDENTITY only after C6-10 moves normalization into the shared recipe implementation closure, with dossier step-E differential proof"
+   }
+  ],
+  "store_hashing": [
+   {
+    "cite": "cache/geometry.py:178-182",
+    "fact": "key hashes the complete canonical identity"
+   },
+   {
+    "cite": "cache/geometry.py:287-300",
+    "fact": "identity frozen then keyed before lookup"
+   }
+  ]
+ },
+ "fixture_record": {
+  "cols": 96,
+  "dir": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-438/test_cold_then_warm_producer_c0/scene96",
+  "epsg": 32618,
+  "generator_motif": "dense_urban 32-pixel motif (pinned p7 generator 00318d13), no RNG",
+  "met_source": "tests/reference/small_original_cpu/scene/met.txt (byte-for-byte copy)",
+  "rows": 96,
+  "sha256": {
+   "Building_DSM.tif": "f5091bee49e15d901a3855f9b904fe546d552a4a47c0c8d306a2673807d17f78",
+   "DEM.tif": "b58de75ebae6791b9e0c5769dea8e4ddf2e44b8fa3371f75f9289d18e63ba883",
+   "Trees.tif": "bfacf1e14961a708758992663b9ad962331df823255046f335ca9706055c7ed9",
+   "met.txt": "bc8ee6361071dd109649857127d6b777571e868bdb06db0e47968b39e99189e4"
+  },
+  "transform": [
+   582969.5,
+   1.0,
+   0.0,
+   4507032.0,
+   0.0,
+   -1.0
+  ]
+ },
+ "generated": "2026-09-21",
+ "hypothesis_verdict": "CONFIRMED: two full productions, two distinct keys, the key diff is exactly {construction, standalone_implementation}, shared fields equal",
+ "method": {
+  "child_instrumentation": "the public thermal_comfort runs the simulation tile in a runtime_worker subprocess; a generated sitecustomize on the child PYTHONPATH arms the same probe (meta-path finder patches each target module right after its normal execution)",
+  "fixture": "deterministic 96x96 dense_urban motif (pinned p7 generator 00318d13), reference met file byte-for-byte, EPSG:32618; no RNG",
+  "workflow": "public solweig_light.thermal_comfort, defaults (cache_enabled=True), ERA_5_z0_find=False, date 2020-07-18",
+  "wrapping": "call-through wrappers only: svf_calculator_compact (plus pipeline.py:22 / service.py:21 aliases), GeometryStore.get_or_create, GeometryStore.key_for, save_svf_zip_npz_outputs; producer calls, arguments, and returns are never altered"
+ },
+ "raw_events": [
+  "census_counts_cold-warm.json",
+  "census_counts_cache-disabled.json",
+  "raw/cold-warm/{cold,warm-faithful,warm-native-only}/{parent,child}-<pid>.jsonl",
+  "raw/cache-disabled/cache-disabled/{parent,child}-<pid>.jsonl"
+ ],
+ "schema": "c6-02-census-v1",
+ "task": "C6-02 cold producer/key census (geometry constructed twice cold under two keys)",
+ "tests": {
+  "probe": "tests/optimization_v6/geometry_census/census_probe.py",
+  "result": "2 passed (census evidence is persisted before assertions so a failing census still records what happened)",
+  "test_file": "tests/optimization_v6/geometry_census/test_cold_producer_counts.py"
+ },
+ "warm_faithful": {
+  "counts": {
+   "by_route_svf": {},
+   "export_calls": 0,
+   "get_or_create_calls": 1,
+   "key_for_calls": 1,
+   "productions": 0,
+   "svf_calls": 0
+  },
+  "finding": "second identical public run: zero productions anywhere. The standalone route never reached the native store because api.py:91-93 skips prepare_geometry_exports entirely when all three export artifacts exist; the pipeline route hit its native key (hit=True, producer_calls=0)",
+  "store_calls": [
+   {
+    "cache_root": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-438/test_cold_then_warm_producer_c0/scene96/processed_inputs/.solweig-light/cache",
+    "caller": "pipeline.py:91",
+    "duration_s": 0.013365666032768786,
+    "hit": true,
+    "key": "b5453f0026364e9ff5362b01eb7c2a0a2b7f06f46ee8aab0f4da67a8a264ad98",
+    "producer_calls": 0,
+    "producer_duration_s": 0.0,
+    "route": "pipeline"
+   }
+  ]
+ },
+ "warm_native_only": {
+  "counts": {
+   "by_route_svf": {},
+   "export_calls": 1,
+   "get_or_create_calls": 2,
+   "key_for_calls": 2,
+   "productions": 0,
+   "svf_calls": 0
+  },
+  "finding": "after deleting only SVF/svfs_0_0.zip, SVF/shadowmats_0_0.npz, SVF/SkyViewFactor_0_0.tif and the export manifest: both routes consult the native store, both hit, zero productions; exports regenerate from cached native fields",
+  "store_calls": [
+   {
+    "cache_root": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-438/test_cold_then_warm_producer_c0/scene96/processed_inputs/.solweig-light/cache",
+    "caller": "pipeline.py:91",
+    "duration_s": 0.019982832949608564,
+    "hit": true,
+    "key": "b5453f0026364e9ff5362b01eb7c2a0a2b7f06f46ee8aab0f4da67a8a264ad98",
+    "producer_calls": 0,
+    "producer_duration_s": 0.0,
+    "route": "pipeline"
+   },
+   {
+    "cache_root": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-438/test_cold_then_warm_producer_c0/scene96/processed_inputs/.solweig-light/cache",
+    "caller": "geometry/service.py:258",
+    "duration_s": 0.024021541001275182,
+    "hit": true,
+    "key": "e7ae9597ff67236055719a47b7d0c11262c74ca92cc8083721f7487ae62d279b",
+    "producer_calls": 0,
+    "producer_duration_s": 0.0,
+    "route": "standalone"
+   }
+  ]
+ },
+ "worktree": "/Users/alansynn/Workspace/solweig-light-v6-census (detached at commit)"
+}
