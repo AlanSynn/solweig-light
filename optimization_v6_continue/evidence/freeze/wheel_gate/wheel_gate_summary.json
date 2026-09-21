@@ -1,0 +1,91 @@
+{
+ "schema": "sw6-freeze-wheelgate-v1",
+ "date": "2026-09-21",
+ "tree_head": "ea2eed53a3338f2bd45b7dfac364efe20ecd3084",
+ "branch": "perf/claude-glm53-cpu-v5",
+ "wheel": {
+  "file": "build/solweig_light-0.1.0.dev0-py3-none-any.whl",
+  "sha256": "368b15afdf757b91ec039daf7b5d82c42a5a2cc101a15933a2defe975256f8d1",
+  "built_with": "project venv python -m pip wheel . --no-deps (PEP 517 setuptools.build_meta)"
+ },
+ "install": {
+  "venv": "fresh_venv (python -m venv --system-site-packages from project venv interpreter)",
+  "deps_path": "fresh_venv/lib/python3.11/site-packages/_freeze_gate_deps.pth -> project venv site-packages (numpy/scipy/numba/GDAL/pytz/timezonefinder only; solweig_light NOT installed there)",
+  "install_cmd": "fresh_venv/bin/python -m pip install --no-deps build/solweig_light-0.1.0.dev0-py3-none-any.whl",
+  "import_origin_verified": "/Users/alansynn/Workspace/solweig-light-claude-v5/optimization_v6_continue/evidence/freeze/wheel_gate/fresh_venv/lib/python3.11/site-packages/solweig_light/__init__.py",
+  "no_pythonpath": "PYTHONPATH unset for the wheel side (env -u); src/ not importable"
+ },
+ "scene": {
+  "source": "tests/reference/small_original_cpu/scene root files (in-tree true fixture)",
+  "inputs_copied_identically": true,
+  "size": [
+   35,
+   32
+  ],
+  "met_records": 24,
+  "entry": "solweig_light.api.thermal_comfort (full public workflow incl. preprocess)",
+  "pinned_options": {
+   "memory_budget_bytes": 12884901888,
+   "cpu_budget": 4,
+   "workers": 1,
+   "threads_per_worker": 1,
+   "block_pixels": 1024,
+   "checkpoint_interval": 1,
+   "cache_enabled": true,
+   "legacy_cache_policy": "recompute"
+  },
+  "threads": "all 7 native thread vars = 1, set before first numerical import, both sides",
+  "numba_cache": "fresh NUMBA_CACHE_DIR per side (cache_wheel, cache_src)"
+ },
+ "thread_mask": {
+  "wheel": {
+   "config_NUMBA_NUM_THREADS": 1,
+   "get_num_threads": 1,
+   "threading_layer": "workqueue",
+   "version": "0.67.0",
+   "set_num_threads_called": true,
+   "final_get_num_threads": 1
+  },
+  "src": {
+   "config_NUMBA_NUM_THREADS": 1,
+   "get_num_threads": 1,
+   "threading_layer": "workqueue",
+   "version": "0.67.0",
+   "set_num_threads_called": true,
+   "final_get_num_threads": 1
+  }
+ },
+ "math_profile": {
+  "wheel": "solweig-portable-sleef-5a1d179d-v1",
+  "fingerprint": "8e4d38460b61b0299e7c1d525c8499750dcd219ef01cc785d7496dbe1dcbef30",
+  "identical_both_sides": true
+ },
+ "comparison": {
+  "simulation_output_tiffs": "10/10 bitwise identical (sha256): output_folder/0_0/{Kdown,Kup,Ldown,Lup,Shadow,TMRT,Ta,UTCI,WBGT,Wind}_0_0.tif",
+  "published_inputs": "8/9 bitwise identical; svfs_0_0.zip differs only in ZIP member timestamps - all 15 members content-identical (crc+size+data sha256)",
+  "export_manifest": "differs only in svfs zip digest, numerical_recipe.digest (embeds run-root ABSOLUTE PATH via GDAL DERIVED_SUBDATASET metadata domain), and its own self-digest",
+  "recipe_digest_root_cause": "raster_fingerprint captures GDAL metadata domains; DERIVED_SUBDATASET strings contain the file path. Recomputing the recipe in BOTH environments over the SAME paths yields IDENTICAL digests (recipe_probe.py over scene_src) - verified.",
+  "internal_bookkeeping": "49 run-unique lock/transaction files per side (random names), not outputs, not compared",
+  "verdict": "PASS - numerical outputs bitwise identical wheel vs src"
+ },
+ "loadavg": {
+  "wheel_before": [
+   13.5146484375,
+   8.43798828125,
+   7.53759765625
+  ],
+  "src_before": [
+   10.29296875,
+   8.10791015625,
+   7.44482421875
+  ]
+ },
+ "workload_seconds_recorded_no_claim": {
+  "wheel": 12.12706804194022,
+  "src": 12.079061000025831
+ },
+ "outputs_dir": {
+  "wheel": "run_wheel",
+  "src": "run_src"
+ }
+}

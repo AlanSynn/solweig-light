@@ -1,0 +1,20 @@
+Traceback (most recent call last):
+  File "/Users/alansynn/Workspace/solweig-light-claude-v5/optimization_v6_continue/evidence/freeze/wheel_gate/fresh_venv/lib/python3.11/site-packages/solweig_light/geometry/recipe.py", line 150, in numerical_geometry_recipe
+    sources = {name: Path(paths[name]) for name in INPUT_NAMES}
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/alansynn/Workspace/solweig-light-claude-v5/optimization_v6_continue/evidence/freeze/wheel_gate/fresh_venv/lib/python3.11/site-packages/solweig_light/geometry/recipe.py", line 150, in <dictcomp>
+    sources = {name: Path(paths[name]) for name in INPUT_NAMES}
+                          ~~~~~^^^^^^
+KeyError: 'Building_DSM'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/alansynn/Workspace/solweig-light-claude-v5/optimization_v6_continue/evidence/freeze/wheel_gate/recipe_probe.py", line 5, in <module>
+    recipe = numerical_geometry_recipe(paths, 2)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/alansynn/Workspace/solweig-light-claude-v5/optimization_v6_continue/evidence/freeze/wheel_gate/fresh_venv/lib/python3.11/site-packages/solweig_light/geometry/recipe.py", line 152, in numerical_geometry_recipe
+    raise ValueError(f'Missing numerical geometry input {error.args[0]}; '
+ValueError: Missing numerical geometry input Building_DSM; required: Building_DSM, Trees, DEM
+/Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/osgeo/gdal.py:606: FutureWarning: Neither gdal.UseExceptions() nor gdal.DontUseExceptions() has been explicitly called. In GDAL 4.0, exceptions will be enabled by default.
+  warnings.warn(

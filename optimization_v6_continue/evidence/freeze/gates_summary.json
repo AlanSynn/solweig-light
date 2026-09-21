@@ -1,0 +1,43 @@
+{
+ "schema": "sw6-freeze-gates-v1",
+ "date": "2026-09-21",
+ "tree_head": "ea2eed53a3338f2bd45b7dfac364efe20ecd3084",
+ "branch": "perf/claude-glm53-cpu-v5",
+ "discipline": "single process, sequential, project venv (/Users/alansynn/Workspace/solweig-light/.venv-light/bin/python), PYTHONPATH=src, NUMBA_NUM_THREADS=2; loadavg recorded before each run; no timing claims",
+ "gates": [
+  {
+   "suite": "tests/optimization_v6/geometry_recipe",
+   "command": "cd /Users/alansynn/Workspace/solweig-light-claude-v5 && env PYTHONPATH=<tree>/src NUMBA_NUM_THREADS=2 .venv-light/bin/python -m pytest tests/optimization_v6/geometry_recipe -q",
+   "result": "8 passed in 21.27s",
+   "loadavg_before": [5.92, 7.34, 7.3],
+   "verdict": "PASS"
+  },
+  {
+   "suite": "tests/optimization_v6/phases",
+   "command": "cd /Users/alansynn/Workspace/solweig-light-claude-v5 && env PYTHONPATH=<tree>/src NUMBA_NUM_THREADS=2 .venv-light/bin/python -m pytest tests/optimization_v6/phases -q",
+   "result": "17 passed in 20.31s",
+   "loadavg_before": [6.69, 7.36, 7.31],
+   "verdict": "PASS"
+  },
+  {
+   "suite": "tests/differential/test_pipeline_reference.py (small_original_cpu-driven real-TIFF + chronological suite)",
+   "command": "cd /Users/alansynn/Workspace/solweig-light-claude-v5 && env PYTHONPATH=<tree>/src NUMBA_NUM_THREADS=2 .venv-light/bin/python -m pytest tests/differential/test_pipeline_reference.py -q",
+   "result": "1 failed, 8 passed in 9.11s",
+   "loadavg_before": [7.08, 7.44, 7.34],
+   "passed_cases": [
+    "small-False (chronological TIFF-to-TIFF vs original CPU artifacts)",
+    "small-True (cold, SVF removed first)",
+    "base-False", "uhi-False", "landcover-False", "landcover_normalized-False",
+    "directional-False", "legacy_wrapper-False"
+   ],
+   "failed_case": "raw-True",
+   "failure_verbatim": "solweig_light.runtime.ResourceAdmissionError: simulation job 0_0 (32x35, patches=153) needs about 1,736,017,587 B but only 1,307,272,806 B of the 1,736,769,536 B budget remains after parent (429,496,730 B) and writer queue (0 B); queueing cannot make this phase fit. Reduce the tile shape, cap GDAL_CACHEMAX, or use supported disk-backed execution with an explicit live-array inventory",
+   "failure_site": "src/solweig_light/runtime_memory.py:919",
+   "failure_classification_note": "Admission-policy rejection BEFORE any worker spawns, driven by the availability-sensitive AUTO memory budget under current host load (other session agents active; loadavg 6-8). No numerical comparison ran in this case. The identical public thermal_comfort entry over the same fixture completed twice in the wheel gate (wheel + src) under PINNED RuntimeOptions (12 GiB budget, C6-80 discipline) and produced bitwise-identical outputs; the 'small' chronological cases of this same suite passed. Recorded verbatim and NOT worked around, per freeze rules - disposition belongs to the integrator.",
+   "full_output": "gate_raw_true.full.txt",
+   "verdict": "FAIL (recorded; not fixed)"
+  }
+ ],
+ "evidence_restoration": "after the runs: git checkout -- optimization_v6_continue/evidence/recipe optimization_v6_continue/evidence/census (19 tracked files restored; untracked raw run records left in place); src/ and tests/ verified clean at HEAD before and after",
+ "no_statistical_claims": true
+}

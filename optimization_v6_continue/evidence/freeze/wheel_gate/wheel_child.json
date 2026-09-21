@@ -1,0 +1,402 @@
+{
+ "schema": "sw6-freeze-wheelgate-child-v1",
+ "label": "wheel_installed",
+ "env_threads": {
+  "BLIS_NUM_THREADS": "1",
+  "MKL_NUM_THREADS": "1",
+  "NUMBA_NUM_THREADS": "1",
+  "NUMEXPR_NUM_THREADS": "1",
+  "OMP_NUM_THREADS": "1",
+  "OPENBLAS_NUM_THREADS": "1",
+  "VECLIB_MAXIMUM_THREADS": "1"
+ },
+ "pythonpath_env": null,
+ "loadavg_before": [
+  13.5146484375,
+  8.43798828125,
+  7.53759765625
+ ],
+ "scene_inputs": {
+  "Building_DSM.tif": "e13aefb56d224680fd0a04fbf1886faf840d73db032aa4bbe2bbc651c4d8f80a",
+  "DEM.tif": "a550dd0b6519621fff999eb6cc7bce224c27a3c5cc17d73660c41b52767a7105",
+  "Trees.tif": "aacbcf3ffe3296c1ad4528138555b19d59358210a4c2b5b1c636074975fc8bdc",
+  "met.txt": "bc8ee6361071dd109649857127d6b777571e868bdb06db0e47968b39e99189e4"
+ },
+ "module_origin": {
+  "solweig_light": "/Users/alansynn/Workspace/solweig-light-claude-v5/optimization_v6_continue/evidence/freeze/wheel_gate/fresh_venv/lib/python3.11/site-packages/solweig_light/__init__.py",
+  "api": "/Users/alansynn/Workspace/solweig-light-claude-v5/optimization_v6_continue/evidence/freeze/wheel_gate/fresh_venv/lib/python3.11/site-packages/solweig_light/api.py",
+  "package_dir": "/Users/alansynn/Workspace/solweig-light-claude-v5/optimization_v6_continue/evidence/freeze/wheel_gate/fresh_venv/lib/python3.11/site-packages/solweig_light",
+  "sys_path0": "/Users/alansynn/Workspace/solweig-light-claude-v5/optimization_v6_continue/evidence/freeze/wheel_gate"
+ },
+ "numba": {
+  "config_NUMBA_NUM_THREADS": 1,
+  "get_num_threads": 1,
+  "threading_layer": "workqueue",
+  "version": "0.67.0",
+  "set_num_threads_called": true,
+  "final_get_num_threads": 1
+ },
+ "versions": {
+  "python": "3.11.16",
+  "numpy": "2.4.6",
+  "numba": "0.67.0",
+  "machine": "arm64",
+  "system": "Darwin"
+ },
+ "math_profile": {
+  "id": "solweig-portable-sleef-5a1d179d-v1",
+  "fingerprint": "8e4d38460b61b0299e7c1d525c8499750dcd219ef01cc785d7496dbe1dcbef30",
+  "implementation": {
+   "profile_id": "solweig-portable-sleef-5a1d179d-v1",
+   "sleef_commit": "5a1d179df9cf652951b59010a2d2075372d67f68",
+   "coefficient_policy": "numpy-float64-cos-tan-scalar-v1",
+   "tan_domain_policy": "sleef-u10-fast-abs-lt-125;explicit-legacy-numpy-otherwise-v1",
+   "source_sha256": {
+    "_sleef_acos.py": "9c7aff0c880a10db81cc6f96c314a7600ef77cb0008cbcd5ff344fa156511263",
+    "_sleef_classifier.py": "444e27eb3e887145b0f9fc2447b9e6aafba3185c4f7cab0835bf862ae60447ec",
+    "_math_profile.py": "7921432908b43aec6b99ac5c70df0f1f7e6566787c4e84cd741cbfa5b64e3ef7",
+    "_jit_cache.py": "93cafde414ff020fa6810f5bb5a904e199ba22b0ebd780a9291a1257903b85ab",
+    "SLEEF_LICENSE.txt": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566"
+   }
+  },
+  "runtime": {
+   "python": "CPython-3.11.16",
+   "numpy": "2.4.6",
+   "numba": "0.67.0",
+   "llvmlite": "0.49.0",
+   "machine": "arm64",
+   "system": "Darwin",
+   "byteorder": "little",
+   "float_rounds": 1,
+   "fastmath": false,
+   "fma": "explicit-llvm.fma.f32"
+  }
+ },
+ "pinned_options": {
+  "memory_budget_bytes": 12884901888,
+  "cpu_budget": 4,
+  "workers": 1,
+  "threads_per_worker": 1,
+  "block_pixels": 1024,
+  "checkpoint_interval": 1,
+  "cache_enabled": true,
+  "legacy_cache_policy": "recompute"
+ },
+ "options_inside_run": {
+  "cache_dir": null,
+  "legacy_cache_policy": "recompute",
+  "cache_enabled": true,
+  "memory_budget_bytes": 12884901888,
+  "cpu_budget": 4,
+  "workers": 1,
+  "threads_per_worker": 1,
+  "block_pixels": 1024,
+  "checkpoint_interval": 1,
+  "resume": false
+ },
+ "workflow_seconds": 12.12706804194022,
+ "loadavg_after": [
+  11.9892578125,
+  8.3505859375,
+  7.521484375
+ ],
+ "output_manifest": {
+  ".solweig-light/transactions/928a1f87d8e223a04efcfd435e2b223448c5a9f3f68cad2f70545d06b6969bb1/complete.json": {
+   "size": 28674,
+   "sha256": "6d8c287b8e5e69ff642515077c273f8d902caf38093f808777f1934db76e97e3"
+  },
+  ".solweig-light/transactions/928a1f87d8e223a04efcfd435e2b223448c5a9f3f68cad2f70545d06b6969bb1/publication.json": {
+   "size": 28674,
+   "sha256": "6d8c287b8e5e69ff642515077c273f8d902caf38093f808777f1934db76e97e3"
+  },
+  ".solweig-light/transactions/928a1f87d8e223a04efcfd435e2b223448c5a9f3f68cad2f70545d06b6969bb1/state-8fc21cd9f0634695b2aa3aa1e1af8b61/array-0.npy": {
+   "size": 136,
+   "sha256": "658b169f34765c97f46a01ec89c87920ce364f69e04a7a75c527e2a5ba740a7b"
+  },
+  ".solweig-light/transactions/928a1f87d8e223a04efcfd435e2b223448c5a9f3f68cad2f70545d06b6969bb1/state-8fc21cd9f0634695b2aa3aa1e1af8b61/array-1.npy": {
+   "size": 136,
+   "sha256": "69cf11a2831ece04133cee3734fe93115b91f2d4679b70ff06e2d8bff380418b"
+  },
+  ".solweig-light/transactions/928a1f87d8e223a04efcfd435e2b223448c5a9f3f68cad2f70545d06b6969bb1/state-8fc21cd9f0634695b2aa3aa1e1af8b61/array-2.npy": {
+   "size": 4608,
+   "sha256": "15682cd99f24a8631908016f191aa8c7c786c861ae010a478ea63929de72605e"
+  },
+  ".solweig-light/transactions/928a1f87d8e223a04efcfd435e2b223448c5a9f3f68cad2f70545d06b6969bb1/state-8fc21cd9f0634695b2aa3aa1e1af8b61/array-3.npy": {
+   "size": 4608,
+   "sha256": "b08ac4c523cdab4945ce8311102b2d990df726af20128f5d049396b58974bd17"
+  },
+  ".solweig-light/transactions/928a1f87d8e223a04efcfd435e2b223448c5a9f3f68cad2f70545d06b6969bb1/state-8fc21cd9f0634695b2aa3aa1e1af8b61/array-4.npy": {
+   "size": 4608,
+   "sha256": "0fdf702d90ded48a4b7666aa8f3172a437dca1febb8808693a8136e7dd8254ab"
+  },
+  ".solweig-light/transactions/928a1f87d8e223a04efcfd435e2b223448c5a9f3f68cad2f70545d06b6969bb1/state-8fc21cd9f0634695b2aa3aa1e1af8b61/array-5.npy": {
+   "size": 4608,
+   "sha256": "53840ea8b5b6de44ccbcfccf584fd1917a0c78501af18bf4996b69ee7b769b1c"
+  },
+  ".solweig-light/transactions/928a1f87d8e223a04efcfd435e2b223448c5a9f3f68cad2f70545d06b6969bb1/state-8fc21cd9f0634695b2aa3aa1e1af8b61/array-6.npy": {
+   "size": 4608,
+   "sha256": "aa694e9a6195cca9d9628fdda6564c0004cb8b42eea5c6c11b149709757a1b44"
+  },
+  ".solweig-light/transactions/928a1f87d8e223a04efcfd435e2b223448c5a9f3f68cad2f70545d06b6969bb1/state-8fc21cd9f0634695b2aa3aa1e1af8b61/array-7.npy": {
+   "size": 4608,
+   "sha256": "f2b19e96e1ed3c55585e1bdde8892057b8578e956773ea0268c638b66e6f179a"
+  },
+  ".solweig-light/transactions/928a1f87d8e223a04efcfd435e2b223448c5a9f3f68cad2f70545d06b6969bb1/state-8fc21cd9f0634695b2aa3aa1e1af8b61/state.json": {
+   "size": 1130,
+   "sha256": "44d6871bfc6e393b9c0a028f0b295ad6d8b1ba55ac5dab263e64c46e0da1cc58"
+  },
+  ".solweig-light/transactions/928a1f87d8e223a04efcfd435e2b223448c5a9f3f68cad2f70545d06b6969bb1/transaction.json": {
+   "size": 40077,
+   "sha256": "463ac9b6636177283d7a9220614f8b8ff9b46a0d366559173e7ea16bb92ab0b3"
+  },
+  ".solweig-light-locks/02cba87a2674a67d2655e64a6bbca981e00859e78e55c6dfc352545d6cf9ce68.lock": {
+   "size": 0,
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  ".solweig-light-locks/16792e948002ae6585f92dd03c0ad6a6099dccdc13598b1b0fc985afd9a032c8.lock": {
+   "size": 0,
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  ".solweig-light-locks/2837110b52d72edd14d4fad8861d9edfc05810e40ae47195988c5bf8f40c16a3.lock": {
+   "size": 0,
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  ".solweig-light-locks/3297e62f67c7eb44f09d07443fbfc33b028e31f752d80435f59b3da35225c36f.lock": {
+   "size": 0,
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  ".solweig-light-locks/33a8b67dbe02ac7f4a86eff9d825506c5aefa2810f214766372f99f83214e813.lock": {
+   "size": 0,
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  ".solweig-light-locks/341a6508adb1cb4e1e8039b8b69a22c56604391a91dff404d4cf4bbf1a5b776c.lock": {
+   "size": 0,
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  ".solweig-light-locks/463d46050f98a94b9a7f1f4c8bae3bcdfbe7485c677ad6d46bedc5c3e373e3c3.lock": {
+   "size": 0,
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  ".solweig-light-locks/4df18be8f1a48df18aaa5f803338413bb77a413add920319d95fdf0878866cd9.lock": {
+   "size": 0,
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  ".solweig-light-locks/726b163da12d529d8dba5bb203e5584cda6a5badca4d41b5aad4632b01fed3ed.lock": {
+   "size": 0,
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  ".solweig-light-locks/8e8a38cf442bfa4a9136a46a76e7e1c4381b8d8eedf13fee5736aa2a9c3193fd.lock": {
+   "size": 0,
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "Building_DSM.tif": {
+   "size": 4840,
+   "sha256": "e13aefb56d224680fd0a04fbf1886faf840d73db032aa4bbe2bbc651c4d8f80a"
+  },
+  "DEM.tif": {
+   "size": 4840,
+   "sha256": "a550dd0b6519621fff999eb6cc7bce224c27a3c5cc17d73660c41b52767a7105"
+  },
+  "Trees.tif": {
+   "size": 4840,
+   "sha256": "aacbcf3ffe3296c1ad4528138555b19d59358210a4c2b5b1c636074975fc8bdc"
+  },
+  "met.txt": {
+   "size": 7569,
+   "sha256": "bc8ee6361071dd109649857127d6b777571e868bdb06db0e47968b39e99189e4"
+  },
+  "output_folder/0_0/Kdown_0_0.tif": {
+   "size": 141646,
+   "sha256": "c5de00eb2d01f60af7e8457a3b8a8179f52b5757df5d00fdde060f46819360c3"
+  },
+  "output_folder/0_0/Kup_0_0.tif": {
+   "size": 141646,
+   "sha256": "fd9e10e3cf4652af7ddc65757ec68e73de1f18cc5e62f65ed12c6658a614f0c3"
+  },
+  "output_folder/0_0/Ldown_0_0.tif": {
+   "size": 141646,
+   "sha256": "f8ee69206d0712e8d3662d07e4c025dc9833d5a1e9d614a4ccf4e7cc0c545c7f"
+  },
+  "output_folder/0_0/Lup_0_0.tif": {
+   "size": 141646,
+   "sha256": "baadfe48d92d09c97b2bf04d86345eca39ab097996f1d5db487243b5cc6da9b4"
+  },
+  "output_folder/0_0/Shadow_0_0.tif": {
+   "size": 141646,
+   "sha256": "8dfb0fc208084889c6d8394775fab82cfc41e1a6e5cf05fdef5c7ba32c9cf392"
+  },
+  "output_folder/0_0/TMRT_0_0.tif": {
+   "size": 141646,
+   "sha256": "37be7bc31487faabedc7ddf428fc28d2b2d5549a5193ce03d01dcdd9181fa27c"
+  },
+  "output_folder/0_0/Ta_0_0.tif": {
+   "size": 141646,
+   "sha256": "4d9ae6d30624055a152bad5a2b2bd98ab313cb23444f6e7d3d1484d76074f4f9"
+  },
+  "output_folder/0_0/UTCI_0_0.tif": {
+   "size": 141646,
+   "sha256": "0127cd160c82a66583f8e18ff029fecf2ad2e07b6f3f819ac85898caf730b346"
+  },
+  "output_folder/0_0/WBGT_0_0.tif": {
+   "size": 141646,
+   "sha256": "062e8652dffb734a194f8a84a442718438a9f0665975ebce8057bc81eb87e6c2"
+  },
+  "output_folder/0_0/Wind_0_0.tif": {
+   "size": 141646,
+   "sha256": "3ef5e1e507103fa162f04400efc55145c7e6aa844daf05aed71165aa66d60f68"
+  },
+  "processed_inputs/.solweig-light/cache/a87766fd5c608827c1019feefe6b2dc8fbfdcf6cbcc5ea8eaa22716f085d8505/.lock": {
+   "size": 0,
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "processed_inputs/.solweig-light/cache/a87766fd5c608827c1019feefe6b2dc8fbfdcf6cbcc5ea8eaa22716f085d8505/generation-f1f453d847ae4c16974da9091d82e6c5/shmat.json": {
+   "size": 7381,
+   "sha256": "dcdbe617400ce7998e1a7f3acdbe90c08bdf725edf80188c54d130e7eb7dadc6"
+  },
+  "processed_inputs/.solweig-light/cache/a87766fd5c608827c1019feefe6b2dc8fbfdcf6cbcc5ea8eaa22716f085d8505/generation-f1f453d847ae4c16974da9091d82e6c5/shmat.json.bf8cqb3k.npy": {
+   "size": 21548,
+   "sha256": "6c17c8f19a4070ce1f4a48509dd44753895ddfa211526eeb64b60bc9ed61cd4e"
+  },
+  "processed_inputs/.solweig-light/cache/a87766fd5c608827c1019feefe6b2dc8fbfdcf6cbcc5ea8eaa22716f085d8505/generation-f1f453d847ae4c16974da9091d82e6c5/svf.npy": {
+   "size": 4608,
+   "sha256": "e16f536da2031c4126e884712961d25770c0c3bbd8a44598ef054259c2850918"
+  },
+  "processed_inputs/.solweig-light/cache/a87766fd5c608827c1019feefe6b2dc8fbfdcf6cbcc5ea8eaa22716f085d8505/generation-f1f453d847ae4c16974da9091d82e6c5/svfE.npy": {
+   "size": 4608,
+   "sha256": "493c627524b8d0fa4422df2978faa4f9059b0048913914eff007f5d42e5edb7e"
+  },
+  "processed_inputs/.solweig-light/cache/a87766fd5c608827c1019feefe6b2dc8fbfdcf6cbcc5ea8eaa22716f085d8505/generation-f1f453d847ae4c16974da9091d82e6c5/svfEaveg.npy": {
+   "size": 4608,
+   "sha256": "0b7466395cf654d85ca243c02c25a623060317f4050777733e3ee732fa501567"
+  },
+  "processed_inputs/.solweig-light/cache/a87766fd5c608827c1019feefe6b2dc8fbfdcf6cbcc5ea8eaa22716f085d8505/generation-f1f453d847ae4c16974da9091d82e6c5/svfEveg.npy": {
+   "size": 4608,
+   "sha256": "9a628c53921f11548ee5afad95b9b1157f7191e3e4e4d33f702c2392242ad2af"
+  },
+  "processed_inputs/.solweig-light/cache/a87766fd5c608827c1019feefe6b2dc8fbfdcf6cbcc5ea8eaa22716f085d8505/generation-f1f453d847ae4c16974da9091d82e6c5/svfN.npy": {
+   "size": 4608,
+   "sha256": "5566203a570aed2b278ec9358eb1832726bf88391ca40b3d11ef1721e4705c29"
+  },
+  "processed_inputs/.solweig-light/cache/a87766fd5c608827c1019feefe6b2dc8fbfdcf6cbcc5ea8eaa22716f085d8505/generation-f1f453d847ae4c16974da9091d82e6c5/svfNaveg.npy": {
+   "size": 4608,
+   "sha256": "12f63b22bf0678545e72252b3dbbd0e768b67772ffde00fbe0d183da520e8281"
+  },
+  "processed_inputs/.solweig-light/cache/a87766fd5c608827c1019feefe6b2dc8fbfdcf6cbcc5ea8eaa22716f085d8505/generation-f1f453d847ae4c16974da9091d82e6c5/svfNveg.npy": {
+   "size": 4608,
+   "sha256": "84bce2301454dca4ae2a0cf3faeb9d2a8f84cdcec77add0727316155ca03439f"
+  },
+  "processed_inputs/.solweig-light/cache/a87766fd5c608827c1019feefe6b2dc8fbfdcf6cbcc5ea8eaa22716f085d8505/generation-f1f453d847ae4c16974da9091d82e6c5/svfS.npy": {
+   "size": 4608,
+   "sha256": "4dbaee11e80cffc86e68f877cd0f2b9930ceb599c03c08f33bda628726e1d0ae"
+  },
+  "processed_inputs/.solweig-light/cache/a87766fd5c608827c1019feefe6b2dc8fbfdcf6cbcc5ea8eaa22716f085d8505/generation-f1f453d847ae4c16974da9091d82e6c5/svfSaveg.npy": {
+   "size": 4608,
+   "sha256": "adb9e50ec42d4ea768c9262b128989a26bf7d700caf899db370df406a78e7ed4"
+  },
+  "processed_inputs/.solweig-light/cache/a87766fd5c608827c1019feefe6b2dc8fbfdcf6cbcc5ea8eaa22716f085d8505/generation-f1f453d847ae4c16974da9091d82e6c5/svfSveg.npy": {
+   "size": 4608,
+   "sha256": "fceff2fda28a1bd797fa89303d7c094c562599dace3470b8a4e7e4c343bd3750"
+  },
+  "processed_inputs/.solweig-light/cache/a87766fd5c608827c1019feefe6b2dc8fbfdcf6cbcc5ea8eaa22716f085d8505/generation-f1f453d847ae4c16974da9091d82e6c5/svfW.npy": {
+   "size": 4608,
+   "sha256": "b44f7403ba2a634151ea39da5f670f6670a1521307648077ad34002debe4483f"
+  },
+  "processed_inputs/.solweig-light/cache/a87766fd5c608827c1019feefe6b2dc8fbfdcf6cbcc5ea8eaa22716f085d8505/generation-f1f453d847ae4c16974da9091d82e6c5/svfWaveg.npy": {
+   "size": 4608,
+   "sha256": "3bf512a215f431fdce120e9834a7c8935352ba82d8d4aca8e59b4b5fd223f7e0"
+  },
+  "processed_inputs/.solweig-light/cache/a87766fd5c608827c1019feefe6b2dc8fbfdcf6cbcc5ea8eaa22716f085d8505/generation-f1f453d847ae4c16974da9091d82e6c5/svfWveg.npy": {
+   "size": 4608,
+   "sha256": "1b2677394d7493de106217c4df408e1851ac33bcba24bcf27f88be7a48ec16ca"
+  },
+  "processed_inputs/.solweig-light/cache/a87766fd5c608827c1019feefe6b2dc8fbfdcf6cbcc5ea8eaa22716f085d8505/generation-f1f453d847ae4c16974da9091d82e6c5/svfaveg.npy": {
+   "size": 4608,
+   "sha256": "945da2b2375d745b846d0a7b4728b4201dfe91220d2de2c616acec19bef593d8"
+  },
+  "processed_inputs/.solweig-light/cache/a87766fd5c608827c1019feefe6b2dc8fbfdcf6cbcc5ea8eaa22716f085d8505/generation-f1f453d847ae4c16974da9091d82e6c5/svftotal.npy": {
+   "size": 4608,
+   "sha256": "3759231b472607714188961d1d676c801d63d79335e4b65e4eb6d95276d02239"
+  },
+  "processed_inputs/.solweig-light/cache/a87766fd5c608827c1019feefe6b2dc8fbfdcf6cbcc5ea8eaa22716f085d8505/generation-f1f453d847ae4c16974da9091d82e6c5/svfveg.npy": {
+   "size": 4608,
+   "sha256": "66d2b681603a67bfcdaa9c322575227b4c8ca3a54e8618b740a6440d8d82f640"
+  },
+  "processed_inputs/.solweig-light/cache/a87766fd5c608827c1019feefe6b2dc8fbfdcf6cbcc5ea8eaa22716f085d8505/generation-f1f453d847ae4c16974da9091d82e6c5/vbshvegshmat.json": {
+   "size": 7388,
+   "sha256": "8f597e8942662890c07797e99f7d7f36938a8d7549a2e267525b62c8769a2d82"
+  },
+  "processed_inputs/.solweig-light/cache/a87766fd5c608827c1019feefe6b2dc8fbfdcf6cbcc5ea8eaa22716f085d8505/generation-f1f453d847ae4c16974da9091d82e6c5/vbshvegshmat.json.8z5azqdg.npy": {
+   "size": 21548,
+   "sha256": "929f47796541a4d15ad89222d86f2e81517dad5f20b23dee52cc2d30f571b424"
+  },
+  "processed_inputs/.solweig-light/cache/a87766fd5c608827c1019feefe6b2dc8fbfdcf6cbcc5ea8eaa22716f085d8505/generation-f1f453d847ae4c16974da9091d82e6c5/vegshmat.json": {
+   "size": 7384,
+   "sha256": "57dcc5d5c6c68e7f42f31b89fc29aa22574d65d4a1e976a266ff56e9e5f7e46c"
+  },
+  "processed_inputs/.solweig-light/cache/a87766fd5c608827c1019feefe6b2dc8fbfdcf6cbcc5ea8eaa22716f085d8505/generation-f1f453d847ae4c16974da9091d82e6c5/vegshmat.json.orbfhja5.npy": {
+   "size": 21548,
+   "sha256": "15327f3726e13a49de92e81541a3f4800ac32e6bafb602ddea665802b51549b8"
+  },
+  "processed_inputs/.solweig-light/cache/a87766fd5c608827c1019feefe6b2dc8fbfdcf6cbcc5ea8eaa22716f085d8505/manifest.json": {
+   "size": 12481,
+   "sha256": "5e4c3428bb62252ff4ce39aaada5cc0963e8973f61638b5cac0d21961bc08e89"
+  },
+  "processed_inputs/.solweig-light/export-manifests/geometry-exports_0_0.json": {
+   "size": 1930,
+   "sha256": "44333461b31003cb05aa108b33fd9e32e924da812e225f79b19473d0322fa609"
+  },
+  "processed_inputs/.solweig-light/export-manifests/geometry-exports_0_0.lock": {
+   "size": 0,
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "processed_inputs/.solweig-light-locks/1770ed87ca952fb34f9343e267ebae5a9c39ac2ada49997b976d58d30191371b.lock": {
+   "size": 0,
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "processed_inputs/.solweig-light-locks/47c3361ce6d1915944c5b4ac8eb8f49bcfb85337a7dad7e7ff21c3bfc93ab129.lock": {
+   "size": 0,
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "processed_inputs/.solweig-light-locks/c0625b151de4fd8cf5ccc80549209b585e0669ea519ce7fef346ba2bb4d9e858.lock": {
+   "size": 0,
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "processed_inputs/Building_DSM/Building_DSM_0_0.tif": {
+   "size": 4840,
+   "sha256": "e13aefb56d224680fd0a04fbf1886faf840d73db032aa4bbe2bbc651c4d8f80a"
+  },
+  "processed_inputs/DEM/DEM_0_0.tif": {
+   "size": 4840,
+   "sha256": "a550dd0b6519621fff999eb6cc7bce224c27a3c5cc17d73660c41b52767a7105"
+  },
+  "processed_inputs/SVF/SkyViewFactor_0_0.tif": {
+   "size": 4840,
+   "sha256": "0f10eba06cba04e7abb8030dc0f0b1b08921cae410ba171ed1df4d3e089290cc"
+  },
+  "processed_inputs/SVF/shadowmats_0_0.npz": {
+   "size": 18846,
+   "sha256": "7b35f89104798a045cffa2ecd880b7d86e70c262f2e83659b3928ad8b39b565b"
+  },
+  "processed_inputs/SVF/svfs_0_0.zip": {
+   "size": 17579,
+   "sha256": "6d29bc2a4a349303cf12fd0b6613b85760bf17a9fa51de9efcb8a99013da83d3"
+  },
+  "processed_inputs/Trees/Trees_0_0.tif": {
+   "size": 4840,
+   "sha256": "aacbcf3ffe3296c1ad4528138555b19d59358210a4c2b5b1c636074975fc8bdc"
+  },
+  "processed_inputs/aspect/aspect_0_0.tif": {
+   "size": 4840,
+   "sha256": "e936838ef576f1c1b2f32f284c24e58933469b1dc140e06a9c91de1c3c3c1980"
+  },
+  "processed_inputs/metfiles/metfile_0_0.txt": {
+   "size": 7569,
+   "sha256": "bc8ee6361071dd109649857127d6b777571e868bdb06db0e47968b39e99189e4"
+  },
+  "processed_inputs/walls/walls_0_0.tif": {
+   "size": 4840,
+   "sha256": "a5d78d7d7c6808402d363de3809d6c8dc5f5edf3898fdfbfa70b5572bfca1d14"
+  }
+ },
+ "output_file_count": 74
+}

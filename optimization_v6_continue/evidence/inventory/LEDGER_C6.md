@@ -61,7 +61,9 @@ Reviewer recompute: 541 + 35 scoped tests green on the integrated tree.
 | C6-81 residual choice | **DONE + APPROVE** (selection 5928ead4; decoder declined 46450c75; independent GLM review APPROVE, Opus unavailable — evidence/reviews/C6-81_review_decoder_decline.md; F1 marker registration fixed at landing) |
 | C6-90..94 conditional | **NOT SELECTED** (no measured activation case; see evidence/selection/C6-81_selection.md) |
 | C6-99 final integration | **DONE** — surface confirmation (zero selected optionals; evidence/integration/C6-99_surface_confirmation.md) |
-| C6-100 freeze → C6-101 campaign → C6-102 audit → C6-103 handover | C6-100 UNBLOCKED; C6-101 scope unverified until the actual 24-tile dataset exists |
+| C6-100 freeze | **DONE** — frozen at ea2eed53 (wheel gate PASS bitwise; true-TIFF/state gates pass on substance; raw-True admission-boundary case dispositioned in evidence/freeze/C6-100_integrator_dispositions.md) |
+| C6-101 single campaign | **BLOCKED-UNVERIFIED** — actual 24-spatial-tile dataset still absent; no frozen real target; no actual-target or release timing claim exists |
+| C6-102 audit → C6-103 handover | UNBLOCKED (audit covers the tree as-is; carries raw-True + dataset-absence items) |
 
 Standing facts: routing = GLM via Z.ai, Opus unavailable (INVENTORY_C6-00.md).
 24-tile target dataset still absent (synthetic 24-tile load = load test, not
