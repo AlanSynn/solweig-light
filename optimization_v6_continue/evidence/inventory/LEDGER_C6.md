@@ -63,7 +63,7 @@ Reviewer recompute: 541 + 35 scoped tests green on the integrated tree.
 | C6-99 final integration | **DONE** — surface confirmation (zero selected optionals; evidence/integration/C6-99_surface_confirmation.md) |
 | C6-100 freeze | **DONE** — frozen at ea2eed53 (wheel gate PASS bitwise; true-TIFF/state gates pass on substance; raw-True admission-boundary case dispositioned in evidence/freeze/C6-100_integrator_dispositions.md) |
 | C6-101 single campaign | **BLOCKED-UNVERIFIED** — actual 24-spatial-tile dataset still absent; no frozen real target; no actual-target or release timing claim exists |
-| C6-102 audit → C6-103 handover | C6-102 **DONE — CLEAN-WITH-NOTES** (independent GLM audit; Opus unavailable; evidence/final_review/C6-102_audit.md; 4 info notes, no verdict changes). C6-103 handover in progress |
+| C6-102 audit → C6-103 handover | C6-102 **DONE — CLEAN-WITH-NOTES** (independent GLM audit; Opus unavailable; evidence/final_review/C6-102_audit.md). C6-103 **DONE — APPROVE-WITH-NOTES** (independent GLM review; Opus unavailable; evidence/reviews/C6-103_review_handover.md; N1–N3 fixed at landing 6152864f-series). v6 continuation CLOSED: branch unmerged by design, no push/PR/release |
 
 Standing facts: routing = GLM via Z.ai, Opus unavailable (INVENTORY_C6-00.md).
 24-tile target dataset still absent (synthetic 24-tile load = load test, not

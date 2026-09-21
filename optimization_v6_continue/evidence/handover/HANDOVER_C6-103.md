@@ -45,7 +45,8 @@ performed or is authorized by this record.
 ## Verification gates on record
 
 - Combined v6 suite 560/560 (`PYTHONPATH=src NUMBA_NUM_THREADS=2`, single
-  process) — reviewer- and auditor-measured.
+  process) — reviewer-measured twice (C6-81 review and C6-103 handover
+  review); the audit trusted rather than re-ran it.
 - Wheel gate PASS: wheel built from the frozen tree, installed in a fresh
   venv, imported without src on the path, full public entry bitwise
   identical wheel vs src (10/10 output TIFFs) — evidence/freeze/.
@@ -71,7 +72,10 @@ performed or is authorized by this record.
 4. **All timings are dev-tier single-lease observations** on a host with
    unrelated OS/browser load (loadavg median 11.2). Nothing here is a
    statistical or release claim.
-5. Four audit info notes (wording/rounding/host-sizing assumptions) —
+5. Four audit notes (3 INFO: wording/rounding/host-sizing assumptions;
+   1 NOTE: the C6-100 freeze commit was amended 2f91d3e2→7e0d8764 before
+   the audit to drop bulky build artifacts — same parent, evidence-only,
+   no evidence references the old hash) —
    evidence/final_review/C6-102_audit.md.
 
 ## Worktrees at handover (explicit cleanup record)
@@ -94,7 +98,8 @@ performed or is authorized by this record.
 
 ```
 cd /Users/alansynn/Workspace/solweig-light-claude-v5
-git rev-parse HEAD                      # expect 98545430…
+git rev-parse HEAD                      # expect 6152864f… (the handover tip at
+                                        # recording time; later evidence commits advance it)
 PYTHONPATH=src NUMBA_NUM_THREADS=2 /Users/alansynn/Workspace/solweig-light/.venv-light/bin/python \
   -m pytest tests/optimization_v6/{gvf_prepare,gvf_postprocess,decoder,cylinder_lw,cylinder_sw,lside,geometry_recipe,memory,phases} -q
 # expect 560 passed
