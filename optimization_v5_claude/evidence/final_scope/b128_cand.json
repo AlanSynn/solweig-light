@@ -1,0 +1,120 @@
+{
+ "schema": "c5-block128-probe-v1",
+ "files": [
+  {
+   "path": "Building_DSM.tif",
+   "size": 262696,
+   "sha256": "687655ed2122002eebc16214fa506537a433aec5ca12ef198572c8dc0bee430f"
+  },
+  {
+   "path": "DEM.tif",
+   "size": 262696,
+   "sha256": "85ab26fcec6fa193ca5d5d116eb1560c03b44d9f87c32dce0988b0d3ef29334e"
+  },
+  {
+   "path": "Trees.tif",
+   "size": 262696,
+   "sha256": "30f9e56852cc59aa196df9ce281666612a63608ee14cef76ee698227128ccdfa"
+  },
+  {
+   "path": "met.txt",
+   "size": 7569,
+   "sha256": "bc8ee6361071dd109649857127d6b777571e868bdb06db0e47968b39e99189e4"
+  },
+  {
+   "path": "output_folder/0_0/Kdown_0_0.tif",
+   "size": 6361582,
+   "sha256": "d5bb0e0ac7bca1434982d2380b7dafe4636bc2c507a261dc27b1fd56c34fa839"
+  },
+  {
+   "path": "output_folder/0_0/Kup_0_0.tif",
+   "size": 6361582,
+   "sha256": "c5abb1a74a836107a146a976acd145c53b94ad0d07cf54988343d7df13b7d77b"
+  },
+  {
+   "path": "output_folder/0_0/Ldown_0_0.tif",
+   "size": 6361582,
+   "sha256": "95fe916267f12c93e6ab946ebe1effad857d52b23472d94a4d7ac0e247417367"
+  },
+  {
+   "path": "output_folder/0_0/Lup_0_0.tif",
+   "size": 6361582,
+   "sha256": "a19c09c0fe156fa4ca163c6d7a1750dbef06e81dba652f7d8b009fd1486e6e52"
+  },
+  {
+   "path": "output_folder/0_0/Shadow_0_0.tif",
+   "size": 6361582,
+   "sha256": "46d8fedeeda2f45680a9d5fa01f4f16390c405d3f518f1e2f3046f2c252ad41d"
+  },
+  {
+   "path": "output_folder/0_0/TMRT_0_0.tif",
+   "size": 6361582,
+   "sha256": "2640d6e56dd409bb16d9491fddb4ed69ebe698cae10143ac1b0abba2d4fa3e71"
+  },
+  {
+   "path": "output_folder/0_0/Ta_0_0.tif",
+   "size": 6361582,
+   "sha256": "f180aa7653f665aa8b26a9011c918c40c9c8c0c3666a87a5497cf4d26b3f1abe"
+  },
+  {
+   "path": "output_folder/0_0/UTCI_0_0.tif",
+   "size": 6361582,
+   "sha256": "e8b03bc6a8f78a681e898f58cc7011bffdaabd4ce2273f680a533d9ff885c063"
+  },
+  {
+   "path": "output_folder/0_0/WBGT_0_0.tif",
+   "size": 6361582,
+   "sha256": "ee71350e412cfd47ea322b6e9e33a75d85bb31847827c777b7c43b340d6c0fb2"
+  },
+  {
+   "path": "output_folder/0_0/Wind_0_0.tif",
+   "size": 6361582,
+   "sha256": "6f58de0baddc9d317b78e0af1d819307bbf766d81e86d169954ce26b78e015af"
+  },
+  {
+   "path": "processed_inputs/Building_DSM/Building_DSM_0_0.tif",
+   "size": 262696,
+   "sha256": "687655ed2122002eebc16214fa506537a433aec5ca12ef198572c8dc0bee430f"
+  },
+  {
+   "path": "processed_inputs/DEM/DEM_0_0.tif",
+   "size": 262696,
+   "sha256": "85ab26fcec6fa193ca5d5d116eb1560c03b44d9f87c32dce0988b0d3ef29334e"
+  },
+  {
+   "path": "processed_inputs/SVF/SkyViewFactor_0_0.tif",
+   "size": 262696,
+   "sha256": "e5b1ae5194ca263e33b7a3b4368d0ee51999224386627174efe0b7e5a82659da"
+  },
+  {
+   "path": "processed_inputs/SVF/shadowmats_0_0.npz",
+   "size": 884221,
+   "sha256": "6df9dc3ec6245e2383b8ef0cd1673eea1620c010bb5f4ca53bcc58f9dcfbc88f"
+  },
+  {
+   "path": "processed_inputs/SVF/svfs_0_0.zip",
+   "size": 282867,
+   "sha256": "dd38c7b361b47a6dabd1a007f71a40941ff277e1d932986505f232162214978e"
+  },
+  {
+   "path": "processed_inputs/Trees/Trees_0_0.tif",
+   "size": 262696,
+   "sha256": "30f9e56852cc59aa196df9ce281666612a63608ee14cef76ee698227128ccdfa"
+  },
+  {
+   "path": "processed_inputs/aspect/aspect_0_0.tif",
+   "size": 262696,
+   "sha256": "7badaeee79cb4f490f149faf4196a57388bb4a971d747d3786a0289b661c57b7"
+  },
+  {
+   "path": "processed_inputs/metfiles/metfile_0_0.txt",
+   "size": 7569,
+   "sha256": "bc8ee6361071dd109649857127d6b777571e868bdb06db0e47968b39e99189e4"
+  },
+  {
+   "path": "processed_inputs/walls/walls_0_0.tif",
+   "size": 262696,
+   "sha256": "7bec6a080f51bb942b91a7d8af0466f5668aca8fbe205d77aecc1b1b786ff48f"
+  }
+ ]
+}
