@@ -153,9 +153,12 @@ def main():
     from solweig_light.radiation import engine
     wrap_engine_lside(engine)
 
+    threads = int(sys.argv[4]) if len(sys.argv) > 4 else 1
     merged = dataclasses.replace(get_runtime_options(),
                                  memory_budget_bytes=12 * 1024 ** 3,
-                                 workers=1)
+                                 workers=1,
+                                 threads_per_worker=threads,
+                                 cpu_budget=max(threads, get_runtime_options().cpu_budget))
     # execute_tiles always serves jobs from a persistent subprocess pool;
     # the wrappers above live in this process. Swap in an in-process loop
     # over the same job dicts calling the same run_tile entry: only the

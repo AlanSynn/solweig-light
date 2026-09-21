@@ -166,19 +166,25 @@ def run_utci_tiles(
         plan_phase_admission,
         shape_from_building_dsm,
     )
-    plan_phase_admission(
-        [PhaseJob(PHASE_SIMULATION,
-                  **shape_from_building_dsm(
-                      job['paths'], block_pixels=runtime.block_pixels).to_dict(),
-                  tile=job['tile'])
-         for job in jobs],
-        budget_bytes=runtime.resolved_memory_budget_bytes,
-        active_workers=min(runtime.workers,
-                           max(1, runtime.cpu_budget // runtime.threads_per_worker)),
-        threads_per_worker=runtime.threads_per_worker,
-        gdal_cache_bytes=default_gdal_cache_bytes(),
-        policy='reject',
-    )
+    # C6-60 F1 (C6-70 review): plan_phase_admission rejects an empty list,
+    # but a degenerate zero-tile public run was a silent no-op at base.
+    # Guard keeps the public-behavior delta at zero; deviates from the m7
+    # W1 hunk verbatim form by this one guard (recorded in the integration
+    # evidence).
+    if jobs:
+        plan_phase_admission(
+            [PhaseJob(PHASE_SIMULATION,
+                      **shape_from_building_dsm(
+                          job['paths'], block_pixels=runtime.block_pixels).to_dict(),
+                      tile=job['tile'])
+             for job in jobs],
+            budget_bytes=runtime.resolved_memory_budget_bytes,
+            active_workers=min(runtime.workers,
+                               max(1, runtime.cpu_budget // runtime.threads_per_worker)),
+            threads_per_worker=runtime.threads_per_worker,
+            gdal_cache_bytes=default_gdal_cache_bytes(),
+            policy='reject',
+        )
     # Even one public tile gets native limits before numerical libraries load.
     # The internal run_tile entry remains available to numerical test harnesses.
     execute_tiles(jobs, runtime)
