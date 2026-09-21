@@ -1,0 +1,34 @@
+{
+  "python": "3.11.16",
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "processor": "arm",
+  "size": [
+    128,
+    128
+  ],
+  "patches": 153,
+  "repeat": 30,
+  "note": "contended development tier; recording only, no claims",
+  "numba": "0.67.0",
+  "numpy": "2.4.6",
+  "original_4x_decode_block": {
+    "best_ms": 58.14837501384318,
+    "mean_ms": 59.300786074406155
+  },
+  "prepared_decode": {
+    "best_ms": 71.58524997066706,
+    "mean_ms": 73.69586943338315
+  },
+  "prepared_decode_caller_buffers": {
+    "best_ms": 74.12499992642552,
+    "mean_ms": 78.39181517095615
+  },
+  "prepare_only": {
+    "best_ms": 0.005167094059288502,
+    "mean_ms": 0.006334619441380103
+  },
+  "dropin_single_block": {
+    "best_ms": 0.5359170027077198,
+    "mean_ms": 0.5820167250931263
+  }
+}

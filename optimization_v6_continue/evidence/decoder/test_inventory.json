@@ -1,0 +1,11 @@
+{
+  "total": 95,
+  "per_file": {
+    "test_close_lifetime.py": 4,
+    "test_decode_equivalence.py": 52,
+    "test_error_precedence.py": 17,
+    "test_fallback.py": 13,
+    "test_no_hidden_copy.py": 6,
+    "test_recipe_integration.py": 3
+  }
+}
