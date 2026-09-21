@@ -1,0 +1,410 @@
+{
+ "schema": "sw6-portfolio-child-v1",
+ "requested": {
+  "temp": "warm_full",
+  "workers": 1,
+  "threads": 2,
+  "cpu_budget": 4,
+  "memory_budget_bytes": 12884901888,
+  "block_pixels": 1024,
+  "site": "/Users/alansynn/Workspace/solweig-light-claude-v5/src",
+  "scene_src": "/Users/alansynn/Workspace/solweig-light-claude-v5/optimization_v6_continue/evidence/portfolio/scenes/scene_t128"
+ },
+ "env": {
+  "threads_at_numerical_import": {
+   "BLIS_NUM_THREADS": "2",
+   "MKL_NUM_THREADS": "2",
+   "NUMBA_NUM_THREADS": "2",
+   "NUMEXPR_NUM_THREADS": "2",
+   "OMP_NUM_THREADS": "2",
+   "OPENBLAS_NUM_THREADS": "2",
+   "VECLIB_MAXIMUM_THREADS": "2"
+  },
+  "gdal_cachemax_env": null,
+  "numba_cache_dir": "/Users/alansynn/Workspace/solweig-light-claude-v5/optimization_v6_continue/evidence/portfolio/runs/t128_T2/integrated/numba_cache"
+ },
+ "numba": {
+  "config_NUMBA_NUM_THREADS": 2,
+  "set_num_threads_error": null,
+  "final_get_num_threads": 2,
+  "threading_layer": "workqueue",
+  "version": "0.67.0"
+ },
+ "route": {
+  "observed_events": [],
+  "observed_counts": {},
+  "first_kernel_entry": {},
+  "observation_point": "ground_view leaf wrappers (C6-01 pattern, call-through)"
+ },
+ "admission": {
+  "plan_active_workers": 1,
+  "plan_native_threads": 2,
+  "requested_native_threads": 2
+ },
+ "options": {
+  "cache_dir": null,
+  "legacy_cache_policy": "recompute",
+  "cache_enabled": true,
+  "memory_budget_bytes": 12884901888,
+  "cpu_budget": 4,
+  "workers": 1,
+  "threads_per_worker": 2,
+  "block_pixels": 1024,
+  "checkpoint_interval": 1,
+  "resume": false
+ },
+ "module_origin": {
+  "solweig_light": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/__init__.py",
+  "pipeline": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/pipeline.py",
+  "runtime_phases_present": true,
+  "pythonpath_env": "/Users/alansynn/Workspace/solweig-light-claude-v5/src"
+ },
+ "math_profile": {
+  "id": "solweig-portable-sleef-5a1d179d-v1",
+  "fingerprint": "8e4d38460b61b0299e7c1d525c8499750dcd219ef01cc785d7496dbe1dcbef30",
+  "implementation": {
+   "profile_id": "solweig-portable-sleef-5a1d179d-v1",
+   "sleef_commit": "5a1d179df9cf652951b59010a2d2075372d67f68",
+   "coefficient_policy": "numpy-float64-cos-tan-scalar-v1",
+   "tan_domain_policy": "sleef-u10-fast-abs-lt-125;explicit-legacy-numpy-otherwise-v1",
+   "source_sha256": {
+    "_sleef_acos.py": "9c7aff0c880a10db81cc6f96c314a7600ef77cb0008cbcd5ff344fa156511263",
+    "_sleef_classifier.py": "444e27eb3e887145b0f9fc2447b9e6aafba3185c4f7cab0835bf862ae60447ec",
+    "_math_profile.py": "7921432908b43aec6b99ac5c70df0f1f7e6566787c4e84cd741cbfa5b64e3ef7",
+    "_jit_cache.py": "93cafde414ff020fa6810f5bb5a904e199ba22b0ebd780a9291a1257903b85ab",
+    "SLEEF_LICENSE.txt": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566"
+   }
+  },
+  "runtime": {
+   "python": "CPython-3.11.16",
+   "numpy": "2.4.6",
+   "numba": "0.67.0",
+   "llvmlite": "0.49.0",
+   "machine": "arm64",
+   "system": "Darwin",
+   "byteorder": "little",
+   "float_rounds": 1,
+   "fastmath": false,
+   "fma": "explicit-llvm.fma.f32"
+  }
+ },
+ "workload": {
+  "tiles": [
+   "0_0",
+   "1_0"
+  ],
+  "tile_shapes": [
+   {
+    "tile": "0_0",
+    "rows": 128,
+    "cols": 128
+   },
+   {
+    "tile": "1_0",
+    "rows": 128,
+    "cols": 128
+   }
+  ],
+  "date": "2020-07-18",
+  "timesteps_per_tile": 24,
+  "flags": [
+   "save_kdown",
+   "save_kup",
+   "save_ldown",
+   "save_lup",
+   "save_shadow",
+   "save_svf",
+   "save_ta",
+   "save_tmrt",
+   "save_wbgt",
+   "save_wind"
+  ],
+  "scene_manifest": {
+   "schema": "sw6-portfolio-scene-v1",
+   "dir": "/Users/alansynn/Workspace/solweig-light-claude-v5/optimization_v6_continue/evidence/portfolio/scenes/scene_t128",
+   "tile_size": [
+    128,
+    128
+   ],
+   "tiles": [
+    "0_0",
+    "1_0"
+   ],
+   "tile_distinction": "motif height/tree shift by tile index (deterministic, no RNG)",
+   "motif": "dense_urban 32-pixel motif (pinned p7 generator lineage), no RNG",
+   "met_source": "/Users/alansynn/Workspace/solweig-light-claude-v5/optimization_v5_claude/evidence/census/scene_dense256/processed_inputs/metfiles/metfile_0_0.txt",
+   "met_records_including_header": 25,
+   "epsg": 32618,
+   "sha256": {
+    "processed_inputs/DEM/DEM_0_0.tif": "07e60ecf82e0677128fd732636ea3d528f376fb65e1e1f05603a94b829d1038d",
+    "processed_inputs/Building_DSM/Building_DSM_0_0.tif": "e28b66df31c553a273b27ef12cd407d348291b955891cd4638c9a141f6080797",
+    "processed_inputs/Trees/Trees_0_0.tif": "238d36b7b378e1dd2ea45835d3e3374b3ed7b2451c1f121d337d2796f6e9b945",
+    "processed_inputs/metfiles/metfile_0_0.txt": "bc8ee6361071dd109649857127d6b777571e868bdb06db0e47968b39e99189e4",
+    "processed_inputs/DEM/DEM_1_0.tif": "527721a6b72e6e4856f86a893e2df8f6cd2237670ed7e53700827134a74e2f88",
+    "processed_inputs/Building_DSM/Building_DSM_1_0.tif": "3fa1ffd651fe22ea31a3f717118ceee30f0d1674145bb51fcdea1c17950f4dde",
+    "processed_inputs/Trees/Trees_1_0.tif": "37b1cd24a79fb268079b18a86d184329509f6a6a5f24a007f11555028cd7a926",
+    "processed_inputs/metfiles/metfile_1_0.txt": "bc8ee6361071dd109649857127d6b777571e868bdb06db0e47968b39e99189e4"
+   },
+   "layout": "processed_inputs/{Building_DSM,DEM,Trees,metfiles}; walls/aspect/SVF/cache are produced INSIDE the measured stages, pristine scene has none"
+  },
+  "run_dir_fresh_this_run": false
+ },
+ "stage_splits_s": {
+  "walls_aspect": 0.071,
+  "svf_geometry_total": 0.0833,
+  "svf_phase_wall": 0,
+  "svf_phase_calls": 0,
+  "svf_store_production": 0,
+  "svf_export_calls_total": 0.0829,
+  "svf_export_calls_count": 2,
+  "simulation_total": 8.0821,
+  "simulation_store_calls": 0,
+  "simulation_store_production": 0,
+  "simulation_store_hits": 0,
+  "simulation_export_calls": 0,
+  "total_measured": 8.2364
+ },
+ "store_calls": [],
+ "export_calls": [
+  {
+   "tile": "0_0",
+   "s": 0.0417
+  },
+  {
+   "tile": "1_0",
+   "s": 0.0412
+  }
+ ],
+ "phase_calls": [],
+ "cache_census_after_run": {
+  "cache_entry_count": 2,
+  "cache_entries": [
+   "138d03d476cfa2cf67cb4625e58b08971820c5448dd5666fd10c8c2a6465b8f3",
+   "abe4c2aeee6323d33027ff5ff4ff7e243d16e2e7ccd4cdb1a8a354f3f91005d6"
+  ],
+  "phase_publication_files": [],
+  "phase_route_fired": false
+ },
+ "output_manifest": {
+  "file_count": 39,
+  "total_bytes": 33937673,
+  "digest": "af16587e46cd831f",
+  "simulation_tiff_count": 20,
+  "simulation_tiff_digest": "fcffb12a915e035e",
+  "files": [
+   {
+    "path": "output_folder/0_0/Kdown_0_0.tif",
+    "size": 1623790,
+    "sha256": "c888b53d354c6a2d6964450a4484bfe49a4f0f6353f0352187cd71e0baf18195"
+   },
+   {
+    "path": "output_folder/0_0/Kup_0_0.tif",
+    "size": 1623790,
+    "sha256": "0beac819abc4ec80bcad878a1ab93e7c1a17dce4478e195d0450b2da7e99593a"
+   },
+   {
+    "path": "output_folder/0_0/Ldown_0_0.tif",
+    "size": 1623790,
+    "sha256": "18c5e3de2c70853c57935ff257c14acb47a936b7222e1305a34a8aa379172381"
+   },
+   {
+    "path": "output_folder/0_0/Lup_0_0.tif",
+    "size": 1623790,
+    "sha256": "2b23c0a9cabc71d96cb329776a1d717540ab9e9fd8068da9560801b4a59bb7ca"
+   },
+   {
+    "path": "output_folder/0_0/Shadow_0_0.tif",
+    "size": 1623790,
+    "sha256": "8fa0b9672f583b576b79a22638969fd2f36acf4c0256767984412bb3eb964c1b"
+   },
+   {
+    "path": "output_folder/0_0/TMRT_0_0.tif",
+    "size": 1623790,
+    "sha256": "4d2db6b20a2b596fc8a1a4aede8672314580470795d5585f650361f2d895d9f5"
+   },
+   {
+    "path": "output_folder/0_0/Ta_0_0.tif",
+    "size": 1623790,
+    "sha256": "67f965e9e3bad265c1435219420a48bddba4b163de8725b75c300fb19830c6d9"
+   },
+   {
+    "path": "output_folder/0_0/UTCI_0_0.tif",
+    "size": 1623790,
+    "sha256": "d568bd4f8938563943e298778bb34c44aa3c97d331fb520f3766eafdaeb5a50a"
+   },
+   {
+    "path": "output_folder/0_0/WBGT_0_0.tif",
+    "size": 1623790,
+    "sha256": "773249775bc1f00b536047353ce10af4c80b2b8b47e9ed7b1b17dd215b56fbba"
+   },
+   {
+    "path": "output_folder/0_0/Wind_0_0.tif",
+    "size": 1623790,
+    "sha256": "f5fcc6f9e773c7fb6194f3be3f96bb3832255435368f5a7651b07709b3048ff4"
+   },
+   {
+    "path": "output_folder/1_0/Kdown_1_0.tif",
+    "size": 1623790,
+    "sha256": "35de59e2f0bb5e5d8e5be0c3b7167ddddea4f14ba2dc9ff482f9c913f38f8745"
+   },
+   {
+    "path": "output_folder/1_0/Kup_1_0.tif",
+    "size": 1623790,
+    "sha256": "d74ec57429501be75ca982d891279158d8f30d04fceeb4b7c2e0fabaaa7789da"
+   },
+   {
+    "path": "output_folder/1_0/Ldown_1_0.tif",
+    "size": 1623790,
+    "sha256": "e5672e4e05cbccc9606db65a791086dfeafffbd5772ad291dcb4bc13f3cf9c23"
+   },
+   {
+    "path": "output_folder/1_0/Lup_1_0.tif",
+    "size": 1623790,
+    "sha256": "275f0449464dd7dcfb317f497b5b8c3d391d46f2412e613d9574cd25df36ac6a"
+   },
+   {
+    "path": "output_folder/1_0/Shadow_1_0.tif",
+    "size": 1623790,
+    "sha256": "6a1e1f4b41959d8609cab0e93f23698f0c5d6ae957f04a0f01f72d6367d577a4"
+   },
+   {
+    "path": "output_folder/1_0/TMRT_1_0.tif",
+    "size": 1623790,
+    "sha256": "d6648d1ea834d10a47b8bdcec38d410b1f5ea7f9f725c8f70304eb17273b4767"
+   },
+   {
+    "path": "output_folder/1_0/Ta_1_0.tif",
+    "size": 1623790,
+    "sha256": "a5504512dc622ac506b5f836def48f463b31a3dfe02979e6727f2130620d5899"
+   },
+   {
+    "path": "output_folder/1_0/UTCI_1_0.tif",
+    "size": 1623790,
+    "sha256": "df7531707929c7a0f1e5e0316f5c3c53407df1ad667f87d427732f1a390788a6"
+   },
+   {
+    "path": "output_folder/1_0/WBGT_1_0.tif",
+    "size": 1623790,
+    "sha256": "65c25a0c20201c03ff140109c6d55a6d4b418636df3afc33a256264ac03081a5"
+   },
+   {
+    "path": "output_folder/1_0/Wind_1_0.tif",
+    "size": 1623790,
+    "sha256": "c4b03c7236220695e3f888b0dfedb369922a2ccea34778a8b6d351625ec479a2"
+   },
+   {
+    "path": "processed_inputs/Building_DSM/Building_DSM_0_0.tif",
+    "size": 65944,
+    "sha256": "e28b66df31c553a273b27ef12cd407d348291b955891cd4638c9a141f6080797"
+   },
+   {
+    "path": "processed_inputs/Building_DSM/Building_DSM_1_0.tif",
+    "size": 65944,
+    "sha256": "3fa1ffd651fe22ea31a3f717118ceee30f0d1674145bb51fcdea1c17950f4dde"
+   },
+   {
+    "path": "processed_inputs/DEM/DEM_0_0.tif",
+    "size": 65944,
+    "sha256": "07e60ecf82e0677128fd732636ea3d528f376fb65e1e1f05603a94b829d1038d"
+   },
+   {
+    "path": "processed_inputs/DEM/DEM_1_0.tif",
+    "size": 65944,
+    "sha256": "527721a6b72e6e4856f86a893e2df8f6cd2237670ed7e53700827134a74e2f88"
+   },
+   {
+    "path": "processed_inputs/SVF/SkyViewFactor_0_0.tif",
+    "size": 65944,
+    "sha256": "9d9cc31e9d6e99cf7735ff1abecb9c0019795fb364a6491acc395dabe7170e1f"
+   },
+   {
+    "path": "processed_inputs/SVF/SkyViewFactor_1_0.tif",
+    "size": 65944,
+    "sha256": "12029cf5706352804dfec241da03e487011d2c4639c584752be0bf7e0b5fd96e"
+   },
+   {
+    "path": "processed_inputs/SVF/shadowmats_0_0.npz",
+    "size": 219084,
+    "sha256": "f7f67fa1d4cd15b5dcd71aa6ccc5a54f99a54b415eaea64ffd6dae641b75dfac"
+   },
+   {
+    "path": "processed_inputs/SVF/shadowmats_1_0.npz",
+    "size": 217689,
+    "sha256": "0f6f15d38bbdcd4e9384e739322d4a56a44542f6158974017a6f5b95540992b0"
+   },
+   {
+    "path": "processed_inputs/SVF/svfs_0_0.zip",
+    "size": 109860,
+    "sha256": "95c26bad5ee1457a28868300c0e3bfa02ea7a08440c7ebc0918976463b72cc30"
+   },
+   {
+    "path": "processed_inputs/SVF/svfs_1_0.zip",
+    "size": 107084,
+    "sha256": "51b158c329ebe8eaf584d15aca2b7abec38428cc01e0276fc25213f4d730d174"
+   },
+   {
+    "path": "processed_inputs/Trees/Trees_0_0.tif",
+    "size": 65944,
+    "sha256": "238d36b7b378e1dd2ea45835d3e3374b3ed7b2451c1f121d337d2796f6e9b945"
+   },
+   {
+    "path": "processed_inputs/Trees/Trees_1_0.tif",
+    "size": 65944,
+    "sha256": "37b1cd24a79fb268079b18a86d184329509f6a6a5f24a007f11555028cd7a926"
+   },
+   {
+    "path": "processed_inputs/aspect/aspect_0_0.tif",
+    "size": 65944,
+    "sha256": "73951adc453bcbb81f82595683b49e1f768354b7a60582e70fb829152e92db14"
+   },
+   {
+    "path": "processed_inputs/aspect/aspect_1_0.tif",
+    "size": 65944,
+    "sha256": "9f42ab69dcdcc2d69f6f48acf2565bc5d0071e4b324f19b26be7b97ba849a765"
+   },
+   {
+    "path": "processed_inputs/metfiles/metfile_0_0.txt",
+    "size": 7569,
+    "sha256": "bc8ee6361071dd109649857127d6b777571e868bdb06db0e47968b39e99189e4"
+   },
+   {
+    "path": "processed_inputs/metfiles/metfile_1_0.txt",
+    "size": 7569,
+    "sha256": "bc8ee6361071dd109649857127d6b777571e868bdb06db0e47968b39e99189e4"
+   },
+   {
+    "path": "processed_inputs/walls/walls_0_0.tif",
+    "size": 65944,
+    "sha256": "be98bc6449b06b0bbfba1b81f93b86f4a4acd9f0fb1f640bd3ffdb6517fa1c63"
+   },
+   {
+    "path": "processed_inputs/walls/walls_1_0.tif",
+    "size": 65944,
+    "sha256": "6217d97699dd8cafab30cb19458bf92d77626d6b7a894f9e8ab8162a10dc14f1"
+   },
+   {
+    "path": "scene_manifest.json",
+    "size": 1690,
+    "sha256": "5777a7f19488ca00d445a61425a8b2f4ef31abf57a7eb027bc3dbbdbb964ca43"
+   }
+  ]
+ },
+ "versions": {
+  "python": "3.11.16",
+  "numpy": "2.4.6",
+  "numba": "0.67.0",
+  "llvmlite": "0.49.0",
+  "machine": "arm64",
+  "system": "Darwin"
+ },
+ "timing_s": {
+  "numpy_numba_import": 0.269,
+  "solweig_import": 1.495,
+  "child_total": 10.047
+ },
+ "peak_rss_bytes": 184221696,
+ "peak_rss_note": "macOS ru_maxrss is bytes; parent only (worker children not summed)",
+ "process": {
+  "pid": 72517
+ }
+}

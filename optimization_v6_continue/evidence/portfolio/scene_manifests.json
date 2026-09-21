@@ -1,0 +1,58 @@
+{
+ "scene_t128": {
+  "schema": "sw6-portfolio-scene-v1",
+  "dir": "/Users/alansynn/Workspace/solweig-light-claude-v5/optimization_v6_continue/evidence/portfolio/scenes/scene_t128",
+  "tile_size": [
+   128,
+   128
+  ],
+  "tiles": [
+   "0_0",
+   "1_0"
+  ],
+  "tile_distinction": "motif height/tree shift by tile index (deterministic, no RNG)",
+  "motif": "dense_urban 32-pixel motif (pinned p7 generator lineage), no RNG",
+  "met_source": "/Users/alansynn/Workspace/solweig-light-claude-v5/optimization_v5_claude/evidence/census/scene_dense256/processed_inputs/metfiles/metfile_0_0.txt",
+  "met_records_including_header": 25,
+  "epsg": 32618,
+  "sha256": {
+   "processed_inputs/DEM/DEM_0_0.tif": "07e60ecf82e0677128fd732636ea3d528f376fb65e1e1f05603a94b829d1038d",
+   "processed_inputs/Building_DSM/Building_DSM_0_0.tif": "e28b66df31c553a273b27ef12cd407d348291b955891cd4638c9a141f6080797",
+   "processed_inputs/Trees/Trees_0_0.tif": "238d36b7b378e1dd2ea45835d3e3374b3ed7b2451c1f121d337d2796f6e9b945",
+   "processed_inputs/metfiles/metfile_0_0.txt": "bc8ee6361071dd109649857127d6b777571e868bdb06db0e47968b39e99189e4",
+   "processed_inputs/DEM/DEM_1_0.tif": "527721a6b72e6e4856f86a893e2df8f6cd2237670ed7e53700827134a74e2f88",
+   "processed_inputs/Building_DSM/Building_DSM_1_0.tif": "3fa1ffd651fe22ea31a3f717118ceee30f0d1674145bb51fcdea1c17950f4dde",
+   "processed_inputs/Trees/Trees_1_0.tif": "37b1cd24a79fb268079b18a86d184329509f6a6a5f24a007f11555028cd7a926",
+   "processed_inputs/metfiles/metfile_1_0.txt": "bc8ee6361071dd109649857127d6b777571e868bdb06db0e47968b39e99189e4"
+  },
+  "layout": "processed_inputs/{Building_DSM,DEM,Trees,metfiles}; walls/aspect/SVF/cache are produced INSIDE the measured stages, pristine scene has none"
+ },
+ "scene_t256": {
+  "schema": "sw6-portfolio-scene-v1",
+  "dir": "/Users/alansynn/Workspace/solweig-light-claude-v5/optimization_v6_continue/evidence/portfolio/scenes/scene_t256",
+  "tile_size": [
+   256,
+   256
+  ],
+  "tiles": [
+   "0_0",
+   "1_0"
+  ],
+  "tile_distinction": "motif height/tree shift by tile index (deterministic, no RNG)",
+  "motif": "dense_urban 32-pixel motif (pinned p7 generator lineage), no RNG",
+  "met_source": "/Users/alansynn/Workspace/solweig-light-claude-v5/optimization_v5_claude/evidence/census/scene_dense256/processed_inputs/metfiles/metfile_0_0.txt",
+  "met_records_including_header": 25,
+  "epsg": 32618,
+  "sha256": {
+   "processed_inputs/DEM/DEM_0_0.tif": "85ab26fcec6fa193ca5d5d116eb1560c03b44d9f87c32dce0988b0d3ef29334e",
+   "processed_inputs/Building_DSM/Building_DSM_0_0.tif": "687655ed2122002eebc16214fa506537a433aec5ca12ef198572c8dc0bee430f",
+   "processed_inputs/Trees/Trees_0_0.tif": "30f9e56852cc59aa196df9ce281666612a63608ee14cef76ee698227128ccdfa",
+   "processed_inputs/metfiles/metfile_0_0.txt": "bc8ee6361071dd109649857127d6b777571e868bdb06db0e47968b39e99189e4",
+   "processed_inputs/DEM/DEM_1_0.tif": "5b07f1925a0034eac84b31c140c4a0ba3e756aaaa1fb443e00bdbe864c05a628",
+   "processed_inputs/Building_DSM/Building_DSM_1_0.tif": "737d8f8245cfa808c403417f6db2a3f6cfb9b62b599613c94825e471279f6e37",
+   "processed_inputs/Trees/Trees_1_0.tif": "f28cbe437a19f7912de9fd3292b6336620b90e91ec43738bfe6073b67358dff6",
+   "processed_inputs/metfiles/metfile_1_0.txt": "bc8ee6361071dd109649857127d6b777571e868bdb06db0e47968b39e99189e4"
+  },
+  "layout": "processed_inputs/{Building_DSM,DEM,Trees,metfiles}; walls/aspect/SVF/cache are produced INSIDE the measured stages, pristine scene has none"
+ }
+}

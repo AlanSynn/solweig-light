@@ -1,0 +1,36 @@
+{
+ "schema": "sw6-portfolio-decoder-probe-v1",
+ "size": [
+  256,
+  256
+ ],
+ "patches": 153,
+ "stride": 128,
+ "blocks": 512,
+ "repeat": 30,
+ "native_threads": 2,
+ "note": "single-lease dev tier, unrelated OS load recorded by scheduler; no statistical claims; warm JIT (compile excluded)",
+ "python": "3.11.16",
+ "numba": "0.67.0",
+ "numpy": "2.4.6",
+ "original_4x_decode_block": {
+  "best_ms": 236.70474998652935,
+  "mean_ms": 239.35172505443916
+ },
+ "prepared_decode": {
+  "best_ms": 288.828541059047,
+  "mean_ms": 294.86490272295976
+ },
+ "prepared_decode_caller_buffers": {
+  "best_ms": 288.8412500033155,
+  "mean_ms": 296.6374263128576
+ },
+ "prepare_only": {
+  "best_ms": 0.005249981768429279,
+  "mean_ms": 0.006497337017208338
+ },
+ "dropin_single_block": {
+  "best_ms": 0.5184159381315112,
+  "mean_ms": 0.5594750167801976
+ }
+}
