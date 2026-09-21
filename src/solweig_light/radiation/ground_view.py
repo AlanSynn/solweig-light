@@ -21,6 +21,7 @@ same accumulators one row block at a time (G03) and is internal until the
 integrator flips dispatch.
 """
 from functools import lru_cache
+from .gvf_postprocess import gvf_postprocess_block
 import numpy as np
 from numba import njit, prange
 
@@ -653,10 +654,15 @@ def _gvf_fused(wallsun, walls, buildings, scale, shadow, first, second, dirwalls
             row1 = min(row0 + block_rows, buildings.shape[0])
             block = np.empty((16, row1 - row0, buildings.shape[1]), dtype=np.float32)
             gather(row0, row1, buildings, shadow, sunwall, lup_snap, albshadow_snap, alb, lwall_snap, np.float32(albedo_b), bounds, kernel_first, block)
-            gvf_b, gvfLup_b, gvfalb_b, gvfalbnosh_b, gvf2_b = _postprocess_block(
-                tuple(block[index] for index in range(16)), buildings[row0:row1],
+            # C6-31: typed block postprocess wrapper; on any flagged case it
+            # restores planes 1/3/5 to the incoming bits and re-runs the
+            # untouched _postprocess_block on equivalent views, so the five
+            # returned fields and the in-place receiver-plane mutations keep
+            # their exact original semantics.
+            gvf_b, gvfLup_b, gvfalb_b, gvfalbnosh_b, gvf2_b = gvf_postprocess_block(
+                block, buildings[row0:row1],
                 facesh[row0:row1], lup_term[row0:row1], alb_term[row0:row1],
-                nosh_term[row0:row1], first_steps, second_steps)
+                nosh_term[row0:row1], first_steps, second_steps, parallel=True)
             gvfLup[row0:row1] += gvfLup_b
             gvfalb[row0:row1] += gvfalb_b
             gvfalbnosh[row0:row1] += gvfalbnosh_b

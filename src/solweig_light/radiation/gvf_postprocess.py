@@ -111,14 +111,21 @@ def gvf_postprocess_block(block, buildings_b, facesh_b, lup_term_b, alb_term_b, 
     Boundary contract (review C6-60 F4): ``block`` must be a
     ``(16, rows, cols)`` float32 array — the wrapper deliberately refuses
     (TypeError) anything else instead of silently producing float32 outputs
-    for an out-of-contract dtype. The rasters must be float32 as well, the
-    in-tree invariant (the fused-gather buffer and all engine rasters are
-    float32); only ``block`` is checked per call to keep the hot path free.
+    for an out-of-contract dtype. The term rasters must be float32 as well:
+    the typed kernel allocates float32 outputs, while the original promotes
+    its returns with the rasters (a float64 ``lup_term`` — reachable in the
+    fused route because ``SBC`` is outside ``_supported`` — makes the
+    original's ``gvfLup`` float64). An out-of-contract raster therefore
+    delegates to the original instead of downcasting; integration finding,
+    C6-70 (differential ``test_float64_derived_lup_conversion_preserved``).
     """
     if block.dtype != np.dtype(np.float32) or block.ndim != 3 or block.shape[0] != 16:
         raise TypeError(
             'gvf_postprocess_block requires a (16, rows, cols) float32 block, '
             f'got dtype={block.dtype} shape={block.shape}')
+    if any(np.asarray(raster).dtype != np.dtype(np.float32)
+           for raster in (buildings_b, facesh_b, lup_term_b, alb_term_b, nosh_term_b)):
+        return _reference_block(block, buildings_b, facesh_b, lup_term_b, alb_term_b, nosh_term_b, first, second)
     first_v = _step_scalar(first)
     second_v = _step_scalar(second)
     if first_v is None or second_v is None:

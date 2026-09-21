@@ -66,31 +66,35 @@ def test_lup_expression_single_evaluation_without_water():
 
 
 def test_operate_call_reduction():
-    # Aggregate repeated arithmetic: every numpy elementwise op in both
-    # routes flows through engine._operate. The prepared route removes the
-    # 17 once-per-direction expression trees; direction-dependent trees
-    # (azilow/azihigh/facesh) and the block postprocess remain per direction
-    # in both routes.
+    # Aggregate repeated arithmetic: every numpy elementwise op in the three
+    # routes flows through engine._operate. The prepared route (C6-30) removes
+    # the once-per-direction expression trees; its per-block postprocess stays
+    # NumPy. C6-70 wiring additionally moved the fused route's block
+    # postprocess into the typed kernel (gvf_postprocess_block, C6-31), which
+    # makes zero _operate calls, so the fused route — per-direction trees
+    # only — is now the leanest route. The per-direction tree reduction itself
+    # is pinned by the _lup_expression tests above (fused 36 vs prepared 2/1);
+    # this test pins the aggregate: the typed-postprocess fused route stays
+    # far below both the full route and the prepared route.
     from solweig_light.radiation import engine, gvf_prepared, ground_view
     scene = build_scene(64, 64, seed=65, water=True)
     counts = {}
-    for name in ('fused', 'prepared'):
+    for name in ('full', 'fused', 'prepared'):
         wrapper = Counting(engine._operate, '_operate', engine)
         with wrapper:
             with np.errstate(invalid='ignore', divide='ignore'):
-                if name == 'fused':
+                if name == 'full':
+                    ground_view._gvf(**snapshots(scene), parallel=True)
+                elif name == 'fused':
                     ground_view._gvf_fused(**snapshots(scene), parallel=True, block_rows=32)
                 else:
                     gvf_prepared.prepared_gvf_step(**snapshots(scene), parallel=True, block_rows=32)
         counts[name] = wrapper.count
-    assert counts['prepared'] < counts['fused'], counts
-    # The reduction spans the once-per-direction trees the preparation
-    # removes (Lup ~10 ops x36 evals, lup_term wrapper tree, Lwall ~9,
-    # albshadow, aspect, first/second, alb/nosh terms, post-loop sky x5),
-    # minus the once-per-call prepared evaluations. The precise Lup-tree
-    # reduction is pinned by the _lup_expression tests above; this floor
+    assert counts['fused'] < counts['prepared'], counts
+    # Measured gap fused vs full is 1313 at this shape (972 vs 2285): the
+    # typed postprocess plus the removed full-raster plane trees. The floor
     # stays far below the measured gap so only a real regression trips it.
-    assert counts['fused'] - counts['prepared'] >= 600, counts
+    assert counts['full'] - counts['fused'] >= 600, counts
 
 
 def test_per_direction_expressions_survive_for_direction_dependent_work():
