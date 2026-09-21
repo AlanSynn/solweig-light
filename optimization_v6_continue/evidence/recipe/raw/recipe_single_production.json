@@ -1,0 +1,63 @@
+{
+ "cached_fields_bitwise_equal_cold": {
+  "shmat": true,
+  "svf": true,
+  "svfE": true,
+  "svfEaveg": true,
+  "svfEveg": true,
+  "svfN": true,
+  "svfNaveg": true,
+  "svfNveg": true,
+  "svfS": true,
+  "svfSaveg": true,
+  "svfSveg": true,
+  "svfW": true,
+  "svfWaveg": true,
+  "svfWveg": true,
+  "svfaveg": true,
+  "svftotal": true,
+  "svfveg": true,
+  "vbshvegshmat": true,
+  "vegshmat": true
+ },
+ "commit": "e7a2d6ec8594b234820e7783e0ca26d821de7f3d",
+ "generations_for_key": [
+  "generation-a9e81b00d0ac46aab724e74cfb4ace16"
+ ],
+ "records": {
+  "route_pipeline": {
+   "digest": "9decf0c3fae2ee5c5a0d26c8bcdcf49f1786895c06794985b6629060c31c46b6",
+   "hit": false,
+   "key": "c3c750b72fdc2b877165b34fbc4c91dcdc212d6eed57b21a9f16198d6f9eed5c"
+  },
+  "route_standalone": {
+   "digest": "9decf0c3fae2ee5c5a0d26c8bcdcf49f1786895c06794985b6629060c31c46b6",
+   "export_identity": {
+    "construction": "standalone-svf-v1",
+    "exporter_implementation": {
+     "sha256": "standalone-wrapper-placeholder",
+     "size_bytes": 1
+    },
+    "numerical_recipe": {
+     "digest": "9decf0c3fae2ee5c5a0d26c8bcdcf49f1786895c06794985b6629060c31c46b6",
+     "policy": "common-numerical-geometry-v1"
+    },
+    "operation_policy": "overwrite-explicit-complete-set-validated-compare-v1"
+   },
+   "hit": true,
+   "key": "c3c750b72fdc2b877165b34fbc4c91dcdc212d6eed57b21a9f16198d6f9eed5c"
+  },
+  "warm_repeat": {
+   "hit": true,
+   "key": "c3c750b72fdc2b877165b34fbc4c91dcdc212d6eed57b21a9f16198d6f9eed5c"
+  }
+ },
+ "scene_inputs_sha256": {
+  "Building_DSM.tif": "f5091bee49e15d901a3855f9b904fe546d552a4a47c0c8d306a2673807d17f78",
+  "DEM.tif": "b58de75ebae6791b9e0c5769dea8e4ddf2e44b8fa3371f75f9289d18e63ba883",
+  "Trees.tif": "bfacf1e14961a708758992663b9ad962331df823255046f335ca9706055c7ed9",
+  "met.txt": "bc8ee6361071dd109649857127d6b777571e868bdb06db0e47968b39e99189e4"
+ },
+ "schema": "c6-10-recipe-single-production-v1",
+ "svf_producer_calls_total": 1
+}

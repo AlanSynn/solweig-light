@@ -1,0 +1,32 @@
+{
+ "commit": "e7a2d6ec8594b234820e7783e0ca26d821de7f3d",
+ "corruption": "forged_manifest",
+ "generations_after": [
+  "generation-01aa4719358d4c348eefd85d0c01602c",
+  "generation-77d6542f305a4308acbb9e8674acb9d7"
+ ],
+ "rebuild_hit": false,
+ "rebuilt_fields_bitwise_equal_reference": {
+  "shmat": true,
+  "svf": true,
+  "svfE": true,
+  "svfEaveg": true,
+  "svfEveg": true,
+  "svfN": true,
+  "svfNaveg": true,
+  "svfNveg": true,
+  "svfS": true,
+  "svfSaveg": true,
+  "svfSveg": true,
+  "svfW": true,
+  "svfWaveg": true,
+  "svfWveg": true,
+  "svfaveg": true,
+  "svftotal": true,
+  "svfveg": true,
+  "vbshvegshmat": true,
+  "vegshmat": true
+ },
+ "schema": "c6-10-recipe-corruption-v1",
+ "svf_producer_calls_after_corruption": 1
+}

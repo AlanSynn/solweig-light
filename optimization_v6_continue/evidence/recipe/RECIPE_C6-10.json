@@ -1,0 +1,98 @@
+{
+  "task": "C6-10",
+  "title": "Versioned common geometry recipe kills the duplicate cold geometry construction",
+  "worker": "C6-10 (numerical_implementer)",
+  "model_note": "routing: GLM via Z.ai; no other model identity claimed",
+  "worktree": "/Users/alansynn/Workspace/solweig-light-v6-recipe",
+  "base_commit": "5e1fab46",
+  "parity_base_commit": "e7a2d6ec8594b234820e7783e0ca26d821de7f3d",
+  "deliverables": {
+    "recipe_module": {
+      "path": "src/solweig_light/geometry/recipe.py",
+      "sha256": "56cf88da32d83fa4923fc367ea3e9948888ef95c39ac593cea058c83f096b6a5",
+      "policy": "common-numerical-geometry-v1"
+    },
+    "integration_patch": {
+      "path": "optimization_v6_continue/evidence/recipe/integration_patch_C6-10.diff",
+      "sha256": "886c07f6c2bd00851b07a0c84209f005a23c1178ec30e2b8544f1aab61ece26d",
+      "git_apply_check": "ok (verified against base service.py/pipeline.py)",
+      "targets": ["src/solweig_light/geometry/service.py (INTEGRATOR-OWNED)", "src/solweig_light/pipeline.py (INTEGRATOR-OWNED)"]
+    },
+    "tests": "tests/optimization_v6/geometry_recipe/ (8 tests)",
+    "evidence": "optimization_v6_continue/evidence/recipe/"
+  },
+  "design": {
+    "recipe": "GeometryRecipe = frozen identity dict (geometry_identity + policy override + implementation closure extended with geometry/service.py and geometry/recipe.py fingerprints), frozen via canonical-JSON round-trip; digest = sha256(canonical_json(identity)); source paths + real producer (normalize + svf_calculator_compact) attached; export_identity() carries construction/exporter_implementation/operation_policy SEPARATELY and never enters the native key.",
+    "guarantee": "both routes derive the same recipe -> same native key -> GeometryStore.get_or_create serves one construction cold, zero warm; producer is the only oracle.",
+    "pipeline_trust": "pipeline.py keeps its trusted-legacy branch by extending a COPY of the recipe identity (trusted_legacy=fingerprints); never mutates the shared recipe."
+  },
+  "gates": {
+    "gate1_source_bound_bitwise_parity": {
+      "verdict": "PASS",
+      "scenes": [
+        "reference 35x32 real scene (tests/reference/small_original_cpu/scene)",
+        "dense96 96x96 real-generator dense-urban motif"
+      ],
+      "per_field": "19/19 RESULT_NAMES bitwise equal for recipe_vs_standalone, recipe_vs_pipeline, standalone_vs_pipeline on both scenes",
+      "normalized_inputs": "clamped tree, vegdem(trees+dem), vegdsm(trees+a), vegdsm2, bush, amaxvalue, scale all bitwise equal",
+      "evidence": ["raw/parity_reference-35x32-real-scene.json", "raw/parity_dense96-96x96-real-generator-motif.json"]
+    },
+    "gate2_single_production": {
+      "verdict": "PASS",
+      "recipe_level": {
+        "test": "test_recipe_single_production.py::test_two_routes_one_shared_recipe_single_cold_production",
+        "result": "svf producer calls == 1 for BOTH routes through one shared recipe; second route hit=True producer_calls=0; warm repeat 0 productions; 1 generation on disk",
+        "evidence": "raw/recipe_single_production.json"
+      },
+      "end_to_end": {
+        "verdict": "PASS under LABELED INTEGRATION SIMULATION",
+        "simulation": "service half = exact diff post-image of geometry/service.py applied with git apply and loaded as pseudo-module; child half = identity-only patch (recipe_probe) making the tile worker derive numerical_geometry_recipe(...).identity, mirroring the diff's pipeline.py section; the child producer is the UNMODIFIED pipeline.py producer proven bitwise identical in gate 1; svf_calculator_compact only wrapped call-through",
+        "stages": {
+          "baseline_cold": "2 svf calls (standalone 1, pipeline 1), 2 distinct keys, both produced (reproduces census C6-02)",
+          "recipe_cold": "1 svf call TOTAL; standalone miss+produce (producer_calls=1), pipeline consult hit=True producer_calls=0; 1 shared key 7998d95e289bc799e50aa8c3b35a78ca531ac976c93e4d827e9cd2b9ca0cff0b, disjoint from both baseline keys",
+          "recipe_warm": "0 svf calls; store consult hit=True"
+        },
+        "output_parity": "baseline vs recipe outputs bitwise identical: output_folder/0_0 TIFF pixels AND bytes, SkyViewFactor TIFF, all svfs_0_0.zip members, all shadowmats_0_0.npz visibility channels",
+        "evidence": "raw/end-to-end/end_to_end_summary.json + raw/end-to-end/{baseline-cold,recipe-cold,recipe-warm}/",
+        "scope_statement": "proven: one cold production per tile with the integration patch's exact service post-image plus the identity-only child patch, on a real thermal_comfort run. NOT yet proven: production counts on unpatched integrator code; that requires the integrator to apply integration_patch_C6-10.diff at C6-70 and re-run the census. The parent-side post-image is the real patched code; the child-side patch is identity-only (producer is real pipeline code)."
+      }
+    },
+    "gate3_corruption_and_staleness": {
+      "verdict": "PASS",
+      "cases": {
+        "array_payload": "svf.npy byte flipped at offset 512 after publication -> not served as hit; real producer rebuilt once; fields bitwise equal to reference",
+        "visibility_payload": "shmat sidecar payload byte flipped at offset 256 -> rejected and rebuilt; bitwise equal",
+        "forged_manifest": "manifest patch_option rewritten to 999 with recomputed self-consistent digest -> still rejected by identity check; rebuilt; bitwise equal",
+        "stale_source": "Trees.tif content changed (same geometry metadata) -> new key, old generation preserved, no stale hit, producer re-ran once; svftotal changed 2488 px on this motif"
+      },
+      "evidence": ["raw/corruption_array_payload.json", "raw/corruption_visibility_payload.json", "raw/corruption_forged_manifest.json", "raw/stale_input.json"]
+    }
+  },
+  "test_runs": [
+    {"command": "PYTHONPATH=<worktree>/src NUMBA_NUM_THREADS=2 .venv-light/bin/python -m pytest tests/optimization_v6/geometry_recipe/ -q", "exit_code": 0, "result": "8 passed in 21.60s"},
+    {"command": "PYTHONPATH=<worktree>/src NUMBA_NUM_THREADS=2 .venv-light/bin/python -m pytest tests/unit/test_geometry_service.py tests/unit/test_identities.py tests/unit/test_geometry_cache.py -q", "exit_code": 0, "result": "80 passed, 2 warnings in 14.03s (base behavior untouched; 2 warnings are pre-existing zipfile UserWarnings from the cache test's own corruption fixtures)"},
+    {"command": "PYTHONPATH=<worktree>/src NUMBA_NUM_THREADS=2 .venv-light/bin/python -m pytest tests/optimization_v6/geometry_recipe/test_end_to_end_single_production.py -x -q", "exit_code": 0, "result": "1 passed in 16.34s"}
+  ],
+  "environment": {
+    "python": "/Users/alansynn/Workspace/solweig-light/.venv-light/bin/python (3.11.16)",
+    "thread_cap": "NUMBA_NUM_THREADS=2 set before numba imports; children additionally capped to 1 in runtime env",
+    "host": "contended development host, 8 sibling optimization workers; all wall times are development-tier records only - NO timing claims made",
+    "validation_tier": "L1/L2-small (<=256^2); no 1024 runs",
+    "fastmath": "not used; existing njit(cache=True) policy untouched; math profile imports reused; warnings and np.seterr behavior preserved"
+  },
+  "scope_and_integrity": {
+    "files_written": [
+      "src/solweig_light/geometry/recipe.py (NEW, owned)",
+      "tests/optimization_v6/geometry_recipe/* (owned)",
+      "optimization_v6_continue/evidence/recipe/* (evidence)"
+    ],
+    "untouched_integrator_files": ["src/solweig_light/geometry/service.py", "src/solweig_light/pipeline.py", "src/solweig_light/identities.py", "src/solweig_light/api.py", "src/solweig_light/cache/*"],
+    "mocks": "none for numerics; svf_calculator_compact only wrapped call-through to count invocations; service mocks limited to acquisition paths and labeled in test docstrings",
+    "git_status": "only owned untracked paths present; no branch created; no commit/push"
+  },
+  "unresolved": [
+    "Real end-to-end single-production on unpatched integrator code awaits diff application at C6-70 (integration_patch_C6-10.diff, git apply --check verified; the e2e test validates the service post-image at runtime).",
+    "Integration-applier note: when applying with 'git apply --directory <root>', the --include pattern must match the REWRITTEN path (e.g. '*src/solweig_light/geometry/service.py'); a non-matching pattern silently skips the patch with exit 0.",
+    "construction/standalone_implementation handling: the patch moves construction into the separate export identity and drops standalone_implementation from the native key; if the integrator wants to retain a standalone-implementation fingerprint anywhere, it belongs in export_identity.exporter_implementation (content_fingerprint of the service wrapper), which the diff already supplies."
+  ]
+}
