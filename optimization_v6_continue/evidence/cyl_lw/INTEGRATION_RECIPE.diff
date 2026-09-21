@@ -1,0 +1,85 @@
+# Integration recipe (PROPOSAL — engine.py and pipeline.py are integrator-owned)
+
+Worker C6-21 does not edit these files. The recipe below is the minimal
+mechanical wiring for the private module
+`src/solweig_light/radiation/cylinder_longwave.py`. Default demand is
+FULL_DIAGNOSTICS, so an engine-only integration changes nothing for existing
+callers; pipeline.py opts in to the primary profile for the private TIFF
+driver.
+
+Observable-scope boundary (proved in INDEPENDENCE_VERIFICATION.md): under
+PIPELINE_CYLINDERS_ANISOTROPIC the returned public fields `Least, Lsouth,
+Lwest, Lnorth` lose the Lcyl cardinal contributions (the `+=` sites are
+skipped via the sentinel guard). The private pipeline never reads these
+fields (pipeline.py:267-277); Tmrt/Ldown/Kup/Kdown/Lup/shadow and all carried
+state are unchanged. Under FULL_DIAGNOSTICS and under every guard-failure
+fallback (the reference returns real arrays, not the sentinel) behavior is
+byte-identical to today.
+
+--- a/src/solweig_light/radiation/engine.py
++++ b/src/solweig_light/radiation/engine.py
+@@ -1647,9 +1647,15 @@
+         if CI < 0.95:
+             esky_c = _operate(np.add, _operate(np.multiply, CI, esky), _operate(np.multiply, _operate(np.subtract, 1, CI), 1.0))
+             esky = esky_c
+-        Ldown, Lside, Least_, Lwest_, Lnorth_, Lsouth_ = Lcyl_v2022a(esky, L_patches, Ta, Tgwall, ewall, Lup, shmat, vegshmat, vbshvegshmat, altitude, azimuth, rows, cols, asvf)
++        from .cylinder_longwave import Lcyl_v2022a_by_demand, NOT_REQUESTED
++        from ..runtime import get_runtime_options
++        Ldown, Lside, Least_, Lwest_, Lnorth_, Lsouth_ = Lcyl_v2022a_by_demand(esky, L_patches, Ta, Tgwall, ewall, Lup, shmat, vegshmat, vbshvegshmat, altitude, azimuth, rows, cols, asvf, block_pixels=get_runtime_options().block_pixels, parallel=get_runtime_options().threads_per_worker > 1)
+@@ -1659,7 +1665,7 @@
+-    if cyl == 0 and anisotropic_sky == 1:
++    if cyl == 0 and anisotropic_sky == 1 and Least_ is not NOT_REQUESTED:
+         Least += Least_
+         Lwest += Lwest_
+         Lnorth += Lnorth_
+         Lsouth += Lsouth_
+@@ -1671,7 +1677,7 @@
+-    if cyl == 1 and anisotropic_sky == 1:
++    if cyl == 1 and anisotropic_sky == 1 and Least_ is not NOT_REQUESTED:
+         Least += Least_
+         Lwest += Lwest_
+         Lnorth += Lnorth_
+         Lsouth += Lsouth_
+
+Notes:
+- The unconditional `Lcyl_v2022a_by_demand` swap is behavior-identical under
+  the default FULL_DIAGNOSTICS demand: it forwards to the existing compiled
+  `patch_radiation.Lcyl_v2022a` with the same runtime block_pixels/parallel
+  the current wrapper used.
+- The sentinel identity guard also covers the fallback domain: unsupported
+  inputs make `Lcyl_v2022a_by_demand` return the serial reference's real
+  arrays, so the `+=` runs exactly as today.
+
+--- a/src/solweig_light/pipeline.py
++++ b/src/solweig_light/pipeline.py
+@@ -256,6 +256,10 @@
+         restored = writer.restore()
+         start = 0
+         if restored is not None:
+             start, state = restored
++        # Private demand profile: the pipeline consumes only the primary
++        # cylinder-longwave outputs; cardinal diagnostics are not requested
++        # (never zeros). No public signature or RuntimeOptions field changes.
++        from .radiation.cylinder_longwave import CylinderLongwaveDemand, set_demand
++        previous_demand = set_demand(CylinderLongwaveDemand.PIPELINE_CYLINDERS_ANISOTROPIC)
+         for i in range(start, len(timeline.met)):
+
+Notes:
+- The holder is a per-process module global; the pipeline timestep loop runs
+  inside the runtime worker process that executes Solweig_2022a_calc, so the
+  opt-in lands in the same process as the kernel dispatch. If the integrator
+  prefers scoped restoration, wrap the loop in
+  `cylinder_longwave.demand_scope(...)` instead (requires reindenting the
+  loop).
+- The demand flag must not be exported through RuntimeOptions.as_dict or any
+  public signature (D09); it is set programmatically by the private driver
+  only.
+
+Reviewer checklist (acceptance bundle, D09):
+1. Diff is confined to the one call site plus two `+=` guards in engine.py
+   and the opt-in in pipeline.py.
+2. Default demand run (FULL_DIAGNOSTICS) is byte-identical: covered by
+   tests/optimization_v6/cylinder_lw (by_demand dispatch and fallback tests).
+3. L2 whole-pipeline small real TIFF comparison remains the numerical
+   reviewer's gate for the wired state (census policy); this task's L1 scope
+   covers kernel and wrapper parity only.

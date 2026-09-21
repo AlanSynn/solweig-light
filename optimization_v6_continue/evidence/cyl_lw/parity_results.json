@@ -1,0 +1,418 @@
+{
+  "wrapper": [
+    {
+      "case": "schedule_0",
+      "rows": 16,
+      "cols": 16,
+      "parallel": false,
+      "block_pixels": 128,
+      "Ldown_bitwise": true,
+      "Lside_bitwise": true,
+      "cardinals_not_requested": true
+    },
+    {
+      "case": "schedule_0",
+      "rows": 16,
+      "cols": 16,
+      "parallel": true,
+      "block_pixels": 128,
+      "Ldown_bitwise": true,
+      "Lside_bitwise": true,
+      "cardinals_not_requested": true
+    },
+    {
+      "case": "schedule_1",
+      "rows": 16,
+      "cols": 16,
+      "parallel": false,
+      "block_pixels": 128,
+      "Ldown_bitwise": true,
+      "Lside_bitwise": true,
+      "cardinals_not_requested": true
+    },
+    {
+      "case": "schedule_1",
+      "rows": 16,
+      "cols": 16,
+      "parallel": true,
+      "block_pixels": 128,
+      "Ldown_bitwise": true,
+      "Lside_bitwise": true,
+      "cardinals_not_requested": true
+    },
+    {
+      "case": "schedule_2",
+      "rows": 16,
+      "cols": 16,
+      "parallel": false,
+      "block_pixels": 128,
+      "Ldown_bitwise": true,
+      "Lside_bitwise": true,
+      "cardinals_not_requested": true
+    },
+    {
+      "case": "schedule_2",
+      "rows": 16,
+      "cols": 16,
+      "parallel": true,
+      "block_pixels": 128,
+      "Ldown_bitwise": true,
+      "Lside_bitwise": true,
+      "cardinals_not_requested": true
+    },
+    {
+      "case": "schedule_3",
+      "rows": 16,
+      "cols": 16,
+      "parallel": false,
+      "block_pixels": 128,
+      "Ldown_bitwise": true,
+      "Lside_bitwise": true,
+      "cardinals_not_requested": true
+    },
+    {
+      "case": "schedule_3",
+      "rows": 16,
+      "cols": 16,
+      "parallel": true,
+      "block_pixels": 128,
+      "Ldown_bitwise": true,
+      "Lside_bitwise": true,
+      "cardinals_not_requested": true
+    },
+    {
+      "case": "schedule_4",
+      "rows": 16,
+      "cols": 16,
+      "parallel": false,
+      "block_pixels": 128,
+      "Ldown_bitwise": true,
+      "Lside_bitwise": true,
+      "cardinals_not_requested": true
+    },
+    {
+      "case": "schedule_4",
+      "rows": 16,
+      "cols": 16,
+      "parallel": true,
+      "block_pixels": 128,
+      "Ldown_bitwise": true,
+      "Lside_bitwise": true,
+      "cardinals_not_requested": true
+    },
+    {
+      "case": "zero_emissivity",
+      "rows": 16,
+      "cols": 16,
+      "parallel": false,
+      "block_pixels": 128,
+      "Ldown_bitwise": true,
+      "Lside_bitwise": true,
+      "cardinals_not_requested": true
+    },
+    {
+      "case": "zero_emissivity",
+      "rows": 16,
+      "cols": 16,
+      "parallel": true,
+      "block_pixels": 128,
+      "Ldown_bitwise": true,
+      "Lside_bitwise": true,
+      "cardinals_not_requested": true
+    },
+    {
+      "case": "ta_hot",
+      "rows": 16,
+      "cols": 16,
+      "parallel": false,
+      "block_pixels": 128,
+      "Ldown_bitwise": true,
+      "Lside_bitwise": true,
+      "cardinals_not_requested": true
+    },
+    {
+      "case": "ta_hot",
+      "rows": 16,
+      "cols": 16,
+      "parallel": true,
+      "block_pixels": 128,
+      "Ldown_bitwise": true,
+      "Lside_bitwise": true,
+      "cardinals_not_requested": true
+    },
+    {
+      "case": "visibility_all_zero",
+      "rows": 16,
+      "cols": 16,
+      "parallel": false,
+      "block_pixels": 128,
+      "Ldown_bitwise": true,
+      "Lside_bitwise": true,
+      "cardinals_not_requested": true
+    },
+    {
+      "case": "visibility_all_zero",
+      "rows": 16,
+      "cols": 16,
+      "parallel": true,
+      "block_pixels": 128,
+      "Ldown_bitwise": true,
+      "Lside_bitwise": true,
+      "cardinals_not_requested": true
+    },
+    {
+      "case": "block_schedule",
+      "rows": 16,
+      "cols": 16,
+      "parallel": true,
+      "block_pixels": 1,
+      "Ldown_bitwise": true,
+      "Lside_bitwise": true,
+      "cardinals_not_requested": true
+    },
+    {
+      "case": "block_schedule",
+      "rows": 16,
+      "cols": 16,
+      "parallel": true,
+      "block_pixels": 3,
+      "Ldown_bitwise": true,
+      "Lside_bitwise": true,
+      "cardinals_not_requested": true
+    },
+    {
+      "case": "block_schedule",
+      "rows": 16,
+      "cols": 16,
+      "parallel": true,
+      "block_pixels": 128,
+      "Ldown_bitwise": true,
+      "Lside_bitwise": true,
+      "cardinals_not_requested": true
+    },
+    {
+      "case": "block_schedule",
+      "rows": 16,
+      "cols": 16,
+      "parallel": true,
+      "block_pixels": 1000000,
+      "Ldown_bitwise": true,
+      "Lside_bitwise": true,
+      "cardinals_not_requested": true
+    },
+    {
+      "case": "lup_nonfinite",
+      "rows": 16,
+      "cols": 16,
+      "parallel": false,
+      "block_pixels": 128,
+      "Ldown_bitwise": true,
+      "Lside_bitwise": true,
+      "cardinals_not_requested": true
+    },
+    {
+      "case": "lup_nonfinite",
+      "rows": 16,
+      "cols": 16,
+      "parallel": true,
+      "block_pixels": 128,
+      "Ldown_bitwise": true,
+      "Lside_bitwise": true,
+      "cardinals_not_requested": true
+    }
+  ],
+  "kernel": [
+    {
+      "case": "lw_blocks_nonfinite",
+      "rows": 16,
+      "cols": 16,
+      "parallel": false,
+      "columns_0_6_bitwise": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": "lw_blocks_nonfinite",
+      "rows": 16,
+      "cols": 16,
+      "parallel": true,
+      "columns_0_6_bitwise": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": "lw_blocks_nonfinite",
+      "rows": 37,
+      "cols": 53,
+      "parallel": false,
+      "columns_0_6_bitwise": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": "lw_blocks_nonfinite",
+      "rows": 37,
+      "cols": 53,
+      "parallel": true,
+      "columns_0_6_bitwise": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": "lw_blocks_nonfinite",
+      "rows": 64,
+      "cols": 64,
+      "parallel": false,
+      "columns_0_6_bitwise": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": "lw_blocks_nonfinite",
+      "rows": 64,
+      "cols": 64,
+      "parallel": true,
+      "columns_0_6_bitwise": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": "lw_blocks_nonfinite",
+      "rows": 128,
+      "cols": 128,
+      "parallel": false,
+      "columns_0_6_bitwise": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": "lw_blocks_nonfinite",
+      "rows": 128,
+      "cols": 128,
+      "parallel": true,
+      "columns_0_6_bitwise": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    }
+  ],
+  "fused": [
+    {
+      "case": "packed_adversarial",
+      "rows": 16,
+      "cols": 16,
+      "parallel": false,
+      "columns_0_6_bitwise": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "case": "packed_adversarial",
+      "rows": 16,
+      "cols": 16,
+      "parallel": true,
+      "columns_0_6_bitwise": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    }
+  ],
+  "timing": [
+    {
+      "rows": 64,
+      "cols": 64,
+      "parallel": false,
+      "tier": "contended_development",
+      "claim": "none",
+      "full_warm_s": 0.00973854202311486,
+      "primary_warm_s": 0.005548291024751961
+    },
+    {
+      "rows": 64,
+      "cols": 64,
+      "parallel": true,
+      "tier": "contended_development",
+      "claim": "none",
+      "full_warm_s": 0.001783417072147131,
+      "primary_warm_s": 0.0012674159370362759
+    },
+    {
+      "rows": 128,
+      "cols": 128,
+      "parallel": false,
+      "tier": "contended_development",
+      "claim": "none",
+      "full_warm_s": 0.0397718750173226,
+      "primary_warm_s": 0.02237016602884978
+    },
+    {
+      "rows": 128,
+      "cols": 128,
+      "parallel": true,
+      "tier": "contended_development",
+      "claim": "none",
+      "full_warm_s": 0.0066832080483436584,
+      "primary_warm_s": 0.004112040973268449
+    }
+  ],
+  "all_passed": true,
+  "module_sha256": "37de63ded1696edb9085bc0f5517be9368abf9bf37a78a121de326f0eda21c74"
+}
