@@ -1,0 +1,53 @@
+{
+ "schema": "c5-41-portfolio-v1",
+ "scene": "/Users/alansynn/Workspace/solweig-light-claude-v5/optimization_v5_claude/evidence/census/scene_dense256",
+ "commit": "bfd9915e411e28bfe498d547e3c820a4de863ee2",
+ "measurement_class": "L3 central-lab diagnostic timing, warm in-process run_tile, min/median of 3, exclusive host lease required",
+ "configs": {
+  "source_default_t1_b128": {
+   "times_s": [
+    27.625,
+    20.728,
+    20.952
+   ],
+   "min_s": 20.728,
+   "median_s": 20.952
+  },
+  "t1_b1024": {
+   "times_s": [
+    20.762,
+    20.564,
+    20.572
+   ],
+   "min_s": 20.564,
+   "median_s": 20.572
+  },
+  "t4_b128": {
+   "times_s": [
+    23.0,
+    19.601,
+    19.532
+   ],
+   "min_s": 19.532,
+   "median_s": 19.601
+  },
+  "t4_b1024": {
+   "times_s": [
+    14.396,
+    14.472,
+    14.721
+   ],
+   "min_s": 14.396,
+   "median_s": 14.472
+  },
+  "t2_b1024": {
+   "times_s": [
+    14.515,
+    14.624,
+    14.515
+   ],
+   "min_s": 14.515,
+   "median_s": 14.515
+  }
+ }
+}
