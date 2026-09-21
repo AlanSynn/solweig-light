@@ -76,6 +76,26 @@ def mapped_roundtrip(tmp_path, channel, name='channel'):
     return open_native_visibility(path)
 
 
+@pytest.fixture(autouse=True)
+def _prepared_route_on(request):
+    """Arm the opt-in prepared route for this suite.
+
+    C6-81 gated ``prepare_channels`` behind SOLWEIG_LIGHT_PREPARED_VIS=1
+    (default OFF after the C6-80 measured regression). The decoder suite
+    validates the prepared route itself, so every test runs with the
+    variable set except the default-off pin, which removes it explicitly.
+    """
+    if request.node.get_closest_marker('prepared_default_off') is not None:
+        yield
+        return
+    monkey = pytest.MonkeyPatch()
+    monkey.setenv('SOLWEIG_LIGHT_PREPARED_VIS', '1')
+    try:
+        yield
+    finally:
+        monkey.undo()
+
+
 @contextlib.contextmanager
 def retained_route():
     """Pin the fused route OFF for the duration of one test.

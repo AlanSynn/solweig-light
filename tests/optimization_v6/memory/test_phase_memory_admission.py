@@ -477,9 +477,9 @@ def test_module_is_inert_until_wired():
 
     Integrated-tree form (C6-70): wiring is real, so the importer set is
     pinned to exactly the intended wiring points — api.py (W1 simulation
-    admission) and runtime.py (W3 GDAL_CACHEMAX cap).  service.py (W2
-    geometry-phase admission) is deliberately deferred to the C6-40 phase
-    adapter per m7 §3; when it lands, extend this pin."""
+    admission), runtime.py (W3 GDAL_CACHEMAX cap) and, since the C6-40
+    landing, runtime_phases.py (the sanctioned geometry-phase adapter that
+    took over the deferred W2 admission).  No other src importer is legal."""
     code = (
         "import sys; sys.path.insert(0, " + repr(str(SRC)) + "); "
         "import solweig_light.runtime; "
@@ -498,7 +498,8 @@ def test_module_is_inert_until_wired():
         if path.name != "runtime_memory.py"
         and "runtime_memory" in path.read_text(encoding="utf-8")
     )
-    assert importers == ["api.py", "runtime.py"], f"unexpected importers in src: {importers}"
+    assert importers == ["api.py", "runtime.py", "runtime_phases.py"], (
+        f"unexpected importers in src: {importers}")
 
 
 def test_shape_from_building_dsm_missing_file_raises_explicitly():

@@ -56,6 +56,7 @@ This module is PRIVATE to the v6 radiation demand. Exporters, the geometry
 service verifier and every public codec entry are unaffected; implicit dense
 conversion does not exist here.
 """
+import os
 from contextlib import ExitStack
 from dataclasses import dataclass
 
@@ -305,13 +306,30 @@ def _diffuse_slot(shadow, vegetation, diffuse):
     return None
 
 
+def _prepared_enabled():
+    """Prepared route is opt-in: SOLWEIG_LIGHT_PREPARED_VIS=1, default OFF.
+
+    C6-80 portfolio re-measurement (evidence/portfolio/decoder_probe/) showed
+    the one-entry prepared decode at +21-24% per full-frame sweep versus the
+    per-channel entries at both timing shapes and both block strides -- the
+    preflight scan does not amortize with size, so the dispatch hooks keep
+    the original per-channel decode armed unless the environment explicitly
+    requests the prepared path (exactness/memory-profile adoption case only).
+    """
+    return os.environ.get('SOLWEIG_LIGHT_PREPARED_VIS') == '1'
+
+
 def prepare_channels(shadow, vegetation, vegetation_building, diffuse=None):
     """Prepare the demanded channels for one-pass decode, or return None.
 
     Pure admission: never raises, never fires an original error checkpoint,
     and never copies payload bytes. ``None`` means the caller must run the
-    original per-channel decode path in full.
+    original per-channel decode path in full. The prepared route itself is
+    opt-in (``_prepared_enabled``); declined admission is indistinguishable
+    from unsupported inputs and the caller falls back completely.
     """
+    if not _prepared_enabled():
+        return None
     base = []
     for channel in (shadow, vegetation, vegetation_building):
         # Base channels must satisfy decode_block's direct single-leaf packed
