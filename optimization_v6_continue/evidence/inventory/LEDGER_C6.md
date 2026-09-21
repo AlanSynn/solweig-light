@@ -65,6 +65,8 @@ Reviewer recompute: 541 + 35 scoped tests green on the integrated tree.
 | C6-101 single campaign | **REOPENED as C6-101r (synthetic)** — user authorized 2026-09-21: synthetic dummy multi-tile 1024² targets allowed for full-workload verification + in-sim residual measurement (C6-81 reopened). Actual 24-tile dataset still absent; every number stays labeled SYNTHETIC dev-tier |
 | C6-102 audit → C6-103 handover | C6-102 **DONE — CLEAN-WITH-NOTES** (independent GLM audit; Opus unavailable; evidence/final_review/C6-102_audit.md). C6-103 **DONE — APPROVE-WITH-NOTES** (independent GLM review; Opus unavailable; evidence/reviews/C6-103_review_handover.md; N1–N3 fixed at landing 6152864f-series). C6-103 record predates C6-101r; handover will be supplemented by the C6-101r campaign record |
 
+| C6-104 branch rename+push | **DONE** — user-authorized 2026-09-21: branch renamed perf/claude-glm53-cpu-v5 → perf/cpu-optimization (tip unchanged 30624e02) and pushed to origin; old remote ref deleted; evidence/integration/BRANCH_RENAME.md |
+
 Standing facts: routing = GLM via Z.ai, Opus unavailable (INVENTORY_C6-00.md).
 24-tile target dataset still absent (synthetic 24-tile load = load test, not
 actual-target claim). Exclusive benchmark lease starts at C6-80; wave-1 worker
