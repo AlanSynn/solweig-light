@@ -1,0 +1,21 @@
+C6-31 sha256 record (shasum -a 256), worktree at base 5e1fab467f7e6038dcf3992cb694008a51ea2c58
+
+Post-C6-60-review-fix hashes (F1 scoping + underflow pin test, F2 recipe regen,
+F3 timing run2, F4 f32 boundary guard) — supersedes the pre-review list:
+
+450422e546a413e48c7fcaea7d93d4f2f48c78ff334dc1be7a994470b510cbfb  src/solweig_light/radiation/gvf_postprocess.py
+88a974bb183d1de003ee649bc75f512657e37719905abb2e58f14247d0563544  tests/optimization_v6/gvf_postprocess/conftest.py
+c90d9cbc054870b50590db4f16d11c52ce4ca971deaf7e8f8c116766df43dae4  tests/optimization_v6/gvf_postprocess/_cases.py
+bd41285ae9f524f9851f20016ce0db4177dcb5548bb9249755be72ee56e0cd39  tests/optimization_v6/gvf_postprocess/test_gvf_postprocess_parity.py
+e4094c7c1b8aa053f5acc52d7f039948b5c87b5e9fe20c74ceae8305c0e3f69c  optimization_v6_continue/evidence/gvf_post/parity_harness.py
+7095492a1e4e4c22a70f798d497d8a2acdeae3eb64739edd67440d72030c8f58  optimization_v6_continue/evidence/gvf_post/bench_postprocess.py
+
+Pre-review hashes, kept for the review trail:
+
+61ca94e7d89407f2fd407a3190a2214e1b7fedba9e715c79764d983017b62141  src/solweig_light/radiation/gvf_postprocess.py
+0bbe703db07e31de60c001b504ef2eebd939d0d5f6ffe99c80465a18e0ecee68  tests/optimization_v6/gvf_postprocess/_cases.py
+491ce9b987d96e4d4eaf6d8fdcc0dec2fdd674e189c01df19856ac17881a256d  tests/optimization_v6/gvf_postprocess/test_gvf_postprocess_parity.py
+
+Environment: Python 3.11.16, numpy 2.4.6, numba 0.67.0, Darwin arm64.
+Untouched integrator-owned files at this base are verified by the base commit
+itself; ground_view.py and engine.py were not modified by C6-31.
