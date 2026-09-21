@@ -1,0 +1,58 @@
+# C6-42 commands, exit codes, hashes
+# Revision 3 (2026-09-21): C6-42 review fixes applied — patch regenerated via git diff
+# (passes git apply --check), block_pixels forwarded at W1/W2, visibility_mode/
+# export_overlap validated+forwarded, m7 interval [3.4742, 4.8320) GiB corrected,
+# width-3 narrowing reworded, parent GDAL caching documented, counts updated.
+# Base 5e1fab46; only owned paths written; no branch/commit made.
+
+## 1. Full module test suite
+$ PYTHONPATH=src /Users/alansynn/Workspace/solweig-light/.venv-light/bin/python -m pytest tests/optimization_v6/memory/ -q  (cwd: repo root)
+31 passed, 1 warning in 0.65s
+
+## 2. Decision-table probe (writes m6_admission_decision_table.json; deterministic — sha256 798ce48d… stable across runs, byte-identical to rev 2)
+$ /Users/alansynn/Workspace/solweig-light/.venv-light/bin/python optimization_v6_continue/evidence/mem_adm/m6_decision_probe.py
+wrote /Users/alansynn/Workspace/solweig-light-v6-memadm/optimization_v6_continue/evidence/mem_adm/m6_admission_decision_table.json
+  12GiB sim x4 queue                           queued    admissible=2 deferred=2 tree=11913422438
+  12GiB sim x4 reject                          rejected  requested 4 concurrent phase jobs but only 2 fit: the 4 largest reservations sum to 22,967,851,416 B against a
+  12GiB sim x3 queue (C6-60 F6)                queued    admissible=2 deferred=1 tree=11913422438
+  12GiB sim x3 reject (C6-60 F6)               rejected  requested 3 concurrent phase jobs but only 2 fit: the 3 largest reservations sum to 17,225,888,562 B against a
+  12GiB geo+sim 2x2                            admitted  admissible=2 deferred=0 tree=10930316902
+  12GiB geo x4 queue                           queued    admissible=2 deferred=2 tree=9947211366
+  12GiB pre x4 queue                           admitted  admissible=4 deferred=0 tree=11126649650
+  16GiB sim x4 queue                           queued    admissible=2 deferred=2 tree=11913422438
+  16GiB sim x4 reject (4x1 default-budget)     rejected  requested 4 concurrent phase jobs but only 2 fit: the 4 largest reservations sum to 22,967,851,416 B against a
+  12GiB sim x4 queue + 1GiB writer queue       queued    admissible=1 deferred=3 tree=7245201408
+  8GiB sim x4 queue                            queued    admissible=1 deferred=3 tree=6171459584
+  5.5GiB sim x1 queue (infeasible)             rejected  simulation job simulation_0 (1024x1024, patches=153) needs about 5,741,962,854 B but only 5,476,083,302 B of t
+exit=0
+
+## 3. Inert check
+$ ... pytest tests/optimization_v6/memory/test_phase_memory_admission.py::test_module_is_inert_until_wired -q
+1 passed in 0.11s
+
+## 4. Proposed-patch validation (C6-42 review fix 1)
+$ git apply --check -v optimization_v6_continue/evidence/mem_adm/m7_phase_admission_wiring.proposed.patch
+Checking patch src/solweig_light/api.py...
+Checking patch src/solweig_light/geometry/service.py...
+Checking patch src/solweig_light/runtime.py...
+exit=0
+$ git apply --stat optimization_v6_continue/evidence/mem_adm/m7_phase_admission_wiring.proposed.patch
+ src/solweig_light/api.py              |   24 ++++++++++++++++++++++++
+ src/solweig_light/geometry/service.py |   23 +++++++++++++++++++++++
+ src/solweig_light/runtime.py          |    6 ++++++
+ 3 files changed, 53 insertions(+)
+
+## 5. sha256 of deliverables (revision 3)
+9aa2bceec7bfb13f7fae283c380d0be3383b67bbff0d6ea764e9ac17c679af23  src/solweig_light/runtime_memory.py
+edac024388c271363ba21551f7c0cc125b65580cb06b0ed3d5266b3d72af5593  tests/optimization_v6/memory/test_phase_memory_admission.py
+2613aa7ca785edcb45da43507034fe713684f0b7d8dee9d7cc8510f244469aeb  optimization_v6_continue/evidence/mem_adm/m6_decision_probe.py
+798ce48dab3f2c2440eee3fda64040fd16d0d9005f4c1c452f4a61de117b1d8e  optimization_v6_continue/evidence/mem_adm/m6_admission_decision_table.json
+784304638ddde15f3b9b652ec1c84ee2139cf356adda32265f404b409a77c702  optimization_v6_continue/evidence/mem_adm/m5_phase_inventory_and_calculator.md
+7f40a359fd15afe68ed78f83ed8d7c5dbbc23e357f876b4b73c0bdc45f6d4047  optimization_v6_continue/evidence/mem_adm/m7_integration_recipe.md
+a27ee30504cb2feb19ae1cbc5bba0f6e70456bc2f42b01d113a336b25dc081ad  optimization_v6_continue/evidence/mem_adm/m7_phase_admission_wiring.proposed.patch
+
+## 6. Tree state (untracked deliverables only)
+?? optimization_v6_continue/evidence/mem_adm/
+?? src/solweig_light/runtime_memory.py
+?? tests/optimization_v6/memory/
+5e1fab467f7e6038dcf3992cb694008a51ea2c58
