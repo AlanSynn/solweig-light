@@ -243,8 +243,12 @@ def _direction_snapshot(prepared, Lup, albshadow, Lwall, shape):
     Lup is evaluated before ``Tg[lc_grid == 3] = ...``, so direction 0 owns a
     pre-mutation snapshot and directions 2..18 share one post-mutation snapshot
     (the mutation rewrites one constant onto fixed cells, so their Lup values
-    are bitwise identical). Lwall/albshadow are evaluated after that mutation in
-    every direction, so a single snapshot covers all 18. Lup/Lwall/albshadow
+    are bitwise identical). albshadow reads only alb_grid/shadow, which _gvf's
+    alias gate keeps Tg-free, so its value is direction-invariant. Lwall reads
+    the call-start ewall copy inside _sun, so it is only direction-invariant
+    when ewall does not alias Tg — the gate routes such calls to the
+    per-direction path before this snapshot is ever built (Tgwall is read live
+    at Lwall-eval time, after the mutation, and needs no gate). The snapshots
     are freshly allocated operator outputs that nothing writes afterwards, so
     converting them once is exact.
     """
@@ -430,7 +434,13 @@ def _gvf(wallsun, walls, buildings, scale, shadow, first, second, dirwalls, Tg, 
     # Lup evaluation and the gather, and if Tg shares memory with any caller
     # array that the snapshots would capture or that the postprocessing rereads
     # (buildings/shadow/alb_grid), the exact per-direction path stays in charge.
-    if any(np.may_share_memory(Tg, value) for value in (buildings, shadow, alb_grid)):
+    # ewall belongs to that set as well (C5-32 F1 follow-up): _sun copies it at
+    # the top of every direction, before that direction's water mutation, so
+    # with a Tg alias direction 1's Lwall differs from directions 2..18's and
+    # the single call-owned lwall snapshot would freeze direction 1's value.
+    # Tgwall needs no gate: _sun reads it live at Lwall-eval time, after the
+    # mutation, so its aliased Lwall is already direction-invariant.
+    if any(np.may_share_memory(Tg, np.asarray(value)) for value in (buildings, shadow, alb_grid, ewall)):
         prepared = None
     else:
         buildings = np.array(buildings, dtype=np.float32, copy=True)
@@ -537,8 +547,13 @@ def _gvf_fused(wallsun, walls, buildings, scale, shadow, first, second, dirwalls
     planes per direction and stays the diagnostic/reference path; this route
     consumes the same ray accumulators one row block at a time and updates the
     final total/cardinal outputs in original direction order. Guards union
-    _gvf's and _sun's own conditions; anything unsupported delegates to _gvf,
-    which keeps the exact fallback and per-direction behavior. Direction-level
+    _gvf's and _sun's own conditions plus a Tg-alias check on every input the
+    baseline re-reads per direction: buildings/shadow/alb_grid aliases keep
+    per-direction conversion over the live arrays, while walls/scale/ewall/
+    albedo_b/landcover aliases delegate to _gvf, which keeps the exact
+    fallback and per-direction behavior (Tgwall aliases stay on this route:
+    the per-direction Lwall reads Tgwall live, matching the baseline).
+    Direction-level
     expression evaluations (Lup, water mutation, Lwall, albshadow, azilow/
     azihigh, facesh, postprocessed terms) keep their original places relative
     to the Tg mutation; only the 16 full-raster per-direction planes become
@@ -548,6 +563,18 @@ def _gvf_fused(wallsun, walls, buildings, scale, shadow, first, second, dirwalls
         return _gvf(wallsun, walls, buildings, scale, shadow, first, second, dirwalls, Tg, Tgwall, Ta, emis_grid, ewall, alb_grid, SBC, albedo_b, rows, cols, Twater, lc_grid, landcover, parallel=parallel)
     if not np.isfinite(np.asarray(first)).all() or not np.isfinite(np.asarray(second)).all() or float(np.round(_operate(np.multiply, second, scale)))<=0:
         # _sun falls back for every direction; the full route reproduces that.
+        return _gvf(wallsun, walls, buildings, scale, shadow, first, second, dirwalls, Tg, Tgwall, Ta, emis_grid, ewall, alb_grid, SBC, albedo_b, rows, cols, Twater, lc_grid, landcover, parallel=parallel)
+    if any(np.may_share_memory(Tg, np.asarray(value)) for value in (walls, scale, ewall, albedo_b, landcover)):
+        # C5-32 F1: wallbol (walls), Lwall's ewall, the water test's
+        # landcover and the step counts' scale are re-copied by the baseline
+        # at the top of every direction, so a Tg alias lets the water
+        # mutation rewrite them mid-loop while the once-per-call copies below
+        # would freeze the direction-1 values (demonstrated: scale aliased
+        # into a Tg water cell raises RuntimeError in _build_schedule on the
+        # live route but completes silently on frozen copies). The full route
+        # reads them live; hand the call over. Tgwall is excluded on purpose:
+        # the baseline reads it live at Lwall-eval time, so the fused route's
+        # per-direction Lwall keeps aliased calls exact without delegation.
         return _gvf(wallsun, walls, buildings, scale, shadow, first, second, dirwalls, Tg, Tgwall, Ta, emis_grid, ewall, alb_grid, SBC, albedo_b, rows, cols, Twater, lc_grid, landcover, parallel=parallel)
     block_rows = max(1, int(block_rows))
     azimuthA = np.arange(5, 359, 20, dtype=np.float32)

@@ -128,6 +128,40 @@ def test_gvf_scalar_float64_tgwall_broadcast_conversion():
     run_both_gvf(scene, parallel=True)
 
 
+@pytest.mark.parametrize('alias_key', ['ewall', 'Tgwall'])
+def test_gvf_aliased_lwall_input_keeps_per_direction_route(alias_key):
+    # C5-32 F1 follow-up, found while fixing the fused admission gate. _sun
+    # copies ewall at the top of every direction, before that direction's
+    # water mutation, so with Tg aliased to ewall, direction 1's Lwall differs
+    # from directions 2..18's and the call-owned lwall snapshot would freeze
+    # direction 1's value — this reproduces against the G02 route itself, not
+    # only the fused route — so the prepared-snapshot gate must route ewall
+    # aliases to the exact per-direction path. Tgwall is the contrast case:
+    # _sun reads it live at Lwall-eval time, after the mutation, so its
+    # aliased Lwall is direction-invariant and the snapshot path stays exact;
+    # the clause pins that this remains true.
+    scene = build_scene(22, 18, seed=73, water=True)  # odd seed: Tgwall is a float32 raster
+
+    def aliased_scene():
+        local = snapshots(scene)
+        shared = scene['Tg'].copy()
+        local['Tg'] = shared
+        local[alias_key] = shared
+        return local
+
+    ref_scene = aliased_scene()
+    new_scene = aliased_scene()
+    fused_scene = aliased_scene()
+    with np.errstate(invalid='ignore', divide='ignore'):
+        expected = reference._gvf(**ref_scene, parallel=False)
+        actual = ground_view._gvf(**new_scene, parallel=False)
+        fused = ground_view._gvf_fused(**fused_scene, parallel=False)
+    assert_exact(ref_scene['Tg'], new_scene['Tg'], 'Tg after the call')
+    assert_exact(ref_scene['Tg'], fused_scene['Tg'], 'fused Tg after the call')
+    assert_gvf_outputs(actual, expected)
+    assert_gvf_outputs(fused, expected)
+
+
 @pytest.mark.parametrize('alias_key', ['shadow', 'buildings', 'alb_grid'])
 def test_gvf_aliased_tg_keeps_exact_per_direction_route(alias_key):
     # Tg sharing memory with a snapshotted input must keep the legacy
@@ -379,6 +413,90 @@ def test_gvf_fused_delegates_sun_level_guards():
     if expected[0] == 'ok':
         for actual in (outcome(ground_view._gvf, scene), outcome(ground_view._gvf_fused, scene)):
             assert_gvf_outputs(actual[1], expected[1])
+
+
+def test_gvf_fused_scale_aliased_into_tg_water_cell_delegates():
+    # C5-32 F1 regression (reviewer probe): scale is a 0-d view into a Tg
+    # water cell. The baseline re-reads scale every direction, so the water
+    # mutation rewrites it (Twater - Ta = 274.0) and _build_schedule then
+    # raises RuntimeError on the exploded step count. A fused route that
+    # froze the pre-mutation scale completes silently — the observable
+    # difference the gate must remove — so the gate hands the call to the
+    # full route and the raise happens identically everywhere.
+    scene = build_scene(22, 18, seed=67, water=True)
+    scene['Tg'][:] = np.float32(3.0)  # small enough that the frozen scale keeps a valid schedule
+    row, col = np.argwhere(scene['lc_grid'] == 3)[0]
+    mutated = np.float32(scene['Twater'] - scene['Ta'])
+    assert mutated != np.float32(3.0)
+
+    def aliased_scene():
+        local = snapshots(scene)
+        shared = scene['Tg'].copy()
+        local['Tg'] = shared
+        local['scale'] = shared[row:row + 1, col:col + 1].reshape(())
+        assert np.may_share_memory(local['scale'], local['Tg'])
+        return local
+
+    # Non-vacuity: the water mutation really travels through the alias.
+    scratch = aliased_scene()
+    scratch['Tg'][scratch['lc_grid'] == 3] = mutated
+    assert float(scratch['scale']) == float(mutated)
+    # Non-vacuity of the divergence: with scale frozen at the pre-mutation
+    # value the fused route completes (this is what pre-gate _gvf_fused did).
+    witness = snapshots(scene)
+    witness['scale'] = np.float32(3.0)
+    with np.errstate(invalid='ignore', divide='ignore'):
+        ground_view._gvf_fused(**witness, parallel=False)
+        for call in (reference._gvf, ground_view._gvf, ground_view._gvf_fused):
+            with pytest.raises(RuntimeError, match='source/destination'):
+                call(**aliased_scene(), parallel=False)
+
+
+@pytest.mark.parametrize('alias_key,fill', [
+    ('scale', 3.0),      # 0-d water-cell view: frozen copy keeps a valid schedule, live route raises
+    ('walls', -5.0),     # wallbol flips where the water mutation lands
+    ('ewall', None),     # Lwall's emission tracks the mutated cells live
+    ('albedo_b', None),  # gather albedo scalar tracks the mutated cell live
+    ('landcover', 3.0),  # water test reads the cell live every direction
+    ('Tgwall', None),    # read live at Lwall-eval time: exact without delegation
+])
+def test_gvf_fused_per_direction_read_aliases_delegate(alias_key, fill):
+    # C5-32 F1: the fused route copies walls/scale/ewall/albedo_b/landcover
+    # once per call while the baseline re-reads them every direction, so any
+    # Tg alias would diverge after the water mutation (silently or by
+    # raising). The alias gate must route these calls to the full route:
+    # whatever the baseline does with the alias, the fused route must match.
+    scene = build_scene(22, 18, seed=71, water=True)
+    if fill is not None:
+        scene['Tg'][:] = np.float32(fill)
+    row, col = np.argwhere(scene['lc_grid'] == 3)[0]
+
+    def aliased_scene():
+        local = snapshots(scene)
+        shared = scene['Tg'].copy()
+        local['Tg'] = shared
+        if np.asarray(scene[alias_key]).ndim == 0:
+            local[alias_key] = shared[row:row + 1, col:col + 1].reshape(())
+        else:
+            local[alias_key] = shared
+        assert np.may_share_memory(local[alias_key], local['Tg'])
+        return local
+
+    def outcome(function):
+        try:
+            with np.errstate(invalid='ignore', divide='ignore'):
+                local = aliased_scene()
+                return ('ok', function(**local, parallel=False), local['Tg'])
+        except Exception as error:
+            return ('raise', type(error))
+
+    expected = outcome(reference._gvf)
+    assert outcome(ground_view._gvf)[0] == expected[0]
+    actual = outcome(ground_view._gvf_fused)
+    assert actual[0] == expected[0]
+    if expected[0] == 'ok':
+        assert_gvf_outputs(actual[1], expected[1])
+        assert_exact(actual[2], expected[2], 'aliased Tg after')
 
 
 def test_gvf_fused_float64_rasters_delegate():
