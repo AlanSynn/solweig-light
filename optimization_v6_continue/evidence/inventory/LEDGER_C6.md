@@ -23,8 +23,8 @@ integrator commits. Base of record for wave-1 workers: `5e1fab46`.
 | v6-cylsw | C6-22 | radiation/cylinder_shortwave.py | **LANDED 99681b53** (APPROVE-WITH-NOTES; prose corrections 9/4 cases, totals 823/739; C6-70 note: consider decline when _fused_enabled()) |
 | v6-gvfprep | C6-30 | radiation/gvf_prepared.py | **LANDED 986c5a09** (APPROVE-WITH-NOTES; snapshot semantics + counts independently verified; 160/160) |
 | v6-gvfpost | C6-31 | radiation/gvf_postprocess.py | **LANDED d7eb148d** (APPROVE-WITH-NOTES post-fix; 139/139; recipe regenerated from verbatim base call site) |
-| v6-phases | C6-40 | runtime_phases.py | **in flight** (dispatched at 4b83452b; unblocked by C6-10+C6-03) |
-| v6-decoder | C6-50 | geometry/visibility_prepared.py | worker DELIVERED (95/95; precedence exact; NOTE: prepared slower on dev tier 71.6 vs 58.1 ms — re-measure at C6-80 before adoption); **C6-60 in flight (v6-rev650)** |
+| v6-phases | C6-40 | runtime_phases.py | **LANDED 3f3e8b8d** (APPROVE-WITH-CONDITIONS; F1 recipe fix + F2 windchannels=1 confirmed + F5 D04 retention reading recorded at landing; phases 17/17) |
+| v6-decoder | C6-50 | geometry/visibility_prepared.py | **LANDED** (module 4b83452b; wiring 58d7fe23; 95/95; NOTE: prepared slower on dev tier 71.6 vs 58.1 ms — re-measure at C6-80 before adoption) |
 | v6-memadm | C6-42 | runtime_memory.py | **LANDED e318c226** (APPROVE-WITH-NOTES rev3; patch apply --check PASS verified; 31/31; raw-safe count 2) |
 
 ## Landed — C6-70 first-wave controlled integration (integrator commits on this branch)
@@ -46,13 +46,18 @@ L2 chronology differential (evidence/integration/L2_chronology_differential.md):
 base 8e0b3877 vs integrated 78d242a6, 96x96 real-motif scene, 24 steps —
 Lside 24/24 + Kside 14/14 events bitwise (inputs+outputs), all 11 final TIFFs
 sha256-identical, cylinder-longwave equality transitive (Ldown in Lside inputs
-+ bitwise Ldown/Tmrt TIFFs). **C6-70 C6-60 review in flight (reviewer-c6-70).**
++ bitwise Ldown/Tmrt TIFFs).
+**C6-70 C6-60 review: APPROVE-WITH-CONDITIONS (independent GLM review; Opus
+unavailable) — conditions closed by db5928fe** (F1 empty-jobs guard; F2
+threads=2 whole-pipeline differential GREEN incl. wired GVF hooks; F3
+accepted-residual record; see evidence/integration/C6-70_review_dispositions.md).
+Reviewer recompute: 541 + 35 scoped tests green on the integrated tree.
 
 ## Queued (not dispatched)
 
 | task | blocked by |
 |---|---|
-| C6-40 phase adapter integration | worker COMPLETE (delivered; base 4b83452b, 17/17); **C6-60 review in flight (reviewer-c6-40)**, then integrator lands integration_recipe_C6-40.diff |
+| C6-80 small cold/warm portfolio | UNBLOCKED (C6-70 reviewed+closed, C6-40 landed); exclusive benchmark lease required |
 | C6-80 small cold/warm portfolio | C6-70 review verdict + C6-40 landed |
 | C6-81 residual choice | C6-80 |
 | C6-90..94 conditional | C6-81 selection |
