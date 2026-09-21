@@ -1,17 +1,19 @@
 """C6-10 gate 1: source-bound all-19-field bitwise parity of the shared recipe.
 
-The recipe path (``solweig_light.geometry.recipe``) must reproduce the
-producer outputs of BOTH current routes bitwise on real scenes:
+Integrated-tree form (C6-70): the service route no longer exists as a
+separate implementation — ``geometry/service.py`` produces through
+``numerical_geometry_recipe`` and its former ``_producer`` is deleted — so
+the historical three-route comparison (standalone vs pipeline vs recipe,
+recorded in ``raw/parity_*.json`` with schema ``c6-10-recipe-parity-v1``)
+is replaced by:
 
-- Route A: the real unmodified standalone producer
-  (``geometry/service.py`` ``_producer``, called through the installed
-  service module — no reimplementation).
 - Route B: the pinned ``pipeline.py`` geometry branch. The normalization
   body is transcribed verbatim below and asserted against the installed
-  source text so drift fails loudly.
+  source text so drift fails loudly. The recipe must still reproduce this
+  transcription bitwise on real scenes.
+- Integration assertions: the installed service and pipeline sources both
+  route production through the shared recipe.
 
-Census C6-02 already proved route A and route B bitwise identical on the
-96x96 fixture; this test additionally proves the shared recipe equals both.
 All comparisons are uint32-view exact (dtype, shape, signed zeros, NaN
 payloads). No numerical mocks anywhere; evidence is persisted before
 assertions.
@@ -72,15 +74,15 @@ def _check_pipeline_body_unchanged():
         assert line in text, f'pipeline.py geometry branch drifted: missing {line!r}'
 
 
-def _route_a_fields(paths):
-    """The real unmodified standalone producer from the installed service."""
-    from osgeo import gdal
-    from solweig_light.geometry import service
-    template = gdal.Open(str(paths['Building_DSM']))
-    try:
-        return service._producer(paths, 2, template), 1 / template.GetGeoTransform()[1]
-    finally:
-        template = None
+def _assert_integrated_sources():
+    """The installed service and pipeline must produce through the recipe."""
+    service_text = (SRC / 'solweig_light' / 'geometry' / 'service.py').read_text()
+    assert 'numerical_geometry_recipe' in service_text, \
+        'service.py must import the shared recipe'
+    assert 'recipe.produce()' in service_text or 'recipe.export_identity' in service_text, \
+        'service.py must produce through the recipe'
+    assert '_producer' not in service_text, \
+        'the duplicate standalone producer must stay deleted'
 
 
 def _route_b_fields(paths):
@@ -104,8 +106,9 @@ def _field_fp(value):
 
 
 @pytest.mark.parametrize('scene_builder', [reference_paths, 'dense96'])
-def test_recipe_bitwise_parity_both_routes(tmp_path, scene_builder):
+def test_recipe_bitwise_parity_pipeline_route(tmp_path, scene_builder):
     _check_pipeline_body_unchanged()
+    _assert_integrated_sources()
     if scene_builder == 'dense96':
         scene_info = build_scene(tmp_path / 'scene96')
         scene_dir = scene_info.pop('dir')
@@ -119,12 +122,11 @@ def test_recipe_bitwise_parity_both_routes(tmp_path, scene_builder):
     from solweig_light.geometry.recipe import guarded_producer, normalize, numerical_geometry_recipe
     from solweig_light.io.rasters import read_raster
 
-    fields_a, scale_a = _route_a_fields(paths)
     fields_b, scale_b = _route_b_fields(paths)
     recipe = numerical_geometry_recipe(paths, 2)
     fields_r = guarded_producer(recipe)()
 
-    # Recipe scale must come from the DSM geotransform like both routes.
+    # Recipe scale must come from the DSM geotransform like the pinned route.
     from osgeo import gdal
     template = gdal.Open(str(paths['Building_DSM']))
     try:
@@ -152,31 +154,26 @@ def test_recipe_bitwise_parity_both_routes(tmp_path, scene_builder):
         'vegdsm_tree_plus_a_zeroed': bool(np.all(vegdsm_n[vegdsm_n == a_n] == 0)),
         'amaxvalue_hex': _scalar_fp(amaxvalue_n) == _scalar_fp(amaxvalue_p),
         'scale_hex_pipeline': _scalar_fp(scale_p) == _scalar_fp(scale_b),
-        'scale_hex_standalone': _scalar_fp(scale_r) == _scalar_fp(scale_a),
+        'scale_hex_recipe': _scalar_fp(scale_r) == _scalar_fp(scale_b),
     }
 
-    parity_a = fields_equal(fields_r, fields_a)
     parity_b = fields_equal(fields_r, fields_b)
-    parity_ab = fields_equal(fields_a, fields_b)
 
     payload = {
-        'schema': 'c6-10-recipe-parity-v1', 'commit': COMMIT, 'scene': scene_label,
+        'schema': 'c6-10-recipe-parity-integrated-v2', 'commit': COMMIT, 'scene': scene_label,
         'scene_inputs_sha256': scene_info.get('sha256'),
         'recipe_policy': recipe.identity['policy'], 'recipe_digest': recipe.digest,
         'recipe_implementation_closure': sorted(recipe.identity['implementation']),
         'normalized_inputs_recipe_vs_pipeline': inputs_equal,
-        'per_field_bitwise': {'recipe_vs_standalone': parity_a, 'recipe_vs_pipeline': parity_b,
-                              'standalone_vs_pipeline': parity_ab},
-        'field_fingerprints': {'recipe': {name: _field_fp(value) for name, value in fields_r.items()},
-                               'standalone': {name: _field_fp(value) for name, value in fields_a.items()}},
-        'note': 'single small scenes on a shared development host; parity only, no timing claims'}
-    out = EVIDENCE / 'raw' / f'parity_{scene_label}.json'
+        'per_field_bitwise': {'recipe_vs_pipeline_transcription': parity_b},
+        'field_fingerprints': {'recipe': {name: _field_fp(value) for name, value in fields_r.items()}},
+        'note': 'integrated-tree form: the standalone route is deleted (see schema v1 '
+                'evidence for the historical three-route proof); parity only, no timing claims'}
+    out = EVIDENCE / 'raw' / f'parity_integrated_{scene_label}.json'
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(payload, indent=1, sort_keys=True))
 
     assert all(inputs_equal.values()), f'normalized inputs differ: {inputs_equal}'
-    assert all(parity_a.values()), f'recipe vs standalone differs: {[k for k, v in parity_a.items() if not v]}'
     assert all(parity_b.values()), f'recipe vs pipeline differs: {[k for k, v in parity_b.items() if not v]}'
-    assert all(parity_ab.values()), f'route A vs route B differs on this scene: {parity_ab}'
-    assert len(fields_r) == 19 and set(fields_r) == set(fields_a) == set(fields_b)
+    assert len(fields_r) == 19 and set(fields_r) == set(fields_b)
     assert out.exists()

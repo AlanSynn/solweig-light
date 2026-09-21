@@ -11,9 +11,17 @@ from osgeo import gdal
 
 from solweig_light.cache import content_fingerprint, load_legacy_geometry
 from solweig_light.geometry import service
+from solweig_light.geometry import recipe as recipe_module
+from solweig_light.geometry import svf as svf_module
 from solweig_light.runtime import RuntimeOptions
 
 REFERENCE = Path(__file__).parents[1] / 'reference' / 'small_original_cpu' / 'scene'
+
+
+def produce_fields(paths, patch_option=2):
+    """The shared recipe production (the service route since C6-10)."""
+    from solweig_light.geometry.recipe import guarded_producer, numerical_geometry_recipe
+    return guarded_producer(numerical_geometry_recipe(paths, patch_option))()
 
 
 def fixture(tmp_path):
@@ -66,11 +74,11 @@ def test_original_standalone_cold_warm_native_exports(tmp_path, monkeypatch):
     paths = fixture(tmp_path)
     preprocess = tmp_path / 'processed'
     calls = []
-    original = service.svf_calculator_compact
+    original = svf_module.svf_calculator_compact
     def count(*args, **kwargs):
         calls.append(1)
         return original(*args, **kwargs)
-    monkeypatch.setattr(service, 'svf_calculator_compact', count)
+    monkeypatch.setattr(svf_module, 'svf_calculator_compact', count)
     record = service.prepare_geometry_exports(preprocess, '0_0', paths, 2)
     assert not record['cache_hit']
     assert calls == [1]
@@ -113,7 +121,7 @@ def test_unproven_complete_equal_exports_compared_and_preserved(tmp_path, monkey
         calls.append(1)
         return original(*args)
     monkeypatch.setattr(service, '_compare', compare)
-    monkeypatch.setattr(service, 'svf_calculator_compact', lambda *args, **kwargs: pytest.fail('native cache should satisfy rays'))
+    monkeypatch.setattr(svf_module, 'svf_calculator_compact', lambda *args, **kwargs: pytest.fail('native cache should satisfy rays'))
     record = service.prepare_geometry_exports(preprocess, '0_0', paths, 1)
     assert calls == [1]
     assert record['cache_hit'] and fingerprints(preprocess) == before
@@ -149,7 +157,7 @@ def test_changed_content_same_size_mtime_reject_preserve_then_overwrite(tmp_path
     assert refreshed['cache_hit']  # Failed validation already computed fresh cache.
     assert fingerprints(preprocess) != before
     template = gdal.Open(str(paths['Building_DSM']))
-    fields = service._producer(paths, 2, template)
+    fields = produce_fields(paths, 2)
     service._compare(artifacts(preprocess), service._schema(template, 2), fields)
     template = None
 
@@ -187,11 +195,11 @@ def test_concurrent_export_owners_single_compute(tmp_path, monkeypatch):
     paths = fixture(tmp_path)
     preprocess = tmp_path / 'processed'
     calls = []
-    original = service.svf_calculator_compact
+    original = svf_module.svf_calculator_compact
     def count(*args, **kwargs):
         calls.append(1)
         return original(*args, **kwargs)
-    monkeypatch.setattr(service, 'svf_calculator_compact', count)
+    monkeypatch.setattr(svf_module, 'svf_calculator_compact', count)
     def request(_):
         return service.prepare_geometry_exports(preprocess, '0_0', paths, 1)
     with ThreadPoolExecutor(4) as pool:
@@ -238,11 +246,11 @@ def test_cache_disabled_and_configured_directory(tmp_path, monkeypatch):
     service.prepare_geometry_exports(preprocess, '0_0', paths, 1, runtime=RuntimeOptions(cache_dir=str(custom)))
     assert list(custom.glob('*/manifest.json'))
     calls = []
-    original = service.svf_calculator_compact
+    original = svf_module.svf_calculator_compact
     def count(*args, **kwargs):
         calls.append(1)
         return original(*args, **kwargs)
-    monkeypatch.setattr(service, 'svf_calculator_compact', count)
+    monkeypatch.setattr(svf_module, 'svf_calculator_compact', count)
     record = service.prepare_geometry_exports(preprocess, '0_0', paths, 1, overwrite=True,
                                                runtime=RuntimeOptions(cache_enabled=False))
     assert calls == [1] and not record['cache_hit']
@@ -269,12 +277,12 @@ def test_legacy_custom_metadata_mismatch_preserved(tmp_path):
 
 
 def _process_exports(preprocess, paths, queue, calls):
-    original = service.svf_calculator_compact
+    original = svf_module.svf_calculator_compact
     def count(*args, **kwargs):
         with Path(calls).open('a') as stream:
             stream.write('produced\n')
         return original(*args, **kwargs)
-    service.svf_calculator_compact = count
+    svf_module.svf_calculator_compact = count
     try:
         result = service.prepare_geometry_exports(preprocess, '0_0', paths, 1)
         queue.put(result['artifacts'])
@@ -361,12 +369,12 @@ def test_standalone_owner_excludes_transaction_actual_geometry_publication(tmp_p
     preprocess = tmp_path / 'processed'
     service.prepare_geometry_exports(preprocess, '0_0', paths, 1)
     entered, release = threading.Event(), threading.Event()
-    original = service._producer
-    def paused(*args, **kwargs):
+    original = recipe_module.GeometryRecipe.produce
+    def paused(self, *args, **kwargs):
         entered.set()
         assert release.wait(20)
-        return original(*args, **kwargs)
-    monkeypatch.setattr(service, '_producer', paused)
+        return original(self, *args, **kwargs)
+    monkeypatch.setattr(recipe_module.GeometryRecipe, 'produce', paused)
     writer, extras = transaction_with_geometry_extras(tmp_path, preprocess)
     try:
         with ThreadPoolExecutor(1) as pool:
@@ -399,13 +407,14 @@ def test_transaction_owner_excludes_standalone_before_production(tmp_path, monke
         writer.complete(extras)
         before = fingerprints(preprocess)
         manifest_before = manifest_path(preprocess).read_bytes()
-        original = service._producer
-        monkeypatch.setattr(service, '_producer', lambda *args, **kwargs: pytest.fail('busy destination must fail before producing'))
+        original = recipe_module.GeometryRecipe.produce
+        monkeypatch.setattr(recipe_module.GeometryRecipe, 'produce',
+                            lambda self, *args, **kwargs: pytest.fail('busy destination must fail before producing'))
         with pytest.raises(ValueError, match='already has an owner'):
             service.prepare_geometry_exports(preprocess, '0_0', paths, 1, overwrite=True)
         assert fingerprints(preprocess) == before
         assert manifest_path(preprocess).read_bytes() == manifest_before
-        monkeypatch.setattr(service, '_producer', original)
+        monkeypatch.setattr(recipe_module.GeometryRecipe, 'produce', original)
     finally:
         writer.close()
     service.prepare_geometry_exports(preprocess, '0_0', paths, 1, overwrite=True)
@@ -434,11 +443,11 @@ def test_input_mutation_during_producer_refuses_native_and_legacy_publication(tm
     from solweig_light.identities import InputChangedError
     paths = fixture(tmp_path)
     preprocess = tmp_path / 'processed'
-    original = service._producer
-    def mutate(*args, **kwargs):
+    original = recipe_module.GeometryRecipe.produce
+    def mutate(self, *args, **kwargs):
         change_dsm_preserved_stat(paths['Building_DSM'])
-        return original(*args, **kwargs)
-    monkeypatch.setattr(service, '_producer', mutate)
+        return original(self, *args, **kwargs)
+    monkeypatch.setattr(recipe_module.GeometryRecipe, 'produce', mutate)
     with pytest.raises(InputChangedError):
         service.prepare_geometry_exports(preprocess, '0_0', paths, 1)
     assert list((preprocess / 'SVF').iterdir()) == []
@@ -468,12 +477,12 @@ def test_input_mutation_during_identity_capture_refuses_geometry(tmp_path, monke
     from solweig_light.identities import InputChangedError
     paths = fixture(tmp_path)
     preprocess = tmp_path / 'processed'
-    original = service.geometry_identity
+    original = service.numerical_geometry_recipe
     def mutate(*args, **kwargs):
-        identity = original(*args, **kwargs)
+        constructed = original(*args, **kwargs)
         change_dsm_preserved_stat(paths['Building_DSM'])
-        return identity
-    monkeypatch.setattr(service, 'geometry_identity', mutate)
+        return constructed
+    monkeypatch.setattr(service, 'numerical_geometry_recipe', mutate)
     with pytest.raises(InputChangedError):
         service.prepare_geometry_exports(preprocess, '0_0', paths, 1)
     assert list((preprocess / 'SVF').iterdir()) == []
@@ -510,9 +519,9 @@ def test_geometry_memory_admission_rejects_before_cold_arrays_and_outputs(tmp_pa
     preprocess = tmp_path / 'processed'
     def forbidden(*args, **kwargs):
         pytest.fail('memory rejection must precede raster arrays, geometry identity and production')
-    monkeypatch.setattr(service, '_producer', forbidden)
+    monkeypatch.setattr(service, 'numerical_geometry_recipe', forbidden)
     monkeypatch.setattr(service, '_schema', forbidden)
-    monkeypatch.setattr(service, 'geometry_identity', forbidden)
+    monkeypatch.setattr(recipe_module.GeometryRecipe, 'produce', forbidden)
     monkeypatch.setattr(gdal.Band, 'ReadAsArray', forbidden)
     monkeypatch.setattr(gdal.Dataset, 'ReadAsArray', forbidden)
     with pytest.raises(ResourceAdmissionError, match='increase the memory budget'):

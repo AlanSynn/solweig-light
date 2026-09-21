@@ -1,26 +1,20 @@
 """C6-10 gate 2 end-to-end: one geometry production per cold tile in a real
 public ``thermal_comfort`` run when cache is enabled.
 
-``service.py`` is integrator-owned, so the service half of the integration
-is simulated by loading the DIFF POST-IMAGE of ``geometry/service.py``: the
-owned proposal ``integration_patch_C6-10.diff`` is applied with ``git apply``
-to a private copy of the installed base service module, which is then used
-in place of ``prepare_geometry_exports`` (labeled service-path patch; every
-numerical kernel inside it is the real code). The pipeline half is simulated
-in the tile-worker child by ``recipe_probe`` (identity-only patch; the
-child's producer is the unmodified ``pipeline.py`` producer whose fields the
-parity test proves bitwise identical to the recipe producer's).
+Integrated-tree form (C6-70): the service and pipeline halves are wired for
+real (``integration_patch_C6-10.diff`` is applied to the installed source),
+so the pre-integration simulation (loading the diff post-image of
+``service.py`` over a private copy and identity-patching the child; recorded
+in ``raw/end-to-end/`` with schema ``c6-10-end-to-end-v1``) is replaced by
+runs against the actual integrated tree:
 
-Stages on real 96x96 scenes (dense_urban motif, reference met file):
-
-1. ``baseline-cold``: unmodified source — reproduces census C6-02: two
-   productions under two keys.
-2. ``recipe-cold``: integration simulation — exactly ONE production, shared
-   key for both routes.
-3. ``recipe-warm``: faithful warm repeat — zero productions.
-
-Final simulation outputs and standalone export artifacts are then compared
-bitwise between the baseline and recipe runs.
+1. ``integrated-cold``: fresh scene — exactly ONE production under ONE
+   shared key, consulted by both routes.
+2. ``integrated-warm``: faithful warm repeat on the same scene — zero
+   productions.
+3. ``integrated-cold-2``: a second identical fresh scene — one production
+   again, and every published artifact bitwise-equal to run 1 (determinism
+   of the integrated tree across identical cold inputs).
 
 Instrumentation is the committed C6-02 census probe (call-through wrappers
 on ``svf_calculator_compact``, ``GeometryStore.get_or_create``,
@@ -30,11 +24,9 @@ assertions.
 """
 from __future__ import annotations
 
-import importlib.util
 import json
 import os
 import shutil
-import subprocess
 import sys
 import time
 from pathlib import Path
@@ -45,12 +37,11 @@ import numpy as np
 import pytest
 
 import scene_fixtures
-from scene_fixtures import DATE, REPO, SRC, build_scene, field_bits
+from scene_fixtures import DATE, REPO, SRC, build_scene
 
 PROBE_DIR = Path(__file__).resolve().parent
 CENSUS_DIR = REPO / 'tests' / 'optimization_v6' / 'geometry_census'
 EVIDENCE = REPO / 'optimization_v6_continue' / 'evidence' / 'recipe'
-DIFF = EVIDENCE / 'integration_patch_C6-10.diff'
 COMMIT = 'e7a2d6ec8594b234820e7783e0ca26d821de7f3d'
 
 for entry in (str(SRC), str(CENSUS_DIR)):
@@ -58,7 +49,6 @@ for entry in (str(SRC), str(CENSUS_DIR)):
         sys.path.insert(0, entry)
 
 import census_probe  # noqa: E402  (committed C6-02 instrumentation, reused unmodified)
-import recipe_probe  # noqa: E402  (local integration-simulation patch)
 
 
 def collect_events(record_dir):
@@ -76,70 +66,32 @@ def arm_children(record_dir, tmp_path):
     (site_dir / 'sitecustomize.py').write_text(
         'import os, sys\n'
         'try:\n'
-        '    for probe_dir in ("SOLWEIG_CENSUS_PROBE_DIR", "SOLWEIG_RECIPE_PROBE_DIR"):\n'
+        '    for probe_dir in ("SOLWEIG_CENSUS_PROBE_DIR",):\n'
         '        where = os.environ.get(probe_dir)\n'
         '        if where and where not in sys.path:\n'
         '            sys.path.insert(0, where)\n'
         '    import census_probe\n'
         '    census_probe.autostart()\n'
-        '    if os.environ.get("SOLWEIG_RECIPE_PROBE_DIR"):\n'
-        '        import recipe_probe\n'
-        '        recipe_probe.install()\n'
         'except Exception:\n'
         '    import traceback\n'
         '    traceback.print_exc(file=sys.stderr)\n', encoding='utf8')
     existing = os.environ.get('PYTHONPATH', '')
-    parts = [str(site_dir), str(PROBE_DIR), str(CENSUS_DIR), str(SRC)]
+    parts = [str(site_dir), str(CENSUS_DIR), str(SRC)]
     parts += [part for part in existing.split(os.pathsep) if part]
     os.environ['PYTHONPATH'] = os.pathsep.join(parts)
     os.environ['SOLWEIG_CENSUS_PROBE_DIR'] = str(CENSUS_DIR)
-    os.environ['SOLWEIG_RECIPE_PROBE_DIR'] = str(PROBE_DIR)
     os.environ['SOLWEIG_CENSUS_RECORD_DIR'] = str(record_dir)
     os.environ['SOLWEIG_CENSUS_ROLE'] = 'child'
 
 
-def begin_stage(base_record_dir, stage, tmp_path, integrate_child):
+def begin_stage(base_record_dir, stage, tmp_path):
     stage_dir = Path(base_record_dir) / stage
     if stage_dir.exists():
         shutil.rmtree(stage_dir)
     stage_dir.mkdir(parents=True)
     arm_children(stage_dir, tmp_path)
-    if not integrate_child:
-        # Baseline children must NOT see the integration-simulation patch.
-        os.environ.pop('SOLWEIG_RECIPE_PROBE_DIR', None)
     census_probe.rearm(stage_dir, 'parent')
     return stage_dir
-
-
-def load_patched_service_module(tmp_path):
-    """Apply the owned integration diff to a private copy of service.py.
-
-    ``git apply --directory`` rewrites each file path BEFORE ``--include``
-    matching and refuses targets outside the worktree, so the private copy is
-    staged (relative) inside the owned tests directory and removed afterwards.
-    A silent no-op is impossible here: the applied file must differ.
-    """
-    root = PROBE_DIR / '_patched_stage'
-    if root.exists():
-        shutil.rmtree(root)
-    target_dir = root / 'src' / 'solweig_light' / 'geometry'
-    target_dir.mkdir(parents=True)
-    shutil.copyfile(SRC / 'solweig_light' / 'geometry' / 'service.py', target_dir / 'service.py')
-    subprocess.run(['git', 'apply', '--directory', str(root.relative_to(REPO)),
-                    '--include', '*src/solweig_light/geometry/service.py', str(DIFF)],
-                   check=True, cwd=str(REPO))
-    applied = (target_dir / 'service.py').read_text()
-    assert applied != (SRC / 'solweig_light' / 'geometry' / 'service.py').read_text(), \
-        'git apply silently skipped the service patch'
-    assert 'numerical_geometry_recipe' in applied, 'post-image must use the shared recipe'
-    name = 'solweig_light.geometry._service_c610_patched'
-    spec = importlib.util.spec_from_file_location(name, target_dir / 'service.py')
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[name] = module
-    spec.loader.exec_module(module)
-    # The staged file must stay on disk: the post-image fingerprints its own
-    # __file__ for the export identity, so cleanup happens at test end.
-    return module
 
 
 def thermal_comfort(scene):
@@ -214,69 +166,58 @@ def compare_outputs(left_scene, right_scene):
 
 
 def test_end_to_end_single_production_per_cold_tile(tmp_path):
-    record_dir = EVIDENCE / 'raw' / 'end-to-end'
+    record_dir = EVIDENCE / 'raw' / 'end-to-end-integrated'
     if record_dir.exists():
         shutil.rmtree(record_dir)
     record_dir.mkdir(parents=True)
 
-    # --- Stage 1: baseline cold public workflow on unmodified source. ---
-    scene_base = build_scene(tmp_path / 'scene-base')
-    stage = begin_stage(record_dir, 'baseline-cold', tmp_path, integrate_child=False)
+    # --- Run 1: integrated cold public workflow on a fresh scene. ---
+    scene_one = build_scene(tmp_path / 'scene-one')
+    stage = begin_stage(record_dir, 'integrated-cold', tmp_path)
     start = time.perf_counter()
-    thermal_comfort(scene_base['dir'])
-    base = summarize('baseline-cold', collect_events(stage), time.perf_counter() - start)
+    thermal_comfort(scene_one['dir'])
+    cold = summarize('integrated-cold', collect_events(stage), time.perf_counter() - start)
 
-    # --- Stage 2: integration simulation on a fresh identical scene. ---
-    scene_recipe = build_scene(tmp_path / 'scene-recipe')
-    stage = begin_stage(record_dir, 'recipe-cold', tmp_path, integrate_child=True)
-    from solweig_light.geometry import service as service_module
-    from solweig_light import identities as identities_module
-    patched = load_patched_service_module(tmp_path)
-    saved_service = service_module.prepare_geometry_exports
-    saved_identity = identities_module.geometry_identity
-    service_module.prepare_geometry_exports = patched.prepare_geometry_exports
-    identities_module.geometry_identity = recipe_probe.unified_geometry_identity
-    try:
-        start = time.perf_counter()
-        thermal_comfort(scene_recipe['dir'])
-        cold = summarize('recipe-cold', collect_events(stage), time.perf_counter() - start)
+    # --- Run 2: warm faithful repeat on the same scene. ---
+    stage = begin_stage(record_dir, 'integrated-warm', tmp_path)
+    start = time.perf_counter()
+    thermal_comfort(scene_one['dir'])
+    warm = summarize('integrated-warm', collect_events(stage), time.perf_counter() - start)
 
-        # --- Stage 3: warm faithful repeat, still patched. ---
-        stage = begin_stage(record_dir, 'recipe-warm', tmp_path, integrate_child=True)
-        start = time.perf_counter()
-        thermal_comfort(scene_recipe['dir'])
-        warm = summarize('recipe-warm', collect_events(stage), time.perf_counter() - start)
-    finally:
-        service_module.prepare_geometry_exports = saved_service
-        identities_module.geometry_identity = saved_identity
-        shutil.rmtree(PROBE_DIR / '_patched_stage', ignore_errors=True)
+    # --- Run 3: second identical fresh scene — cold again, outputs must
+    #     match run 1 bitwise (integrated-tree determinism). ---
+    scene_two = build_scene(tmp_path / 'scene-two')
+    stage = begin_stage(record_dir, 'integrated-cold-2', tmp_path)
+    start = time.perf_counter()
+    thermal_comfort(scene_two['dir'])
+    cold2 = summarize('integrated-cold-2', collect_events(stage), time.perf_counter() - start)
 
-    parity = compare_outputs(scene_base['dir'], scene_recipe['dir'])
-    payload = {'schema': 'c6-10-end-to-end-v1', 'commit': COMMIT,
-               'simulation': 'service half = diff post-image via git apply; child half = identity-only patch',
-               'scene_sha256': {'baseline': scene_base['sha256'], 'recipe': scene_recipe['sha256']},
-               'stages': [base, cold, warm], 'output_parity': parity,
+    parity = compare_outputs(scene_one['dir'], scene_two['dir'])
+    payload = {'schema': 'c6-10-end-to-end-integrated-v2', 'commit': COMMIT,
+               'simulation': 'none; runs execute the actual integrated source',
+               'scene_sha256': {'run1': scene_one['sha256'], 'run3': scene_two['sha256']},
+               'stages': [cold, warm, cold2], 'output_parity': parity,
                'note': 'development-tier contended host; wall times recorded, no benchmark claims'}
-    out = EVIDENCE / 'raw' / 'end_to_end_summary.json'
+    out = EVIDENCE / 'raw' / 'end_to_end_integrated_summary.json'
     out.write_text(json.dumps(payload, indent=1, sort_keys=True))
 
-    # Baseline reproduces the census on this base commit.
-    assert base['svf_calls'] == 2, f'baseline must construct twice: {base}'
-    assert base['svf_by_route'].get('standalone') == 1 and base['svf_by_route'].get('pipeline') == 1
-    assert len(base['keys']) == 2, f'baseline keys must differ: {base["keys"]}'
-    # Integration simulation: exactly one production, one shared key.
-    assert cold['svf_calls'] == 1, f'recipe cold run must produce exactly once: {cold}'
+    # Integrated cold run: exactly one production, one shared native key.
+    assert cold['svf_calls'] == 1, f'integrated cold run must produce exactly once: {cold}'
     hits = sorted(call['hit'] for call in cold['store_calls'])
     producers = sorted(call['producer_calls'] for call in cold['store_calls'])
     assert len(cold['store_calls']) == 2, f'both routes must consult the store: {cold}'
     assert hits == [False, True] and producers == [0, 1], f'exactly one production expected: {cold}'
     assert len(cold['keys']) == 1, f'both routes must share one native key: {cold["keys"]}'
-    assert cold['keys'][0] not in base['keys'], 'recipe key is a new third generation'
-    # Warm repeat: zero productions; the child store consult still happens.
+    # Warm repeat: zero productions; the store consult still happens.
     assert warm['svf_calls'] == 0, f'warm repeat must not produce: {warm}'
     assert len(warm['store_calls']) == 1 and warm['store_calls'][0]['hit'] is True, f'{warm}'
     assert warm['keys'] == cold['keys'], 'warm key must equal the shared cold key'
-    # Outputs identical in every published artifact.
+    # Second cold scene: one production, bitwise-equal outputs. The key is
+    # allowed to differ across directories (pre-existing raster_fingerprint
+    # path dependence, C6-10 review record): the key assertion is only made
+    # within one scene directory (cold vs warm above).
+    assert cold2['svf_calls'] == 1, f'second cold run must produce exactly once: {cold2}'
+    assert len(cold2['keys']) == 1, f'second cold run must use one shared key: {cold2}'
     assert all(parity['outputs_pixel_bitwise_equal'].values()), f'{parity["outputs_pixel_bitwise_equal"]}'
     assert all(parity['svf_exports_pixel_bitwise_equal'].values()), f'{parity}'
     assert all(parity['visibility_channels_bitwise_equal'].values()), f'{parity}'

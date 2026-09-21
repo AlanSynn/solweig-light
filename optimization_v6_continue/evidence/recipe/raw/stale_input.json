@@ -16,10 +16,10 @@
   "vegshmat": true
  },
  "fields_changed_somewhere": true,
- "key_new": "0e68992546a1ce5fa05c7f41b50321e824aff5760d574dd75967c214f3a267a5",
- "key_old": "c9f8ca34af1bd240e391eeeaf21b009e8cd3211720f335ca8cb43c8749a9719e",
+ "key_new": "cdd85863c1d4d4dcf758e43cef379056103bc80b112655b43a3e6eb35dec5dd0",
+ "key_old": "f25ff1f3aba1a998f63c8e63336eb3e342886dbbd662c14f36a851f91160a2b8",
  "old_generation_preserved": [
-  "generation-bcc1b742bf7742948e74b584f0529f67"
+  "generation-63913445f2744d25bbca80761f7cfb54"
  ],
  "schema": "c6-10-recipe-stale-input-v1",
  "stale_hit": false,

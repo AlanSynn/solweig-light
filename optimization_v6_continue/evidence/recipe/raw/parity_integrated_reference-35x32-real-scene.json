@@ -1,0 +1,221 @@
+{
+ "commit": "e7a2d6ec8594b234820e7783e0ca26d821de7f3d",
+ "field_fingerprints": {
+  "recipe": {
+   "shmat": {
+    "dtype": "uint32",
+    "sha256": "2eba980b3b778b0991cab52f829babe8f7345be3c4e2633c0a5aac1049c6e01f",
+    "shape": [
+     32,
+     35,
+     153
+    ]
+   },
+   "svf": {
+    "dtype": "uint32",
+    "sha256": "1b68bd38c183c717cd385be6e762910b2b8b190bf9fa018943807f48cf13b52b",
+    "shape": [
+     32,
+     35
+    ]
+   },
+   "svfE": {
+    "dtype": "uint32",
+    "sha256": "1a1cc413b53caadf284d21bc1a24af8f126bda38c138d62bd9d6b6419c62d7d1",
+    "shape": [
+     32,
+     35
+    ]
+   },
+   "svfEaveg": {
+    "dtype": "uint32",
+    "sha256": "1f669669f2a98c1603e210a85b95769f3bf6dc48cceb249195070f6cd65b852d",
+    "shape": [
+     32,
+     35
+    ]
+   },
+   "svfEveg": {
+    "dtype": "uint32",
+    "sha256": "3dcca26175ed20bd0e20b2c9c62dc02652bba43bc495e8150d59c0acb445ff41",
+    "shape": [
+     32,
+     35
+    ]
+   },
+   "svfN": {
+    "dtype": "uint32",
+    "sha256": "2bf9487f88fb18cf8b5dc7b3045073e5fbdc42631fb73b908f60f141c7547ed5",
+    "shape": [
+     32,
+     35
+    ]
+   },
+   "svfNaveg": {
+    "dtype": "uint32",
+    "sha256": "21fced1485f928a5fb84c780ce631df196d1e936751eac6dc9bbfb37ceadd221",
+    "shape": [
+     32,
+     35
+    ]
+   },
+   "svfNveg": {
+    "dtype": "uint32",
+    "sha256": "ee6847fc95b1cfdec653bf68af194b56d3bc38da1e10639948ee82e481cf0382",
+    "shape": [
+     32,
+     35
+    ]
+   },
+   "svfS": {
+    "dtype": "uint32",
+    "sha256": "f81896b8fc288507416876677294a166b184bb8aeddb89439d554828eaf6f36e",
+    "shape": [
+     32,
+     35
+    ]
+   },
+   "svfSaveg": {
+    "dtype": "uint32",
+    "sha256": "6c31eef9dac18435197a03a2011b122c8420f4b60eb0815b6812b4f9dd7cfc0b",
+    "shape": [
+     32,
+     35
+    ]
+   },
+   "svfSveg": {
+    "dtype": "uint32",
+    "sha256": "fa61dae462991c3d2b84c2fdc2dba7abad490527d138736da8192955ae291965",
+    "shape": [
+     32,
+     35
+    ]
+   },
+   "svfW": {
+    "dtype": "uint32",
+    "sha256": "9b9bf5c84c67fe1976500fcc1c0a7c4f7a386fc050689b496f64400501ba7946",
+    "shape": [
+     32,
+     35
+    ]
+   },
+   "svfWaveg": {
+    "dtype": "uint32",
+    "sha256": "9cfe088a298fd175e144ae97a448271fb0c39cee3c49d9d378cc1179a86cf656",
+    "shape": [
+     32,
+     35
+    ]
+   },
+   "svfWveg": {
+    "dtype": "uint32",
+    "sha256": "30de17ea0a4bef5ddfcf79069b46dfaa35358ed65a055109e4c263a02777ed99",
+    "shape": [
+     32,
+     35
+    ]
+   },
+   "svfaveg": {
+    "dtype": "uint32",
+    "sha256": "2b9619a8ff0fbc8190cae3fbe591c123d3fbb7dd4ea3a899e7b22fa2cba5b32b",
+    "shape": [
+     32,
+     35
+    ]
+   },
+   "svftotal": {
+    "dtype": "uint32",
+    "sha256": "a2f37ca3a989f959f540b47d26d2ff87aac259a495db90d1bae44fb4435ce167",
+    "shape": [
+     32,
+     35
+    ]
+   },
+   "svfveg": {
+    "dtype": "uint32",
+    "sha256": "2f0cd95a1bae2404377028187edca8222e03607f42603bc9b262b98d4027822b",
+    "shape": [
+     32,
+     35
+    ]
+   },
+   "vbshvegshmat": {
+    "dtype": "uint32",
+    "sha256": "a49fc09a81426e26251a730e9dbf8a37aeb0d3189d42d4adce52a57b8403cc01",
+    "shape": [
+     32,
+     35,
+     153
+    ]
+   },
+   "vegshmat": {
+    "dtype": "uint32",
+    "sha256": "ffc0424b06e3b8bb5a1e64be7cce51a0be0cd437bf97b23c54fa1e2cbb635da5",
+    "shape": [
+     32,
+     35,
+     153
+    ]
+   }
+  }
+ },
+ "normalized_inputs_recipe_vs_pipeline": {
+  "a_dtype_float32": true,
+  "amaxvalue_hex": true,
+  "bush": true,
+  "clamped_tree": true,
+  "scale_hex_pipeline": true,
+  "scale_hex_recipe": true,
+  "vegdem_trees_plus_dem": true,
+  "vegdsm2": true,
+  "vegdsm_tree_plus_a_zeroed": true,
+  "vegdsm_trees_plus_a": true
+ },
+ "note": "integrated-tree form: the standalone route is deleted (see schema v1 evidence for the historical three-route proof); parity only, no timing claims",
+ "per_field_bitwise": {
+  "recipe_vs_pipeline_transcription": {
+   "shmat": true,
+   "svf": true,
+   "svfE": true,
+   "svfEaveg": true,
+   "svfEveg": true,
+   "svfN": true,
+   "svfNaveg": true,
+   "svfNveg": true,
+   "svfS": true,
+   "svfSaveg": true,
+   "svfSveg": true,
+   "svfW": true,
+   "svfWaveg": true,
+   "svfWveg": true,
+   "svfaveg": true,
+   "svftotal": true,
+   "svfveg": true,
+   "vbshvegshmat": true,
+   "vegshmat": true
+  }
+ },
+ "recipe_digest": "7153f8d905cb4b3cc19f96eb584e0af8a71b042e7645d87bb2ef4de44cf3c990",
+ "recipe_implementation_closure": [
+  "geometry/recipe.py",
+  "geometry/service.py",
+  "geometry/shadows.py",
+  "geometry/sky_compiled.py",
+  "geometry/svf.py",
+  "geometry/visibility.py",
+  "geometry/visibility_native.py",
+  "identities.py",
+  "pipeline.py",
+  "radiation/_math_profile.py",
+  "radiation/_sleef_acos.py",
+  "radiation/_sleef_classifier.py"
+ ],
+ "recipe_policy": "common-numerical-geometry-v1",
+ "scene": "reference-35x32-real-scene",
+ "scene_inputs_sha256": {
+  "Building_DSM": "e13aefb56d224680fd0a04fbf1886faf840d73db032aa4bbe2bbc651c4d8f80a",
+  "DEM": "a550dd0b6519621fff999eb6cc7bce224c27a3c5cc17d73660c41b52767a7105",
+  "Trees": "aacbcf3ffe3296c1ad4528138555b19d59358210a4c2b5b1c636074975fc8bdc"
+ },
+ "schema": "c6-10-recipe-parity-integrated-v2"
+}

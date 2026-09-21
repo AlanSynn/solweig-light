@@ -159,11 +159,15 @@ def _run_tile(base_path, preprocess_dir, selected_date_str, tile, paths, flags, 
     cache_available = all((svf_dir / name).is_file() for name in
                           (f"SkyViewFactor_{tile}.tif", f"svfs_{tile}.zip", f"shadowmats_{tile}.npz"))
     from .cache import GeometryStore, load_legacy_geometry, content_fingerprint
-    from .identities import geometry_identity, simulation_identity
+    from .identities import simulation_identity
     from .geometry.svf import save_svf_zip_npz_outputs
     from .geometry.shadows import create_patches
+    from .geometry.recipe import numerical_geometry_recipe, guarded_producer
 
-    geometry_key = geometry_identity(paths, 2)
+    # One shared numerical recipe with the standalone route: same identity,
+    # same native key, one production per logical tile when caching is on.
+    recipe = numerical_geometry_recipe(paths, 2)
+    geometry_key = recipe.identity
     input_guard.check()
     geometry = None
     legacy_guard = None
@@ -175,13 +179,10 @@ def _run_tile(base_path, preprocess_dir, selected_date_str, tile, paths, flags, 
             patch_count=int(np.sum(create_patches(2)[4])), geotransform=metadata.transform,
             projection=metadata.projection)
         legacy_guard.check()
-        geometry_key['trusted_legacy'] = legacy_guard.fingerprints
+        geometry_key = dict(geometry_key, trusted_legacy=legacy_guard.fingerprints)
 
     def produce_geometry():
-        values = svf_calculator(2, scene.amaxvalue, scene.dsm, scene.vegdsm, scene.vegdsm2, scene.bush, scene.scale,
-                                save_rasters=False)
-        input_guard.check()
-        return dict(zip(SVF_NAMES, values))
+        return guarded_producer(recipe, input_guard.check)()
 
     if geometry is None:
         if runtime.cache_enabled:
