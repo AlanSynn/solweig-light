@@ -17,8 +17,13 @@ name: CPU reference
 env:
   GDAL_FORMULA_COMMIT: 3c01d2c89227ced6d17c28d6a784b675c991b33e
   GDAL_FORMULA_SHA256: 71ecda409f008f599b15b10f0fe6f51f8f7d052ee91f1082a801ce2ca9d3c05f
-  POPPLER_FORMULA_COMMIT: 1400ff1c03e278cebea841ae0788d984f4bbe1b9
-  POPPLER_FORMULA_SHA256: 8d966536c326bc067aa23ba84a1bddd3295763bc6052dad76a2b4fbba3b2eead
+  # poppler 26.08.0, rebuild 1: the LAST homebrew-core commit carrying
+  # 26.08.0 bottles (the version-bump commit 1400ff1c precedes bottle CI
+  # and has stale bottle checksums -> "Couldn't find manifest matching
+  # bottle checksum"). 26.08.0 is the soname-163 release the pinned
+  # gdal 3.13.3 bottle links.
+  POPPLER_FORMULA_COMMIT: 2b54d1e3b59ce2ebe3ca041756fbbfe03d4b3c19
+  POPPLER_FORMULA_SHA256: 42b509ccff3b615d6354a3b67750d7c4a6c3333926053582a155c61bed6be472
 on:
   pull_request:
   push:
