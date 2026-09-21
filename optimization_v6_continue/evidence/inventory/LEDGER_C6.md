@@ -22,7 +22,8 @@ integrator commits. Base of record for wave-1 workers: `5e1fab46`.
 | v6-cyllw | C6-21 | radiation/cylinder_longwave.py | **LANDED eea97fbd** (APPROVE-WITH-NOTES, 0 blocking; C6-70 handoff: demand_scope+restore, assert cyl=1) |
 | v6-cylsw | C6-22 | radiation/cylinder_shortwave.py | **LANDED 99681b53** (APPROVE-WITH-NOTES; prose corrections 9/4 cases, totals 823/739; C6-70 note: consider decline when _fused_enabled()) |
 | v6-gvfprep | C6-30 | radiation/gvf_prepared.py | **LANDED 986c5a09** (APPROVE-WITH-NOTES; snapshot semantics + counts independently verified; 160/160) |
-| v6-gvfpost | C6-31 | radiation/gvf_postprocess.py | worker PASS; **APPROVE-WITH-NOTES** (v6-rev631; F1 errstate(under) docstring scope, **F2 recipe snippet wrong vs base — regenerate**, F3 timing record, F4 f32 boundary assert); fixes to worker |
+| v6-gvfpost | C6-31 | radiation/gvf_postprocess.py | **LANDED d7eb148d** (APPROVE-WITH-NOTES post-fix; 139/139; recipe regenerated from verbatim base call site) |
+| v6-phases | C6-40 | runtime_phases.py | **in flight** (dispatched at 4b83452b; unblocked by C6-10+C6-03) |
 | v6-decoder | C6-50 | geometry/visibility_prepared.py | worker DELIVERED (95/95; precedence exact; NOTE: prepared slower on dev tier 71.6 vs 58.1 ms — re-measure at C6-80 before adoption); **C6-60 in flight (v6-rev650)** |
 | v6-memadm | C6-42 | runtime_memory.py | **LANDED e318c226** (APPROVE-WITH-NOTES rev3; patch apply --check PASS verified; 31/31; raw-safe count 2) |
 
@@ -30,7 +31,7 @@ integrator commits. Base of record for wave-1 workers: `5e1fab46`.
 
 | task | blocked by |
 |---|---|
-| C6-40 phase adapter (runtime_phases.py) | **UNBLOCKED — dispatching** (C6-10 landed 443ee2b7, C6-03 approved) |
+| C6-40 phase adapter (runtime_phases.py) | in flight (v6-phases, base 4b83452b) |
 | C6-70 first-wave integration | C6-60 verdicts on all selected wave-1 patches |
 | C6-80 small cold/warm portfolio | C6-70 |
 | C6-81 residual choice | C6-80 |
