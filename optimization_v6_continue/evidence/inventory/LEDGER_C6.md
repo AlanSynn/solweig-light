@@ -17,14 +17,14 @@ integrator commits. Base of record for wave-1 workers: `5e1fab46`.
 
 | worker | task | owned module | blocked-by status |
 |---|---|---|---|
-| v6-recipe | C6-10 | geometry/recipe.py + integration recipe | running |
-| v6-lside | C6-20 | radiation/pipeline_demand.py | running |
+| v6-recipe | C6-10 | geometry/recipe.py + integration recipe | worker PASS (3 gates; both routes -> shared key 7998d95e…; standalone_implementation dropped from native key); **C6-60 in flight (v6-rev610)** |
+| v6-lside | C6-20 | radiation/pipeline_demand.py | worker PASS (ALL_BITWISE_OK; 62 tests); **C6-60 in flight (v6-rev620)** |
 | v6-cyllw | C6-21 | radiation/cylinder_longwave.py | worker PASS (R-B confirmed w/ consumer chain; 39/39); **C6-60 in flight (v6-rev621)** |
 | v6-cylsw | C6-22 | radiation/cylinder_shortwave.py | worker PASS (R-C confirmed; 86 pass; parity bound to wrapper route); **C6-60 in flight (v6-rev622)** |
-| v6-gvfprep | C6-30 | radiation/gvf_prepared.py | C6-01 done → unblocked |
-| v6-gvfpost | C6-31 | radiation/gvf_postprocess.py | C6-01 done → unblocked |
-| v6-decoder | C6-50 | geometry/visibility_prepared.py | C6-01 done → unblocked |
-| v6-memadm | C6-42 | runtime_memory.py | worker PASS; **C6-60 in flight (v6-rev642)**; corrected reservations: geom 4.4320 GiB / sim 5.3476 GiB; 2x2 admit, 4x1 reject @12GiB |
+| v6-gvfprep | C6-30 | radiation/gvf_prepared.py | worker SHIP-CANDIDATE (expr 36→2; 78+82 pass); **C6-60 in flight (v6-rev630)** |
+| v6-gvfpost | C6-31 | radiation/gvf_postprocess.py | worker PASS (125 tests; serial slower, parallel 0.28x); **C6-60 in flight (v6-rev631)** |
+| v6-decoder | C6-50 | geometry/visibility_prepared.py | running |
+| v6-memadm | C6-42 | runtime_memory.py | worker PASS rev2; **C6-60 in flight (v6-rev642)**; corrected reservations: geom 4.4320 GiB / sim 5.3476 GiB; 2x2 admit, 4x1 reject @12GiB |
 
 ## Queued (not dispatched)
 
