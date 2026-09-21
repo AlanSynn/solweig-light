@@ -1,0 +1,2 @@
+# Configuration fragments, not automatic global setup
+`worktree-head.fragment.json` is a nonsecret optional session/project fragment for supported Claude Code versions. It does not select providers, change authentication, bypass permissions or create worktrees. Merge only the shown key after checking actual CLI support and existing settings. The safer portable alternative is explicit Git worktrees from recorded commit SHAs. No provider credentials/config file is shipped here.

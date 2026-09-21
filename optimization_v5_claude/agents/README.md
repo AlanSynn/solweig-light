@@ -1,0 +1,4 @@
+# Agent templates
+These files are installed into `.claude/agents/` only after preview and branch preparation. They are definitions, not launched sessions. `inherit` inherits the GLM coordinator only when that session actually uses GLM. `opus` does not switch provider; invoke those definitions only through a verified Opus route, usually a separate Claude Code profile/process. No hard maxTurns, dollar or total-token limit is set. Effort selection is made after actual model/client support is confirmed.
+
+The reviewer and source auditor have no write/command tools in these definitions. The coordinator can save their terminal structured result. Implementation and proof agents may need explicit worktrees; verify HEAD/settings rather than trusting default isolation. Installed tool names/schema must be checked once against the actual client. Template instructions are not an OS sandbox.

@@ -1,0 +1,35 @@
+schema: 1
+task_id: ASSIGN
+role: ASSIGN
+baseline_commit: ASSIGN_IMMUTABLE_SHA
+worktree: ASSIGN_ABSOLUTE_PATH
+read_only_baseline: ASSIGN
+model_route: verified-glm-or-opus-profile
+actual_backend: record-not-assume
+objective: one concrete transformation
+design_references:
+- DESIGN_AUTHORITY.md
+- IMPLEMENTATION_BLUEPRINT.md#assigned-section
+owned_paths: []
+shared_paths_not_to_edit:
+- src/solweig_light/radiation/engine.py
+- src/solweig_light/pipeline.py
+guard_and_fallback: write exact admitted domain
+observables:
+- required returns
+- mutations
+- masks and metadata
+- all affected carried state
+validation:
+  maximum_tier: L2
+  full_scale_allowed: false
+  resource_lease_required: true
+  existing_evidence_key: ASSIGN
+deliverables:
+- immutable commit
+- proof record
+- executed or reused test evidence
+- integration recipe
+- terminal result
+no_required_astra_calls: true
+no_progress_polling: true

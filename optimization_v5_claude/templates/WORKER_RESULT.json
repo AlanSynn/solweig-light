@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "task_id": null,
+  "status": "pending",
+  "base_sha": null,
+  "candidate_sha": null,
+  "source_tree_hash": null,
+  "route_manifest": null,
+  "changed_files": [],
+  "proof_record": null,
+  "executed_checks": [],
+  "reused_evidence": [],
+  "failures": [],
+  "measurements": [],
+  "integration_recipe": null,
+  "remaining_scope": [],
+  "large_workload_executed": false
+}

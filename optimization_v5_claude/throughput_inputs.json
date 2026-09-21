@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "status": "HYPOTHETICAL_NOT_CALIBRATED",
+  "tiles": 24,
+  "pixels_per_tile": 1048576,
+  "timesteps_per_tile": 24,
+  "sky_patches": 153,
+  "target_seconds": 1800,
+  "exclusive_batch_overhead_seconds": 90,
+  "hardware_assumptions": {
+    "equivalent_cores": 8,
+    "ram_budget_gib": 12,
+    "parent_and_shared_gib": 0.8,
+    "per_worker_base_gib": 1.85,
+    "per_native_thread_scratch_gib": 0.075,
+    "note": "Hypothetical homogeneous-core model, NOT an identified M1 Pro hardware profile or proven memory bound."
+  },
+  "stages": [
+    {"id": "geometry", "core_seconds": 140, "parallel": false},
+    {"id": "radiation", "core_seconds": 480, "parallel": true},
+    {"id": "gvf", "core_seconds": 320, "parallel": true},
+    {"id": "other", "core_seconds": 60, "parallel": false}
+  ],
+  "resource_measurements": {
+    "dram_gib_per_tile": null,
+    "dram_effective_gib_per_second": null,
+    "disk_gib_per_tile": null,
+    "disk_effective_gib_per_second": null
+  },
+  "settings": [[1, 4], [1, 8], [2, 4], [3, 2], [4, 2], [4, 1], [5, 1], [6, 1], [8, 1]],
+  "scenarios": [
+    {"id": "unchanged_work_tuned_scheduling", "parallel_geometry": false, "work_reductions": {}},
+    {"id": "dispatch_only", "parallel_geometry": true, "work_reductions": {}},
+    {"id": "modest_portfolio", "parallel_geometry": true, "work_reductions": {"geometry": 1.5, "radiation": 1.5, "gvf": 1.3}},
+    {"id": "target_portfolio", "parallel_geometry": true, "work_reductions": {"geometry": 2.5, "radiation": 3, "gvf": 2}},
+    {"id": "margin_portfolio", "parallel_geometry": true, "work_reductions": {"geometry": 4, "radiation": 4, "gvf": 3, "other": 1.25}}
+  ]
+}

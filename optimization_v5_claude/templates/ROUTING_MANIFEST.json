@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "cli_version": null,
+  "roles": {
+    "coordinator": {
+      "requested_model": "glm-5.3",
+      "configured_host": null,
+      "backend_verified": false,
+      "served_model_metadata": null
+    },
+    "opus_specialist": {
+      "requested_model": "opus_or_verified_wire_id",
+      "configured_host": null,
+      "backend_verified": false,
+      "served_model_metadata": null
+    }
+  },
+  "effort_requested": null,
+  "effort_acceptance_evidence": null,
+  "tool_use_smoke": null,
+  "verification_source": null,
+  "secrets_included": false,
+  "note": "Model self-description is not provider verification."
+}

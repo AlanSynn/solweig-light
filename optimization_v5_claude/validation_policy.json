@@ -1,0 +1,110 @@
+{
+  "schema": 1,
+  "policy_id": "claude-small-first-v5",
+  "status": "specification_only_not_installed",
+  "supersedes": "v4 agent routing/artificial inference caps only; lean numerical-run budgets retained",
+  "branch": {
+    "integration": "perf/claude-glm53-cpu-v5",
+    "separate_worktree": true,
+    "worker_branches": true,
+    "auto_push": false,
+    "auto_pr": false,
+    "auto_merge": false,
+    "touch_main": false
+  },
+  "tiers": {
+    "L0": {
+      "scope": "tiny proofs/guards",
+      "soft_command_cap_seconds": 60,
+      "owner": "family"
+    },
+    "L1": {
+      "preferred_max_side": 128,
+      "exception_max_side": 256,
+      "soft_command_cap_seconds": 180,
+      "owner": "family",
+      "actual_kernel_required": true
+    },
+    "L2": {
+      "preferred_max_side": 128,
+      "exception_max_side": 256,
+      "chronological_steps": [
+        24,
+        48
+      ],
+      "patches": 153,
+      "soft_command_cap_seconds": 300,
+      "owner": "family_integrator",
+      "real_tiff_pipeline_required": true
+    },
+    "L3": {
+      "default_sides": [
+        128,
+        256
+      ],
+      "exception_probe_side": 512,
+      "small_batch_tiles": [
+        2,
+        4
+      ],
+      "max_variants_per_family": 2,
+      "max_resource_tuples": 4,
+      "soft_session_cap_seconds": 600,
+      "owner": "exclusive_evidence_owner",
+      "screening_pairs_per_selected_fixture": 1,
+      "max_extra_pairs_for_close_decision": 2
+    },
+    "L4": {
+      "owner": "exclusive_evidence_owner_after_freeze",
+      "spatial_tiles": 24,
+      "actual_shape": [
+        1024,
+        1024
+      ],
+      "timesteps": 24,
+      "patches": 153,
+      "candidate_runs": 1,
+      "new_baseline_runs": 0,
+      "max_missing_reference_baseline_runs": 1,
+      "paired_trials": 0,
+      "max_causally_fixed_candidate_retries": 1,
+      "automatic_secondary_regimes": false,
+      "target_seconds": 1800,
+      "timeout_is_failure": true,
+      "evidence_scope": "single_observation_not_reliability_or_speedup_distribution"
+    }
+  },
+  "development_large_runs_allowed": false,
+  "worker_maximum_tier": "L2",
+  "testing_trigger": "coherent_behavioral_change_and_changed_dependency_closure",
+  "release_matrix_automatic": false,
+  "ci": {
+    "development": "local_only_no_push",
+    "large_runs_on_pr": false,
+    "new_platform_matrix_automatic": false,
+    "small_real_e2e_preserved": true,
+    "required_checks_preserved": true,
+    "global_disable_allowed": false
+  },
+  "evidence_key_fields": [
+    "source_dependency_closure",
+    "generated_code_and_guards",
+    "test_harness_and_rules",
+    "fixture_and_reference_hashes",
+    "environment_compiler_math_profile",
+    "runtime_thread_block_layout_cache",
+    "input_mutability_and_exception_policy"
+  ],
+  "model_execution_results": null,
+  "agent_policy": {
+    "coordinator": "GLM-5.3 in Claude Code",
+    "preferred_specialist": "actual Anthropic Opus on verified route",
+    "required_astra_calls": 0,
+    "artificial_token_cap": null,
+    "artificial_total_agent_cap": null,
+    "logical_concurrency": "elastic_dependency_frontier",
+    "local_compute": "central_resource_admission",
+    "benchmark_concurrency": 1,
+    "model_driven_progress_polling": false
+  }
+}

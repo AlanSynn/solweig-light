@@ -1,0 +1,401 @@
+schema: 1
+status: specification_only
+project: solweig-light
+orchestration:
+  coordinator: GLM-5.3 in Claude Code
+  numerical_specialist: verified Anthropic Opus preferred
+  required_astra_calls: 0
+  artificial_token_limit: null
+  artificial_total_agent_limit: null
+  parallel_dispatch: all useful ready independent tasks subject to actual resources
+  maximum_simultaneous_benchmarks: 1
+  writer_policy: one owner per scope
+  completion_trigger: terminal events / supported blocking wait
+  global_progress_polling: false
+dependency_semantics:
+  selected_primary_tasks: complete or honestly rejected/not_selected after deciding
+    evidence; never count rejection as a numerical pass
+  conditional_tasks: not activated by default
+  C5-60: also requires terminal accepted/rejected outcomes and independent review
+    for every dynamically selected C5-50..54 patch
+  loop_policy: do not create static cyclic DAG; residual attempts append new immutable
+    task IDs before final freeze
+  all_workers: route must be verified before claiming model identity; separate writer
+    workspace and assigned base required
+branch: perf/claude-glm53-cpu-v5
+tasks:
+- id: C5-00
+  title: Create isolated integration branch; inventory user changes
+  status: pending
+  depends_on: []
+  role: integrator
+  owned_scope:
+  - optimization_v5_claude/evidence/setup/
+  maximum_validation_tier: none
+  source_base: immutable integration SHA assigned in work packet
+  completion: terminal commit/evidence result; no progress polling
+- id: C5-01
+  title: Verify GLM and actual Opus routes and client capabilities
+  status: pending
+  depends_on:
+  - C5-00
+  role: coordinator
+  owned_scope:
+  - optimization_v5_claude/evidence/routing/
+  maximum_validation_tier: none
+  source_base: immutable integration SHA assigned in work packet
+  completion: terminal commit/evidence result; no progress polling
+- id: C5-02
+  title: Map current numerical contracts, source and retained evidence
+  status: pending
+  depends_on:
+  - C5-00
+  role: source_auditor
+  owned_scope:
+  - optimization_v5_claude/evidence/inventory/
+  maximum_validation_tier: none
+  source_base: immutable integration SHA assigned in work packet
+  completion: terminal commit/evidence result; no progress polling
+- id: C5-03
+  title: Freeze lean small/reference and final protocol
+  status: pending
+  depends_on:
+  - C5-02
+  role: performance_owner
+  owned_scope:
+  - benchmarks/protocols/claude_v5/
+  maximum_validation_tier: none
+  source_base: immutable integration SHA assigned in work packet
+  completion: terminal commit/evidence result; no progress polling
+- id: C5-04
+  title: Freeze private interfaces and write ownership
+  status: pending
+  depends_on:
+  - C5-02
+  role: integrator
+  owned_scope:
+  - optimization_v5_claude/evidence/interfaces/
+  maximum_validation_tier: none
+  source_base: immutable integration SHA assigned in work packet
+  completion: terminal commit/evidence result; no progress polling
+- id: C5-10
+  title: Audit sky absorption and suffix proof
+  status: pending
+  depends_on:
+  - C5-02
+  role: opus_proof
+  owned_scope:
+  - optimization_v5_claude/evidence/proofs/rays/
+  maximum_validation_tier: L0
+  source_base: immutable integration SHA assigned in work packet
+  completion: terminal commit/evidence result; no progress polling
+- id: C5-11
+  title: Audit typed radiation contributions and layout
+  status: pending
+  depends_on:
+  - C5-02
+  role: opus_proof
+  owned_scope:
+  - optimization_v5_claude/evidence/proofs/radiation/
+  maximum_validation_tier: L0
+  source_base: immutable integration SHA assigned in work packet
+  completion: terminal commit/evidence result; no progress polling
+- id: C5-12
+  title: Audit GVF prefix, water snapshots and static dependencies
+  status: pending
+  depends_on:
+  - C5-02
+  role: opus_proof
+  owned_scope:
+  - optimization_v5_claude/evidence/proofs/gvf/
+  maximum_validation_tier: L0
+  source_base: immutable integration SHA assigned in work packet
+  completion: terminal commit/evidence result; no progress polling
+- id: C5-13
+  title: Build allocation/liveness and lifecycle inventory
+  status: pending
+  depends_on:
+  - C5-02
+  role: runtime_specialist
+  owned_scope:
+  - optimization_v5_claude/evidence/memory/
+  maximum_validation_tier: L0
+  source_base: immutable integration SHA assigned in work packet
+  completion: terminal commit/evidence result; no progress polling
+- id: C5-14
+  title: Prepare small actual-kernel differential adapters
+  status: pending
+  depends_on:
+  - C5-03
+  role: fixture_specialist
+  owned_scope:
+  - tests/optimization_v5/reference_support/
+  maximum_validation_tier: L2
+  source_base: immutable integration SHA assigned in work packet
+  completion: terminal commit/evidence result; no progress polling
+- id: C5-15
+  title: Small baseline stage/counter census
+  status: pending
+  depends_on:
+  - C5-03
+  - C5-14
+  role: performance_owner
+  owned_scope:
+  - optimization_v5_claude/evidence/census/
+  maximum_validation_tier: L3
+  source_base: immutable integration SHA assigned in work packet
+  completion: terminal commit/evidence result; no progress polling
+- id: C5-20
+  title: Implement guarded sky fast paths as separate patches
+  status: pending
+  depends_on:
+  - C5-01
+  - C5-04
+  - C5-10
+  - C5-14
+  - C5-15
+  role: opus_or_glm_implementer
+  owned_scope:
+  - src/solweig_light/geometry/sky_compiled.py
+  - src/solweig_light/geometry/shadows.py
+  - src/solweig_light/geometry/svf.py
+  - tests/optimization_v5/rays/
+  maximum_validation_tier: L2
+  source_base: immutable integration SHA assigned in work packet
+  completion: terminal commit/evidence result; no progress polling
+- id: C5-21
+  title: Implement ordered radiation layout and exact contributions
+  status: pending
+  depends_on:
+  - C5-01
+  - C5-04
+  - C5-11
+  - C5-14
+  - C5-15
+  role: opus_or_glm_implementer
+  owned_scope:
+  - src/solweig_light/radiation/patch_radiation.py
+  - src/solweig_light/geometry/visibility_compiled.py
+  - tests/optimization_v5/radiation/
+  maximum_validation_tier: L2
+  source_base: immutable integration SHA assigned in work packet
+  completion: terminal commit/evidence result; no progress polling
+- id: C5-22
+  title: Implement owned GVF preparation and fused receivers
+  status: pending
+  depends_on:
+  - C5-01
+  - C5-04
+  - C5-12
+  - C5-14
+  - C5-15
+  role: opus_or_glm_implementer
+  owned_scope:
+  - src/solweig_light/radiation/ground_view.py
+  - tests/optimization_v5/gvf/
+  maximum_validation_tier: L2
+  source_base: immutable integration SHA assigned in work packet
+  completion: terminal commit/evidence result; no progress polling
+- id: C5-23
+  title: Implement measured memory admission and worker lifecycle
+  status: pending
+  depends_on:
+  - C5-01
+  - C5-04
+  - C5-13
+  - C5-14
+  - C5-15
+  role: runtime_specialist
+  owned_scope:
+  - src/solweig_light/runtime.py
+  - src/solweig_light/runtime_worker.py
+  - tests/optimization_v5/runtime/
+  maximum_validation_tier: L2
+  source_base: immutable integration SHA assigned in work packet
+  completion: terminal commit/evidence result; no progress polling
+- id: C5-30
+  title: Independent immutable rays patch review
+  status: pending
+  depends_on:
+  - C5-20
+  role: opus_reviewer
+  owned_scope:
+  - optimization_v5_claude/evidence/reviews/rays/
+  maximum_validation_tier: none
+  source_base: immutable integration SHA assigned in work packet
+  completion: terminal commit/evidence result; no progress polling
+- id: C5-31
+  title: Independent immutable radiation patch review
+  status: pending
+  depends_on:
+  - C5-21
+  role: opus_reviewer
+  owned_scope:
+  - optimization_v5_claude/evidence/reviews/radiation/
+  maximum_validation_tier: none
+  source_base: immutable integration SHA assigned in work packet
+  completion: terminal commit/evidence result; no progress polling
+- id: C5-32
+  title: Independent immutable gvf patch review
+  status: pending
+  depends_on:
+  - C5-22
+  role: opus_reviewer
+  owned_scope:
+  - optimization_v5_claude/evidence/reviews/gvf/
+  maximum_validation_tier: none
+  source_base: immutable integration SHA assigned in work packet
+  completion: terminal commit/evidence result; no progress polling
+- id: C5-33
+  title: Independent immutable runtime patch review
+  status: pending
+  depends_on:
+  - C5-23
+  role: opus_reviewer
+  owned_scope:
+  - optimization_v5_claude/evidence/reviews/runtime/
+  maximum_validation_tier: none
+  source_base: immutable integration SHA assigned in work packet
+  completion: terminal commit/evidence result; no progress polling
+- id: C5-40
+  title: Integrate accepted first-wave source and shared dispatch
+  status: pending
+  depends_on:
+  - C5-30
+  - C5-31
+  - C5-32
+  - C5-33
+  role: integrator
+  owned_scope:
+  - src/solweig_light/radiation/engine.py
+  - src/solweig_light/pipeline.py
+  - shared API/config/schema/ledger
+  maximum_validation_tier: L2
+  source_base: immutable integration SHA assigned in work packet
+  completion: terminal commit/evidence result; no progress polling
+- id: C5-41
+  title: Small combined portfolio comparison
+  status: pending
+  depends_on:
+  - C5-40
+  role: performance_owner
+  owned_scope:
+  - optimization_v5_claude/evidence/portfolio/
+  maximum_validation_tier: L3
+  source_base: immutable integration SHA assigned in work packet
+  completion: terminal commit/evidence result; no progress polling
+- id: C5-50
+  title: Optional bush/wall specialized certificates
+  status: pending
+  depends_on:
+  - C5-41
+  role: opus_or_glm_implementer
+  owned_scope:
+  - ray family scope transferred after prior owner terminates
+  maximum_validation_tier: L2
+  source_base: immutable integration SHA assigned in work packet
+  completion: terminal commit/evidence result; no progress polling
+  activate_when: measured residual and proof coverage justify
+- id: C5-51
+  title: Optional exact classifier/signature reuse
+  status: pending
+  depends_on:
+  - C5-41
+  role: opus_or_glm_implementer
+  owned_scope:
+  - radiation family scope transferred after prior owner terminates
+  maximum_validation_tier: L2
+  source_base: immutable integration SHA assigned in work packet
+  completion: terminal commit/evidence result; no progress polling
+  activate_when: exact cardinality/cost census predicts benefit
+- id: C5-52
+  title: Optional GVF prefix/static/material replay
+  status: pending
+  depends_on:
+  - C5-41
+  role: opus_or_glm_implementer
+  owned_scope:
+  - GVF family scope transferred after prior owner terminates
+  maximum_validation_tier: L2
+  source_base: immutable integration SHA assigned in work packet
+  completion: terminal commit/evidence result; no progress polling
+  activate_when: prefix/material census predicts benefit
+- id: C5-53
+  title: Optional codec/out-of-core/durable I/O
+  status: pending
+  depends_on:
+  - C5-41
+  role: runtime_specialist
+  owned_scope:
+  - storage/persistence scope explicitly transferred
+  maximum_validation_tier: L2
+  source_base: immutable integration SHA assigned in work packet
+  completion: terminal commit/evidence result; no progress polling
+  activate_when: memory/raw/IO bottleneck is material
+- id: C5-54
+  title: Optional comfort/forcing terminal specialization
+  status: pending
+  depends_on:
+  - C5-41
+  role: opus_or_glm_implementer
+  owned_scope:
+  - comfort/forcing scope assigned without shared dispatch
+  maximum_validation_tier: L2
+  source_base: immutable integration SHA assigned in work packet
+  completion: terminal commit/evidence result; no progress polling
+  activate_when: actual residual rather than convenient microbenchmark
+- id: C5-60
+  title: Independent review and integration of selected residual patches
+  status: pending
+  depends_on:
+  - C5-41
+  role: integrator
+  owned_scope:
+  - shared dispatch and optimization_v5_claude/evidence/final_review/
+  maximum_validation_tier: L2
+  source_base: immutable integration SHA assigned in work packet
+  completion: terminal commit/evidence result; no progress polling
+- id: C5-61
+  title: Freeze final source/wheel/environment and small installed check
+  status: pending
+  depends_on:
+  - C5-60
+  role: integrator
+  owned_scope:
+  - optimization_v5_claude/evidence/freeze/
+  maximum_validation_tier: L2
+  source_base: immutable integration SHA assigned in work packet
+  completion: terminal commit/evidence result; no progress polling
+- id: C5-62
+  title: One final-scale campaign including permitted corrective retry
+  status: pending
+  depends_on:
+  - C5-61
+  role: performance_owner
+  owned_scope:
+  - optimization_v5_claude/evidence/final_batch/
+  maximum_validation_tier: L4
+  source_base: immutable integration SHA assigned in work packet
+  completion: terminal commit/evidence result; no progress polling
+- id: C5-63
+  title: Independent final evidence scope review
+  status: pending
+  depends_on:
+  - C5-62
+  role: opus_reviewer
+  owned_scope:
+  - optimization_v5_claude/evidence/final_scope/
+  maximum_validation_tier: none
+  source_base: immutable integration SHA assigned in work packet
+  completion: terminal commit/evidence result; no progress polling
+- id: C5-64
+  title: Deliver unmerged branch and reproducible handover
+  status: pending
+  depends_on:
+  - C5-63
+  role: integrator
+  owned_scope:
+  - optimization_v5_claude/evidence/handover/
+  maximum_validation_tier: none
+  source_base: immutable integration SHA assigned in work packet
+  completion: terminal commit/evidence result; no progress polling
