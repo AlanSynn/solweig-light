@@ -80,3 +80,47 @@ Known flake `tests/differential::test_compiled_patch_parallel_diagnostics` not e
 ## Probes/artifacts
 
 Probe scripts: `/tmp/c531/probe1.py`, `/tmp/c531/probe2.py`, `/tmp/c531/probe3.py`, normalized-kernel diff `/tmp/c531/normdiff.py`. No writes to the rad worktree.
+
+---
+
+# ADDENDUM — C5-31 rework verification (2026-09-21)
+
+Scope: a5b05fdd (C5-31 Finding-1 fix) + 611deaff (default-off gate) + ba024eeb (kernel rework); integration merge 39b3fab0. Original review above stands; this addendum verifies the rework only.
+
+## Verdict: REWORK-ACCEPTED
+
+## 0. Prior findings resolved
+
+- **Finding 1 (MEDIUM, fixed)** — a5b05fdd: `_packed_leaves(channel, allow_lazy=False)`; only the diffuse position (index==3) passes `allow_lazy=True` (patch_radiation.py `_shortwave_fused_block`). A lazy direct channel now falls back. Regression test covers admission, both dispatchers, and the bitwise end-to-end probe from my original review.
+- **Activation answer AMENDED** — 611deaff: both dispatchers return `None` unless `SOLWEIG_LIGHT_FUSED_RAD == '1'` (`_fused_enabled()`, default OFF, confirmed by fresh-process probe). The fused route is wired and correct but **dormant by default** in the real pipeline; the retained route is the production default per the measured rejection.
+
+## (a) `_decode_at` bit-exactness — PASS
+
+Codebook via `np.float32(code)`: codes 0/1/2 → 0.0/1.0/2.0, whose float32 bit patterns are exactly 0x00000000/0x3f800000/0x40000000 — identical to base `_decode`'s uint32 constants + array view. Raw mode assembles the little-endian uint32 from `flat[base+pixel*4 .. +3]` and scalar-bitcasts via `np.uint32(bits).view(np.float32)` — same 4 bytes base reads from `payload[pixel*4..]` (flat layout is an exact concatenation; offsets are cumulative payload lengths guaranteed by `PackedVisibility.__post_init__`). Binary/ternary shift/mask/byte-index arithmetic token-identical to base (`pixel // (8//mode)`, `(pixel % (8//mode))*mode`, mask `(1<<mode)-1`). Probe F: `_decode_at` per (patch,pixel) is bitwise-equal to the untouched `decode_block` for binary, ternary, and raw channels (3072 values each).
+
+## (b) Preflight order parity — PASS
+
+`_preflight_flat` keeps `_decode`'s patch-major/pixel-inner walk; dispatcher order sh → vs → vb → dsh (if not shared) → dveg (if lazy and not shared) preserves the retained observable read order; a shared descriptor's stream is preflighted exactly once under its base position. Probe G (adversarial layout: reserved code late in sh at patch 11/pixel 250, early in vs at patch 0/pixel 3, 17-pixel blocks): fused and retained raise `IndexError('Reserved visibility code')` on exactly the same block set — MATCH on every block. Prior-block commit parity: the rework diff does not touch the Kside/Lside caller loops; the dispatcher raises before the kernel launches, so no block output is written on failure — same observable as base.
+
+## (c) LW occlusion buffer — PASS
+
+Sweep 1 stores `masks[row,patch] = sh_v==0 or vs_v==0 or vb_v==0` from the same decode-once values base re-derives the predicate from; sweep 2 consumes `mask=masks[row,patch]` in the identical full `for patch in range(patches)` loop — no patch skipped, added, or reordered; the buffer is written and consumed within the same `row` iteration (no cross-thread visibility concern). Reserved codes raise in `_preflight_flat` before the kernel exists, so no buffer content is consumed on a rejected block. The `reflected` expression and output column mapping remain token-identical to base (normalized diff).
+
+## (d) Descriptor identity — PASS (no false sharing)
+
+Sharing is identity of the cached `_fused_block_descriptor` tuple (per-object attribute), never content comparison. Probe H: same channel object → same tuple (cache hit, and `dsh_desc is sh_desc` is True for the pipeline's `LazyDiffVisibility(shmat, vegshmat)` — matching the retained route's `diffuse.shadow is shadow` reuse semantics); equal-content channels with distinct storage → distinct descriptors (decoded and preflighted separately, like the retained route). Payload immutability (frozen dataclass + immutable bytes; MappedVisibility cannot reopen after close) makes the cache sound; the flat buffer is a detached copy, so post-close kernel use is impossible anyway (`_check_open` in the guard).
+
+## (e) Rework kernels vs retained — PASS
+
+Normalized-token diff of the per-pixel `_shortwave_fused`/`_longwave_fused` bodies against the retained kernels: only expected additions (decode-once via `_decode_at`, lazy-diff application with shared-leaf reuse `d_v = sh_v if dsh_shared else ...`, mask store/load). Every arithmetic expression, accumulation order (per-pixel patch 0..152 into `out[row,c]` from +0.0), both box branches, and the reflected term are token-identical. No allocations inside the prange loop (`masks`/`output` allocated once per call). `out=np.zeros` init is bitwise the +0.0 base starts from and every row/column is written.
+
+## (f) Run
+
+`NUMBA_NUM_THREADS=2 pytest tests/optimization_v5/radiation -q` → **95 passed, 20 skipped** in 127.9s (expected 95). The two new `probe_*.py` files are not pytest-collected and are labeled probes, not benchmark claims.
+
+## New findings
+
+1. **INFO** — `_fused_descriptor` copies each admitted channel's payload into a flat buffer (cached per channel; ~1.25 MB per binary channel at 256x256x153, 4 MB per raw channel). Bounded, one-time, and it removes the typed-list serialization the tile kernels suffered; acceptable.
+2. **INFO** — `masks` adds an O(block_pixels x patches) bool allocation per block (~19.7 KB at defaults). Negligible.
+
+Probes: `/tmp/c531/probe4.py` (F–I), `/tmp/c531/normdiff2.py`.

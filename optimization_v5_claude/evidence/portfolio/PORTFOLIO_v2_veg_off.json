@@ -1,0 +1,53 @@
+{
+ "schema": "c5-41-portfolio-v1",
+ "scene": "/tmp/scene_veg256",
+ "commit": "0ecb90428ad51315ecef47794c271e4806024406",
+ "measurement_class": "L3 central-lab diagnostic timing, warm in-process run_tile, min/median of 3, exclusive host lease required",
+ "configs": {
+  "source_default_t1_b128": {
+   "times_s": [
+    15.369,
+    14.991,
+    15.078
+   ],
+   "min_s": 14.991,
+   "median_s": 15.078
+  },
+  "t1_b1024": {
+   "times_s": [
+    14.478,
+    14.621,
+    14.601
+   ],
+   "min_s": 14.478,
+   "median_s": 14.601
+  },
+  "t4_b128": {
+   "times_s": [
+    13.869,
+    13.8,
+    13.939
+   ],
+   "min_s": 13.8,
+   "median_s": 13.869
+  },
+  "t4_b1024": {
+   "times_s": [
+    9.036,
+    9.107,
+    9.035
+   ],
+   "min_s": 9.035,
+   "median_s": 9.036
+  },
+  "t2_b1024": {
+   "times_s": [
+    9.031,
+    9.03,
+    8.987
+   ],
+   "min_s": 8.987,
+   "median_s": 9.03
+  }
+ }
+}

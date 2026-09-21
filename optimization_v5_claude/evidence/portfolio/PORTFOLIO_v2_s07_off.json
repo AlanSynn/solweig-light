@@ -1,0 +1,53 @@
+{
+ "schema": "c5-41-portfolio-v1",
+ "scene": "optimization_v5_claude/evidence/census/scene_dense256",
+ "commit": "0ecb90428ad51315ecef47794c271e4806024406",
+ "measurement_class": "L3 central-lab diagnostic timing, warm in-process run_tile, min/median of 3, exclusive host lease required",
+ "configs": {
+  "source_default_t1_b128": {
+   "times_s": [
+    15.164,
+    15.097,
+    14.972
+   ],
+   "min_s": 14.972,
+   "median_s": 15.097
+  },
+  "t1_b1024": {
+   "times_s": [
+    14.517,
+    14.449,
+    14.555
+   ],
+   "min_s": 14.449,
+   "median_s": 14.517
+  },
+  "t4_b128": {
+   "times_s": [
+    13.788,
+    13.675,
+    13.626
+   ],
+   "min_s": 13.626,
+   "median_s": 13.675
+  },
+  "t4_b1024": {
+   "times_s": [
+    8.922,
+    9.124,
+    8.972
+   ],
+   "min_s": 8.922,
+   "median_s": 8.972
+  },
+  "t2_b1024": {
+   "times_s": [
+    8.952,
+    8.956,
+    8.993
+   ],
+   "min_s": 8.952,
+   "median_s": 8.956
+  }
+ }
+}
