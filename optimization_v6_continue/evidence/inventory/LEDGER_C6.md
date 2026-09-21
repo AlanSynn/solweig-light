@@ -57,12 +57,11 @@ Reviewer recompute: 541 + 35 scoped tests green on the integrated tree.
 
 | task | blocked by |
 |---|---|
-| C6-80 small cold/warm portfolio | UNBLOCKED (C6-70 reviewed+closed, C6-40 landed); exclusive benchmark lease required |
-| C6-80 small cold/warm portfolio | C6-70 review verdict + C6-40 landed |
-| C6-81 residual choice | C6-80 |
-| C6-90..94 conditional | C6-81 selection |
-| C6-99 final integration | selected optionals reviewed |
-| C6-100 freeze → C6-101 campaign → C6-102 audit → C6-103 handover | C6-99 |
+| C6-80 small cold/warm portfolio | **DONE** (evidence committed 2ce117e0) |
+| C6-81 residual choice | **DONE** (selection record 46450c75-series; decoder declined via opt-in gate 46450c75) |
+| C6-90..94 conditional | **NOT SELECTED** (no measured activation case; see evidence/selection/C6-81_selection.md) |
+| C6-99 final integration | reduce to branch-surface confirmation (zero selected optionals) |
+| C6-100 freeze → C6-101 campaign → C6-102 audit → C6-103 handover | C6-99; C6-101 scope unverified until the actual 24-tile dataset exists |
 
 Standing facts: routing = GLM via Z.ai, Opus unavailable (INVENTORY_C6-00.md).
 24-tile target dataset still absent (synthetic 24-tile load = load test, not
@@ -74,8 +73,9 @@ Integrator sign-off items for C6-70 (status after integration):
   in api.py with policy='reject'); width-2 sensitivity is inherited from
   the pre-existing availability-sensitive budget resolution and is now
   C6-40 phase-adapter territory.
-- OPEN until C6-80: confirm GDAL_CACHEMAX cap causes no per-worker cache
-  regression (needs uncontended timing; dev tier cannot show it).
+- RESOLVED at C6-80: GDAL_CACHEMAX cap shows no per-worker cache
+  regression at the timing tier (cap active in worker/phase children;
+  integrated cold wins, warm wash — evidence/portfolio/README_C6-80.md).
 - STANDING base fact (unchanged): wrapper cylinder-shortwave route is not
   bitwise vs serial reference at base; specialization gates bind to the
   wrapper route (C6-70e respects this; hook declines under fused).
