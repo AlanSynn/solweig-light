@@ -58,7 +58,7 @@ Reviewer recompute: 541 + 35 scoped tests green on the integrated tree.
 | task | blocked by |
 |---|---|
 | C6-80 small cold/warm portfolio | **DONE** (evidence committed 2ce117e0) |
-| C6-81 residual choice | **DONE** (selection record 46450c75-series; decoder declined via opt-in gate 46450c75) |
+| C6-81 residual choice | **DONE + APPROVE** (selection 5928ead4; decoder declined 46450c75; independent GLM review APPROVE, Opus unavailable — evidence/reviews/C6-81_review_decoder_decline.md; F1 marker registration fixed at landing) |
 | C6-90..94 conditional | **NOT SELECTED** (no measured activation case; see evidence/selection/C6-81_selection.md) |
 | C6-99 final integration | reduce to branch-surface confirmation (zero selected optionals) |
 | C6-100 freeze → C6-101 campaign → C6-102 audit → C6-103 handover | C6-99; C6-101 scope unverified until the actual 24-tile dataset exists |
