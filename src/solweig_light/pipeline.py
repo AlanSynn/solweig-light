@@ -260,7 +260,10 @@ def _run_tile(base_path, preprocess_dir, selected_date_str, tile, paths, flags, 
         assert args['cyl'] and args['anisotropic_sky'] == 1, \
             'reduced private demand profiles require the standard cylinder-anisotropic workflow'
         _previous_lw_demand = _cyl_lw.set_demand(_cyl_lw.CylinderLongwaveDemand.PIPELINE_CYLINDERS_ANISOTROPIC)
-        _previous_sw_profile = _cyl_sw.set_demand_profile(_cyl_sw.PIPELINE_CYLINDER_ANISOTROPIC)
+        # cylinder_shortwave.set_demand_profile deliberately returns None
+        # (set-only API); capture the ambient profile before switching.
+        _previous_sw_profile = _cyl_sw.demand_profile()
+        _cyl_sw.set_demand_profile(_cyl_sw.PIPELINE_CYLINDER_ANISOTROPIC)
         try:
             for i in range(start, len(timeline.met)):
                 if scene.landcover and (i == 0 or timeline.dectime[i] % 1 == 0):
@@ -268,9 +271,14 @@ def _run_tile(base_path, preprocess_dir, selected_date_str, tile, paths, flags, 
                 if timeline.dectime[i] % 1 == 0:
                     state.CI = 1.0  # Original np.where tuple-length branch always selects this for 1D dectime.
                 dynamic = timeline.at(i)
-                result = Solweig_2022a_calc(i=i, **args, **state.engine_arguments(), **dynamic, altitude=timeline.altitude[0, i],
-                    azimuth=timeline.azimuth[0, i], zen=timeline.zen[0, i], jday=timeline.jday[0, i],
-                    psi=timeline.psi[i], dectime=timeline.dectime[i], altmax=timeline.altmax[0, i], Twater=state.Twater)
+                # C6-20: the anisotropic Lside fast path is opted into per
+                # thread by the private demand context (recipe: driver-side
+                # placement); non-admitted inputs still fall back internally.
+                from .radiation.pipeline_demand import RadiationDemand, radiation_demand
+                with radiation_demand(RadiationDemand.PIPELINE_CYLINDER_ANISOTROPIC):
+                    result = Solweig_2022a_calc(i=i, **args, **state.engine_arguments(), **dynamic, altitude=timeline.altitude[0, i],
+                        azimuth=timeline.azimuth[0, i], zen=timeline.zen[0, i], jday=timeline.jday[0, i],
+                        psi=timeline.psi[i], dectime=timeline.dectime[i], altmax=timeline.altmax[0, i], Twater=state.Twater)
                 fields = dict(zip(RETURN_NAMES, result))
                 state.accept(fields)
                 direction = timeline.wind_direction[i]
