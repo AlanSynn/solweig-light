@@ -1739,14 +1739,18 @@ from .ground_view import sunonsurface_2018a
 
 def gvf_2018a(wallsun, walls, buildings, scale, shadow, first, second, dirwalls, Tg, Tgwall, Ta, emis_grid, ewall, alb_grid, SBC, albedo_b, rows, cols, Twater, lc_grid, landcover):
     """Dispatch the identical ordered gather within the admitted CPU budget."""
-    from .ground_view import _gvf_fused, gvf_2018a as serial, gvf_2018a_parallel as parallel
+    from .ground_view import gvf_2018a as serial, gvf_2018a_parallel as parallel
+    from .gvf_prepared import prepared_gvf_step
     from ..runtime import get_runtime_options
     threads = get_runtime_options().threads_per_worker
     if threads > 1:
-        # C5-22 G03: fused row-block route; its guard union delegates anything
-        # unsupported (water-class Tg aliases, bush states, nonfinite steps)
-        # back to the exact per-direction full route.
-        return _gvf_fused(wallsun, walls, buildings, scale, shadow, first, second, dirwalls, Tg, Tgwall, Ta, emis_grid, ewall, alb_grid, SBC, albedo_b, rows, cols, Twater, lc_grid, landcover, parallel=True, block_rows=32)
+        # C6-30: prepared source-expression snapshot; its guard union is the
+        # C5-22 G03 fused union PLUS three stronger alias exclusions required
+        # by the once-per-call snapshots (lc_grid/dirwalls/Twater vs Tg), and
+        # every unsupported input delegates to the exact per-direction full
+        # route. SOLWEIG_LIGHT_GVF_PREPARE=0 routes every call to the
+        # previous fused path bitwise.
+        return prepared_gvf_step(wallsun, walls, buildings, scale, shadow, first, second, dirwalls, Tg, Tgwall, Ta, emis_grid, ewall, alb_grid, SBC, albedo_b, rows, cols, Twater, lc_grid, landcover, parallel=True, block_rows=32)
     return serial(wallsun, walls, buildings, scale, shadow, first, second, dirwalls, Tg, Tgwall, Ta, emis_grid, ewall, alb_grid, SBC, albedo_b, rows, cols, Twater, lc_grid, landcover)
 
 
