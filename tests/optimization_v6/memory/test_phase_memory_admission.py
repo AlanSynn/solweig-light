@@ -473,8 +473,13 @@ def test_json_safety_round_trips():
 def test_module_is_inert_until_wired():
     """Gate: no behavioural change without integration.  The private module
     adds no native-math imports of its own (numba would appear in sys.modules
-    only if the module pulled it in) and is imported by nothing else in
-    src/ (the integrator wiring will change the latter)."""
+    only if the module pulled it in).
+
+    Integrated-tree form (C6-70): wiring is real, so the importer set is
+    pinned to exactly the intended wiring points — api.py (W1 simulation
+    admission) and runtime.py (W3 GDAL_CACHEMAX cap).  service.py (W2
+    geometry-phase admission) is deliberately deferred to the C6-40 phase
+    adapter per m7 §3; when it lands, extend this pin."""
     code = (
         "import sys; sys.path.insert(0, " + repr(str(SRC)) + "); "
         "import solweig_light.runtime; "
@@ -487,13 +492,13 @@ def test_module_is_inert_until_wired():
     subprocess.run([sys.executable, "-c", code], check=True)
 
     src_root = SRC / "solweig_light"
-    importers = [
+    importers = sorted(
         path.name
         for path in src_root.rglob("*.py")
         if path.name != "runtime_memory.py"
         and "runtime_memory" in path.read_text(encoding="utf-8")
-    ]
-    assert importers == [], f"unexpected importers in src: {importers}"
+    )
+    assert importers == ["api.py", "runtime.py"], f"unexpected importers in src: {importers}"
 
 
 def test_shape_from_building_dsm_missing_file_raises_explicitly():

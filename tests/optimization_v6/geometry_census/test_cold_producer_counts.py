@@ -226,8 +226,17 @@ def persist(payload, name):
 
 
 def thermal_comfort(scene):
-    from solweig_light import thermal_comfort as run
-    run(str(scene), DATE, own_met_file=str(scene / 'met.txt'), ERA_5_z0_find=False)
+    import dataclasses
+    from solweig_light import RuntimeOptions, runtime_options, thermal_comfort as run
+    from solweig_light.runtime import get_runtime_options
+    # Explicit budget: the auto-resolved budget tracks transient available
+    # host memory, which other local workers contend; these tests pin
+    # production-counting behavior, not admission boundary sensitivity.
+    # Merge with the ambient options so caller-set flags survive.
+    merged = dataclasses.replace(get_runtime_options(),
+                                 memory_budget_bytes=12 * 1024 ** 3)
+    with runtime_options(merged):
+        run(str(scene), DATE, own_met_file=str(scene / 'met.txt'), ERA_5_z0_find=False)
 
 
 def test_cold_then_warm_producer_census(tmp_path):

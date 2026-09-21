@@ -673,6 +673,12 @@ def _child_environment(options: RuntimeOptions) -> dict[str, str]:
         "NUMBA_NUM_THREADS",
     ):
         env[name] = value
+    # C6-42: cap the per-process GDAL block cache at the allowance the phase
+    # admission calculator charges (5% of physical RAM when GDAL_CACHEMAX is
+    # unset; M2 §5).  GDAL reads this at first use in each fresh child, the
+    # same mechanism as the thread caps above.  Value is megabytes.
+    from .runtime_memory import default_gdal_cache_bytes
+    env['GDAL_CACHEMAX'] = str(max(1, default_gdal_cache_bytes() // (1024 * 1024)))
     return env
 
 

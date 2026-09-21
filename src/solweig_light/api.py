@@ -155,6 +155,30 @@ def run_utci_tiles(
         jobs.append(dict(base_path=base_path, preprocess_dir=preprocess_dir,
                          selected_date_str=selected_date_str, tile=tile, paths=paths, flags=flags))
     plan_admission(jobs, runtime)
+    # C6-42: corrected phase admission (private calculator; parent-side,
+    # in-process only).  policy='reject' preserves the public resource-failure
+    # semantics: ResourceAdmissionError aborts before any worker is spawned,
+    # so first-serial-order failure and publication semantics are unchanged.
+    from .runtime_memory import (
+        PHASE_SIMULATION,
+        PhaseJob,
+        default_gdal_cache_bytes,
+        plan_phase_admission,
+        shape_from_building_dsm,
+    )
+    plan_phase_admission(
+        [PhaseJob(PHASE_SIMULATION,
+                  **shape_from_building_dsm(
+                      job['paths'], block_pixels=runtime.block_pixels).to_dict(),
+                  tile=job['tile'])
+         for job in jobs],
+        budget_bytes=runtime.resolved_memory_budget_bytes,
+        active_workers=min(runtime.workers,
+                           max(1, runtime.cpu_budget // runtime.threads_per_worker)),
+        threads_per_worker=runtime.threads_per_worker,
+        gdal_cache_bytes=default_gdal_cache_bytes(),
+        policy='reject',
+    )
     # Even one public tile gets native limits before numerical libraries load.
     # The internal run_tile entry remains available to numerical test harnesses.
     execute_tiles(jobs, runtime)
