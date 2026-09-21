@@ -293,3 +293,106 @@ def test_public_entries_match_internal_and_baseline():
         parallel = ground_view.gvf_2018a_parallel(**snapshots(scene))
     assert_gvf_outputs(serial, expected)
     assert_gvf_outputs(parallel, expected)
+
+
+@pytest.mark.parametrize('rows,cols', [(7, 5), (16, 16), (33, 21), (64, 64)])
+@pytest.mark.parametrize('water', [False, True], ids=['nowater', 'water'])
+@pytest.mark.parametrize('with_buildings', [False, True], ids=['open', 'built'])
+@pytest.mark.parametrize('parallel', [False, True], ids=['serial', 'parallel'])
+def test_gvf_fused_matches_full_and_baseline(rows, cols, water, with_buildings, parallel):
+    # G03: the fused route must reproduce the full route (which materializes
+    # all 16 per-direction planes) and the verbatim baseline bitwise.
+    scene = build_scene(rows, cols, seed=43 + water + 2 * with_buildings,
+                        water=water, with_buildings=with_buildings)
+    ref_scene = snapshots(scene)
+    full_scene = snapshots(scene)
+    fused_scene = snapshots(scene)
+    with np.errstate(invalid='ignore', divide='ignore'):
+        expected = reference._gvf(**ref_scene, parallel=parallel)
+        full = ground_view._gvf(**full_scene, parallel=parallel)
+        fused = ground_view._gvf_fused(**fused_scene, parallel=parallel)
+    assert_exact(ref_scene['Tg'], full_scene['Tg'], 'full Tg after')
+    assert_exact(ref_scene['Tg'], fused_scene['Tg'], 'fused Tg after')
+    assert_gvf_outputs(full, expected)
+    assert_gvf_outputs(fused, expected)
+
+
+def test_gvf_fused_block_row_variants():
+    scene = build_scene(23, 19, seed=41, water=True)
+    expected = None
+    with np.errstate(invalid='ignore', divide='ignore'):
+        expected = reference._gvf(**snapshots(scene), parallel=False)
+        for block_rows in (1, 3, 32, 10_000):
+            fused = ground_view._gvf_fused(**snapshots(scene), parallel=False, block_rows=block_rows)
+            assert_gvf_outputs(fused, expected)
+
+
+def test_gvf_fused_aliased_tg_route():
+    # With Tg aliasing a snapshotted input the fused route keeps per-direction
+    # conversion over the live arrays, read at the same chronological point as
+    # the legacy gather copies; results must stay bitwise identical.
+    scene = build_scene(22, 18, seed=47, water=True)
+    scene['shadow'] = scene['shadow'].copy()
+    scene['Tg'] = scene['shadow']
+
+    def aliased():
+        local = snapshots(scene)
+        shared = scene['shadow'].copy()
+        local['shadow'] = shared
+        local['Tg'] = shared
+        return local
+
+    ref_scene = aliased()
+    fused_scene = aliased()
+    with np.errstate(invalid='ignore', divide='ignore'):
+        expected = reference._gvf(**ref_scene, parallel=False)
+        fused = ground_view._gvf_fused(**fused_scene, parallel=False)
+    assert_exact(ref_scene['Tg'], fused_scene['Tg'], 'aliased Tg after')
+    assert_gvf_outputs(fused, expected)
+
+
+def test_gvf_fused_delegates_sun_level_guards():
+    # Inputs _gvf accepts but _sun falls back on (nonfinite first, nonpositive
+    # second*scale): the fused route must delegate to the full route, which
+    # runs the exact per-direction fallback. That fallback is the original
+    # engine body, whose documented upstream failure disposition for these
+    # inputs is UnboundLocalError/RuntimeError, so identical failing behavior
+    # across all three routes is the exactness contract here.
+    def outcome(function, scene):
+        try:
+            with np.errstate(invalid='ignore', divide='ignore'):
+                return ('ok', function(**snapshots(scene)))
+        except (UnboundLocalError, RuntimeError) as error:
+            return ('raise', type(error))
+
+    scene = build_scene(15, 17, seed=53, water=True)
+    scene['first'] = np.array(np.nan, dtype=np.float32)
+    expected = outcome(reference._gvf, scene)
+    assert expected[0] == 'raise', 'NaN-first control is vacuous'
+    assert outcome(ground_view._gvf, scene)[0] == expected[0]
+    assert outcome(ground_view._gvf_fused, scene)[0] == expected[0]
+    scene = build_scene(15, 17, seed=53, water=True)
+    scene['second'] = np.array(0.0, dtype=np.float32)
+    expected = outcome(reference._gvf, scene)
+    assert outcome(ground_view._gvf, scene)[0] == expected[0]
+    assert outcome(ground_view._gvf_fused, scene)[0] == expected[0]
+    if expected[0] == 'ok':
+        for actual in (outcome(ground_view._gvf, scene), outcome(ground_view._gvf_fused, scene)):
+            assert_gvf_outputs(actual[1], expected[1])
+
+
+def test_gvf_fused_float64_rasters_delegate():
+    scene = build_scene(14, 15, seed=59, water=True)
+    scene['buildings'] = scene['buildings'].astype(np.float64)
+    with np.errstate(invalid='ignore', divide='ignore'):
+        expected = reference._gvf(**snapshots(scene), parallel=False)
+        fused = ground_view._gvf_fused(**snapshots(scene), parallel=False)
+    assert_gvf_outputs(fused, expected)
+
+
+def test_public_entries_stay_on_full_route():
+    scene = build_scene(19, 23, seed=61, water=True)
+    with np.errstate(invalid='ignore', divide='ignore'):
+        expected = ground_view._gvf(**snapshots(scene), parallel=False)
+        serial = ground_view.gvf_2018a(**snapshots(scene))
+    assert_gvf_outputs(serial, expected)
