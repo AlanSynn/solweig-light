@@ -17,10 +17,10 @@ integrator commits. Base of record for wave-1 workers: `5e1fab46`.
 
 | worker | task | owned module | blocked-by status |
 |---|---|---|---|
-| v6-recipe | C6-10 | geometry/recipe.py + integration recipe | C6-02 done → unblocked |
-| v6-lside | C6-20 | radiation/pipeline_demand.py | C6-01 done → unblocked |
-| v6-cyllw | C6-21 | radiation/cylinder_longwave.py | C6-01 done → unblocked |
-| v6-cylsw | C6-22 | radiation/cylinder_shortwave.py | C6-01 done → unblocked |
+| v6-recipe | C6-10 | geometry/recipe.py + integration recipe | running |
+| v6-lside | C6-20 | radiation/pipeline_demand.py | running |
+| v6-cyllw | C6-21 | radiation/cylinder_longwave.py | worker PASS (R-B confirmed w/ consumer chain; 39/39); **C6-60 in flight (v6-rev621)** |
+| v6-cylsw | C6-22 | radiation/cylinder_shortwave.py | worker PASS (R-C confirmed; 86 pass; parity bound to wrapper route); **C6-60 in flight (v6-rev622)** |
 | v6-gvfprep | C6-30 | radiation/gvf_prepared.py | C6-01 done → unblocked |
 | v6-gvfpost | C6-31 | radiation/gvf_postprocess.py | C6-01 done → unblocked |
 | v6-decoder | C6-50 | geometry/visibility_prepared.py | C6-01 done → unblocked |
@@ -49,3 +49,13 @@ Integrator sign-off items for C6-70:
   Accept stricter boundary, or defer width-2 admission to C6-40 phase adapter.
 - C6-42 m7: GDAL_CACHEMAX enforcement in _child_environment converts
   reservation into enforced cap — confirm no per-worker cache regression.
+- C6-22 finding (NEW base fact): at 5e1fab46 the retained wrapper
+  (production) cylinder-shortwave route is NOT bitwise vs the serial
+  reference — float32-vs-float64 deg2rad geometry profile, max ~1.2e-4
+  (KsideD 764/1120 px, Kside 703/1120 px on the real 32x35 packet),
+  identical with the candidate module absent. Parity gates for any
+  cylinder-route specialization must bind to the wrapper route; serial
+  comparisons keep the original comparison_v1 budget. Corroborated by
+  C6-21 (same pre-existing differential failure
+  test_compiled_patch_parallel_diagnostics, order-dependent, fails
+  identically without either module).
