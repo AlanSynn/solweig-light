@@ -24,7 +24,7 @@ integrator commits. Base of record for wave-1 workers: `5e1fab46`.
 | v6-gvfprep | C6-30 | radiation/gvf_prepared.py | C6-01 done → unblocked |
 | v6-gvfpost | C6-31 | radiation/gvf_postprocess.py | C6-01 done → unblocked |
 | v6-decoder | C6-50 | geometry/visibility_prepared.py | C6-01 done → unblocked |
-| v6-memadm | C6-42 | runtime_memory.py | C6-03 done → unblocked |
+| v6-memadm | C6-42 | runtime_memory.py | worker PASS; **C6-60 in flight (v6-rev642)**; corrected reservations: geom 4.4320 GiB / sim 5.3476 GiB; 2x2 admit, 4x1 reject @12GiB |
 
 ## Queued (not dispatched)
 
@@ -42,3 +42,10 @@ Standing facts: routing = GLM via Z.ai, Opus unavailable (INVENTORY_C6-00.md).
 24-tile target dataset still absent (synthetic 24-tile load = load test, not
 actual-target claim). Exclusive benchmark lease starts at C6-80; wave-1 worker
 timings are contended development-tier.
+
+Integrator sign-off items for C6-70:
+- C6-42 m7 §3: corrected geometry reservation 4.4320 GiB means single-job
+  budgets in ~[3.88, 4.83] GiB would NEWLY raise ResourceAdmissionError.
+  Accept stricter boundary, or defer width-2 admission to C6-40 phase adapter.
+- C6-42 m7: GDAL_CACHEMAX enforcement in _child_environment converts
+  reservation into enforced cap — confirm no per-worker cache regression.
