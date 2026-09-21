@@ -130,11 +130,14 @@ def _shortwave_visibility_blocks(shadow,vegetation,vegetation_building,diffuse,s
 _FUSED_TILE=32
 
 
-def _packed_leaves(channel):
+def _packed_leaves(channel,allow_lazy=False):
     """Admitted packed leaves of a channel, or None when fusion is unsupported.
 
     Admission is deliberately restricted to the two known immutable packed
-    implementations, never arbitrary PackedVisibility subclasses.
+    implementations, never arbitrary PackedVisibility subclasses. Only the
+    diffuse stream may be a LazyDiffVisibility pair: the fused kernels apply
+    the leaf subtraction on that stream alone, so a lazy direct channel must
+    fall back to the retained route.
     """
     from ..geometry.visibility import PackedVisibility, LazyDiffVisibility
     from ..geometry.visibility_native import MappedVisibility
@@ -142,7 +145,7 @@ def _packed_leaves(channel):
         return type(leaf) is PackedVisibility or isinstance(leaf,MappedVisibility)
     if isinstance(channel,LazyDiffVisibility):
         leaves=(channel.shadow,channel.vegetation)
-        return leaves if all(admitted(leaf) for leaf in leaves) else None
+        return leaves if allow_lazy and all(admitted(leaf) for leaf in leaves) else None
     return (channel,) if admitted(channel) else None
 
 
@@ -167,7 +170,8 @@ def _fused_guard(leaves,start,stop,patches):
 def _shortwave_fused_block(shadow,vegetation,vegetation_building,diffuse,start,stop,patches,sun,shade,lum,solid,cosine,directions,diff_gate,ref_gate,box_gate,surface_sun,surface_sh,box,parallel):
     """Fused ordered decode+reduce for one block; None selects the retained route."""
     from ..geometry.visibility_compiled import _descriptor, _preflight
-    leaves=[_packed_leaves(channel) for channel in (shadow,vegetation,vegetation_building,diffuse)]
+    leaves=[_packed_leaves(channel,allow_lazy=index==3)
+            for index,channel in enumerate((shadow,vegetation,vegetation_building,diffuse))]
     if any(pair is None for pair in leaves):
         return None
     flat=[leaf for pair in leaves for leaf in pair]

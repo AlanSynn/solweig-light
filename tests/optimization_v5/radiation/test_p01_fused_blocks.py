@@ -352,6 +352,71 @@ def test_fallback_and_admission():
     assert bitwise(block, reference)
 
 
+def test_lazydiff_nondiffuse_channel_falls_back():
+    """A lazy direct channel is never fused; only the diffuse stream may be a pair (C5-31).
+
+    The fused kernels apply the leaf subtraction on the diffuse stream alone, so a
+    LazyDiffVisibility in a direct shortwave position would silently drop the
+    vegetation term. Admission must reject it and the retained route must produce
+    the observed outputs bit-for-bit (the C5-31 reviewer probe).
+    """
+    rng = np.random.default_rng(53)
+    rows, cols = 16, 16
+    pixels = rows*cols
+    leaf_sh = packed(rng, rows, cols, 153, kinds_three)
+    leaf_vs = packed(rng, rows, cols, 153, kinds_three)
+    lazy_direct = LazyDiffVisibility(leaf_sh, leaf_vs)
+    assert compiled._packed_leaves(lazy_direct) is None
+    assert compiled._packed_leaves(lazy_direct, allow_lazy=True) is not None
+    start, stop = 5, 22
+    coefficients = sw_coefficients(rng, 153)
+    sun, shade = classes(rng, pixels, 153)
+    arguments = (start, stop, 153, sun[start:stop], shade[start:stop], coefficients['lum'],
+                 coefficients['solid'], coefficients['cosine'], coefficients['directions'],
+                 coefficients['diff_gate'], coefficients['ref_gate'], coefficients['box_gate'],
+                 coefficients['surface_sun'], coefficients['surface_sh'])
+    lw = lw_coefficients(rng, 153, pixels)
+    vb = packed(rng, rows, cols, 153, kinds_three)
+    for parallel in (False, True):
+        assert compiled._shortwave_fused_block(
+            lazy_direct, leaf_vs, vb, leaf_sh, *arguments, False, parallel) is None
+    # Negative control: the same pair in the diffuse stream stays admitted.
+    assert compiled._shortwave_fused_block(
+        leaf_sh, leaf_vs, vb, lazy_direct, *arguments, False, True) is not None
+    assert compiled._longwave_fused_block(
+        lazy_direct, leaf_vs, vb, start, stop, 153, sun[start:stop], shade[start:stop],
+        lw['solid'], lw['sine'], lw['cosine'], lw['directions'], lw['gate'],
+        lw['solar_gate'], lw['sky_down'], lw['sky_side'], lw['sun_surface'],
+        lw['shade_surface'], lw['lup'], lw['factor'], True) is None
+    with threads(2):
+        for parallel in (False, True):
+            values = kside_arguments(rng, rows, cols, 153, False)
+            # The dense reference carries the exact content the packed routes read.
+            values['shmat'] = _diff_reference(leaf_sh, leaf_vs, rows, cols)
+            values['vegshmat'] = _dense_of(leaf_vs, rows, cols)
+            values['vbshvegshmat'] = _dense_of(vb, rows, cols)
+            packed_values = dict(values)
+            packed_values['shmat'] = lazy_direct
+            packed_values['vegshmat'] = leaf_vs
+            packed_values['vbshvegshmat'] = vb
+            packed_values['diffsh'] = PackedVisibility.from_dense(values['diffsh'])
+            left = compiled.Kside_veg_v2022a(**values, block_pixels=17, parallel=parallel)
+            right = compiled.Kside_veg_v2022a(**packed_values, block_pixels=17, parallel=parallel)
+            assert_fields_bitwise(left, right)
+
+
+def _dense_of(channel, rows, cols):
+    """Full-scene dense content decode_block yields for one packed channel."""
+    return decode_block(channel, 0, rows*cols, 153).reshape(rows, cols, 153)
+
+
+def _diff_reference(shadow, vegetation, rows, cols):
+    """Dense content decode_block yields for a LazyDiff pair: sh - (1-vs)*(1-.03)."""
+    left = _dense_of(shadow, rows, cols)
+    right = _dense_of(vegetation, rows, cols)
+    return left - (np.float32(1) - right)*np.float32(1-.03)
+
+
 def test_packed_equals_dense_end_to_end_kside():
     """Kside on packed channels (fused) equals Kside on dense channels (fallback)."""
     rng = np.random.default_rng(41)
