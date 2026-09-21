@@ -1,4 +1,10 @@
-# C5-64 Merge-review packet — draft (completed after L4)
+# C5-64 Merge-review packet
+
+Status: FINAL. L4 campaign complete (both cases bitwise-pass, target
+demonstrated once); C5-63 independent review verdict ACCEPT-WITH-NOTES
+(`evidence/final_scope/REVIEW_C5-63.md`), all notes applied in this packet.
+The commit containing this file is the final branch tip; the final evidence
+commit before handover is `de48e54e`.
 
 ## Branch / base / tip
 
@@ -8,7 +14,9 @@
 - Historical optimization checkpoint (v4): `14e888760727583ef782a4dc0e7a5c7c6e6ff9d1`.
 - Integration base: `bfd9915e411e28bfe498d547e3c820a4de863ee2` — source-identical
   to `14e88876` over `src/`, `pyproject.toml`, `tests/` (verified: empty diff).
-- Tip at freeze: see `FREEZE_TIP` below (filled at handover).
+- Tip at freeze (wheel source): `d2edbc105d5d3658d25613326439d3a3efb74bb9`;
+  freeze commit `d63636ae`; final evidence commit `de48e54e`; branch tip: the
+  handover commit containing this file.
 - Model/API ancestry: `nvnsudharsan/SOLWEIG-GPU@0d7fe742abeeddd890dd58fc76ed7f78bd47faec`.
 
 ## Accepted patches (reviewed, integrated, L2-gated)
