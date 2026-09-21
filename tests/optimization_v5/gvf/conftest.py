@@ -1,8 +1,10 @@
-"""Caps numba threads at 2 for the GVF v5 differentials before numba loads."""
-import os
+"""Caps numba threads at 2 for the GVF v5 differentials.
 
-os.environ.setdefault('NUMBA_NUM_THREADS', '2')
-
+Only this directory's tests are capped, and only downwards (min(2, current)),
+so shared pytest sessions never see their larger pools rejected by other
+suites. For the full isolation run use:
+NUMBA_NUM_THREADS=2 uv run --extra test pytest tests/optimization_v5/gvf/
+"""
 import numba
 import pytest
 
