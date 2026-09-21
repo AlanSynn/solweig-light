@@ -17,8 +17,8 @@ integrator commits. Base of record for wave-1 workers: `5e1fab46`.
 
 | worker | task | owned module | blocked-by status |
 |---|---|---|---|
-| v6-recipe | C6-10 | geometry/recipe.py + integration recipe | worker PASS (3 gates; both routes -> shared key 7998d95e…; standalone_implementation dropped from native key); **C6-60 in flight (v6-rev610)** |
-| v6-lside | C6-20 | radiation/pipeline_demand.py | worker PASS; **APPROVE-WITH-NOTES** (v6-rev620; 3 prescribed fixes to worker: 0-d azimuth/t guard at night, bool-svf test, _minmax_1d empty early-out); landing after fix confirmation |
+| v6-recipe | C6-10 | geometry/recipe.py + integration recipe | **LANDED 443ee2b7** (APPROVE-WITH-NOTES; post-image scratch-verified; 88/88; C6-70 deferred-coverage + pre-existing raster_fingerprint path-dependence noted) |
+| v6-lside | C6-20 | radiation/pipeline_demand.py | **LANDED 2304449d** (APPROVE-WITH-NOTES post-fix; 65/65; night guard closed) |
 | v6-cyllw | C6-21 | radiation/cylinder_longwave.py | **LANDED eea97fbd** (APPROVE-WITH-NOTES, 0 blocking; C6-70 handoff: demand_scope+restore, assert cyl=1) |
 | v6-cylsw | C6-22 | radiation/cylinder_shortwave.py | **LANDED 99681b53** (APPROVE-WITH-NOTES; prose corrections 9/4 cases, totals 823/739; C6-70 note: consider decline when _fused_enabled()) |
 | v6-gvfprep | C6-30 | radiation/gvf_prepared.py | **LANDED 986c5a09** (APPROVE-WITH-NOTES; snapshot semantics + counts independently verified; 160/160) |
@@ -30,7 +30,7 @@ integrator commits. Base of record for wave-1 workers: `5e1fab46`.
 
 | task | blocked by |
 |---|---|
-| C6-40 phase adapter (runtime_phases.py) | C6-10 + C6-03 (review) |
+| C6-40 phase adapter (runtime_phases.py) | **UNBLOCKED — dispatching** (C6-10 landed 443ee2b7, C6-03 approved) |
 | C6-70 first-wave integration | C6-60 verdicts on all selected wave-1 patches |
 | C6-80 small cold/warm portfolio | C6-70 |
 | C6-81 residual choice | C6-80 |
