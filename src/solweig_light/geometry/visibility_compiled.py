@@ -36,6 +36,35 @@ def _decode(payloads, modes, start, stop, patches):
 
 
 @njit(cache=True, fastmath=False)
+def _preflight(payloads, modes, start, stop, patches):
+    """Reject reserved codes in _decode's exact patch-major, pixel-inner order."""
+    for patch in range(patches):
+        mode = modes[patch]
+        if mode == 4:
+            continue
+        data = payloads[patch]
+        for row in range(stop-start):
+            pixel = start + row
+            code = (data[pixel // (8 // mode)] >> ((pixel % (8 // mode))*mode)) & ((1 << mode)-1)
+            if code == 3:
+                raise IndexError('Reserved visibility code')
+
+
+@njit(cache=True, fastmath=False, inline='always')
+def _decode_slice(payload, mode, start, tile0, lanes, bits):
+    """Decode one patch's [start+tile0, start+tile0+lanes) pixels with _decode's exact bits."""
+    for lane in range(lanes):
+        pixel = start + tile0 + lane
+        if mode == 4:
+            offset = pixel * 4
+            bits[lane] = (np.uint32(payload[offset]) | (np.uint32(payload[offset+1]) << 8)
+                          | (np.uint32(payload[offset+2]) << 16) | (np.uint32(payload[offset+3]) << 24))
+        else:
+            code = (payload[pixel // (8 // mode)] >> ((pixel % (8 // mode))*mode)) & ((1 << mode)-1)
+            bits[lane] = np.uint32(0) if code == 0 else np.uint32(0x3f800000) if code == 1 else np.uint32(0x40000000)
+
+
+@njit(cache=True, fastmath=False)
 def _diff(shadow, vegetation):
     for row in range(shadow.shape[0]):
         for patch in range(shadow.shape[1]):
