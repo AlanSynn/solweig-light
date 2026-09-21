@@ -1,0 +1,659 @@
+{
+ "schema": "c5-15-stage-census-v1",
+ "fixture": "tests/fixtures/generated/p7/dense_urban_256",
+ "config": {
+  "threads_per_worker": 4,
+  "block_pixels": 1024,
+  "workers": 1
+ },
+ "measurement_class": "diagnostic stage census, not benchmark timing",
+ "profile_total_seconds": 11.5883,
+ "top_by_cumtime": [
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/api.py",
+   "line": 163,
+   "name": "thermal_comfort",
+   "calls": 1,
+   "tottime": 0.0001,
+   "cumtime": 11.5883
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/api.py",
+   "line": 100,
+   "name": "run_utci_tiles",
+   "calls": 1,
+   "tottime": 0.0001,
+   "cumtime": 11.4851
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/runtime.py",
+   "line": 679,
+   "name": "execute_tiles",
+   "calls": 1,
+   "tottime": 0.0054,
+   "cumtime": 11.4841
+  },
+  {
+   "file": "~",
+   "line": 0,
+   "name": "<built-in method time.sleep>",
+   "calls": 941,
+   "tottime": 11.4568,
+   "cumtime": 11.4568
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/api.py",
+   "line": 17,
+   "name": "run_walls_aspect",
+   "calls": 1,
+   "tottime": 0.0002,
+   "cumtime": 0.0909
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/geometry/walls.py",
+   "line": 210,
+   "name": "filter1Goodwin_as_aspect_v3",
+   "calls": 1,
+   "tottime": 0.0,
+   "cumtime": 0.086
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/geometry/walls.py",
+   "line": 202,
+   "name": "filter1Goodwin_as_aspect_v3_serial",
+   "calls": 1,
+   "tottime": 0.0,
+   "cumtime": 0.086
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/geometry/walls.py",
+   "line": 174,
+   "name": "_aspect",
+   "calls": 1,
+   "tottime": 0.0594,
+   "cumtime": 0.086
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+   "line": 2304,
+   "name": "sum",
+   "calls": 14224,
+   "tottime": 0.0059,
+   "cumtime": 0.0248
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+   "line": 66,
+   "name": "_wrapreduction",
+   "calls": 14224,
+   "tottime": 0.0071,
+   "cumtime": 0.018
+  },
+  {
+   "file": "/Users/alansynn/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/subprocess.py",
+   "line": 1233,
+   "name": "poll",
+   "calls": 942,
+   "tottime": 0.0009,
+   "cumtime": 0.0157
+  },
+  {
+   "file": "/Users/alansynn/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/subprocess.py",
+   "line": 1973,
+   "name": "_internal_poll",
+   "calls": 943,
+   "tottime": 0.0015,
+   "cumtime": 0.0148
+  },
+  {
+   "file": "~",
+   "line": 0,
+   "name": "<built-in method posix.waitpid>",
+   "calls": 942,
+   "tottime": 0.0117,
+   "cumtime": 0.0117
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/preprocessor.py",
+   "line": 369,
+   "name": "preprocess",
+   "calls": 1,
+   "tottime": 0.0,
+   "cumtime": 0.0116
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/preprocessor.py",
+   "line": 250,
+   "name": "ppr",
+   "calls": 1,
+   "tottime": 0.0001,
+   "cumtime": 0.0115
+  },
+  {
+   "file": "~",
+   "line": 0,
+   "name": "<method 'reduce' of 'numpy.ufunc' objects>",
+   "calls": 14225,
+   "tottime": 0.0098,
+   "cumtime": 0.0098
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/preprocessor.py",
+   "line": 201,
+   "name": "create_tiles",
+   "calls": 3,
+   "tottime": 0.0,
+   "cumtime": 0.007
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/preprocessor.py",
+   "line": 123,
+   "name": "create_tiles_to_folder",
+   "calls": 3,
+   "tottime": 0.0004,
+   "cumtime": 0.007
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/osgeo/gdal.py",
+   "line": 1155,
+   "name": "Translate",
+   "calls": 3,
+   "tottime": 0.0,
+   "cumtime": 0.0051
+  },
+  {
+   "file": "~",
+   "line": 0,
+   "name": "<built-in method osgeo._gdal.TranslateInternal>",
+   "calls": 3,
+   "tottime": 0.005,
+   "cumtime": 0.005
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/osgeo/gdal.py",
+   "line": 13395,
+   "name": "TranslateInternal",
+   "calls": 3,
+   "tottime": 0.0,
+   "cumtime": 0.005
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/runtime.py",
+   "line": 713,
+   "name": "start",
+   "calls": 1,
+   "tottime": 0.0001,
+   "cumtime": 0.0044
+  },
+  {
+   "file": "/Users/alansynn/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/subprocess.py",
+   "line": 807,
+   "name": "__init__",
+   "calls": 1,
+   "tottime": 0.0001,
+   "cumtime": 0.0036
+  },
+  {
+   "file": "/Users/alansynn/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/subprocess.py",
+   "line": 1791,
+   "name": "_execute_child",
+   "calls": 1,
+   "tottime": 0.0001,
+   "cumtime": 0.0035
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/preprocessor.py",
+   "line": 22,
+   "name": "check_rasters",
+   "calls": 1,
+   "tottime": 0.0002,
+   "cumtime": 0.0034
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/io/rasters.py",
+   "line": 31,
+   "name": "write_single",
+   "calls": 2,
+   "tottime": 0.0002,
+   "cumtime": 0.0026
+  },
+  {
+   "file": "~",
+   "line": 0,
+   "name": "<built-in method _posixsubprocess.fork_exec>",
+   "calls": 1,
+   "tottime": 0.002,
+   "cumtime": 0.002
+  },
+  {
+   "file": "~",
+   "line": 0,
+   "name": "<method 'items' of 'dict' objects>",
+   "calls": 15179,
+   "tottime": 0.0018,
+   "cumtime": 0.0018
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/osgeo/gdal.py",
+   "line": 4487,
+   "name": "Create",
+   "calls": 2,
+   "tottime": 0.0,
+   "cumtime": 0.0017
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/osgeo/gdal.py",
+   "line": 13202,
+   "name": "Open",
+   "calls": 10,
+   "tottime": 0.0,
+   "cumtime": 0.0017
+  },
+  {
+   "file": "~",
+   "line": 0,
+   "name": "<built-in method osgeo._gdal.Driver_Create>",
+   "calls": 2,
+   "tottime": 0.0017,
+   "cumtime": 0.0017
+  },
+  {
+   "file": "~",
+   "line": 0,
+   "name": "<built-in method osgeo._gdal.Dataset_GetProjection>",
+   "calls": 4,
+   "tottime": 0.0017,
+   "cumtime": 0.0017
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/osgeo/gdal.py",
+   "line": 5204,
+   "name": "GetProjection",
+   "calls": 4,
+   "tottime": 0.0,
+   "cumtime": 0.0017
+  },
+  {
+   "file": "~",
+   "line": 0,
+   "name": "<built-in method osgeo._gdal.Open>",
+   "calls": 10,
+   "tottime": 0.0016,
+   "cumtime": 0.0016
+  },
+  {
+   "file": "/Users/alansynn/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/shutil.py",
+   "line": 642,
+   "name": "_rmtree_safe_fd",
+   "calls": 15,
+   "tottime": 0.0001,
+   "cumtime": 0.0015
+  },
+  {
+   "file": "/Users/alansynn/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/shutil.py",
+   "line": 710,
+   "name": "rmtree",
+   "calls": 5,
+   "tottime": 0.0,
+   "cumtime": 0.0015
+  },
+  {
+   "file": "~",
+   "line": 0,
+   "name": "<method 'acquire' of '_thread.lock' objects>",
+   "calls": 942,
+   "tottime": 0.0014,
+   "cumtime": 0.0014
+  },
+  {
+   "file": "~",
+   "line": 0,
+   "name": "<built-in method builtins.isinstance>",
+   "calls": 15034,
+   "tottime": 0.001,
+   "cumtime": 0.0012
+  },
+  {
+   "file": "~",
+   "line": 0,
+   "name": "<built-in method posix.read>",
+   "calls": 1,
+   "tottime": 0.0011,
+   "cumtime": 0.0011
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/geometry/walls.py",
+   "line": 58,
+   "name": "get_ders",
+   "calls": 1,
+   "tottime": 0.0003,
+   "cumtime": 0.0009
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/io/rasters.py",
+   "line": 20,
+   "name": "read_raster",
+   "calls": 1,
+   "tottime": 0.0001,
+   "cumtime": 0.0009
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/preprocessor.py",
+   "line": 221,
+   "name": "create_met_files",
+   "calls": 1,
+   "tottime": 0.0,
+   "cumtime": 0.0009
+  },
+  {
+   "file": "~",
+   "line": 0,
+   "name": "<built-in method posix.listdir>",
+   "calls": 17,
+   "tottime": 0.0005,
+   "cumtime": 0.0007
+  },
+  {
+   "file": "~",
+   "line": 0,
+   "name": "<built-in method posix.mkdir>",
+   "calls": 10,
+   "tottime": 0.0004,
+   "cumtime": 0.0007
+  },
+  {
+   "file": "~",
+   "line": 0,
+   "name": "<built-in method posix.unlink>",
+   "calls": 7,
+   "tottime": 0.0007,
+   "cumtime": 0.0007
+  },
+  {
+   "file": "/Users/alansynn/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/pathlib.py",
+   "line": 437,
+   "name": "__str__",
+   "calls": 60,
+   "tottime": 0.0001,
+   "cumtime": 0.0007
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numpy/_core/fromnumeric.py",
+   "line": 2299,
+   "name": "_sum_dispatcher",
+   "calls": 14224,
+   "tottime": 0.0007,
+   "cumtime": 0.0007
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/api.py",
+   "line": 123,
+   "name": "matching_files",
+   "calls": 6,
+   "tottime": 0.0,
+   "cumtime": 0.0007
+  },
+  {
+   "file": "/Users/alansynn/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/pathlib.py",
+   "line": 407,
+   "name": "_load_parts",
+   "calls": 33,
+   "tottime": 0.0,
+   "cumtime": 0.0006
+  },
+  {
+   "file": "/Users/alansynn/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/tempfile.py",
+   "line": 952,
+   "name": "cleanup",
+   "calls": 1,
+   "tottime": 0.0,
+   "cumtime": 0.0006
+  },
+  {
+   "file": "/Users/alansynn/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/shutil.py",
+   "line": 421,
+   "name": "copy",
+   "calls": 1,
+   "tottime": 0.0,
+   "cumtime": 0.0006
+  },
+  {
+   "file": "/Users/alansynn/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/tempfile.py",
+   "line": 948,
+   "name": "__exit__",
+   "calls": 1,
+   "tottime": 0.0,
+   "cumtime": 0.0006
+  },
+  {
+   "file": "/Users/alansynn/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/tempfile.py",
+   "line": 894,
+   "name": "_rmtree",
+   "calls": 1,
+   "tottime": 0.0,
+   "cumtime": 0.0006
+  },
+  {
+   "file": "/Users/alansynn/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/pathlib.py",
+   "line": 447,
+   "name": "__fspath__",
+   "calls": 41,
+   "tottime": 0.0,
+   "cumtime": 0.0006
+  },
+  {
+   "file": "/Users/alansynn/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/pathlib.py",
+   "line": 551,
+   "name": "drive",
+   "calls": 45,
+   "tottime": 0.0,
+   "cumtime": 0.0006
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/runtime.py",
+   "line": 566,
+   "name": "plan_admission",
+   "calls": 3,
+   "tottime": 0.0,
+   "cumtime": 0.0006
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/api.py",
+   "line": 55,
+   "name": "_calculate_svf",
+   "calls": 1,
+   "tottime": 0.0001,
+   "cumtime": 0.0006
+  },
+  {
+   "file": "~",
+   "line": 0,
+   "name": "<built-in method builtins.sorted>",
+   "calls": 18,
+   "tottime": 0.0,
+   "cumtime": 0.0005
+  },
+  {
+   "file": "/Users/alansynn/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/pathlib.py",
+   "line": 1050,
+   "name": "iterdir",
+   "calls": 24,
+   "tottime": 0.0,
+   "cumtime": 0.0005
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/runtime.py",
+   "line": 569,
+   "name": "<genexpr>",
+   "calls": 6,
+   "tottime": 0.0,
+   "cumtime": 0.0005
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/osgeo/gdal_array.py",
+   "line": 264,
+   "name": "BandRasterIONumPy",
+   "calls": 3,
+   "tottime": 0.0,
+   "cumtime": 0.0005
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/osgeo/gdal.py",
+   "line": 10850,
+   "name": "WriteArray",
+   "calls": 2,
+   "tottime": 0.0,
+   "cumtime": 0.0005
+  },
+  {
+   "file": "~",
+   "line": 0,
+   "name": "<built-in method osgeo._gdal_array.BandRasterIONumPy>",
+   "calls": 3,
+   "tottime": 0.0005,
+   "cumtime": 0.0005
+  },
+  {
+   "file": "/Users/alansynn/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/shutil.py",
+   "line": 230,
+   "name": "copyfile",
+   "calls": 1,
+   "tottime": 0.0001,
+   "cumtime": 0.0005
+  },
+  {
+   "file": "/Users/alansynn/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/pathlib.py",
+   "line": 387,
+   "name": "_parse_path",
+   "calls": 33,
+   "tottime": 0.0001,
+   "cumtime": 0.0005
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/runtime.py",
+   "line": 532,
+   "name": "_job_estimate",
+   "calls": 3,
+   "tottime": 0.0001,
+   "cumtime": 0.0005
+  },
+  {
+   "file": "~",
+   "line": 0,
+   "name": "<built-in method sys.intern>",
+   "calls": 301,
+   "tottime": 0.0004,
+   "cumtime": 0.0004
+  },
+  {
+   "file": "~",
+   "line": 0,
+   "name": "<built-in method _io.open>",
+   "calls": 5,
+   "tottime": 0.0004,
+   "cumtime": 0.0004
+  },
+  {
+   "file": "<frozen os>",
+   "line": 200,
+   "name": "makedirs",
+   "calls": 6,
+   "tottime": 0.0,
+   "cumtime": 0.0004
+  },
+  {
+   "file": "~",
+   "line": 0,
+   "name": "<built-in method osgeo._gdal.Dataset_GetGeoTransform>",
+   "calls": 4,
+   "tottime": 0.0004,
+   "cumtime": 0.0004
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/osgeo/gdal.py",
+   "line": 5301,
+   "name": "GetGeoTransform",
+   "calls": 4,
+   "tottime": 0.0,
+   "cumtime": 0.0004
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/pipeline.py",
+   "line": 36,
+   "name": "files_by_key",
+   "calls": 6,
+   "tottime": 0.0,
+   "cumtime": 0.0004
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py",
+   "line": 1002,
+   "name": "gradient",
+   "calls": 1,
+   "tottime": 0.0003,
+   "cumtime": 0.0004
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/osgeo/gdal_array.py",
+   "line": 671,
+   "name": "BandWriteArray",
+   "calls": 2,
+   "tottime": 0.0,
+   "cumtime": 0.0004
+  },
+  {
+   "file": "~",
+   "line": 0,
+   "name": "<built-in method posix.stat>",
+   "calls": 28,
+   "tottime": 0.0002,
+   "cumtime": 0.0003
+  },
+  {
+   "file": "~",
+   "line": 0,
+   "name": "<built-in method posix.rmdir>",
+   "calls": 5,
+   "tottime": 0.0003,
+   "cumtime": 0.0003
+  },
+  {
+   "file": "~",
+   "line": 0,
+   "name": "<built-in method posix._fcopyfile>",
+   "calls": 1,
+   "tottime": 0.0003,
+   "cumtime": 0.0003
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/api.py",
+   "line": 69,
+   "name": "map_tiles",
+   "calls": 3,
+   "tottime": 0.0,
+   "cumtime": 0.0003
+  },
+  {
+   "file": "/Users/alansynn/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/pathlib.py",
+   "line": 1306,
+   "name": "mkdir",
+   "calls": 3,
+   "tottime": 0.0,
+   "cumtime": 0.0003
+  },
+  {
+   "file": "/Users/alansynn/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/pathlib.py",
+   "line": 1005,
+   "name": "open",
+   "calls": 3,
+   "tottime": 0.0,
+   "cumtime": 0.0003
+  }
+ ],
+ "svf_stage": [],
+ "wall_stage": [],
+ "radiation_stage": [],
+ "gvf_stage": [],
+ "decode_stage": [],
+ "engine_stage": []
+}

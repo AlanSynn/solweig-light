@@ -1,0 +1,37 @@
+{
+  "schema": "claude-v5-validation-protocol-v1",
+  "status": "frozen_for_first_wave",
+  "date": "2026-09-20",
+  "inherits": {
+    "numerical_gates": "benchmarks/protocols/comparison_v1.json (unchanged; exact finite bits incl. signed zero, masks, state; frozen original-reference gates)",
+    "lean_ladder": "optimization_v5_claude/VALIDATION_POLICY.md",
+    "resource_policy": "12 GiB process-tree cap sampled at 20 ms; 10 GiB disk reserve; exclusive host lease for all timed trials"
+  },
+  "tiers": {
+    "L0": "tiny arrays/state machines, exact equality, negative controls; <60 s per command",
+    "L1": "actual-kernel differential vs untouched original function, 16-128 pixels per side (256 only with recorded reason), all 153 patches where patch arithmetic is involved, all returns/mutations/dtypes/masks; <180 s per command; worker tests use <=2 native threads",
+    "L2": "real small TIFF full chronological pipeline (dense_urban_256 or vegetation_rich_256), 24 timesteps, 153 patches, all 10 outputs, checkpoint_interval=1; compare all 24-band outputs + state vs pre-change reference on the same source identity; <300 s per command",
+    "L3": "central lab only (coordinator): 128/256 fixtures, <=2 variants per family, AB/BA paired, exclusive host; <=600 s per session",
+    "L4": "final only, one candidate attempt by default after source/wheel/env freeze"
+  },
+  "fixtures": {
+    "L1_kernels": ["synthetic arrays generated in-test (seeded, fixed)", "tests/reference/small_original_cpu (32x35) for pipeline-adjacent checks"],
+    "L2": ["tests/fixtures/generated/p7/dense_urban_256", "tests/fixtures/generated/p7/vegetation_rich_256", "tests/fixtures/generated/benchmarks/repeated_block_256"],
+    "L3": ["repeated_block_256", "dense_urban_256", "vegetation_rich_256"],
+    "L4": ["reports/characterization/local_cpu_optimization_v1/qualification/final_combined_v1/large_harness/fixtures/dense1024", ".../vegetation1024", "plus the frozen 24-tile batch definition in final_protocol_v1.json (written at freeze time)"]
+  },
+  "reference_discipline": {
+    "golden_source": "references come from the untouched ORIGINAL functions/modules or pre-change pipeline runs recorded BEFORE candidate integration; candidate code never generates its own golden",
+    "first_wave": "each family records a pre-change L2 reference bundle (output TIFFs + final state digest + checkpoint digests) on the pristine integration tip before its first edit touches shared dispatch; family-owned kernels may differentially test against the in-repo original function directly",
+    "identity": "evidence reuse only under dependency-identity match (source bytes, deps, fixture bits, harness, config)"
+  },
+  "failure_preservation": [
+    "dense1024 TMRT Linux p8 gate failure stays recorded as-is (different host; no local large parity claim inherits it)",
+    "four inherited SVF/UMEP exceptions remain failed-by-disposition",
+    "any new failing fixture is retained and reported, never skipped"
+  ],
+  "concurrency": {
+    "worker_local_tests": "L0/L1 only, <=2 native threads, disjoint fixtures; pause during any coordinator timed trial",
+    "exclusive_lease": "coordinator holds it; census/L3/L4 run alone"
+  }
+}
