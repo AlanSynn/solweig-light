@@ -524,6 +524,15 @@ def Kside_veg_v2022a(*args,block_pixels=128,parallel=True,**kwargs):
     azimuth=values['azimuth']
     t=values['t']
     box=values['cyl']!=1
+    if not box and not _fused_enabled():
+        # C6-22 narrow scratch specialization, admitted-profile only. The
+        # entry re-verifies admission and returns None => fall through to the
+        # untouched generic path below. Declined while the experimental fused
+        # route is armed so SOLWEIG_LIGHT_FUSED_RAD=1 keeps base behavior.
+        from .cylinder_shortwave import kside_cylinder_anisotropic as _narrow
+        narrowed=_narrow(values,block_pixels=block_pixels,parallel=parallel)
+        if narrowed is not None:
+            return narrowed
     total=np.zeros(1,dtype=np.float32)
     luminance=values['lv'][:,2]
     for patch in range(count):

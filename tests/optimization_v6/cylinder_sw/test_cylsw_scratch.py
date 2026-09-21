@@ -1,3 +1,12 @@
+import importlib.util as _ilu
+from pathlib import Path as _Path
+_conftest_path = _Path(__file__).resolve().parent / 'conftest.py'
+_spec = _ilu.spec_from_file_location('_cylindersw_conftest', str(_conftest_path))
+_conftest = _ilu.module_from_spec(_spec)
+import sys as _sys
+_sys.modules['_spec_name'] = _conftest
+_spec.loader.exec_module(_conftest)
+synthetic_values = _conftest.synthetic_values
 """Structural scratch gates: the admitted profile must not do box-only work.
 
 Completion gate 2: no box-only allocation under the admitted profile, and the
@@ -7,7 +16,6 @@ import numpy as np
 import pytest
 from solweig_light.radiation import cylinder_shortwave, patch_radiation
 
-from conftest import synthetic_values
 
 
 def test_narrow_kernel_scratch_is_four_columns(admitted_profile):
@@ -88,6 +96,7 @@ def test_fallback_profile_keeps_generic_wrapper_scratch():
     untouched upstream budget against the serial reference."""
     values = synthetic_values(16, 16, seed=11)
     assert cylinder_shortwave.kside_cylinder_anisotropic(values, block_pixels=16, parallel=True) is None
-    from conftest import assert_within_original_budget, serial_reference
+    assert_within_original_budget = _conftest.assert_within_original_budget
+    serial_reference = _conftest.serial_reference
     wrapper = patch_radiation.Kside_veg_v2022a(**values, block_pixels=16, parallel=True)
     assert_within_original_budget(wrapper, serial_reference(values), 'fallback-generic-wrapper')

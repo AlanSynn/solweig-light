@@ -8,12 +8,30 @@ profile in the cached geometry, so no specialization of the route can be
 bitwise vs serial. Serial comparisons therefore retain the untouched
 comparison_v1 budget (atol 0.05, rtol 1e-5), unchanged from upstream.
 """
+import importlib.util as _ilu
+import sys as _sys
+from pathlib import Path as _Path
+
 import numpy as np
 import pytest
+
 from solweig_light.radiation import cylinder_shortwave
 
-from conftest import (assert_bitwise, assert_within_original_budget, load_packet_values,
-                      packet_cases, serial_reference, synthetic_values, wrapper_route)
+# Load THIS family's conftest by file path: bare `import conftest` is
+# shadowed by sibling families' conftest modules when several directories
+# are collected in one pytest invocation.
+_conftest_path = _Path(__file__).resolve().parent / 'conftest.py'
+_spec = _ilu.spec_from_file_location('_cylindersw_conftest', str(_conftest_path))
+_conftest = _ilu.module_from_spec(_spec)
+_sys.modules['_cylindersw_conftest'] = _conftest
+_spec.loader.exec_module(_conftest)
+assert_bitwise = _conftest.assert_bitwise
+assert_within_original_budget = _conftest.assert_within_original_budget
+load_packet_values = _conftest.load_packet_values
+packet_cases = _conftest.packet_cases
+serial_reference = _conftest.serial_reference
+synthetic_values = _conftest.synthetic_values
+wrapper_route = _conftest.wrapper_route
 
 CYLINDER_CASES = [case for case in packet_cases()
                   if np.asarray(load_packet_values(case)['cyl']).reshape(()) in (1, True)]
