@@ -24,7 +24,7 @@ integrator commits. Base of record for wave-1 workers: `5e1fab46`.
 | v6-gvfprep | C6-30 | radiation/gvf_prepared.py | worker SHIP-CANDIDATE (expr 36→2; 78+82 pass); **C6-60 in flight (v6-rev630)** |
 | v6-gvfpost | C6-31 | radiation/gvf_postprocess.py | worker PASS (125 tests; serial slower, parallel 0.28x); **C6-60 in flight (v6-rev631)** |
 | v6-decoder | C6-50 | geometry/visibility_prepared.py | worker DELIVERED (95/95; precedence exact; NOTE: prepared slower on dev tier 71.6 vs 58.1 ms — re-measure at C6-80 before adoption); **C6-60 in flight (v6-rev650)** |
-| v6-memadm | C6-42 | runtime_memory.py | worker PASS rev2; **APPROVE-WITH-NOTES** (v6-rev642; module clean, 4 evidence fixes to worker: broken .patch regenerate, interval [3.4742,4.8320) GiB, width-3 reword, block_pixels +8.8MiB/worker); landing after fix confirmation |
+| v6-memadm | C6-42 | runtime_memory.py | **LANDED e318c226** (APPROVE-WITH-NOTES rev3; patch apply --check PASS verified; 31/31; raw-safe count 2) |
 
 ## Queued (not dispatched)
 
