@@ -21,8 +21,8 @@ integrator commits. Base of record for wave-1 workers: `5e1fab46`.
 | v6-lside | C6-20 | radiation/pipeline_demand.py | worker PASS; **APPROVE-WITH-NOTES** (v6-rev620; 3 prescribed fixes to worker: 0-d azimuth/t guard at night, bool-svf test, _minmax_1d empty early-out); landing after fix confirmation |
 | v6-cyllw | C6-21 | radiation/cylinder_longwave.py | **LANDED eea97fbd** (APPROVE-WITH-NOTES, 0 blocking; C6-70 handoff: demand_scope+restore, assert cyl=1) |
 | v6-cylsw | C6-22 | radiation/cylinder_shortwave.py | **LANDED 99681b53** (APPROVE-WITH-NOTES; prose corrections 9/4 cases, totals 823/739; C6-70 note: consider decline when _fused_enabled()) |
-| v6-gvfprep | C6-30 | radiation/gvf_prepared.py | worker SHIP-CANDIDATE (expr 36→2; 78+82 pass); **C6-60 in flight (v6-rev630)** |
-| v6-gvfpost | C6-31 | radiation/gvf_postprocess.py | worker PASS (125 tests; serial slower, parallel 0.28x); **C6-60 in flight (v6-rev631)** |
+| v6-gvfprep | C6-30 | radiation/gvf_prepared.py | **LANDED 986c5a09** (APPROVE-WITH-NOTES; snapshot semantics + counts independently verified; 160/160) |
+| v6-gvfpost | C6-31 | radiation/gvf_postprocess.py | worker PASS; **APPROVE-WITH-NOTES** (v6-rev631; F1 errstate(under) docstring scope, **F2 recipe snippet wrong vs base — regenerate**, F3 timing record, F4 f32 boundary assert); fixes to worker |
 | v6-decoder | C6-50 | geometry/visibility_prepared.py | worker DELIVERED (95/95; precedence exact; NOTE: prepared slower on dev tier 71.6 vs 58.1 ms — re-measure at C6-80 before adoption); **C6-60 in flight (v6-rev650)** |
 | v6-memadm | C6-42 | runtime_memory.py | **LANDED e318c226** (APPROVE-WITH-NOTES rev3; patch apply --check PASS verified; 31/31; raw-safe count 2) |
 
