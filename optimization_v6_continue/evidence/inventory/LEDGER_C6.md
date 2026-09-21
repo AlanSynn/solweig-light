@@ -27,13 +27,33 @@ integrator commits. Base of record for wave-1 workers: `5e1fab46`.
 | v6-decoder | C6-50 | geometry/visibility_prepared.py | worker DELIVERED (95/95; precedence exact; NOTE: prepared slower on dev tier 71.6 vs 58.1 ms — re-measure at C6-80 before adoption); **C6-60 in flight (v6-rev650)** |
 | v6-memadm | C6-42 | runtime_memory.py | **LANDED e318c226** (APPROVE-WITH-NOTES rev3; patch apply --check PASS verified; 31/31; raw-safe count 2) |
 
+## Landed — C6-70 first-wave controlled integration (integrator commits on this branch)
+
+| commit | task | content | gate |
+|---|---|---|---|
+| 47cda54f | C6-70a | C6-10 recipe: service.py produces via numerical_geometry_recipe, shared identity/key; pipeline geometry_key + guarded_producer | adapted recipe/recipe-census/e2e/unit-geometry tests green |
+| 717a7e72 | C6-70b | C6-42 W1 phase admission (api.py) + W3 GDAL_CACHEMAX (runtime.py); W2 deferred to C6-40 | phase-memory suite green (importers pinned api.py+runtime.py) |
+| 0358497a | C6-70c | C6-20 Lside demand dispatch call site (engine.py) | lside + radiation suites green |
+| 02c0efa4 | C6-70d | C6-21 Lcyl by_demand call site (engine.py) + pipeline private demand scope (cyl_lw/cyl_sw) | cylinder suites green (kernel-level) |
+| 15dfbf2a | C6-70e | C6-22 narrow cylinder-shortwave hook (patch_radiation.py; declines under _fused_enabled) | cyl_sw + Kside differentials green |
+| 6f8325aa | C6-70f | C6-30 prepared GVF dispatch, threads>1 branch (engine.py) | gvf_prepare suite green |
+| 61c76a17 | C6-70g | C6-31 wrapper call in _gvf_fused (ground_view.py) + integration fixes: gvf_postprocess dtype guard (f64 lup_term delegate; SBC outside _supported), count-test floor re-measured (fused 972 < full 2285 < prepared 2745) | gvf_prepare+gvf_postprocess 217/217 |
+| 58d7fe23 | C6-70h | C6-50 decoder wiring (shortwave prepend + longwave compiled branch, patch_radiation.py) + decoder conftest shims + spied recipe test | decoder 95/95; cylinder_lw+sw 125/125 |
+| 78d242a6 | C6-70i | pipeline demand-scope fixes: set_demand_profile returns None (scope-finally ValueError every run) -> demand_profile() capture; C6-20 driver-side radiation_demand context added (fast path was silently inert) | found+fixed by L2 differential |
+| 5aa82325 | C6-70j | L2 chronology differential evidence (probe + logs + record) | L2 GREEN (below) |
+
+L2 chronology differential (evidence/integration/L2_chronology_differential.md):
+base 8e0b3877 vs integrated 78d242a6, 96x96 real-motif scene, 24 steps —
+Lside 24/24 + Kside 14/14 events bitwise (inputs+outputs), all 11 final TIFFs
+sha256-identical, cylinder-longwave equality transitive (Ldown in Lside inputs
++ bitwise Ldown/Tmrt TIFFs). **C6-70 C6-60 review in flight (reviewer-c6-70).**
+
 ## Queued (not dispatched)
 
 | task | blocked by |
 |---|---|
-| C6-40 phase adapter (runtime_phases.py) | in flight (v6-phases, base 4b83452b) |
-| C6-70 first-wave integration | C6-60 verdicts on all selected wave-1 patches |
-| C6-80 small cold/warm portfolio | C6-70 |
+| C6-40 phase adapter integration | worker COMPLETE (delivered; base 4b83452b, 17/17); **C6-60 review in flight (reviewer-c6-40)**, then integrator lands integration_recipe_C6-40.diff |
+| C6-80 small cold/warm portfolio | C6-70 review verdict + C6-40 landed |
 | C6-81 residual choice | C6-80 |
 | C6-90..94 conditional | C6-81 selection |
 | C6-99 final integration | selected optionals reviewed |
@@ -44,7 +64,16 @@ Standing facts: routing = GLM via Z.ai, Opus unavailable (INVENTORY_C6-00.md).
 actual-target claim). Exclusive benchmark lease starts at C6-80; wave-1 worker
 timings are contended development-tier.
 
-Integrator sign-off items for C6-70:
+Integrator sign-off items for C6-70 (status after integration):
+- RESOLVED by adoption: m7 §3 boundary stays as landed in C6-70b (W1
+  in api.py with policy='reject'); width-2 sensitivity is inherited from
+  the pre-existing availability-sensitive budget resolution and is now
+  C6-40 phase-adapter territory.
+- OPEN until C6-80: confirm GDAL_CACHEMAX cap causes no per-worker cache
+  regression (needs uncontended timing; dev tier cannot show it).
+- STANDING base fact (unchanged): wrapper cylinder-shortwave route is not
+  bitwise vs serial reference at base; specialization gates bind to the
+  wrapper route (C6-70e respects this; hook declines under fused).
 - C6-42 m7 §3: corrected geometry reservation 4.4320 GiB means single-job
   budgets in ~[3.88, 4.83] GiB would NEWLY raise ResourceAdmissionError.
   Accept stricter boundary, or defer width-2 admission to C6-40 phase adapter.
