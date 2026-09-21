@@ -48,7 +48,12 @@ The final campaign (L4) executes under `.venv-light`
 25.6.0) — the dependency-identical environment that produced the v4 large
 reference. Under it the math profile reports the exact reference fingerprint
 `8e4d38460b61b0299e7c1d525c8499750dcd219ef01cc785d7496dbe1dcbef30`
-(`solweig-portable-sleef-5a1d179d-v1`); verified before the run. The campaign
-`.venv` (CPython 3.12.13) was used for development gates and is recorded by the
-3.12 installed check above. numba njit cache enabled (per-run `NUMBA_CACHE_DIR`
-in the harness, matching the v4 protocol so cold-JIT time is comparable).
+(`solweig-portable-sleef-5a1d179d-v1`); the assertion was made in-session
+before the run, and its durable evidence is the fingerprint equality recorded
+in both L4 `candidate_manifest.json` files (re-verified independently during
+the C5-63 review). The campaign `.venv` (CPython 3.12.13) was used for
+development gates and is recorded by the 3.12 installed check above. numba
+njit cache enabled (per-run `NUMBA_CACHE_DIR` in the harness, matching the v4
+protocol so cold-JIT time is comparable). Exact installed-check invocations
+and interpreter versions: `FREEZE_CHECKS_ATTRIBUTION.json` (the check JSONs
+use a schema that predates interpreter embedding, so attribution lives here).

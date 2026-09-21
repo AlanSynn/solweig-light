@@ -1,0 +1,20 @@
+{
+  "schema": "claude-v5-freeze-checks-attribution-v1",
+  "note": "The l2_chrono check JSONs (schema c5-40-l2-chrono-v1) do not embed the interpreter version; this sidecar records the exact invocation of each installed check. Both checks are bitwise-identical to evidence/l2/REFERENCE_bfd9915e_dense256.json (23 artifacts). Run trees /tmp/v5-installed-check{,-311} were transient.",
+  "harness": "optimization_v5_claude/evidence/l2/l2_chrono.py",
+  "harness_args": "<scene_src> <run_dir> <out_json>  (scene: optimization_v5_claude/evidence/census/scene_dense256; PYTHONPATH=evidence/freeze/site-packages)",
+  "checks": [
+    {
+      "file": "installed_check_dense256.json",
+      "sha256": "4aa14fdaf05c83d514f0274d97b03adc519303702ab9ecd3d1be0a20ff06fb87",
+      "interpreter": "CPython 3.12.13 (.venv), worktree .venv/bin/python",
+      "run_dir_transient": "/tmp/v5-installed-check"
+    },
+    {
+      "file": "installed_check_dense256_py311.json",
+      "sha256": "88ee3f13225177b5c0e59bf69087e4ce1e131586260bf81c960f549d7e4500dc",
+      "interpreter": "CPython 3.11.16 (.venv-light), /Users/alansynn/Workspace/solweig-light/.venv-light/bin/python",
+      "run_dir_transient": "/tmp/v5-installed-check-311"
+    }
+  ]
+}
