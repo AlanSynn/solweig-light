@@ -1,21 +1,10 @@
-#SOLWEIG-GPU: GPU-accelerated SOLWEIG model for urban thermal comfort simulation
-#Copyright (C) 2022–2025 Harsh Kamath and Naveen Sudharsan
+"""Verbatim pre-edit ground-view baseline for G02/G03 differentials.
 
-#This program is free software: you can redistribute it and/or modify
-#it under the terms of the GNU General Public License as published by
-#the Free Software Foundation, either version 3 of the License, or
-#(at your option) any later version.
-
-#This program is distributed in the hope that it will be useful,
-#but WITHOUT ANY WARRANTY; without even the implied warranty of
-#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-#GNU General Public License for more details.
-"""Pixel-owned ground-view gathers with persistent outside-slice history.
-
-Only addressing descriptors are cached. Emitted/reflected fields are rebuilt
-every direction; direction-invariant float32 source snapshots are prepared once
-per call (G02). Non-float32 raster profiles retain the characterized NumPy
-implementation. Directions are reduced in original order.
+Extracted from commit bfd9915e411e28bfe498d547e3c820a4de863ee2
+(src/solweig_light/radiation/ground_view.py) by a git-driven extraction script:
+the only rewrites are the module docstring, njit cache=True -> cache=False on
+this module's own kernels, and absolute engine imports. Every function below,
+including the water-mutation ordering in _sun, is the exact baseline.
 """
 from functools import lru_cache
 import numpy as np
@@ -124,14 +113,14 @@ def _gather_pixel(row,col,buildings,shadow,sunwall,lup,albshadow,alb,lwall,albed
     output[14,row,col]=firstan;output[15,row,col]=firstanw
 
 
-@njit(cache=True,fastmath=False)
+@njit(cache=False,fastmath=False)
 def _gather_serial(buildings,shadow,sunwall,lup,albshadow,alb,lwall,albedo,bounds,first,output):
     for row in range(buildings.shape[0]):
         for col in range(buildings.shape[1]):
             _gather_pixel(row,col,buildings,shadow,sunwall,lup,albshadow,alb,lwall,albedo,bounds,first,output)
 
 
-@njit(cache=True,fastmath=False,parallel=True)
+@njit(cache=False,fastmath=False,parallel=True)
 def _gather_parallel(buildings,shadow,sunwall,lup,albshadow,alb,lwall,albedo,bounds,first,output):
     rows,cols=buildings.shape
     for pixel in prange(rows*cols):
@@ -139,19 +128,13 @@ def _gather_parallel(buildings,shadow,sunwall,lup,albshadow,alb,lwall,albedo,bou
         _gather_pixel(row,col,buildings,shadow,sunwall,lup,albshadow,alb,lwall,albedo,bounds,first,output)
 
 
-def _gather(azimuth,scale,first,second,buildings,shadow,sunwall,lup,albshadow,alb,lwall,albedo,parallel,snapshot=False):
+def _gather(azimuth,scale,first,second,buildings,shadow,sunwall,lup,albshadow,alb,lwall,albedo,parallel):
     shape=buildings.shape
     bounds=ray_schedule(shape,azimuth,scale,first,second)
-    if snapshot:
-        # G02 contract: the caller passes private float32 snapshots it owns for
-        # the whole call. Kernels only read sources and write output, so sharing
-        # them across directions is exact; no per-direction copy remains.
-        sources=[buildings,shadow,sunwall,lup,albshadow,alb]
-    else:
-        # Snapshot dynamic neighbor inputs before any worker starts. Each direction
-        # owns fresh receiver fields; subsequent Tg mutation cannot rewrite Lup.
-        sources=[np.array(value,dtype=np.float32,copy=True) for value in (buildings,shadow,sunwall,lup,albshadow,alb)]
-        lwall=np.array(np.broadcast_to(lwall,shape),dtype=np.float32,copy=True)
+    # Snapshot dynamic neighbor inputs before any worker starts. Each direction
+    # owns fresh receiver fields; subsequent Tg mutation cannot rewrite Lup.
+    sources=[np.array(value,dtype=np.float32,copy=True) for value in (buildings,shadow,sunwall,lup,albshadow,alb)]
+    lwall=np.array(np.broadcast_to(lwall,shape),dtype=np.float32,copy=True)
     output=np.empty((16,*shape),dtype=np.float32)
     kernel=_gather_parallel if parallel else _gather_serial
     kernel(*sources,lwall,np.float32(albedo),bounds,np.float32(first),output)
@@ -163,7 +146,7 @@ def _supported(values):
 
 
 def _fallback(name,*args):
-    from . import engine
+    from solweig_light.radiation import engine
     function=getattr(engine,name+'_numpy',getattr(engine,name))
     return function(*args)
 
@@ -174,37 +157,7 @@ def _angular_constant(angle, value):
     return np.asarray(value, dtype=dtype) if dtype.kind == 'f' else value
 
 
-def _gather_sources(azimuth, scale, first, second, buildings, shadow, sunwall, Lup, albshadow, alb, Lwall, albedo_b, parallel, prepared):
-    """Feed _gather either per-direction copies (legacy) or call-owned snapshots.
-
-    Without ``prepared`` every direction copies its sources exactly as before.
-    With a prepared dict owned by one _gvf call, the direction-invariant float32
-    conversions run once and every expression evaluation stays at its original
-    place relative to the water mutation of Tg:
-    - Lup is evaluated before ``Tg[lc_grid == 3] = ...``, so direction 0 owns a
-      pre-mutation snapshot and directions 2..18 share one post-mutation
-      snapshot (the mutation rewrites one constant onto fixed cells, so their
-      Lup values are bitwise identical);
-    - Lwall/albshadow are evaluated after that mutation in every direction, so
-      a single snapshot covers all 18.
-    Lup/Lwall/albshadow are freshly allocated operator outputs that nothing
-    writes afterwards, so converting them once is exact; buildings/shadow/alb
-    snapshots are prepared once per call by _gvf, which routes aliased-Tg
-    inputs to the legacy path instead.
-    """
-    if prepared is None:
-        return _gather(azimuth, scale, first, second, buildings, shadow, sunwall, Lup, albshadow, alb, Lwall, albedo_b, parallel)
-    if 'lwall' not in prepared:
-        prepared['lwall'] = np.array(np.broadcast_to(Lwall, buildings.shape), dtype=np.float32, copy=True)
-        prepared['albshadow'] = np.array(albshadow, dtype=np.float32, copy=True)
-        prepared['lup'] = np.array(Lup, dtype=np.float32, copy=True)
-    elif 'lup_rest' not in prepared:
-        prepared['lup_rest'] = np.array(Lup, dtype=np.float32, copy=True)
-    lup = prepared['lup'] if 'lup_rest' not in prepared else prepared['lup_rest']
-    return _gather(azimuth, scale, first, second, buildings, shadow, sunwall, lup, prepared['albshadow'], alb, prepared['lwall'], albedo_b, parallel, snapshot=True)
-
-
-def _sun(azimuthA, scale, buildings, shadow, sunwall, first, second, aspect, walls, Tg, Tgwall, Ta, emis_grid, ewall, alb_grid, SBC, albedo_b, Twater, lc_grid, landcover, parallel=False, *, prepared=None):
+def _sun(azimuthA, scale, buildings, shadow, sunwall, first, second, aspect, walls, Tg, Tgwall, Ta, emis_grid, ewall, alb_grid, SBC, albedo_b, Twater, lc_grid, landcover, parallel=False):
     """
     Calculate solar radiation on surfaces with different orientations.
     
@@ -236,7 +189,7 @@ def _sun(azimuthA, scale, buildings, shadow, sunwall, first, second, aspect, wal
     Returns:
         tuple: Radiation components for different surfaces
     """
-    from .engine import _array, _zeros, _operate, _divide
+    from solweig_light.radiation.engine import _array, _zeros, _operate, _divide
     if not _supported((buildings, shadow, sunwall, aspect, walls, Tg, emis_grid, alb_grid)) or (np.asarray(Tgwall).ndim>0 and np.asarray(Tgwall).dtype!=np.float32) or not np.isfinite(np.asarray(first)).all() or not np.isfinite(np.asarray(second)).all() or float(np.round(_operate(np.multiply, second, scale)))<=0:
         return _fallback('sunonsurface_2018a', azimuthA, scale, buildings, shadow, sunwall, first, second, aspect, walls, Tg, Tgwall, Ta, emis_grid, ewall, alb_grid, SBC, albedo_b, Twater, lc_grid, landcover)
     scale = np.copy(_array(scale))
@@ -263,8 +216,8 @@ def _sun(azimuthA, scale, buildings, shadow, sunwall, first, second, aspect, wal
     (weightsumsh, weightsumwall, weightsumLupsh, weightsumLwall,
      weightsumalbsh, weightsumalbwall, weightsumalbnosh, weightsumalbwallnosh,
      weightsumsh_first, weightsumwall_first, weightsumLupsh_first, weightsumLwall_first,
-     weightsumalbsh_first, weightsumalbwall_first, weightsumalbnosh_first, weightsumalbwallnosh_first) = _gather_sources(
-        azimuth, scale, first, second, buildings, shadow, sunwall, Lup, albshadow, alb, Lwall, albedo_b, parallel, prepared)
+     weightsumalbsh_first, weightsumalbwall_first, weightsumalbnosh_first, weightsumalbwallnosh_first) = _gather(
+        azimuth, scale, first, second, buildings, shadow, sunwall, Lup, albshadow, alb, Lwall, albedo_b, parallel)
     wallsuninfluence_first = weightsumwall_first > 0
     wallinfluence_first = weightsumalbwallnosh_first > 0
     wallsuninfluence_second = weightsumwall > 0
@@ -331,7 +284,7 @@ def _gvf(wallsun, walls, buildings, scale, shadow, first, second, dirwalls, Tg, 
     Returns:
         tuple: View factors and albedo components for different directions
     """
-    from .engine import _zeros, _operate, _divide
+    from solweig_light.radiation.engine import _zeros, _operate, _divide
     if not _supported((wallsun, walls, buildings, shadow, dirwalls, Tg, emis_grid, alb_grid)) or (np.asarray(Tgwall).ndim>0 and np.asarray(Tgwall).dtype!=np.float32):
         return _fallback('gvf_2018a', wallsun, walls, buildings, scale, shadow, first, second, dirwalls, Tg, Tgwall, Ta, emis_grid, ewall, alb_grid, SBC, albedo_b, rows, cols, Twater, lc_grid, landcover)
     azimuthA = np.arange(5, 359, 20, dtype=np.float32)
@@ -352,23 +305,8 @@ def _gvf(wallsun, walls, buildings, scale, shadow, first, second, dirwalls, Tg, 
     gvfalbnoshN = _zeros((rows, cols))
     gvfSum = _zeros((rows, cols))
     sunwall = (_operate(np.multiply, _divide(wallsun, walls), buildings) == 1).astype(np.float32)
-    # G02: convert the direction-invariant float32 sources once per call. The
-    # private copies also absorb the sunwall normalization inside _sun, which is
-    # a numerical no-op here because the comparison above leaves only exact
-    # 0.0/1.0 values. Tg is excluded: it is mutated for water cells between the
-    # Lup evaluation and the gather, and if Tg shares memory with any caller
-    # array that the snapshots would capture or that the postprocessing rereads
-    # (buildings/shadow/alb_grid), the exact per-direction path stays in charge.
-    if any(np.may_share_memory(Tg, value) for value in (buildings, shadow, alb_grid)):
-        prepared = None
-    else:
-        buildings = np.array(buildings, dtype=np.float32, copy=True)
-        shadow = np.array(shadow, dtype=np.float32, copy=True)
-        alb_grid = np.array(alb_grid, dtype=np.float32, copy=True)
-        prepared = {}
-    sunwall = np.array(sunwall, dtype=np.float32, copy=True)
     for j in np.arange(0, len(azimuthA)):
-        _, gvfLupi, gvfalbi, gvfalbnoshi, gvf2 = _sun(azimuthA[j], scale, buildings, shadow, sunwall, first, second, _divide(_operate(np.multiply, dirwalls, np.pi), 180), walls, Tg, Tgwall, Ta, emis_grid, ewall, alb_grid, SBC, albedo_b, Twater, lc_grid, landcover, parallel=parallel, prepared=prepared)
+        _, gvfLupi, gvfalbi, gvfalbnoshi, gvf2 = _sun(azimuthA[j], scale, buildings, shadow, sunwall, first, second, _divide(_operate(np.multiply, dirwalls, np.pi), 180), walls, Tg, Tgwall, Ta, emis_grid, ewall, alb_grid, SBC, albedo_b, Twater, lc_grid, landcover, parallel=parallel)
         gvfLup += gvfLupi
         gvfalb += gvfalbi
         gvfalbnosh += gvfalbnoshi
@@ -408,14 +346,3 @@ def _gvf(wallsun, walls, buildings, scale, shadow, first, second, dirwalls, Tg, 
     gvfNorm[buildings == 0] = 1
     return (gvfLup, gvfalb, gvfalbnosh, gvfLupE, gvfalbE, gvfalbnoshE, gvfLupS, gvfalbS, gvfalbnoshS, gvfLupW, gvfalbW, gvfalbnoshW, gvfLupN, gvfalbN, gvfalbnoshN, gvfSum, gvfNorm)
 
-def sunonsurface_2018a(azimuthA, scale, buildings, shadow, sunwall, first, second, aspect, walls, Tg, Tgwall, Ta, emis_grid, ewall, alb_grid, SBC, albedo_b, Twater, lc_grid, landcover):
-    return _sun(azimuthA, scale, buildings, shadow, sunwall, first, second, aspect, walls, Tg, Tgwall, Ta, emis_grid, ewall, alb_grid, SBC, albedo_b, Twater, lc_grid, landcover, parallel=False)
-
-def sunonsurface_2018a_parallel(azimuthA, scale, buildings, shadow, sunwall, first, second, aspect, walls, Tg, Tgwall, Ta, emis_grid, ewall, alb_grid, SBC, albedo_b, Twater, lc_grid, landcover):
-    return _sun(azimuthA, scale, buildings, shadow, sunwall, first, second, aspect, walls, Tg, Tgwall, Ta, emis_grid, ewall, alb_grid, SBC, albedo_b, Twater, lc_grid, landcover, parallel=True)
-
-def gvf_2018a(wallsun, walls, buildings, scale, shadow, first, second, dirwalls, Tg, Tgwall, Ta, emis_grid, ewall, alb_grid, SBC, albedo_b, rows, cols, Twater, lc_grid, landcover):
-    return _gvf(wallsun, walls, buildings, scale, shadow, first, second, dirwalls, Tg, Tgwall, Ta, emis_grid, ewall, alb_grid, SBC, albedo_b, rows, cols, Twater, lc_grid, landcover, parallel=False)
-
-def gvf_2018a_parallel(wallsun, walls, buildings, scale, shadow, first, second, dirwalls, Tg, Tgwall, Ta, emis_grid, ewall, alb_grid, SBC, albedo_b, rows, cols, Twater, lc_grid, landcover):
-    return _gvf(wallsun, walls, buildings, scale, shadow, first, second, dirwalls, Tg, Tgwall, Ta, emis_grid, ewall, alb_grid, SBC, albedo_b, rows, cols, Twater, lc_grid, landcover, parallel=True)
