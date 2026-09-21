@@ -250,38 +250,53 @@ def _run_tile(base_path, preprocess_dir, selected_date_str, tile, paths, flags, 
         start = 0
         if restored is not None:
             start, state = restored
-        for i in range(start, len(timeline.met)):
-            if scene.landcover and (i == 0 or timeline.dectime[i] % 1 == 0):
-                state.Twater = np.mean(timeline.meteorology["Ta"][timeline.jday[0] == np.floor(timeline.dectime[i])])
-            if timeline.dectime[i] % 1 == 0:
-                state.CI = 1.0  # Original np.where tuple-length branch always selects this for 1D dectime.
-            dynamic = timeline.at(i)
-            result = Solweig_2022a_calc(i=i, **args, **state.engine_arguments(), **dynamic, altitude=timeline.altitude[0, i],
-                azimuth=timeline.azimuth[0, i], zen=timeline.zen[0, i], jday=timeline.jday[0, i],
-                psi=timeline.psi[i], dectime=timeline.dectime[i], altmax=timeline.altmax[0, i], Twater=state.Twater)
-            fields = dict(zip(RETURN_NAMES, result))
-            state.accept(fields)
-            direction = timeline.wind_direction[i]
-            direction = int(np.floor(((direction % 360) + 15) / 30) * 30) % 360 if np.isfinite(direction) and direction >= 0 else None
-            speed = np.maximum(coefficients.get(direction, workspace.ones) * np.float32(timeline.wind[i]), np.float32(.15))
-            temperature = (workspace.zero + np.float32(timeline.meteorology["Ta"][i])) + np.float32(timeline.uhi[i])
-            tmrt = workspace.zero + fields["Tmrt"]
-            utci = utci_calculator_uniform(temperature[0, 0], np.float32(timeline.meteorology["RH"][i]), tmrt, speed)
-            utci[~scene.valid_mask] = np.nan
-            output = {"UTCI": utci, "TMRT": fields["Tmrt"], "Kup": fields["Kup"], "Kdown": fields["Kdown"],
-                      "Lup": fields["Lup"], "Ldown": fields["Ldown"], "Shadow": fields["shadow"], "Ta": temperature, "Wind": speed}
-            if timeline.wetbulb is not None:
-                hcg = (6.3 / .46821) * np.power(speed, .6)
-                globe = black_globe_temperature(hcg, tmrt, temperature, emissivity=.95)
-                sun = np.float32(.7 * timeline.wetbulb[i]) + .3 * globe
-                shade = np.float32(.7 * timeline.wetbulb[i]) + .2 * globe + .1 * temperature
-                output["WBGT"] = np.where(fields["shadow"] < .1, sun, shade)
-            writer.write(i, output)
-            if (i + 1) % runtime.checkpoint_interval == 0 or i + 1 == len(timeline.met):
-                writer.checkpoint(i + 1, state)
-            # State owns its carried maps. Release completed diagnostic and
-            # comfort rasters before the next kernel allocates their successors.
-            del result, fields, output, tmrt, utci, speed, temperature
+        # Private demand profiles: the pipeline consumes only the primary
+        # cylinder-longwave outputs (cardinal diagnostics are NOT_REQUESTED,
+        # never zeros) and the admitted cylinder-anisotropic shortwave
+        # scratch profile. Both restore on exit; public API is unchanged
+        # (D09: never surfaced through RuntimeOptions or public signatures).
+        from .radiation import cylinder_longwave as _cyl_lw
+        from .radiation import cylinder_shortwave as _cyl_sw
+        assert args['cyl'] and args['anisotropic_sky'] == 1, \
+            'reduced private demand profiles require the standard cylinder-anisotropic workflow'
+        _previous_lw_demand = _cyl_lw.set_demand(_cyl_lw.CylinderLongwaveDemand.PIPELINE_CYLINDERS_ANISOTROPIC)
+        _previous_sw_profile = _cyl_sw.set_demand_profile(_cyl_sw.PIPELINE_CYLINDER_ANISOTROPIC)
+        try:
+            for i in range(start, len(timeline.met)):
+                if scene.landcover and (i == 0 or timeline.dectime[i] % 1 == 0):
+                    state.Twater = np.mean(timeline.meteorology["Ta"][timeline.jday[0] == np.floor(timeline.dectime[i])])
+                if timeline.dectime[i] % 1 == 0:
+                    state.CI = 1.0  # Original np.where tuple-length branch always selects this for 1D dectime.
+                dynamic = timeline.at(i)
+                result = Solweig_2022a_calc(i=i, **args, **state.engine_arguments(), **dynamic, altitude=timeline.altitude[0, i],
+                    azimuth=timeline.azimuth[0, i], zen=timeline.zen[0, i], jday=timeline.jday[0, i],
+                    psi=timeline.psi[i], dectime=timeline.dectime[i], altmax=timeline.altmax[0, i], Twater=state.Twater)
+                fields = dict(zip(RETURN_NAMES, result))
+                state.accept(fields)
+                direction = timeline.wind_direction[i]
+                direction = int(np.floor(((direction % 360) + 15) / 30) * 30) % 360 if np.isfinite(direction) and direction >= 0 else None
+                speed = np.maximum(coefficients.get(direction, workspace.ones) * np.float32(timeline.wind[i]), np.float32(.15))
+                temperature = (workspace.zero + np.float32(timeline.meteorology["Ta"][i])) + np.float32(timeline.uhi[i])
+                tmrt = workspace.zero + fields["Tmrt"]
+                utci = utci_calculator_uniform(temperature[0, 0], np.float32(timeline.meteorology["RH"][i]), tmrt, speed)
+                utci[~scene.valid_mask] = np.nan
+                output = {"UTCI": utci, "TMRT": fields["Tmrt"], "Kup": fields["Kup"], "Kdown": fields["Kdown"],
+                          "Lup": fields["Lup"], "Ldown": fields["Ldown"], "Shadow": fields["shadow"], "Ta": temperature, "Wind": speed}
+                if timeline.wetbulb is not None:
+                    hcg = (6.3 / .46821) * np.power(speed, .6)
+                    globe = black_globe_temperature(hcg, tmrt, temperature, emissivity=.95)
+                    sun = np.float32(.7 * timeline.wetbulb[i]) + .3 * globe
+                    shade = np.float32(.7 * timeline.wetbulb[i]) + .2 * globe + .1 * temperature
+                    output["WBGT"] = np.where(fields["shadow"] < .1, sun, shade)
+                writer.write(i, output)
+                if (i + 1) % runtime.checkpoint_interval == 0 or i + 1 == len(timeline.met):
+                    writer.checkpoint(i + 1, state)
+                # State owns its carried maps. Release completed diagnostic and
+                # comfort rasters before the next kernel allocates their successors.
+                del result, fields, output, tmrt, utci, speed, temperature
+        finally:
+            _cyl_sw.set_demand_profile(_previous_sw_profile)
+            _cyl_lw.set_demand(_previous_lw_demand)
         extra = {}
         input_guard.check()
         publishing = writer.publication_path.exists() or writer.completion_path.exists()

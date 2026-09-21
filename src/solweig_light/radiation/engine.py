@@ -1650,7 +1650,9 @@ def Solweig_2022a_calc(i, dsm, scale, rows, cols, svf, svfN, svfW, svfE, svfS, s
         if CI < 0.95:
             esky_c = _operate(np.add, _operate(np.multiply, CI, esky), _operate(np.multiply, _operate(np.subtract, 1, CI), 1.0))
             esky = esky_c
-        Ldown, Lside, Least_, Lwest_, Lnorth_, Lsouth_ = Lcyl_v2022a(esky, L_patches, Ta, Tgwall, ewall, Lup, shmat, vegshmat, vbshvegshmat, altitude, azimuth, rows, cols, asvf)
+        from .cylinder_longwave import Lcyl_v2022a_by_demand, NOT_REQUESTED
+        from ..runtime import get_runtime_options
+        Ldown, Lside, Least_, Lwest_, Lnorth_, Lsouth_ = Lcyl_v2022a_by_demand(esky, L_patches, Ta, Tgwall, ewall, Lup, shmat, vegshmat, vbshvegshmat, altitude, azimuth, rows, cols, asvf, block_pixels=get_runtime_options().block_pixels, parallel=get_runtime_options().threads_per_worker > 1)
     else:
         Ldown = _operate(np.add, _operate(np.add, _operate(np.add, _operate(np.multiply, _operate(np.multiply, _operate(np.multiply, _operate(np.subtract, _operate(np.add, svf, svfveg), 1), esky), SBC), _operate(np.power, _operate(np.add, Ta, 273.15), 4)), _operate(np.multiply, _operate(np.multiply, _operate(np.multiply, _operate(np.subtract, _operate(np.subtract, 2, svfveg), svfaveg), ewall), SBC), _operate(np.power, _operate(np.add, Ta, 273.15), 4))), _operate(np.multiply, _operate(np.multiply, _operate(np.multiply, _operate(np.subtract, svfaveg, svf), ewall), SBC), _operate(np.power, _operate(np.add, _operate(np.add, Ta, 273.15), Tgwall), 4))), _operate(np.multiply, _operate(np.multiply, _operate(np.multiply, _operate(np.multiply, _operate(np.subtract, _operate(np.subtract, 2, svf), svfveg), _operate(np.subtract, 1, ewall)), esky), SBC), _operate(np.power, _operate(np.add, Ta, 273.15), 4)))
         Lside = _zeros((rows, cols))
@@ -1659,7 +1661,7 @@ def Solweig_2022a_calc(i, dsm, scale, rows, cols, svf, svfN, svfW, svfE, svfS, s
             c = _operate(np.subtract, 1, CI)
             Ldown = _operate(np.add, _operate(np.multiply, Ldown, _operate(np.subtract, 1, c)), _operate(np.multiply, c, _operate(np.add, _operate(np.add, _operate(np.add, _operate(np.multiply, _operate(np.multiply, _operate(np.subtract, _operate(np.add, svf, svfveg), 1), SBC), _operate(np.power, _operate(np.add, Ta, 273.15), 4)), _operate(np.multiply, _operate(np.multiply, _operate(np.multiply, _operate(np.subtract, _operate(np.subtract, 2, svfveg), svfaveg), ewall), SBC), _operate(np.power, _operate(np.add, Ta, 273.15), 4))), _operate(np.multiply, _operate(np.multiply, _operate(np.multiply, _operate(np.subtract, svfaveg, svf), ewall), SBC), _operate(np.power, _operate(np.add, _operate(np.add, Ta, 273.15), Tgwall), 4))), _operate(np.multiply, _operate(np.multiply, _operate(np.multiply, _operate(np.subtract, _operate(np.subtract, 2, svf), svfveg), _operate(np.subtract, 1, ewall)), SBC), _operate(np.power, _operate(np.add, Ta, 273.15), 4)))))
     Least, Lsouth, Lwest, Lnorth = lside_veg_v2022a_demanded(svfS, svfW, svfN, svfE, svfEveg, svfSveg, svfWveg, svfNveg, svfEaveg, svfSaveg, svfWaveg, svfNaveg, azimuth.item(), altitude.item(), Ta, Tgwall, SBC, ewall, Ldown, esky, t, F_sh, CI, LupE, LupS, LupW, LupN, anisotropic_sky, demand=current_demand())
-    if cyl == 0 and anisotropic_sky == 1:
+    if cyl == 0 and anisotropic_sky == 1 and Least_ is not NOT_REQUESTED:
         Least += Least_
         Lwest += Lwest_
         Lnorth += Lnorth_
@@ -1671,7 +1673,7 @@ def Solweig_2022a_calc(i, dsm, scale, rows, cols, svf, svfN, svfW, svfE, svfS, s
     else:
         Sstr = _operate(np.add, _operate(np.multiply, absK, _operate(np.add, _operate(np.multiply, _operate(np.add, Kdown, Kup), Fup), _operate(np.multiply, _operate(np.add, _operate(np.add, _operate(np.add, Knorth, Keast), Ksouth), Kwest), Fside))), _operate(np.multiply, absL, _operate(np.add, _operate(np.multiply, _operate(np.add, Ldown, Lup), Fup), _operate(np.multiply, _operate(np.add, _operate(np.add, _operate(np.add, Lnorth, Least), Lsouth), Lwest), Fside))))
     Tmrt = _operate(np.subtract, np.sqrt(np.sqrt(_divide(Sstr, _operate(np.multiply, absL, SBC)))), 273.2)
-    if cyl == 1 and anisotropic_sky == 1:
+    if cyl == 1 and anisotropic_sky == 1 and Least_ is not NOT_REQUESTED:
         Least += Least_
         Lwest += Lwest_
         Lnorth += Lnorth_

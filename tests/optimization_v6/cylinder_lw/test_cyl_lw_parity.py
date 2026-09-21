@@ -6,12 +6,28 @@ call/timestep on real small inputs, adversarial schedules and degenerate
 inputs; the FULL_DIAGNOSTICS profile must keep the untouched full path; guard
 failures must fall back to the original serial reference in both profiles.
 """
+import importlib.util as _ilu
+import sys as _sys
 import warnings
+from pathlib import Path as _Path
 
 import numpy as np
 import pytest
 
-from conftest import bitwise_equal, lcyl_arguments, lcyl_patches, lw_blocks, lw_coefficients, packed
+# Load THIS family's conftest by file path: bare `import conftest` is
+# shadowed by sibling families' conftest modules when several directories
+# are collected in one pytest invocation.
+_conftest_path = _Path(__file__).resolve().parent / 'conftest.py'
+_spec = _ilu.spec_from_file_location('_cylinderlw_conftest', str(_conftest_path))
+_conftest = _ilu.module_from_spec(_spec)
+_sys.modules['_cylinderlw_conftest'] = _conftest
+_spec.loader.exec_module(_conftest)
+bitwise_equal = _conftest.bitwise_equal
+lcyl_arguments = _conftest.lcyl_arguments
+lcyl_patches = _conftest.lcyl_patches
+lw_blocks = _conftest.lw_blocks
+lw_coefficients = _conftest.lw_coefficients
+packed = _conftest.packed
 
 from solweig_light.radiation import cylinder_longwave as cyl
 from solweig_light.radiation import patch_radiation as compiled
