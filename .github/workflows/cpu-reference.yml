@@ -1,14 +1,91 @@
+# CPU reference — RESTRUCTURED 2026-09-21 per user instruction: CI must be a
+# LIGHTWEIGHT problem check, not a heavy suite.
+#
+#   push / pull_request  -> single `smoke` job (minutes): pinned native GDAL
+#                           stack, wheel build+install, import/dependency
+#                           isolation, CLI, and fast contract-level unit tests.
+#   workflow_dispatch    -> the original three full-wheel jobs (differential,
+#                           optional, forcing), preserved unchanged in scope for
+#                           manual full validation.
+#
+# Root-cause fix for the 2026-09-20/21 red runs: the pinned gdal 3.13.3
+# formula links libpoppler.163.dylib (poppler 26.08.0 soname). Runner
+# Homebrew drifted to poppler 26.09.0 (soname 164) and osgeo._gdal could no
+# longer load, killing every job at test collection. Poppler is now pinned
+# the same way GDAL always was: formula commit + sha256 check.
 name: CPU reference
 env:
   GDAL_FORMULA_COMMIT: 3c01d2c89227ced6d17c28d6a784b675c991b33e
   GDAL_FORMULA_SHA256: 71ecda409f008f599b15b10f0fe6f51f8f7d052ee91f1082a801ce2ca9d3c05f
+  POPPLER_FORMULA_COMMIT: 1400ff1c03e278cebea841ae0788d984f4bbe1b9
+  POPPLER_FORMULA_SHA256: 8d966536c326bc067aa23ba84a1bddd3295763bc6052dad76a2b4fbba3b2eead
 on:
   pull_request:
   push:
   workflow_dispatch:
 
 jobs:
+  smoke:
+    name: smoke (light problem check)
+    runs-on: macos-15
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned native poppler and GDAL
+        run: |
+          test "$(uname -m)" = "arm64"
+          curl --fail --location --silent --show-error \
+            "https://raw.githubusercontent.com/Homebrew/homebrew-core/${POPPLER_FORMULA_COMMIT}/Formula/p/poppler.rb" \
+            --output "${RUNNER_TEMP}/poppler.rb"
+          echo "${POPPLER_FORMULA_SHA256}  ${RUNNER_TEMP}/poppler.rb" | shasum -a 256 --check
+          curl --fail --location --silent --show-error \
+            "https://raw.githubusercontent.com/Homebrew/homebrew-core/${GDAL_FORMULA_COMMIT}/Formula/g/gdal.rb" \
+            --output "${RUNNER_TEMP}/gdal.rb"
+          echo "${GDAL_FORMULA_SHA256}  ${RUNNER_TEMP}/gdal.rb" | shasum -a 256 --check
+          HOMEBREW_NO_AUTO_UPDATE=1 brew tap-new solweig-light/pinned
+          cp "${RUNNER_TEMP}/poppler.rb" "$(brew --repository solweig-light/pinned)/Formula/poppler.rb"
+          cp "${RUNNER_TEMP}/gdal.rb" "$(brew --repository solweig-light/pinned)/Formula/gdal.rb"
+          HOMEBREW_NO_AUTO_UPDATE=1 brew trust --formula solweig-light/pinned/poppler
+          HOMEBREW_NO_AUTO_UPDATE=1 brew trust --formula solweig-light/pinned/gdal
+          HOMEBREW_NO_AUTO_UPDATE=1 brew install solweig-light/pinned/poppler
+          HOMEBREW_NO_AUTO_UPDATE=1 brew install solweig-light/pinned/gdal
+          test "$(gdal-config --version)" = "3.13.3"
+          test -f /opt/homebrew/opt/poppler/lib/libpoppler.163.dylib
+      - name: Build and install distribution
+        run: |
+          python -m pip install build==1.6.1
+          python -m build --wheel
+          python -m pip install -r requirements/macos-arm64-py311.txt
+          python -m pip install --no-deps dist/solweig_light-*.whl
+      - name: Smoke check installed package
+        run: |
+          python - <<'PY'
+          import importlib.util
+          import pathlib
+          import solweig_light
+          assert 'site-packages' in pathlib.Path(solweig_light.__file__).parts
+          for name in ('torch', 'xarray', 'cdsapi', 'wrf'):
+              assert importlib.util.find_spec(name) is None, name
+          PY
+          solweig-light --help
+      - name: Fast contract-level unit checks
+        run: |
+          python -m pytest -p tests.helpers.installed_wheel_guard \
+            tests/unit/test_cli.py \
+            tests/unit/test_public_api.py \
+            tests/unit/test_compatibility.py \
+            tests/unit/test_models.py \
+            tests/unit/test_identities.py \
+            tests/unit/test_portable_profile.py -q
+
+  # ---- Full validation matrix: manual dispatch only (user instruction:
+  # ---- per-push CI must stay lightweight). Poppler pin added to each
+  # ---- native install step for the same root cause.
   own-met-wheel:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: macos-15
     timeout-minutes: 30
     steps:
@@ -20,14 +97,22 @@ jobs:
         run: |
           test "$(uname -m)" = "arm64"
           curl --fail --location --silent --show-error \
+            "https://raw.githubusercontent.com/Homebrew/homebrew-core/${POPPLER_FORMULA_COMMIT}/Formula/p/poppler.rb" \
+            --output "${RUNNER_TEMP}/poppler.rb"
+          echo "${POPPLER_FORMULA_SHA256}  ${RUNNER_TEMP}/poppler.rb" | shasum -a 256 --check
+          curl --fail --location --silent --show-error \
             "https://raw.githubusercontent.com/Homebrew/homebrew-core/${GDAL_FORMULA_COMMIT}/Formula/g/gdal.rb" \
             --output "${RUNNER_TEMP}/gdal.rb"
           echo "${GDAL_FORMULA_SHA256}  ${RUNNER_TEMP}/gdal.rb" | shasum -a 256 --check
           HOMEBREW_NO_AUTO_UPDATE=1 brew tap-new solweig-light/pinned
+          cp "${RUNNER_TEMP}/poppler.rb" "$(brew --repository solweig-light/pinned)/Formula/poppler.rb"
           cp "${RUNNER_TEMP}/gdal.rb" "$(brew --repository solweig-light/pinned)/Formula/gdal.rb"
+          HOMEBREW_NO_AUTO_UPDATE=1 brew trust --formula solweig-light/pinned/poppler
           HOMEBREW_NO_AUTO_UPDATE=1 brew trust --formula solweig-light/pinned/gdal
+          HOMEBREW_NO_AUTO_UPDATE=1 brew install solweig-light/pinned/poppler
           HOMEBREW_NO_AUTO_UPDATE=1 brew install solweig-light/pinned/gdal
           test "$(gdal-config --version)" = "3.13.3"
+          test -f /opt/homebrew/opt/poppler/lib/libpoppler.163.dylib
       - name: Install frozen test environment
         run: python -m pip install -r requirements/macos-arm64-py311.txt
       - name: Build and install distribution
@@ -57,6 +142,7 @@ jobs:
         run: python -m pytest -p tests.helpers.installed_wheel_guard tests/unit/test_cli.py tests/unit/test_public_api.py tests/unit/test_compatibility.py tests/unit/test_models.py -q
 
   optional-local-wheel:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: macos-15
     timeout-minutes: 30
     steps:
@@ -68,14 +154,22 @@ jobs:
         run: |
           test "$(uname -m)" = "arm64"
           curl --fail --location --silent --show-error \
+            "https://raw.githubusercontent.com/Homebrew/homebrew-core/${POPPLER_FORMULA_COMMIT}/Formula/p/poppler.rb" \
+            --output "${RUNNER_TEMP}/poppler.rb"
+          echo "${POPPLER_FORMULA_SHA256}  ${RUNNER_TEMP}/poppler.rb" | shasum -a 256 --check
+          curl --fail --location --silent --show-error \
             "https://raw.githubusercontent.com/Homebrew/homebrew-core/${GDAL_FORMULA_COMMIT}/Formula/g/gdal.rb" \
             --output "${RUNNER_TEMP}/gdal.rb"
           echo "${GDAL_FORMULA_SHA256}  ${RUNNER_TEMP}/gdal.rb" | shasum -a 256 --check
           HOMEBREW_NO_AUTO_UPDATE=1 brew tap-new solweig-light/pinned
+          cp "${RUNNER_TEMP}/poppler.rb" "$(brew --repository solweig-light/pinned)/Formula/poppler.rb"
           cp "${RUNNER_TEMP}/gdal.rb" "$(brew --repository solweig-light/pinned)/Formula/gdal.rb"
+          HOMEBREW_NO_AUTO_UPDATE=1 brew trust --formula solweig-light/pinned/poppler
           HOMEBREW_NO_AUTO_UPDATE=1 brew trust --formula solweig-light/pinned/gdal
+          HOMEBREW_NO_AUTO_UPDATE=1 brew install solweig-light/pinned/poppler
           HOMEBREW_NO_AUTO_UPDATE=1 brew install solweig-light/pinned/gdal
           test "$(gdal-config --version)" = "3.13.3"
+          test -f /opt/homebrew/opt/poppler/lib/libpoppler.163.dylib
       - name: Install frozen optional local environment
         run: python -m pip install -r requirements/optional-macos-arm64-py311.txt
       - name: Build and install distribution
@@ -94,6 +188,7 @@ jobs:
           python -m pytest -p tests.helpers.installed_wheel_guard tests/optional -q
 
   forcing-extra-wheel:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: macos-15
     timeout-minutes: 30
     steps:
@@ -105,14 +200,22 @@ jobs:
         run: |
           test "$(uname -m)" = "arm64"
           curl --fail --location --silent --show-error \
+            "https://raw.githubusercontent.com/Homebrew/homebrew-core/${POPPLER_FORMULA_COMMIT}/Formula/p/poppler.rb" \
+            --output "${RUNNER_TEMP}/poppler.rb"
+          echo "${POPPLER_FORMULA_SHA256}  ${RUNNER_TEMP}/poppler.rb" | shasum -a 256 --check
+          curl --fail --location --silent --show-error \
             "https://raw.githubusercontent.com/Homebrew/homebrew-core/${GDAL_FORMULA_COMMIT}/Formula/g/gdal.rb" \
             --output "${RUNNER_TEMP}/gdal.rb"
           echo "${GDAL_FORMULA_SHA256}  ${RUNNER_TEMP}/gdal.rb" | shasum -a 256 --check
           HOMEBREW_NO_AUTO_UPDATE=1 brew tap-new solweig-light/pinned
+          cp "${RUNNER_TEMP}/poppler.rb" "$(brew --repository solweig-light/pinned)/Formula/poppler.rb"
           cp "${RUNNER_TEMP}/gdal.rb" "$(brew --repository solweig-light/pinned)/Formula/gdal.rb"
+          HOMEBREW_NO_AUTO_UPDATE=1 brew trust --formula solweig-light/pinned/poppler
           HOMEBREW_NO_AUTO_UPDATE=1 brew trust --formula solweig-light/pinned/gdal
+          HOMEBREW_NO_AUTO_UPDATE=1 brew install solweig-light/pinned/poppler
           HOMEBREW_NO_AUTO_UPDATE=1 brew install solweig-light/pinned/gdal
           test "$(gdal-config --version)" = "3.13.3"
+          test -f /opt/homebrew/opt/poppler/lib/libpoppler.163.dylib
           python -m pip install build
       - name: Install only forcing and test extras
         run: |
