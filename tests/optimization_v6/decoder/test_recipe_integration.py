@@ -11,12 +11,24 @@ built the production way: identity-shared LazyDiffVisibility over the very
 shmat/vegshmat objects passed as channels (pipeline.py builds it once and
 reuses the objects).
 """
+import importlib.util as _ilu
+import sys as _sys
+from pathlib import Path as _Path
+# Load THIS family's conftest by file path: bare `import conftest` is
+# shadowed by sibling families' conftest modules when several test
+# directories are collected in one pytest invocation.
+_conftest_path = _Path(__file__).resolve().parent / 'conftest.py'
+_spec = _ilu.spec_from_file_location('_decoder_conftest', str(_conftest_path))
+_conftest = _ilu.module_from_spec(_spec)
+_sys.modules['_decoder_conftest'] = _conftest
+_spec.loader.exec_module(_conftest)
+retained_route = _conftest.retained_route
 import numpy as np
 import pytest
 
-from conftest import retained_route
 
 import solweig_light.radiation.patch_radiation as patch_radiation
+import solweig_light.geometry.visibility_prepared as visibility_prepared
 from solweig_light.geometry.visibility import LazyDiffVisibility, PackedVisibility
 from solweig_light.geometry.visibility_prepared import decode_longwave_block, decode_shortwave_block
 
@@ -134,11 +146,14 @@ def test_kside_end_to_end_raw_modes_with_recipe_shim(monkeypatch):
 
 
 def test_longwave_end_to_end_with_recipe_shim(monkeypatch):
-    """Emulate the recipe's single prepared call behind the three-name demand.
+    """The wired entry serves the three-name demand from one prepared decode.
 
-    The integrator replaces the generator expression with one prepared decode;
-    the shim feeds the three names from one prepared result through the same
-    call order, so define_patch_characteristics runs unchanged otherwise.
+    C6-70 integration puts the prepared attempt inside
+    define_patch_characteristics' compiled branch, ahead of the _block
+    generator: when admitted, _block never runs for the three channels. The
+    spy wraps the real decode_longwave_block to prove the wired call site
+    actually took the prepared route (called, with the demand channels, and
+    admitted) while the outputs stay bitwise against the retained route.
     """
     rng = np.random.default_rng(2024)
     rows = cols = 16
@@ -165,24 +180,27 @@ def test_longwave_end_to_end_with_recipe_shim(monkeypatch):
 
     demand_names = ('shmat', 'vegshmat', 'vbshvegshmat')
     with retained_route():
-        stash = {}
-        original_block = patch_radiation._block
+        calls = []
+        real_decode = visibility_prepared.decode_longwave_block
 
-        def recipe_block(channel, start, stop, count):
-            for index, name in enumerate(demand_names):
-                if channel is arguments[name] and name not in stash:
-                    prepared = decode_longwave_block(arguments['shmat'], arguments['vegshmat'],
-                                                     arguments['vbshvegshmat'], start, stop, count)
-                    if prepared is None:
-                        break
-                    stash.update(zip(demand_names, prepared))
-                    return stash[name]
-            return original_block(channel, start, stop, count)
+        def spy(shadow, vegetation, vegetation_building, start, stop, count):
+            result = real_decode(shadow, vegetation, vegetation_building, start, stop, count)
+            calls.append(((shadow, vegetation, vegetation_building), result is not None))
+            return result
 
-        monkeypatch.setattr(patch_radiation, '_block', recipe_block)
+        monkeypatch.setattr(visibility_prepared, 'decode_longwave_block', spy)
         try:
             candidate = patch_radiation.define_patch_characteristics(**arguments)
         finally:
             monkeypatch.undo()
     assert_fields_bitwise(baseline, candidate)
-    assert set(stash) == set(demand_names)  # the prepared call actually served the demand
+    # The wired call site actually took the prepared route: at least one
+    # admitted decode with exactly the demand channels, in demand order.
+    assert calls, 'decode_longwave_block was never reached'
+    assert all(admitted for _, admitted in calls)
+    served = {name for channels, _ in calls for name, channel
+              in zip(demand_names, channels)}
+    assert served == set(demand_names), served
+    first = calls[0][0]
+    assert first[0] is arguments['shmat'] and first[1] is arguments['vegshmat'] \
+        and first[2] is arguments['vbshvegshmat']

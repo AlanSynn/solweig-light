@@ -8,12 +8,26 @@
   variables cannot finalize a mapped owner mid-stage.
 - Close-before-decode behavior matches the original path exactly.
 """
+import importlib.util as _ilu
+import sys as _sys
+from pathlib import Path as _Path
+# Load THIS family's conftest by file path: bare `import conftest` is
+# shadowed by sibling families' conftest modules when several test
+# directories are collected in one pytest invocation.
+_conftest_path = _Path(__file__).resolve().parent / 'conftest.py'
+_spec = _ilu.spec_from_file_location('_decoder_conftest', str(_conftest_path))
+_conftest = _ilu.module_from_spec(_spec)
+_sys.modules['_decoder_conftest'] = _conftest
+_spec.loader.exec_module(_conftest)
+mapped_roundtrip = _conftest.mapped_roundtrip
+original_shortwave = _conftest.original_shortwave
+outcome = _conftest.outcome
+packed = _conftest.packed
 import gc
 import threading
 
 import numpy as np
 
-from conftest import mapped_roundtrip, original_shortwave, outcome, packed
 
 from solweig_light.geometry.visibility import LazyDiffVisibility
 from solweig_light.geometry.visibility_prepared import prepare_channels
@@ -36,7 +50,7 @@ def test_close_before_decode_matches_original(tmp_path):
         channels[0].close()
     # Close invalidates the borrowed descriptor by protocol, so preparation
     # declines and the complete fallback reports the closed owner identically.
-    from conftest import recipe_shortwave
+    recipe_shortwave = _conftest.recipe_shortwave
     assert prepare_channels(*channels, building, diffuse) is None
     result = outcome(recipe_shortwave, *channels, building, diffuse, 0, 256, 3)
     baseline = outcome(original_shortwave, *channels, building, diffuse, 0, 256, 3)
@@ -99,7 +113,7 @@ def test_prepared_holds_strong_owner_references(tmp_path):
 def test_reuse_slot_recheck_observes_intervening_close(tmp_path):
     """A close before the demand is reported at the shadow slot's open check
     in both paths (through preparation decline and complete fallback)."""
-    from conftest import recipe_shortwave
+    recipe_shortwave = _conftest.recipe_shortwave
     channels, building, diffuse = demand(tmp_path, 16, 16, 3)
     try:
         channels[0].close()

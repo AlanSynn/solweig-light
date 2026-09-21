@@ -7,12 +7,25 @@ plus asserted here through the allocation budget of the fallback-free kinds).
 Descriptors must be the accepted path's own cached borrow (tuple identity),
 proving zero payload copies are shared rather than added.
 """
+import importlib.util as _ilu
+import sys as _sys
+from pathlib import Path as _Path
+# Load THIS family's conftest by file path: bare `import conftest` is
+# shadowed by sibling families' conftest modules when several test
+# directories are collected in one pytest invocation.
+_conftest_path = _Path(__file__).resolve().parent / 'conftest.py'
+_spec = _ilu.spec_from_file_location('_decoder_conftest', str(_conftest_path))
+_conftest = _ilu.module_from_spec(_spec)
+_sys.modules['_decoder_conftest'] = _conftest
+_spec.loader.exec_module(_conftest)
+mapped_roundtrip = _conftest.mapped_roundtrip
+original_shortwave = _conftest.original_shortwave
+packed = _conftest.packed
 import gc
 import tracemalloc
 
 import numpy as np
 
-from conftest import mapped_roundtrip, original_shortwave, packed
 
 from solweig_light.geometry.visibility import LazyDiffVisibility
 from solweig_light.geometry.visibility_compiled import decode_block

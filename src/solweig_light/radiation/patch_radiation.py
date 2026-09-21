@@ -118,6 +118,10 @@ def _block(channel,start,stop,patches):
 
 def _shortwave_visibility_blocks(shadow,vegetation,vegetation_building,diffuse,start,stop,patches):
     """Read shortwave visibility in the original observable order."""
+    from ..geometry.visibility_prepared import decode_shortwave_block
+    prepared=decode_shortwave_block(shadow,vegetation,vegetation_building,diffuse,start,stop,patches)
+    if prepared is not None:
+        return prepared
     sh=_block(shadow,start,stop,patches)
     vs=_block(vegetation,start,stop,patches)
     vb=_block(vegetation_building,start,stop,patches)
@@ -903,7 +907,14 @@ def define_patch_characteristics(*args,block_pixels=128,parallel=True,**kwargs):
                                       values['Lsky_down'][:,2],values['Lsky_side'][:,2],
                                       sun_surface,shade_surface,values['Lup'].reshape(-1)[start:stop],factor,parallel)
         if reduced is None:
-            sh,vs,vb=(_block(values[name],start,stop,count) for name in ('shmat','vegshmat','vbshvegshmat'))
+            from ..geometry.visibility_prepared import decode_longwave_block
+            decoded=decode_longwave_block(values['shmat'],values['vegshmat'],
+                                          values['vbshvegshmat'],start,stop,count)
+            if decoded is None:
+                sh,vs,vb=(_block(values[name],start,stop,count)
+                          for name in ('shmat','vegshmat','vbshvegshmat'))
+            else:
+                sh,vs,vb=decoded
             reduced=kernel(sh,vs,vb,sun,shade,values['steradian'],geometry.sine,geometry.cosine,directions,gate,solar_gate,values['Lsky_down'][:,2],values['Lsky_side'][:,2],sun_surface,shade_surface,values['Lup'].reshape(-1)[start:stop],factor)
         output[:,start:stop]=reduced.T
     return tuple(field.reshape(rows,cols) for field in output)

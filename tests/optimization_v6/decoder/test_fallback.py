@@ -5,11 +5,25 @@ tests pin the admission boundary (never raise, never partially optimize) and
 verify the recipe shape (prepared-then-original) reproduces the accepted
 results bitwise on every unadmitted demand.
 """
+import importlib.util as _ilu
+import sys as _sys
+from pathlib import Path as _Path
+# Load THIS family's conftest by file path: bare `import conftest` is
+# shadowed by sibling families' conftest modules when several test
+# directories are collected in one pytest invocation.
+_conftest_path = _Path(__file__).resolve().parent / 'conftest.py'
+_spec = _ilu.spec_from_file_location('_decoder_conftest', str(_conftest_path))
+_conftest = _ilu.module_from_spec(_spec)
+_sys.modules['_decoder_conftest'] = _conftest
+_spec.loader.exec_module(_conftest)
+original_shortwave = _conftest.original_shortwave
+outcome = _conftest.outcome
+packed = _conftest.packed
+recipe_longwave = _conftest.recipe_longwave
+recipe_shortwave = _conftest.recipe_shortwave
 import numpy as np
 import pytest
 
-from conftest import (original_shortwave, outcome, packed, recipe_longwave,
-                      recipe_shortwave)
 
 from solweig_light.geometry.visibility import LazyDiffVisibility, PackedVisibility
 from solweig_light.geometry.visibility_prepared import (decode_longwave_block,
