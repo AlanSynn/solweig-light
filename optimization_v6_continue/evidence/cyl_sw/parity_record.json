@@ -1,0 +1,928 @@
+{
+ "field_names": [
+  "Keast",
+  "Ksouth",
+  "Kwest",
+  "Knorth",
+  "KsideI",
+  "KsideD",
+  "Kside"
+ ],
+ "cases": [
+  {
+   "input": "000-Kside_veg_v2022a-input.npz",
+   "label": "original-small-daytime-step12",
+   "cyl": "True",
+   "rows_cols": [
+    32,
+    35
+   ],
+   "patches": 153,
+   "entry_admitted": true,
+   "fields": {
+    "Keast": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "Ksouth": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "Kwest": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "Knorth": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "KsideI": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "KsideD": {
+     "wrapper_vs_serial_bit_diffs_base": 764,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 9.1552734375e-05,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 9.1552734375e-05
+    },
+    "Kside": {
+     "wrapper_vs_serial_bit_diffs_base": 703,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0001220703125,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0001220703125
+    }
+   }
+  },
+  {
+   "input": "003-Kside_veg_v2022a-input.npz",
+   "label": "option1-binary-cylinder",
+   "cyl": "1",
+   "rows_cols": [
+    3,
+    5
+   ],
+   "patches": 145,
+   "entry_admitted": true,
+   "fields": {
+    "Keast": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "Ksouth": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "Kwest": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "Knorth": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "KsideI": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "KsideD": {
+     "wrapper_vs_serial_bit_diffs_base": 15,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 9.5367431640625e-06,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 9.5367431640625e-06
+    },
+    "Kside": {
+     "wrapper_vs_serial_bit_diffs_base": 9,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 4.57763671875e-05,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 4.57763671875e-05
+    }
+   }
+  },
+  {
+   "input": "004-Kside_veg_v2022a-input.npz",
+   "label": "option1-binary-box-tensor-azimuth",
+   "cyl": "0",
+   "rows_cols": [
+    3,
+    5
+   ],
+   "patches": 145,
+   "entry_admitted": false,
+   "fields": {
+    "Keast": {
+     "wrapper_vs_serial_bit_diffs_base": 15,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 7.62939453125e-06,
+     "within_original_budget": true
+    },
+    "Ksouth": {
+     "wrapper_vs_serial_bit_diffs_base": 1,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 1.52587890625e-05,
+     "within_original_budget": true
+    },
+    "Kwest": {
+     "wrapper_vs_serial_bit_diffs_base": 9,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 3.814697265625e-06,
+     "within_original_budget": true
+    },
+    "Knorth": {
+     "wrapper_vs_serial_bit_diffs_base": 6,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 3.814697265625e-06,
+     "within_original_budget": true
+    },
+    "KsideI": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true
+    },
+    "KsideD": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true
+    },
+    "Kside": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true
+    }
+   }
+  },
+  {
+   "input": "010-Kside_veg_v2022a-input.npz",
+   "label": "option1-raw-cylinder",
+   "cyl": "1",
+   "rows_cols": [
+    3,
+    5
+   ],
+   "patches": 145,
+   "entry_admitted": true,
+   "fields": {
+    "Keast": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "Ksouth": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "Kwest": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "Knorth": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "KsideI": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "KsideD": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "Kside": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    }
+   }
+  },
+  {
+   "input": "015-Kside_veg_v2022a-input.npz",
+   "label": "option2-binary-cylinder",
+   "cyl": "1",
+   "rows_cols": [
+    3,
+    5
+   ],
+   "patches": 153,
+   "entry_admitted": true,
+   "fields": {
+    "Keast": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "Ksouth": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "Kwest": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "Knorth": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "KsideI": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "KsideD": {
+     "wrapper_vs_serial_bit_diffs_base": 14,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 9.5367431640625e-06,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 9.5367431640625e-06
+    },
+    "Kside": {
+     "wrapper_vs_serial_bit_diffs_base": 9,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 4.57763671875e-05,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 4.57763671875e-05
+    }
+   }
+  },
+  {
+   "input": "016-Kside_veg_v2022a-input.npz",
+   "label": "option2-binary-box-tensor-azimuth",
+   "cyl": "0",
+   "rows_cols": [
+    3,
+    5
+   ],
+   "patches": 153,
+   "entry_admitted": false,
+   "fields": {
+    "Keast": {
+     "wrapper_vs_serial_bit_diffs_base": 15,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 6.67572021484375e-06,
+     "within_original_budget": true
+    },
+    "Ksouth": {
+     "wrapper_vs_serial_bit_diffs_base": 3,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 1.52587890625e-05,
+     "within_original_budget": true
+    },
+    "Kwest": {
+     "wrapper_vs_serial_bit_diffs_base": 8,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 3.814697265625e-06,
+     "within_original_budget": true
+    },
+    "Knorth": {
+     "wrapper_vs_serial_bit_diffs_base": 10,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 5.7220458984375e-06,
+     "within_original_budget": true
+    },
+    "KsideI": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true
+    },
+    "KsideD": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true
+    },
+    "Kside": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true
+    }
+   }
+  },
+  {
+   "input": "022-Kside_veg_v2022a-input.npz",
+   "label": "option2-raw-cylinder",
+   "cyl": "1",
+   "rows_cols": [
+    3,
+    5
+   ],
+   "patches": 153,
+   "entry_admitted": true,
+   "fields": {
+    "Keast": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "Ksouth": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "Kwest": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "Knorth": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "KsideI": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "KsideD": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "Kside": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    }
+   }
+  },
+  {
+   "input": "027-Kside_veg_v2022a-input.npz",
+   "label": "option3-binary-cylinder",
+   "cyl": "1",
+   "rows_cols": [
+    3,
+    5
+   ],
+   "patches": 305,
+   "entry_admitted": true,
+   "fields": {
+    "Keast": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "Ksouth": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "Kwest": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "Knorth": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "KsideI": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "KsideD": {
+     "wrapper_vs_serial_bit_diffs_base": 15,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 2.765655517578125e-05,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 2.765655517578125e-05
+    },
+    "Kside": {
+     "wrapper_vs_serial_bit_diffs_base": 12,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 6.103515625e-05,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 6.103515625e-05
+    }
+   }
+  },
+  {
+   "input": "028-Kside_veg_v2022a-input.npz",
+   "label": "option3-binary-box-tensor-azimuth",
+   "cyl": "0",
+   "rows_cols": [
+    3,
+    5
+   ],
+   "patches": 305,
+   "entry_admitted": false,
+   "fields": {
+    "Keast": {
+     "wrapper_vs_serial_bit_diffs_base": 11,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 1.430511474609375e-05,
+     "within_original_budget": true
+    },
+    "Ksouth": {
+     "wrapper_vs_serial_bit_diffs_base": 4,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 1.52587890625e-05,
+     "within_original_budget": true
+    },
+    "Kwest": {
+     "wrapper_vs_serial_bit_diffs_base": 13,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 1.33514404296875e-05,
+     "within_original_budget": true
+    },
+    "Knorth": {
+     "wrapper_vs_serial_bit_diffs_base": 15,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 1.1444091796875e-05,
+     "within_original_budget": true
+    },
+    "KsideI": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true
+    },
+    "KsideD": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true
+    },
+    "Kside": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true
+    }
+   }
+  },
+  {
+   "input": "034-Kside_veg_v2022a-input.npz",
+   "label": "option3-raw-cylinder",
+   "cyl": "1",
+   "rows_cols": [
+    3,
+    5
+   ],
+   "patches": 305,
+   "entry_admitted": true,
+   "fields": {
+    "Keast": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "Ksouth": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "Kwest": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "Knorth": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "KsideI": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "KsideD": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "Kside": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    }
+   }
+  },
+  {
+   "input": "039-Kside_veg_v2022a-input.npz",
+   "label": "option4-binary-cylinder",
+   "cyl": "1",
+   "rows_cols": [
+    3,
+    5
+   ],
+   "patches": 609,
+   "entry_admitted": true,
+   "fields": {
+    "Keast": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "Ksouth": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "Kwest": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "Knorth": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "KsideI": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "KsideD": {
+     "wrapper_vs_serial_bit_diffs_base": 15,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 2.002716064453125e-05,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 2.002716064453125e-05
+    },
+    "Kside": {
+     "wrapper_vs_serial_bit_diffs_base": 6,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 3.0517578125e-05,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 3.0517578125e-05
+    }
+   }
+  },
+  {
+   "input": "040-Kside_veg_v2022a-input.npz",
+   "label": "option4-binary-box-tensor-azimuth",
+   "cyl": "0",
+   "rows_cols": [
+    3,
+    5
+   ],
+   "patches": 609,
+   "entry_admitted": false,
+   "fields": {
+    "Keast": {
+     "wrapper_vs_serial_bit_diffs_base": 15,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 5.7220458984375e-06,
+     "within_original_budget": true
+    },
+    "Ksouth": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true
+    },
+    "Kwest": {
+     "wrapper_vs_serial_bit_diffs_base": 9,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 3.814697265625e-06,
+     "within_original_budget": true
+    },
+    "Knorth": {
+     "wrapper_vs_serial_bit_diffs_base": 10,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 5.7220458984375e-06,
+     "within_original_budget": true
+    },
+    "KsideI": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true
+    },
+    "KsideD": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true
+    },
+    "Kside": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true
+    }
+   }
+  },
+  {
+   "input": "046-Kside_veg_v2022a-input.npz",
+   "label": "option4-raw-cylinder",
+   "cyl": "1",
+   "rows_cols": [
+    3,
+    5
+   ],
+   "patches": 609,
+   "entry_admitted": true,
+   "fields": {
+    "Keast": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "Ksouth": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "Kwest": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "Knorth": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "KsideI": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "KsideD": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    },
+    "Kside": {
+     "wrapper_vs_serial_bit_diffs_base": 0,
+     "nonfinite_mask_equal_base": true,
+     "wrapper_vs_serial_max_finite_abs_err": 0.0,
+     "within_original_budget": true,
+     "entry_vs_wrapper_bit_diffs": 0,
+     "nonfinite_mask_equal_entry_vs_serial": true,
+     "entry_vs_serial_max_finite_abs_err": 0.0
+    }
+   }
+  }
+ ],
+ "meta": {
+  "base_commit": "5e1fab46",
+  "python": "3.11.16",
+  "numpy": "2.4.6",
+  "numba": "0.67.0",
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "oracle_note": "bitwise binds the entry to the retained compiled wrapper route it specializes. The wrapper-vs-serial float32/float64 deg2rad geometry delta is pre-existing at base (visible on cylinder AND box cases alike, this module changes neither); the untouched comparison_v1 budget (atol 0.05, rtol 1e-5) governs serial comparisons on finite values; nonfinite sentinel masks are compared for exact equality",
+  "entry_vs_wrapper_bit_diffs_total": 0,
+  "all_nonfinite_masks_equal": true,
+  "all_within_original_budget": true
+ }
+}
