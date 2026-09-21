@@ -181,3 +181,39 @@ destroyed the aliasing; fixed by re-linking the shared array after the snapshot 
   raster paths; carries F1 (hoisted wallbol + scalar copies outside the aliasing gate),
   which is unreachable in production today. Approve as internal/diagnostic; **fix F1
   before any dispatch flip** to this route.
+
+## Addendum (C5-32 follow-up verification): amendment c987cbb8 — AMENDMENT-ACCEPTED
+
+Short verification pass (not a full re-review) of the author's F1 fix, reviewed at
+c987cbb8 on `perf/claude-glm53-cpu-v5-gvf` (worktree clean, HEAD verified):
+
+- **(a) Scope**: `git diff b42035c7..c987cbb8` touches only the two aliasing gates, three
+  docstrings, and tests (+150/−5; no kernel or `_postprocess_block`/`_lup_expression`
+  changes). The `np.asarray` wrapper added inside `may_share_memory` is memory-correct:
+  same-buffer views still detected, Python scalars produce fresh 0-d arrays (no alias
+  possible, correctly kept on the fast path). Fused gate sits after the pure guards and
+  before any allocation/hoisting; delegation lands in `_gvf`, which applies the
+  now-ewall-inclusive gate.
+- **(b) ewall hole — reasoning verified and independently reproduced.** Base `_sun` copies
+  `ewall` at the top of every direction (:313-314, patched file), before that direction's
+  water write (:325-326), and `Lwall` (:327) uses the copy — so under a Tg alias,
+  direction 1's Lwall is pre-mutation and directions 2..18's post-mutation, while the
+  call-owned `lwall` snapshot froze direction 1's value. Reproduced on pre-fix b42035c7
+  via `git archive` (reviewer's own scene, seed 71, 22×18): **509 diverging cells across
+  12 planes, 79 in gvfLup** — matching the author's 79/396 report. Ewall is the only
+  `_sun`-call-start copy that feeds a hoisted G02 snapshot (scale/albedo_b/landcover stay
+  per-direction live inside `_sun` and feed no snapshot; walls feeds only the per-direction
+  wallbol), so adding exactly `ewall` to the `_gvf` gate is complete, and the fused gate's
+  broader set (walls/scale/ewall/albedo_b/landcover → delegate) matches F1's demonstration.
+  Fixed code: bitwise exact on the same input.
+- **(c) Tgwall-ungated claim — correct.** `_sun` never copies Tgwall; the guard reads only
+  its dtype/ndim, and `Lwall` (:327) reads the parameter live after the mutation in every
+  direction, so an aliased Tgwall yields a direction-invariant (post-mutation, idempotent)
+  Lwall and the snapshot is exact. Confirmed by the two new test clauses plus my own
+  probe (below) and the P8 probe in the original review.
+- **(d) Runs and probes**: `NUMBA_NUM_THREADS=2 uv run --extra test pytest
+  tests/optimization_v5/gvf -q` → **82 passed** (73 + 9 new: 2 + 1 + 6 parametrized).
+  Reviewer-written probe in /tmp (Tg 0-d-view aliased to ewall / aliased to Tgwall /
+  no alias, all three routes vs the verbatim baseline): **EXACT everywhere on c987cbb8**;
+  the ewall case diverges only on pre-fix b42035c7 (figures above).
+- No new issues found. F1 is closed; the F2/F3 notes stand as-is.
