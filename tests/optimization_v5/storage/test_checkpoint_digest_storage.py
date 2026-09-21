@@ -70,6 +70,45 @@ def test_recorded_digest_matches_read_back_digest(tmp_path, name):
     assert recorded == _band_digest(band, META.rows, META.cols), name
 
 
+def test_seeded_probe_digest_matches_flushed_file(tmp_path):
+    """Seeded 2**22-value worst-case band: every value carries zero bytes.
+
+    The skeleton gives each value two zero bytes and two nonzero bytes --
+    hostile to any byte-level zero detection -- then injects random NaN
+    payloads (quiet and signaling), signed zeros, and unrestricted bit
+    patterns.  The recorded write-time digest must equal an independent
+    GDAL read-back of the flushed file.
+    """
+    rng = np.random.default_rng(20260920)
+    n = 2 ** 22
+    bits = ((rng.integers(1, 256, size=n, dtype=np.uint32) << np.uint32(8))
+            | (rng.integers(1, 256, size=n, dtype=np.uint32) << np.uint32(24)))
+    nan_index = rng.choice(n, size=n // 100, replace=False)
+    bits[nan_index] = np.uint32(0x7F800000) | rng.integers(0, 1 << 23, size=nan_index.size, dtype=np.uint32)
+    zero_index = rng.choice(n, size=n // 100, replace=False)
+    bits[zero_index] = np.where(rng.integers(0, 2, size=zero_index.size) == 0,
+                                np.uint32(0x00000000), np.uint32(0x80000000))
+    wild_index = rng.choice(n, size=n // 100, replace=False)
+    bits[wild_index] = rng.integers(0, 2 ** 32, size=wild_index.size, dtype=np.uint32)
+    values = bits.reshape(2048, 2048).view(np.float32)
+
+    # The crafted band really contains the classes it claims to.
+    assert int(np.count_nonzero(bits == np.uint32(0x80000000))) > 0
+    assert int(np.count_nonzero(bits == np.uint32(0x00000000))) > 0
+    nan_bits = (((bits & np.uint32(0x7F800000)) == np.uint32(0x7F800000))
+                & ((bits & np.uint32(0x007FFFFF)) != 0))
+    assert int(np.count_nonzero(nan_bits)) > 0
+    assert int(np.count_nonzero(nan_bits & ((bits & np.uint32(0x00400000)) != 0))) > 0
+    assert int(np.count_nonzero(nan_bits & ((bits & np.uint32(0x00400000)) == 0))) > 0
+
+    metadata = RasterMetadata(2048, 2048, (1.0, 2.0, 0.0, 8.0, 0.0, -2.0), "")
+    with StreamingOutputs(tmp_path, "0_0", metadata, MET, "2020-07-18", ("UTCI",)) as writer:
+        writer.write(0, {"UTCI": values})
+    dataset = gdal.Open(str(tmp_path / "UTCI_0_0.tif"))
+    band = dataset.GetRasterBand(1)
+    assert _stored_bytes_digest(band, values) == _band_digest(band, 2048, 2048)
+
+
 def raster_identity(path):
     """Content identity of a finished raster: band values, georeferencing, timestamps.
 

@@ -203,13 +203,18 @@ def _stored_bytes_digest(band, values):
     """Digest exactly the band bytes GDAL stores for ``values``.
 
     GTiff never rewrites nonzero blocks, but a block whose every value
-    compares equal to 0.0 (this includes -0.0) is skipped and its disk
-    bytes read back as +0.0; mixed blocks keep every bit, including NaN
-    payloads.  Nonzero and pure +0.0 blocks are therefore digested from
-    the buffer, while a block built purely from signed zeros -- the one
-    case whose stored bits depend on the driver build -- is digested from
-    the band itself, so the recorded identity always matches the bytes
-    recovery reads back.
+    compares equal to 0.0 (this includes -0.0) is never physically
+    written, so its bytes read back as +0.0; mixed blocks keep every
+    bit, including NaN payloads.  Nonzero and pure +0.0 blocks are
+    therefore digested straight from the buffer, while a block built
+    purely from signed zeros -- the one case whose stored bits depend
+    on the driver build -- is digested through a live-band ReadAsArray,
+    served from GDAL's block cache rather than a file re-read.  That is
+    the same read-back the previous implementation used for every
+    block, so an all-signed-zero block inherits base's disposition
+    unchanged (in principle a false failure, never a false pass;
+    recorded as an inherited pre-existing behavior, not altered here),
+    and the recorded identity always matches what recovery reads back.
     """
     native = np.ascontiguousarray(values, dtype=np.float32)
     bits = native.view(np.uint32)
