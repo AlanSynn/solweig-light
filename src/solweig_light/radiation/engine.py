@@ -28,6 +28,9 @@ import calendar
 import scipy.ndimage.interpolation as sc
 from scipy.ndimage import rotate
 from solweig_light.geometry.shadows import create_patches
+# C6-20 private demand dispatcher. pipeline_demand imports engine
+# lazily inside its functions, so this module-level import is cycle-free.
+from .pipeline_demand import current_demand, lside_veg_v2022a_demanded
 gdal.UseExceptions()
 
 def ensure_tensor(x, device=None):
@@ -1655,7 +1658,7 @@ def Solweig_2022a_calc(i, dsm, scale, rows, cols, svf, svfN, svfW, svfE, svfS, s
         if CI < 0.95:
             c = _operate(np.subtract, 1, CI)
             Ldown = _operate(np.add, _operate(np.multiply, Ldown, _operate(np.subtract, 1, c)), _operate(np.multiply, c, _operate(np.add, _operate(np.add, _operate(np.add, _operate(np.multiply, _operate(np.multiply, _operate(np.subtract, _operate(np.add, svf, svfveg), 1), SBC), _operate(np.power, _operate(np.add, Ta, 273.15), 4)), _operate(np.multiply, _operate(np.multiply, _operate(np.multiply, _operate(np.subtract, _operate(np.subtract, 2, svfveg), svfaveg), ewall), SBC), _operate(np.power, _operate(np.add, Ta, 273.15), 4))), _operate(np.multiply, _operate(np.multiply, _operate(np.multiply, _operate(np.subtract, svfaveg, svf), ewall), SBC), _operate(np.power, _operate(np.add, _operate(np.add, Ta, 273.15), Tgwall), 4))), _operate(np.multiply, _operate(np.multiply, _operate(np.multiply, _operate(np.subtract, _operate(np.subtract, 2, svf), svfveg), _operate(np.subtract, 1, ewall)), SBC), _operate(np.power, _operate(np.add, Ta, 273.15), 4)))))
-    Least, Lsouth, Lwest, Lnorth = Lside_veg_v2022a(svfS, svfW, svfN, svfE, svfEveg, svfSveg, svfWveg, svfNveg, svfEaveg, svfSaveg, svfWaveg, svfNaveg, azimuth.item(), altitude.item(), Ta, Tgwall, SBC, ewall, Ldown, esky, t, F_sh, CI, LupE, LupS, LupW, LupN, anisotropic_sky)
+    Least, Lsouth, Lwest, Lnorth = lside_veg_v2022a_demanded(svfS, svfW, svfN, svfE, svfEveg, svfSveg, svfWveg, svfNveg, svfEaveg, svfSaveg, svfWaveg, svfNaveg, azimuth.item(), altitude.item(), Ta, Tgwall, SBC, ewall, Ldown, esky, t, F_sh, CI, LupE, LupS, LupW, LupN, anisotropic_sky, demand=current_demand())
     if cyl == 0 and anisotropic_sky == 1:
         Least += Least_
         Lwest += Lwest_
