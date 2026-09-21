@@ -1,0 +1,97 @@
+{
+  "schema": "claude-v5-final-protocol-v1",
+  "status": "frozen",
+  "date": "2026-09-20",
+  "frozen_at_commit": "d2edbc105d5d3658d25613326439d3a3efb74bb9",
+  "branch": "perf/claude-glm53-cpu-v5",
+  "base_chain": {
+    "historical_checkpoint": "14e888760727583ef782a4dc0e7a5c7c6e6ff9d1",
+    "integration_base": "bfd9915e (source-identical to 14e88876 for src/, pyproject.toml, tests/; verified empty diff)",
+    "tip_at_freeze": "d2edbc105d5d3658d25613326439d3a3efb74bb9",
+    "bitwise_evidence": "L2 chronological gate: 23 substantive artifacts bitwise-identical vs pristine bfd9915e reference (optimization_v5_claude/evidence/l2/REFERENCE_bfd9915e_dense256.json) after every integration merge"
+  },
+  "batch": {
+    "description": "24 timesteps x 1024x1024 pixels, 153 sky patches, all 10 outputs, checkpoint_interval=1, two scenes",
+    "cases": [
+      {
+        "case": "dense1024",
+        "fixture": "reports/characterization/local_cpu_optimization_v1/qualification/final_combined_v1/large_harness/fixtures/dense1024",
+        "fixture_manifest_sha256": "51e5aac79281644d20b5e9f9fd518056fc503cca1d538a5cf603c88f5aed755d"
+      },
+      {
+        "case": "vegetation1024",
+        "fixture": "reports/characterization/local_cpu_optimization_v1/qualification/final_combined_v1/large_harness/fixtures/vegetation1024",
+        "fixture_manifest_sha256": "6cc92180356417e1565ce6efd2c3db34093baf44f5e50a87d23cf036ed7ed5b7"
+      }
+    ],
+    "run_kwargs": {
+      "ERA_5_z0_find": false,
+      "building_dsm_filename": "Building_DSM.tif",
+      "data_folder": null,
+      "data_source_type": null,
+      "dem_filename": "DEM.tif",
+      "end_time": null,
+      "landcover_filename": null,
+      "overlap": 20,
+      "save_kdown": true,
+      "save_kup": true,
+      "save_ldown": true,
+      "save_lup": true,
+      "save_shadow": true,
+      "save_svf": true,
+      "save_ta": true,
+      "save_tmrt": true,
+      "save_wbgt": true,
+      "save_wind": true,
+      "selected_date_str": "2020-07-18",
+      "start_time": null,
+      "tile_size": 3600,
+      "trees_filename": "Trees.tif",
+      "use_own_met": true,
+      "use_uhi": false
+    },
+    "runtime_options": {
+      "block_pixels": 1024,
+      "cache_dir": null,
+      "cache_enabled": true,
+      "checkpoint_interval": 1,
+      "cpu_budget": 4,
+      "legacy_cache_policy": "recompute",
+      "memory_budget_bytes": 12884901888,
+      "resume": false,
+      "threads_per_worker": 4,
+      "workers": 1
+    },
+    "math_profile": {
+      "id": "solweig-portable-sleef-5a1d179d-v1",
+      "fingerprint": "8e4d38460b61b0299e7c1d525c8499750dcd219ef01cc785d7496dbe1dcbef30"
+    },
+    "resource_protocol": {
+      "memory_cap": "12 GiB process-tree, sampled 20 ms",
+      "disk_reserve": "10 GiB",
+      "host_lease": "exclusive",
+      "torch": "must not be imported"
+    }
+  },
+  "parity_gate": {
+    "kind": "bitwise-sha256-vs-existing-reference",
+    "reference_location": "reports/characterization/local_cpu_optimization_v1/qualification/final_combined_v1/large_harness/large_runs_v1/{case}/candidate_manifest.json",
+    "reference_integrity_verified": "2026-09-20: all 20 stored output files (10 per case) re-hashed, all match recorded sha256",
+    "reference_provenance": [
+      "v4 large outputs produced from installed v4 wheel built at source identical to 14e88876 (site-packages recorded in module_origins)",
+      "git diff 14e88876..bfd9915e over src/, pyproject.toml, tests/ is empty",
+      "v5 tip proven bitwise-equal to bfd9915e on dense_urban_256 full chronology (L2 gate, 23 artifacts)",
+      "therefore v5 tip outputs on the frozen fixtures must reproduce the stored v4 sha256 exactly"
+    ],
+    "new_baseline_runs": 0,
+    "missing_reference_captures": 0
+  },
+  "limits": {
+    "target_seconds": 1800,
+    "design_margin_modeled": "1200-1380",
+    "attempts_per_case": 1,
+    "corrective_retries_total": 1,
+    "retry_conditions": "only after retained failed/censored run, identified causal fix, small-scale regression check, and refreeze",
+    "claim_ceiling": "target_demonstrated_once; not robustness, not P7/P8 release qualification"
+  }
+}
