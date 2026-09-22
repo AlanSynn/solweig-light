@@ -113,3 +113,34 @@ revalidation (~97 env-order failures, not numerical).
 When the user later requests push/PR: run then-required checks on the
 then-current dependency state; never report a skipped check as passed
 (BRANCH_AND_CI.md § CI and publication).
+
+---
+
+## SUPPLEMENT 2026-09-21 (post-recording events, appended per ledger note)
+
+Events after this record was reviewed (all evidence/docs; src untouched,
+freeze ea2eed53 intact):
+
+1. **Branch renamed + pushed** (user-authorized): perf/claude-glm53-cpu-v5
+   → perf/cpu-optimization, tips unchanged, old remote ref deleted —
+   evidence/integration/BRANCH_RENAME.md (C6-104).
+2. **CI slimmed + fixed** (user instruction: lightweight problem check):
+   push/PR now run one ~4-min smoke job; the three full-wheel jobs moved to
+   workflow_dispatch. Root-cause fix: poppler formula pinned (26.08.0
+   rebuild 1) — the repo-wide red (main 2026-09-20 onward) was runner
+   Homebrew drift breaking the pinned gdal 3.13.3 link. GREEN 3m42s at
+   242a6988 — evidence/integration/CI_PUSH_OBSERVATION.md.
+3. **C6-101r executed** (user-authorized synthetic scope extension):
+   campaign + attribution complete, committed ea328078 —
+   evidence/campaign_synthetic/. SYNTHETIC dev-tier speedups (median):
+   T4 cold 1.251× (sim 1.429×), T4 warm 1.059×, S1 cold 1.177×, S1 warm
+   1.075×; bitwise parity everywhere (one sha256 per tile across 16 runs
+   × both trees). In-sim residual: visibility 27.0%, patch classification
+   ≈15% cum, GVF 15.6%.
+4. **C6-81 selection reopened and made**: R04+G06 selected; conditional
+   cylinder-channel decode; others not selected —
+   evidence/selection/C6-81r_selection_reopened.md. Implementation wave
+   pending selection review + dispatch.
+
+This supplement is appended to the reviewed record verbatim; the reviewed
+body above is unmodified.
