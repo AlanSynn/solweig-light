@@ -1,0 +1,7 @@
+# Bulk reproducible/regenerable artifacts excluded from the evidence commit
+# (C6-80/C6-100 hygiene lesson): scene inputs are regenerable by tools/build
+# scripts and hashed in scene_manifest.json; run_scene outputs and numba
+# caches are per-run throwaways; per-run digests live in the records JSONs.
+runs/**/run_scene/
+runs/**/numba_cache/
+scenes/

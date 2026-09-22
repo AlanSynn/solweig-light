@@ -1,0 +1,1501 @@
+{
+ "schema": "sw6-campaign-synthetic-v1",
+ "label": "SYNTHETIC 1024^2 4-tile paired campaign (C6-101r); dev-tier single-lease; NOT the actual-target dataset; no statistical or actual-target claims",
+ "protocol": {
+  "tier": "L3+: SYNTHETIC 4x1024^2 distinct-tile batch, 24 records/tile, user-authorized scope extension (2026-09-21); synthetic dev-tier only",
+  "lease": "exclusive local-program lease: sequential children only, no pytest/builds/profilers alongside; unrelated OS/browser/system activity (including other session agents) recorded per run via loadavg+ps, never claimed absent",
+  "same_resource": "identical RuntimeOptions per paired cell: memory_budget_bytes pinned 12 GiB via dataclasses.replace, cpu_budget=4, block_pixels=1024, checkpoint_interval=1, cache_enabled=True, legacy_cache_policy='recompute'",
+  "configs": {
+   "T4": "workers 1, threads 4 (v5-campaign-comparable); primary",
+   "S1": "workers 1, threads 1 (serial default); secondary, predeclared time-conditional (S1_DEADLINE_S=16200s campaign wall clock at first S1 slot, else SKIPPED_TIME_BUDGET)"
+  },
+  "temps": {
+   "cold": "fresh run dir + fresh NUMBA_CACHE_DIR (cold geometry cache, cold JIT, inside timer)",
+   "warm_full": "same run dir + same NUMBA_CACHE_DIR (fully warm)"
+  },
+  "stages": {
+   "A_walls_aspect": "api.run_walls_aspect (geometry production)",
+   "B_svf_geometry": "api.calculate_svf patch_option=2 overwrite=False",
+   "C_simulation": "api.run_utci_tiles 10 flags, 24 records/tile, public execute_tiles worker transport"
+  },
+  "parity": "simulation TIFF sha256 per tile must be bitwise-identical across trees/configs/temps; any mismatch recorded verbatim, not tuned",
+  "timeout_s_per_run": 5400.0
+ },
+ "trees": {
+  "integrated": {
+   "root": "/Users/alansynn/Workspace/solweig-light-claude-v5",
+   "head": "4689421c81a9dc9ad5e047bd7ff1dcdd704483b9",
+   "runtime_phases_sha": "b425d79b12214203",
+   "service_sha": "47aa5351e9984703",
+   "patch_radiation_sha": "7e637e76e147bd81",
+   "pipeline_sha": "5f5c3bc4fb8c4831",
+   "engine_sha": "0eabba0d5e29b75b",
+   "ground_view_sha": "55f5bf70ff14d1f9",
+   "api_sha": "77fd56e24ee02100"
+  },
+  "base": {
+   "root": "/Users/alansynn/Workspace/solweig-light-v6-base-l2",
+   "head": "8e0b3877c5706a25dfe71c6d1b6270a158c3c07c",
+   "runtime_phases_sha": "ABSENT",
+   "service_sha": "05eb0e72902d1c38",
+   "patch_radiation_sha": "4019bb515a58247c",
+   "pipeline_sha": "e066873b6c322e95",
+   "engine_sha": "03951a71534188ab",
+   "ground_view_sha": "08780579dc6a01d1",
+   "api_sha": "fcf800976b278cc5"
+  }
+ },
+ "host_facts": {
+  "platform": "macOS (darwin); os.sched_getaffinity and psrset unavailable",
+  "python_os_cpu_count": 10,
+  "sched_getaffinity": null,
+  "os_getloadavg": [
+   10.10205078125,
+   18.58984375,
+   19.3232421875
+  ],
+  "sysctl": {
+   "hw.ncpu": "10",
+   "hw.perflevel0.physicalcpu": "8",
+   "hw.perflevel1.physicalcpu": "2",
+   "hw.physicalcpu": "10",
+   "hw.memsize": "17179869184",
+   "machdep.cpu.brand_string": "Apple M1 Pro"
+  }
+ },
+ "scene_manifest": {
+  "schema": "sw6-campaign-synthetic-scene-v1",
+  "label": "SYNTHETIC dev-tier load fixture (C6-101r); NOT the actual-target dataset",
+  "dir": "/Users/alansynn/Workspace/solweig-light-claude-v5/optimization_v6_continue/evidence/campaign_synthetic/scenes/scene_t1024",
+  "tile_size": [
+   1024,
+   1024
+  ],
+  "tiles": [
+   "0_0",
+   "1_0",
+   "0_1",
+   "1_1"
+  ],
+  "tile_grid": {
+   "0_0": [
+    0,
+    0
+   ],
+   "1_0": [
+    1,
+    0
+   ],
+   "0_1": [
+    0,
+    1
+   ],
+   "1_1": [
+    1,
+    1
+   ]
+  },
+  "tile_distinct_building_sha_count": {
+   "DEM": 4,
+   "Building_DSM": 4,
+   "Trees": 4,
+   "metfiles": 1
+  },
+  "tile_distinction": "motif height/tree shift by tile index 0..3 (deterministic, no RNG)",
+  "motif": "dense_urban 32-pixel motif (pinned p7 generator lineage), no RNG",
+  "met_source": "/Users/alansynn/Workspace/solweig-light-claude-v5/optimization_v5_claude/evidence/census/scene_dense256/processed_inputs/metfiles/metfile_0_0.txt",
+  "met_records_including_header": 25,
+  "epsg": 32618,
+  "sha256": {
+   "processed_inputs/DEM/DEM_0_0.tif": "f8ff5b1f623ba2cdfcdd926b149c26baeba430ef52485428289d555820a6d875",
+   "processed_inputs/Building_DSM/Building_DSM_0_0.tif": "8ffb183e60a0319c885de6aa37d3dbfab75fd42d706296dac5d587bedd21f52f",
+   "processed_inputs/Trees/Trees_0_0.tif": "06a361c115214c9a0118b8ca3a81d3e816192b9a9b5ca1585922292d6b749588",
+   "processed_inputs/metfiles/metfile_0_0.txt": "bc8ee6361071dd109649857127d6b777571e868bdb06db0e47968b39e99189e4",
+   "processed_inputs/DEM/DEM_1_0.tif": "fddaa4922302ad89592d6e28dad05c4318c7fe14d8d76a2c8d25db12bb276c8c",
+   "processed_inputs/Building_DSM/Building_DSM_1_0.tif": "a7246209ad7b58ce52f3dc9289f84836d194ef32982ca1f25f2106d3af957b9f",
+   "processed_inputs/Trees/Trees_1_0.tif": "7914a7c8750ddb912d4f8f9e494a540d6f86bcbcc101d6507210c01b6ed03a5e",
+   "processed_inputs/metfiles/metfile_1_0.txt": "bc8ee6361071dd109649857127d6b777571e868bdb06db0e47968b39e99189e4",
+   "processed_inputs/DEM/DEM_0_1.tif": "faea8931a428a72e92fa5e38a829c4c3dc2510cf9bd63f80023021391f1b996e",
+   "processed_inputs/Building_DSM/Building_DSM_0_1.tif": "3f8737c365a4de46c7ac7788935e67984d5cb6b31975119cde79466b55815d35",
+   "processed_inputs/Trees/Trees_0_1.tif": "e524edb2ca3c9a6945f5695d58ab0b7a0d72c62756952a7d3626746c0730a8ed",
+   "processed_inputs/metfiles/metfile_0_1.txt": "bc8ee6361071dd109649857127d6b777571e868bdb06db0e47968b39e99189e4",
+   "processed_inputs/DEM/DEM_1_1.tif": "efda0acdf6df126145bba9e54c65e77d8805a859e5e8dcca68fed180e2cd1bea",
+   "processed_inputs/Building_DSM/Building_DSM_1_1.tif": "465d6054b19d2842c0d98bac3dbac9c66c74bab90ba1efe473e69bd54da1aa70",
+   "processed_inputs/Trees/Trees_1_1.tif": "7b7d6c9f5effd8151ff1744fe3f82940b2ac12c4e3cafe6624636891a5c667f2",
+   "processed_inputs/metfiles/metfile_1_1.txt": "bc8ee6361071dd109649857127d6b777571e868bdb06db0e47968b39e99189e4"
+  },
+  "layout": "processed_inputs/{Building_DSM,DEM,Trees,metfiles}; walls/aspect/SVF/cache are produced INSIDE the timed stages, pristine scene has none"
+ },
+ "schedule": [
+  {
+   "config": "T4",
+   "temp": "cold",
+   "rep": 0,
+   "tree": "integrated"
+  },
+  {
+   "config": "T4",
+   "temp": "cold",
+   "rep": 0,
+   "tree": "base"
+  },
+  {
+   "config": "T4",
+   "temp": "cold",
+   "rep": 1,
+   "tree": "base"
+  },
+  {
+   "config": "T4",
+   "temp": "cold",
+   "rep": 1,
+   "tree": "integrated"
+  },
+  {
+   "config": "T4",
+   "temp": "warm_full",
+   "rep": 0,
+   "tree": "integrated"
+  },
+  {
+   "config": "T4",
+   "temp": "warm_full",
+   "rep": 0,
+   "tree": "base"
+  },
+  {
+   "config": "T4",
+   "temp": "warm_full",
+   "rep": 1,
+   "tree": "base"
+  },
+  {
+   "config": "T4",
+   "temp": "warm_full",
+   "rep": 1,
+   "tree": "integrated"
+  },
+  {
+   "config": "T4",
+   "temp": "warm_full",
+   "rep": 2,
+   "tree": "integrated"
+  },
+  {
+   "config": "T4",
+   "temp": "warm_full",
+   "rep": 2,
+   "tree": "base"
+  },
+  {
+   "config": "S1",
+   "temp": "cold",
+   "rep": 0,
+   "tree": "base"
+  },
+  {
+   "config": "S1",
+   "temp": "cold",
+   "rep": 0,
+   "tree": "integrated"
+  },
+  {
+   "config": "S1",
+   "temp": "warm_full",
+   "rep": 0,
+   "tree": "integrated"
+  },
+  {
+   "config": "S1",
+   "temp": "warm_full",
+   "rep": 0,
+   "tree": "base"
+  },
+  {
+   "config": "S1",
+   "temp": "warm_full",
+   "rep": 1,
+   "tree": "base"
+  },
+  {
+   "config": "S1",
+   "temp": "warm_full",
+   "rep": 1,
+   "tree": "integrated"
+  }
+ ],
+ "slots": [
+  {
+   "slot": 0,
+   "config": "T4",
+   "temp": "cold",
+   "rep": 0,
+   "tree": "integrated",
+   "wall_s": 965.841,
+   "returncode": 0,
+   "timed_out": false,
+   "host_before": {
+    "loadavg": [
+     10.10205078125,
+     18.58984375,
+     19.3232421875
+    ],
+    "heavy_processes": [
+     {
+      "pcpu": 90.0,
+      "command": "/System/Library/PrivateFrameworks/SkyLight.framework/Resources/WindowServer"
+     },
+     {
+      "pcpu": 67.1,
+      "command": "/Library/Application Support/PaloAltoNetworks/Traps/bin/pmd"
+     },
+     {
+      "pcpu": 64.7,
+      "command": "/System/Library/CoreServices/ControlCenter.app/Contents/MacOS/ControlCenter"
+     }
+    ],
+    "busy_non_browser": [
+     {
+      "pcpu": 67.1,
+      "command": "/Library/Application Support/PaloAltoNetworks/Traps/bin/pmd"
+     },
+     {
+      "pcpu": 64.7,
+      "command": "/System/Library/CoreServices/ControlCenter.app/Contents/MacOS/ControlCenter"
+     }
+    ],
+    "ps_error": null,
+    "exclusive_now": false
+   },
+   "host_after": {
+    "loadavg": [
+     6.35693359375,
+     8.6669921875,
+     11.921875
+    ],
+    "heavy_processes": [],
+    "busy_non_browser": [],
+    "ps_error": null,
+    "exclusive_now": true
+   },
+   "stderr_tail": [],
+   "stages_s": {
+    "walls_aspect": 5.4428,
+    "svf_geometry_total": 416.5186,
+    "svf_phase_wall": 0,
+    "svf_phase_calls": 0,
+    "svf_store_production": 199.7429,
+    "svf_export_calls_total": 416.5172,
+    "svf_export_calls_count": 4,
+    "simulation_total": 538.0718,
+    "simulation_store_calls": 0,
+    "simulation_store_production": 0,
+    "simulation_store_hits": 0,
+    "simulation_export_calls": 0,
+    "total_measured": 960.0331
+   },
+   "native_mask": 4,
+   "set_num_threads_error": null,
+   "phase_route_fired": false,
+   "cache_entries": 4,
+   "output_digest": "9ad5b0c122981e3a",
+   "simulation_tiff_digest": "af9c48343a25236b",
+   "simulation_tiff_digest_per_tile": {
+    "0_0": {
+     "file_count": 10,
+     "digest": "b588c9aaaf8f0c56"
+    },
+    "0_1": {
+     "file_count": 10,
+     "digest": "6920615e3444a432"
+    },
+    "1_0": {
+     "file_count": 10,
+     "digest": "3bde41a404508003"
+    },
+    "1_1": {
+     "file_count": 10,
+     "digest": "8cf33ecc2943a19f"
+    }
+   },
+   "peak_rss_parent_bytes": 834912256,
+   "module_origin": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/__init__.py",
+   "math_profile_id": null
+  },
+  {
+   "slot": 1,
+   "config": "T4",
+   "temp": "cold",
+   "rep": 0,
+   "tree": "base",
+   "wall_s": 1190.308,
+   "returncode": 0,
+   "timed_out": false,
+   "host_before": {
+    "loadavg": [
+     6.35693359375,
+     8.6669921875,
+     11.921875
+    ],
+    "heavy_processes": [],
+    "busy_non_browser": [],
+    "ps_error": null,
+    "exclusive_now": true
+   },
+   "host_after": {
+    "loadavg": [
+     10.34619140625,
+     13.17041015625,
+     12.27880859375
+    ],
+    "heavy_processes": [],
+    "busy_non_browser": [],
+    "ps_error": null,
+    "exclusive_now": true
+   },
+   "stderr_tail": [],
+   "stages_s": {
+    "walls_aspect": 5.543,
+    "svf_geometry_total": 417.7673,
+    "svf_phase_wall": 0,
+    "svf_phase_calls": 0,
+    "svf_store_production": 197.8566,
+    "svf_export_calls_total": 417.7653,
+    "svf_export_calls_count": 4,
+    "simulation_total": 760.8271,
+    "simulation_store_calls": 0,
+    "simulation_store_production": 0,
+    "simulation_store_hits": 0,
+    "simulation_export_calls": 0,
+    "total_measured": 1184.1374
+   },
+   "native_mask": 4,
+   "set_num_threads_error": null,
+   "phase_route_fired": false,
+   "cache_entries": 8,
+   "output_digest": "0f4b4f81ea28a67b",
+   "simulation_tiff_digest": "af9c48343a25236b",
+   "simulation_tiff_digest_per_tile": {
+    "0_0": {
+     "file_count": 10,
+     "digest": "b588c9aaaf8f0c56"
+    },
+    "0_1": {
+     "file_count": 10,
+     "digest": "6920615e3444a432"
+    },
+    "1_0": {
+     "file_count": 10,
+     "digest": "3bde41a404508003"
+    },
+    "1_1": {
+     "file_count": 10,
+     "digest": "8cf33ecc2943a19f"
+    }
+   },
+   "peak_rss_parent_bytes": 910196736,
+   "module_origin": "/Users/alansynn/Workspace/solweig-light-v6-base-l2/src/solweig_light/__init__.py",
+   "math_profile_id": null
+  },
+  {
+   "slot": 2,
+   "config": "T4",
+   "temp": "cold",
+   "rep": 1,
+   "tree": "base",
+   "wall_s": 1148.766,
+   "returncode": 0,
+   "timed_out": false,
+   "host_before": {
+    "loadavg": [
+     10.34619140625,
+     13.17041015625,
+     12.27880859375
+    ],
+    "heavy_processes": [],
+    "busy_non_browser": [],
+    "ps_error": null,
+    "exclusive_now": true
+   },
+   "host_after": {
+    "loadavg": [
+     5.92724609375,
+     6.50439453125,
+     8.228515625
+    ],
+    "heavy_processes": [],
+    "busy_non_browser": [],
+    "ps_error": null,
+    "exclusive_now": true
+   },
+   "stderr_tail": [],
+   "stages_s": {
+    "walls_aspect": 5.4588,
+    "svf_geometry_total": 415.4853,
+    "svf_phase_wall": 0,
+    "svf_phase_calls": 0,
+    "svf_store_production": 199.1597,
+    "svf_export_calls_total": 415.484,
+    "svf_export_calls_count": 4,
+    "simulation_total": 721.8847,
+    "simulation_store_calls": 0,
+    "simulation_store_production": 0,
+    "simulation_store_hits": 0,
+    "simulation_export_calls": 0,
+    "total_measured": 1142.8288
+   },
+   "native_mask": 4,
+   "set_num_threads_error": null,
+   "phase_route_fired": false,
+   "cache_entries": 8,
+   "output_digest": "536a0d939d910d1c",
+   "simulation_tiff_digest": "af9c48343a25236b",
+   "simulation_tiff_digest_per_tile": {
+    "0_0": {
+     "file_count": 10,
+     "digest": "b588c9aaaf8f0c56"
+    },
+    "0_1": {
+     "file_count": 10,
+     "digest": "6920615e3444a432"
+    },
+    "1_0": {
+     "file_count": 10,
+     "digest": "3bde41a404508003"
+    },
+    "1_1": {
+     "file_count": 10,
+     "digest": "8cf33ecc2943a19f"
+    }
+   },
+   "peak_rss_parent_bytes": 946307072,
+   "module_origin": "/Users/alansynn/Workspace/solweig-light-v6-base-l2/src/solweig_light/__init__.py",
+   "math_profile_id": null
+  },
+  {
+   "slot": 3,
+   "config": "T4",
+   "temp": "cold",
+   "rep": 1,
+   "tree": "integrated",
+   "wall_s": 905.279,
+   "returncode": 0,
+   "timed_out": false,
+   "host_before": {
+    "loadavg": [
+     5.92724609375,
+     6.50439453125,
+     8.228515625
+    ],
+    "heavy_processes": [],
+    "busy_non_browser": [],
+    "ps_error": null,
+    "exclusive_now": true
+   },
+   "host_after": {
+    "loadavg": [
+     7.4873046875,
+     6.7919921875,
+     6.9140625
+    ],
+    "heavy_processes": [],
+    "busy_non_browser": [],
+    "ps_error": null,
+    "exclusive_now": true
+   },
+   "stderr_tail": [],
+   "stages_s": {
+    "walls_aspect": 5.2408,
+    "svf_geometry_total": 395.268,
+    "svf_phase_wall": 0,
+    "svf_phase_calls": 0,
+    "svf_store_production": 190.3469,
+    "svf_export_calls_total": 395.2669,
+    "svf_export_calls_count": 4,
+    "simulation_total": 499.7998,
+    "simulation_store_calls": 0,
+    "simulation_store_production": 0,
+    "simulation_store_hits": 0,
+    "simulation_export_calls": 0,
+    "total_measured": 900.3085
+   },
+   "native_mask": 4,
+   "set_num_threads_error": null,
+   "phase_route_fired": false,
+   "cache_entries": 4,
+   "output_digest": "ba55ed20597ab274",
+   "simulation_tiff_digest": "af9c48343a25236b",
+   "simulation_tiff_digest_per_tile": {
+    "0_0": {
+     "file_count": 10,
+     "digest": "b588c9aaaf8f0c56"
+    },
+    "0_1": {
+     "file_count": 10,
+     "digest": "6920615e3444a432"
+    },
+    "1_0": {
+     "file_count": 10,
+     "digest": "3bde41a404508003"
+    },
+    "1_1": {
+     "file_count": 10,
+     "digest": "8cf33ecc2943a19f"
+    }
+   },
+   "peak_rss_parent_bytes": 957841408,
+   "module_origin": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/__init__.py",
+   "math_profile_id": null
+  },
+  {
+   "slot": 4,
+   "config": "T4",
+   "temp": "warm_full",
+   "rep": 0,
+   "tree": "integrated",
+   "wall_s": 509.615,
+   "returncode": 0,
+   "timed_out": false,
+   "host_before": {
+    "loadavg": [
+     7.4873046875,
+     6.7919921875,
+     6.9140625
+    ],
+    "heavy_processes": [],
+    "busy_non_browser": [],
+    "ps_error": null,
+    "exclusive_now": true
+   },
+   "host_after": {
+    "loadavg": [
+     6.841796875,
+     7.142578125,
+     7.02734375
+    ],
+    "heavy_processes": [],
+    "busy_non_browser": [],
+    "ps_error": null,
+    "exclusive_now": true
+   },
+   "stderr_tail": [],
+   "stages_s": {
+    "walls_aspect": 4.7663,
+    "svf_geometry_total": 1.9536,
+    "svf_phase_wall": 0,
+    "svf_phase_calls": 0,
+    "svf_store_production": 0,
+    "svf_export_calls_total": 1.9531,
+    "svf_export_calls_count": 4,
+    "simulation_total": 497.9787,
+    "simulation_store_calls": 0,
+    "simulation_store_production": 0,
+    "simulation_store_hits": 0,
+    "simulation_export_calls": 0,
+    "total_measured": 504.6986
+   },
+   "native_mask": 4,
+   "set_num_threads_error": null,
+   "phase_route_fired": false,
+   "cache_entries": 4,
+   "output_digest": "ba55ed20597ab274",
+   "simulation_tiff_digest": "af9c48343a25236b",
+   "simulation_tiff_digest_per_tile": {
+    "0_0": {
+     "file_count": 10,
+     "digest": "b588c9aaaf8f0c56"
+    },
+    "0_1": {
+     "file_count": 10,
+     "digest": "6920615e3444a432"
+    },
+    "1_0": {
+     "file_count": 10,
+     "digest": "3bde41a404508003"
+    },
+    "1_1": {
+     "file_count": 10,
+     "digest": "8cf33ecc2943a19f"
+    }
+   },
+   "peak_rss_parent_bytes": 250822656,
+   "module_origin": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/__init__.py",
+   "math_profile_id": null
+  },
+  {
+   "slot": 5,
+   "config": "T4",
+   "temp": "warm_full",
+   "rep": 0,
+   "tree": "base",
+   "wall_s": 536.3,
+   "returncode": 0,
+   "timed_out": false,
+   "host_before": {
+    "loadavg": [
+     6.841796875,
+     7.142578125,
+     7.02734375
+    ],
+    "heavy_processes": [],
+    "busy_non_browser": [],
+    "ps_error": null,
+    "exclusive_now": true
+   },
+   "host_after": {
+    "loadavg": [
+     6.89306640625,
+     6.60205078125,
+     6.92333984375
+    ],
+    "heavy_processes": [],
+    "busy_non_browser": [],
+    "ps_error": null,
+    "exclusive_now": true
+   },
+   "stderr_tail": [],
+   "stages_s": {
+    "walls_aspect": 4.9337,
+    "svf_geometry_total": 1.9515,
+    "svf_phase_wall": 0,
+    "svf_phase_calls": 0,
+    "svf_store_production": 0,
+    "svf_export_calls_total": 1.9485,
+    "svf_export_calls_count": 4,
+    "simulation_total": 524.5237,
+    "simulation_store_calls": 0,
+    "simulation_store_production": 0,
+    "simulation_store_hits": 0,
+    "simulation_export_calls": 0,
+    "total_measured": 531.4089
+   },
+   "native_mask": 4,
+   "set_num_threads_error": null,
+   "phase_route_fired": false,
+   "cache_entries": 8,
+   "output_digest": "536a0d939d910d1c",
+   "simulation_tiff_digest": "af9c48343a25236b",
+   "simulation_tiff_digest_per_tile": {
+    "0_0": {
+     "file_count": 10,
+     "digest": "b588c9aaaf8f0c56"
+    },
+    "0_1": {
+     "file_count": 10,
+     "digest": "6920615e3444a432"
+    },
+    "1_0": {
+     "file_count": 10,
+     "digest": "3bde41a404508003"
+    },
+    "1_1": {
+     "file_count": 10,
+     "digest": "8cf33ecc2943a19f"
+    }
+   },
+   "peak_rss_parent_bytes": 247398400,
+   "module_origin": "/Users/alansynn/Workspace/solweig-light-v6-base-l2/src/solweig_light/__init__.py",
+   "math_profile_id": null
+  },
+  {
+   "slot": 6,
+   "config": "T4",
+   "temp": "warm_full",
+   "rep": 1,
+   "tree": "base",
+   "wall_s": 537.681,
+   "returncode": 0,
+   "timed_out": false,
+   "host_before": {
+    "loadavg": [
+     6.89306640625,
+     6.60205078125,
+     6.92333984375
+    ],
+    "heavy_processes": [],
+    "busy_non_browser": [],
+    "ps_error": null,
+    "exclusive_now": true
+   },
+   "host_after": {
+    "loadavg": [
+     9.49951171875,
+     8.10986328125,
+     7.3544921875
+    ],
+    "heavy_processes": [],
+    "busy_non_browser": [],
+    "ps_error": null,
+    "exclusive_now": true
+   },
+   "stderr_tail": [],
+   "stages_s": {
+    "walls_aspect": 4.8291,
+    "svf_geometry_total": 1.8906,
+    "svf_phase_wall": 0,
+    "svf_phase_calls": 0,
+    "svf_store_production": 0,
+    "svf_export_calls_total": 1.8899,
+    "svf_export_calls_count": 4,
+    "simulation_total": 525.9506,
+    "simulation_store_calls": 0,
+    "simulation_store_production": 0,
+    "simulation_store_hits": 0,
+    "simulation_export_calls": 0,
+    "total_measured": 532.6703
+   },
+   "native_mask": 4,
+   "set_num_threads_error": null,
+   "phase_route_fired": false,
+   "cache_entries": 8,
+   "output_digest": "536a0d939d910d1c",
+   "simulation_tiff_digest": "af9c48343a25236b",
+   "simulation_tiff_digest_per_tile": {
+    "0_0": {
+     "file_count": 10,
+     "digest": "b588c9aaaf8f0c56"
+    },
+    "0_1": {
+     "file_count": 10,
+     "digest": "6920615e3444a432"
+    },
+    "1_0": {
+     "file_count": 10,
+     "digest": "3bde41a404508003"
+    },
+    "1_1": {
+     "file_count": 10,
+     "digest": "8cf33ecc2943a19f"
+    }
+   },
+   "peak_rss_parent_bytes": 250494976,
+   "module_origin": "/Users/alansynn/Workspace/solweig-light-v6-base-l2/src/solweig_light/__init__.py",
+   "math_profile_id": null
+  },
+  {
+   "slot": 7,
+   "config": "T4",
+   "temp": "warm_full",
+   "rep": 1,
+   "tree": "integrated",
+   "wall_s": 508.438,
+   "returncode": 0,
+   "timed_out": false,
+   "host_before": {
+    "loadavg": [
+     9.49951171875,
+     8.10986328125,
+     7.3544921875
+    ],
+    "heavy_processes": [],
+    "busy_non_browser": [],
+    "ps_error": null,
+    "exclusive_now": true
+   },
+   "host_after": {
+    "loadavg": [
+     6.0693359375,
+     6.4345703125,
+     6.80517578125
+    ],
+    "heavy_processes": [],
+    "busy_non_browser": [],
+    "ps_error": null,
+    "exclusive_now": true
+   },
+   "stderr_tail": [],
+   "stages_s": {
+    "walls_aspect": 4.9159,
+    "svf_geometry_total": 2.1407,
+    "svf_phase_wall": 0,
+    "svf_phase_calls": 0,
+    "svf_store_production": 0,
+    "svf_export_calls_total": 2.1374,
+    "svf_export_calls_count": 4,
+    "simulation_total": 496.1537,
+    "simulation_store_calls": 0,
+    "simulation_store_production": 0,
+    "simulation_store_hits": 0,
+    "simulation_export_calls": 0,
+    "total_measured": 503.2103
+   },
+   "native_mask": 4,
+   "set_num_threads_error": null,
+   "phase_route_fired": false,
+   "cache_entries": 4,
+   "output_digest": "ba55ed20597ab274",
+   "simulation_tiff_digest": "af9c48343a25236b",
+   "simulation_tiff_digest_per_tile": {
+    "0_0": {
+     "file_count": 10,
+     "digest": "b588c9aaaf8f0c56"
+    },
+    "0_1": {
+     "file_count": 10,
+     "digest": "6920615e3444a432"
+    },
+    "1_0": {
+     "file_count": 10,
+     "digest": "3bde41a404508003"
+    },
+    "1_1": {
+     "file_count": 10,
+     "digest": "8cf33ecc2943a19f"
+    }
+   },
+   "peak_rss_parent_bytes": 251543552,
+   "module_origin": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/__init__.py",
+   "math_profile_id": null
+  },
+  {
+   "slot": 8,
+   "config": "T4",
+   "temp": "warm_full",
+   "rep": 2,
+   "tree": "integrated",
+   "wall_s": 505.819,
+   "returncode": 0,
+   "timed_out": false,
+   "host_before": {
+    "loadavg": [
+     6.0693359375,
+     6.4345703125,
+     6.80517578125
+    ],
+    "heavy_processes": [],
+    "busy_non_browser": [],
+    "ps_error": null,
+    "exclusive_now": true
+   },
+   "host_after": {
+    "loadavg": [
+     7.173828125,
+     7.0400390625,
+     6.84619140625
+    ],
+    "heavy_processes": [
+     {
+      "pcpu": 108.9,
+      "command": "/Library/Application Support/PaloAltoNetworks/Traps/bin/pmd"
+     }
+    ],
+    "busy_non_browser": [
+     {
+      "pcpu": 108.9,
+      "command": "/Library/Application Support/PaloAltoNetworks/Traps/bin/pmd"
+     }
+    ],
+    "ps_error": null,
+    "exclusive_now": false
+   },
+   "stderr_tail": [],
+   "stages_s": {
+    "walls_aspect": 4.833,
+    "svf_geometry_total": 1.9321,
+    "svf_phase_wall": 0,
+    "svf_phase_calls": 0,
+    "svf_store_production": 0,
+    "svf_export_calls_total": 1.9316,
+    "svf_export_calls_count": 4,
+    "simulation_total": 494.0286,
+    "simulation_store_calls": 0,
+    "simulation_store_production": 0,
+    "simulation_store_hits": 0,
+    "simulation_export_calls": 0,
+    "total_measured": 500.7938
+   },
+   "native_mask": 4,
+   "set_num_threads_error": null,
+   "phase_route_fired": false,
+   "cache_entries": 4,
+   "output_digest": "ba55ed20597ab274",
+   "simulation_tiff_digest": "af9c48343a25236b",
+   "simulation_tiff_digest_per_tile": {
+    "0_0": {
+     "file_count": 10,
+     "digest": "b588c9aaaf8f0c56"
+    },
+    "0_1": {
+     "file_count": 10,
+     "digest": "6920615e3444a432"
+    },
+    "1_0": {
+     "file_count": 10,
+     "digest": "3bde41a404508003"
+    },
+    "1_1": {
+     "file_count": 10,
+     "digest": "8cf33ecc2943a19f"
+    }
+   },
+   "peak_rss_parent_bytes": 243269632,
+   "module_origin": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/__init__.py",
+   "math_profile_id": null
+  },
+  {
+   "slot": 9,
+   "config": "T4",
+   "temp": "warm_full",
+   "rep": 2,
+   "tree": "base",
+   "wall_s": 539.512,
+   "returncode": 0,
+   "timed_out": false,
+   "host_before": {
+    "loadavg": [
+     7.173828125,
+     7.0400390625,
+     6.84619140625
+    ],
+    "heavy_processes": [
+     {
+      "pcpu": 108.9,
+      "command": "/Library/Application Support/PaloAltoNetworks/Traps/bin/pmd"
+     }
+    ],
+    "busy_non_browser": [
+     {
+      "pcpu": 108.9,
+      "command": "/Library/Application Support/PaloAltoNetworks/Traps/bin/pmd"
+     }
+    ],
+    "ps_error": null,
+    "exclusive_now": false
+   },
+   "host_after": {
+    "loadavg": [
+     5.712890625,
+     6.5693359375,
+     6.77734375
+    ],
+    "heavy_processes": [],
+    "busy_non_browser": [],
+    "ps_error": null,
+    "exclusive_now": true
+   },
+   "stderr_tail": [],
+   "stages_s": {
+    "walls_aspect": 4.9184,
+    "svf_geometry_total": 1.9943,
+    "svf_phase_wall": 0,
+    "svf_phase_calls": 0,
+    "svf_store_production": 0,
+    "svf_export_calls_total": 1.9921,
+    "svf_export_calls_count": 4,
+    "simulation_total": 527.7576,
+    "simulation_store_calls": 0,
+    "simulation_store_production": 0,
+    "simulation_store_hits": 0,
+    "simulation_export_calls": 0,
+    "total_measured": 534.6702
+   },
+   "native_mask": 4,
+   "set_num_threads_error": null,
+   "phase_route_fired": false,
+   "cache_entries": 8,
+   "output_digest": "536a0d939d910d1c",
+   "simulation_tiff_digest": "af9c48343a25236b",
+   "simulation_tiff_digest_per_tile": {
+    "0_0": {
+     "file_count": 10,
+     "digest": "b588c9aaaf8f0c56"
+    },
+    "0_1": {
+     "file_count": 10,
+     "digest": "6920615e3444a432"
+    },
+    "1_0": {
+     "file_count": 10,
+     "digest": "3bde41a404508003"
+    },
+    "1_1": {
+     "file_count": 10,
+     "digest": "8cf33ecc2943a19f"
+    }
+   },
+   "peak_rss_parent_bytes": 248397824,
+   "module_origin": "/Users/alansynn/Workspace/solweig-light-v6-base-l2/src/solweig_light/__init__.py",
+   "math_profile_id": null
+  },
+  {
+   "slot": 10,
+   "config": "S1",
+   "temp": "cold",
+   "rep": 0,
+   "tree": "base",
+   "wall_s": 1506.692,
+   "returncode": 0,
+   "timed_out": false,
+   "host_before": {
+    "loadavg": [
+     5.712890625,
+     6.5693359375,
+     6.77734375
+    ],
+    "heavy_processes": [],
+    "busy_non_browser": [],
+    "ps_error": null,
+    "exclusive_now": true
+   },
+   "host_after": {
+    "loadavg": [
+     11.54345703125,
+     10.5673828125,
+     8.21337890625
+    ],
+    "heavy_processes": [],
+    "busy_non_browser": [],
+    "ps_error": null,
+    "exclusive_now": true
+   },
+   "stderr_tail": [],
+   "stages_s": {
+    "walls_aspect": 5.3255,
+    "svf_geometry_total": 396.2806,
+    "svf_phase_wall": 0,
+    "svf_phase_calls": 0,
+    "svf_store_production": 191.1995,
+    "svf_export_calls_total": 396.2785,
+    "svf_export_calls_count": 4,
+    "simulation_total": 1099.5708,
+    "simulation_store_calls": 0,
+    "simulation_store_production": 0,
+    "simulation_store_hits": 0,
+    "simulation_export_calls": 0,
+    "total_measured": 1501.1769
+   },
+   "native_mask": 1,
+   "set_num_threads_error": null,
+   "phase_route_fired": false,
+   "cache_entries": 8,
+   "output_digest": "99d1854bdfc0fb9a",
+   "simulation_tiff_digest": "af9c48343a25236b",
+   "simulation_tiff_digest_per_tile": {
+    "0_0": {
+     "file_count": 10,
+     "digest": "b588c9aaaf8f0c56"
+    },
+    "0_1": {
+     "file_count": 10,
+     "digest": "6920615e3444a432"
+    },
+    "1_0": {
+     "file_count": 10,
+     "digest": "3bde41a404508003"
+    },
+    "1_1": {
+     "file_count": 10,
+     "digest": "8cf33ecc2943a19f"
+    }
+   },
+   "peak_rss_parent_bytes": 964329472,
+   "module_origin": "/Users/alansynn/Workspace/solweig-light-v6-base-l2/src/solweig_light/__init__.py",
+   "math_profile_id": null
+  },
+  {
+   "slot": 11,
+   "config": "S1",
+   "temp": "cold",
+   "rep": 0,
+   "tree": "integrated",
+   "wall_s": 1281.62,
+   "returncode": 0,
+   "timed_out": false,
+   "host_before": {
+    "loadavg": [
+     11.54345703125,
+     10.5673828125,
+     8.21337890625
+    ],
+    "heavy_processes": [],
+    "busy_non_browser": [],
+    "ps_error": null,
+    "exclusive_now": true
+   },
+   "host_after": {
+    "loadavg": [
+     7.09375,
+     6.7890625,
+     6.6103515625
+    ],
+    "heavy_processes": [],
+    "busy_non_browser": [],
+    "ps_error": null,
+    "exclusive_now": true
+   },
+   "stderr_tail": [],
+   "stages_s": {
+    "walls_aspect": 5.4269,
+    "svf_geometry_total": 397.7423,
+    "svf_phase_wall": 0,
+    "svf_phase_calls": 0,
+    "svf_store_production": 189.879,
+    "svf_export_calls_total": 397.7414,
+    "svf_export_calls_count": 4,
+    "simulation_total": 872.6664,
+    "simulation_store_calls": 0,
+    "simulation_store_production": 0,
+    "simulation_store_hits": 0,
+    "simulation_export_calls": 0,
+    "total_measured": 1275.8356
+   },
+   "native_mask": 1,
+   "set_num_threads_error": null,
+   "phase_route_fired": false,
+   "cache_entries": 4,
+   "output_digest": "eee3f22ec7b354dd",
+   "simulation_tiff_digest": "af9c48343a25236b",
+   "simulation_tiff_digest_per_tile": {
+    "0_0": {
+     "file_count": 10,
+     "digest": "b588c9aaaf8f0c56"
+    },
+    "0_1": {
+     "file_count": 10,
+     "digest": "6920615e3444a432"
+    },
+    "1_0": {
+     "file_count": 10,
+     "digest": "3bde41a404508003"
+    },
+    "1_1": {
+     "file_count": 10,
+     "digest": "8cf33ecc2943a19f"
+    }
+   },
+   "peak_rss_parent_bytes": 953499648,
+   "module_origin": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/__init__.py",
+   "math_profile_id": null
+  },
+  {
+   "slot": 12,
+   "config": "S1",
+   "temp": "warm_full",
+   "rep": 0,
+   "tree": "integrated",
+   "wall_s": 868.85,
+   "returncode": 0,
+   "timed_out": false,
+   "host_before": {
+    "loadavg": [
+     7.09375,
+     6.7890625,
+     6.6103515625
+    ],
+    "heavy_processes": [],
+    "busy_non_browser": [],
+    "ps_error": null,
+    "exclusive_now": true
+   },
+   "host_after": {
+    "loadavg": [
+     6.580078125,
+     5.59130859375,
+     5.8359375
+    ],
+    "heavy_processes": [
+     {
+      "pcpu": 256.0,
+      "command": "/Users/alansynn/Workspace/gt-computer-animation/.venv/bin/python"
+     }
+    ],
+    "busy_non_browser": [
+     {
+      "pcpu": 256.0,
+      "command": "/Users/alansynn/Workspace/gt-computer-animation/.venv/bin/python"
+     }
+    ],
+    "ps_error": null,
+    "exclusive_now": false
+   },
+   "stderr_tail": [],
+   "stages_s": {
+    "walls_aspect": 4.9057,
+    "svf_geometry_total": 1.9545,
+    "svf_phase_wall": 0,
+    "svf_phase_calls": 0,
+    "svf_store_production": 0,
+    "svf_export_calls_total": 1.9538,
+    "svf_export_calls_count": 4,
+    "simulation_total": 856.8523,
+    "simulation_store_calls": 0,
+    "simulation_store_production": 0,
+    "simulation_store_hits": 0,
+    "simulation_export_calls": 0,
+    "total_measured": 863.7125
+   },
+   "native_mask": 1,
+   "set_num_threads_error": null,
+   "phase_route_fired": false,
+   "cache_entries": 4,
+   "output_digest": "eee3f22ec7b354dd",
+   "simulation_tiff_digest": "af9c48343a25236b",
+   "simulation_tiff_digest_per_tile": {
+    "0_0": {
+     "file_count": 10,
+     "digest": "b588c9aaaf8f0c56"
+    },
+    "0_1": {
+     "file_count": 10,
+     "digest": "6920615e3444a432"
+    },
+    "1_0": {
+     "file_count": 10,
+     "digest": "3bde41a404508003"
+    },
+    "1_1": {
+     "file_count": 10,
+     "digest": "8cf33ecc2943a19f"
+    }
+   },
+   "peak_rss_parent_bytes": 248512512,
+   "module_origin": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/__init__.py",
+   "math_profile_id": null
+  },
+  {
+   "slot": 13,
+   "config": "S1",
+   "temp": "warm_full",
+   "rep": 0,
+   "tree": "base",
+   "wall_s": 943.521,
+   "returncode": 0,
+   "timed_out": false,
+   "host_before": {
+    "loadavg": [
+     6.580078125,
+     5.59130859375,
+     5.8359375
+    ],
+    "heavy_processes": [
+     {
+      "pcpu": 256.0,
+      "command": "/Users/alansynn/Workspace/gt-computer-animation/.venv/bin/python"
+     }
+    ],
+    "busy_non_browser": [
+     {
+      "pcpu": 256.0,
+      "command": "/Users/alansynn/Workspace/gt-computer-animation/.venv/bin/python"
+     }
+    ],
+    "ps_error": null,
+    "exclusive_now": false
+   },
+   "host_after": {
+    "loadavg": [
+     7.7158203125,
+     6.423828125,
+     6.10693359375
+    ],
+    "heavy_processes": [],
+    "busy_non_browser": [],
+    "ps_error": null,
+    "exclusive_now": true
+   },
+   "stderr_tail": [],
+   "stages_s": {
+    "walls_aspect": 4.9697,
+    "svf_geometry_total": 2.0295,
+    "svf_phase_wall": 0,
+    "svf_phase_calls": 0,
+    "svf_store_production": 0,
+    "svf_export_calls_total": 2.0289,
+    "svf_export_calls_count": 4,
+    "simulation_total": 931.5242,
+    "simulation_store_calls": 0,
+    "simulation_store_production": 0,
+    "simulation_store_hits": 0,
+    "simulation_export_calls": 0,
+    "total_measured": 938.5234
+   },
+   "native_mask": 1,
+   "set_num_threads_error": null,
+   "phase_route_fired": false,
+   "cache_entries": 8,
+   "output_digest": "99d1854bdfc0fb9a",
+   "simulation_tiff_digest": "af9c48343a25236b",
+   "simulation_tiff_digest_per_tile": {
+    "0_0": {
+     "file_count": 10,
+     "digest": "b588c9aaaf8f0c56"
+    },
+    "0_1": {
+     "file_count": 10,
+     "digest": "6920615e3444a432"
+    },
+    "1_0": {
+     "file_count": 10,
+     "digest": "3bde41a404508003"
+    },
+    "1_1": {
+     "file_count": 10,
+     "digest": "8cf33ecc2943a19f"
+    }
+   },
+   "peak_rss_parent_bytes": 250249216,
+   "module_origin": "/Users/alansynn/Workspace/solweig-light-v6-base-l2/src/solweig_light/__init__.py",
+   "math_profile_id": null
+  },
+  {
+   "slot": 14,
+   "config": "S1",
+   "temp": "warm_full",
+   "rep": 1,
+   "tree": "base",
+   "wall_s": 917.972,
+   "returncode": 0,
+   "timed_out": false,
+   "host_before": {
+    "loadavg": [
+     7.7158203125,
+     6.423828125,
+     6.10693359375
+    ],
+    "heavy_processes": [],
+    "busy_non_browser": [],
+    "ps_error": null,
+    "exclusive_now": true
+   },
+   "host_after": {
+    "loadavg": [
+     5.10302734375,
+     5.49951171875,
+     5.7958984375
+    ],
+    "heavy_processes": [],
+    "busy_non_browser": [],
+    "ps_error": null,
+    "exclusive_now": true
+   },
+   "stderr_tail": [],
+   "stages_s": {
+    "walls_aspect": 4.8377,
+    "svf_geometry_total": 1.9126,
+    "svf_phase_wall": 0,
+    "svf_phase_calls": 0,
+    "svf_store_production": 0,
+    "svf_export_calls_total": 1.9121,
+    "svf_export_calls_count": 4,
+    "simulation_total": 906.2508,
+    "simulation_store_calls": 0,
+    "simulation_store_production": 0,
+    "simulation_store_hits": 0,
+    "simulation_export_calls": 0,
+    "total_measured": 913.0011
+   },
+   "native_mask": 1,
+   "set_num_threads_error": null,
+   "phase_route_fired": false,
+   "cache_entries": 8,
+   "output_digest": "99d1854bdfc0fb9a",
+   "simulation_tiff_digest": "af9c48343a25236b",
+   "simulation_tiff_digest_per_tile": {
+    "0_0": {
+     "file_count": 10,
+     "digest": "b588c9aaaf8f0c56"
+    },
+    "0_1": {
+     "file_count": 10,
+     "digest": "6920615e3444a432"
+    },
+    "1_0": {
+     "file_count": 10,
+     "digest": "3bde41a404508003"
+    },
+    "1_1": {
+     "file_count": 10,
+     "digest": "8cf33ecc2943a19f"
+    }
+   },
+   "peak_rss_parent_bytes": 239894528,
+   "module_origin": "/Users/alansynn/Workspace/solweig-light-v6-base-l2/src/solweig_light/__init__.py",
+   "math_profile_id": null
+  },
+  {
+   "slot": 15,
+   "config": "S1",
+   "temp": "warm_full",
+   "rep": 1,
+   "tree": "integrated",
+   "wall_s": 864.125,
+   "returncode": 0,
+   "timed_out": false,
+   "host_before": {
+    "loadavg": [
+     5.10302734375,
+     5.49951171875,
+     5.7958984375
+    ],
+    "heavy_processes": [],
+    "busy_non_browser": [],
+    "ps_error": null,
+    "exclusive_now": true
+   },
+   "host_after": {
+    "loadavg": [
+     8.33203125,
+     8.1826171875,
+     7.0888671875
+    ],
+    "heavy_processes": [
+     {
+      "pcpu": 51.2,
+      "command": "/Library/Application Support/PaloAltoNetworks/Traps/bin/pmd"
+     }
+    ],
+    "busy_non_browser": [
+     {
+      "pcpu": 51.2,
+      "command": "/Library/Application Support/PaloAltoNetworks/Traps/bin/pmd"
+     }
+    ],
+    "ps_error": null,
+    "exclusive_now": false
+   },
+   "stderr_tail": [],
+   "stages_s": {
+    "walls_aspect": 4.8782,
+    "svf_geometry_total": 1.9334,
+    "svf_phase_wall": 0,
+    "svf_phase_calls": 0,
+    "svf_store_production": 0,
+    "svf_export_calls_total": 1.9314,
+    "svf_export_calls_count": 4,
+    "simulation_total": 852.422,
+    "simulation_store_calls": 0,
+    "simulation_store_production": 0,
+    "simulation_store_hits": 0,
+    "simulation_export_calls": 0,
+    "total_measured": 859.2335
+   },
+   "native_mask": 1,
+   "set_num_threads_error": null,
+   "phase_route_fired": false,
+   "cache_entries": 4,
+   "output_digest": "eee3f22ec7b354dd",
+   "simulation_tiff_digest": "af9c48343a25236b",
+   "simulation_tiff_digest_per_tile": {
+    "0_0": {
+     "file_count": 10,
+     "digest": "b588c9aaaf8f0c56"
+    },
+    "0_1": {
+     "file_count": 10,
+     "digest": "6920615e3444a432"
+    },
+    "1_0": {
+     "file_count": 10,
+     "digest": "3bde41a404508003"
+    },
+    "1_1": {
+     "file_count": 10,
+     "digest": "8cf33ecc2943a19f"
+    }
+   },
+   "peak_rss_parent_bytes": 249659392,
+   "module_origin": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/__init__.py",
+   "math_profile_id": null
+  }
+ ]
+}

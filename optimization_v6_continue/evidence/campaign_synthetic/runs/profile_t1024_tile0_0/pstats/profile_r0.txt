@@ -1,0 +1,223 @@
+Mon Sep 21 17:12:52 2026    /Users/alansynn/Workspace/solweig-light-claude-v5/optimization_v6_continue/evidence/campaign_synthetic/runs/profile_t1024_tile0_0/pstats/profile_r0.pstats
+
+         13696321 function calls (13669123 primitive calls) in 136.120 seconds
+
+   Ordered by: cumulative time
+   List reduced from 3389 to 120 due to restriction <120>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000  136.123  136.123 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/api.py:153(run_utci_tiles)
+        1    0.000    0.000  136.117  136.117 /Users/alansynn/Workspace/solweig-light-claude-v5/optimization_v6_continue/evidence/campaign_synthetic/tools/profile_child.py:188(_in_process_execute)
+        2    0.000    0.000  136.117   68.058 /Users/alansynn/Workspace/solweig-light-claude-v5/optimization_v6_continue/evidence/campaign_synthetic/tools/profile_child.py:191(<genexpr>)
+        1    0.005    0.005  136.117  136.117 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/pipeline.py:79(run_tile)
+        1    0.405    0.405  136.110  136.110 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/pipeline.py:91(_run_tile)
+       24    0.609    0.025  119.748    4.989 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/engine.py:1481(Solweig_2022a_calc)
+       24    0.001    0.000   37.144    1.548 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/cylinder_longwave.py:397(Lcyl_v2022a_by_demand)
+       24    0.003    0.000   37.137    1.547 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/cylinder_longwave.py:356(Lcyl_v2022a_primary)
+       24    0.782    0.033   37.117    1.547 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/cylinder_longwave.py:310(define_patch_characteristics_primary)
+   116736    0.405    0.000   31.366    0.000 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/patch_radiation.py:101(_block)
+       14    0.003    0.000   31.223    2.230 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/engine.py:1759(Kside_veg_v2022a)
+       14    0.002    0.000   31.220    2.230 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/patch_radiation.py:512(Kside_veg_v2022a)
+       14    0.301    0.021   31.204    2.229 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/cylinder_shortwave.py:126(kside_cylinder_anisotropic)
+   116736    0.860    0.000   30.752    0.000 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/geometry/visibility_compiled.py:127(decode_block)
+   116736   28.693    0.000   28.776    0.000 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/geometry/visibility_compiled.py:17(_decode)
+       14    0.004    0.000   28.532    2.038 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/engine.py:1740(gvf_2018a)
+       14    0.001    0.000   28.528    2.038 /Users/alansynn/Workspace/solweig-light-claude-v5/optimization_v6_continue/evidence/campaign_synthetic/tools/profile_child.py:115(recorder)
+       14    0.001    0.000   28.527    2.038 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/gvf_prepared.py:293(prepared_gvf_step)
+       14    0.916    0.065   28.280    2.020 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/gvf_prepared.py:204(run_prepared_gvf_step)
+    38912   12.283    0.000   20.581    0.001 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/patch_radiation.py:271(_classes)
+    98304    0.036    0.000   19.559    0.000 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/cylinder_longwave.py:350(<genexpr>)
+     8064   18.477    0.002   18.477    0.002 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/ground_view.py:198(_gather_block_parallel)
+   694445   12.485    0.000   14.625    0.000 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/engine.py:1710(_operate)
+    14336    0.105    0.000   12.839    0.001 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/patch_radiation.py:119(_shortwave_visibility_blocks)
+    24576    9.357    0.000    9.391    0.000 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/cylinder_longwave.py:92(_longwave_primary)
+       24    0.001    0.000    8.454    0.352 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/pipeline_demand.py:328(lside_veg_v2022a_demanded)
+     8064    1.749    0.000    8.435    0.001 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/ground_view.py:502(_postprocess_block)
+       24    0.003    0.000    8.381    0.349 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/persistence.py:456(write)
+       17    1.035    0.061    8.303    0.488 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/engine.py:1340(Lside_veg_v2022a)
+       24    0.008    0.000    7.203    0.300 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/io/rasters.py:66(write)
+      240    0.001    0.000    7.031    0.029 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/osgeo/gdal.py:9864(FlushCache)
+      240    7.030    0.029    7.030    0.029 {built-in method osgeo._gdal.Band_FlushCache}
+       68    0.013    0.000    6.993    0.103 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/engine.py:1327(Lvikt_veg)
+     2142    0.772    0.000    6.651    0.003 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/geometry/visibility.py:254(__getitem__)
+    28672    0.063    0.000    6.593    0.000 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/_math_profile.py:87(atan32)
+    28672    6.498    0.000    6.511    0.000 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/_sleef_classifier.py:141(atan_array)
+     4284    0.013    0.000    5.866    0.001 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/geometry/visibility_native.py:103(__getitem__)
+     4284    0.007    0.000    5.852    0.001 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/geometry/visibility.py:145(__getitem__)
+     4284    0.009    0.000    5.838    0.001 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/geometry/visibility_native.py:98(decode_patch)
+     4284    5.762    0.001    5.828    0.001 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/geometry/visibility.py:128(decode_patch)
+       14    0.000    0.000    5.586    0.399 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/engine.py:1728(shadowingfunction_wallheight_23)
+       14    0.001    0.000    5.580    0.399 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/wall_shadows.py:274(exact_23)
+       14    5.550    0.396    5.550    0.396 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/wall_shadows.py:203(_wall23_serial)
+    14336    4.214    0.000    4.239    0.000 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/cylinder_shortwave.py:59(_shortwave_cylinder)
+       24    0.060    0.002    3.575    0.149 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/comfort/utci.py:412(utci_calculator_uniform)
+       24    3.493    0.146    3.493    0.146 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/comfort/utci.py:398(_utci_uniform_serial)
+   862829    0.495    0.000    2.276    0.000 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/engine.py:1698(_operands)
+  2228356    1.849    0.000    1.849    0.000 {built-in method numpy.asarray}
+   249085    1.843    0.000    1.843    0.000 {method 'update' of '_hashlib.HASH' objects}
+       54    0.004    0.000    1.643    0.030 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/persistence.py:33(_digest)
+      240    0.507    0.002    1.162    0.005 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/persistence.py:202(_stored_bytes_digest)
+       24    0.004    0.000    1.147    0.048 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/persistence.py:470(checkpoint)
+        1    0.000    0.000    1.133    1.133 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/persistence.py:540(complete)
+    28672    0.457    0.000    0.874    0.000 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/_math_profile.py:69(tan32)
+   168384    0.721    0.000    0.861    0.000 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/engine.py:1694(_divide)
+    14336    0.114    0.000    0.759    0.000 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/geometry/visibility_compiled.py:146(diff_from_shared_decoded)
+       24    0.001    0.000    0.733    0.031 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/persistence.py:160(save_state)
+       24    0.002    0.000    0.701    0.029 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/persistence.py:166(<dictcomp>)
+       24    0.699    0.029    0.700    0.029 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/comfort/wbgt.py:716(black_globe_temperature)
+      264    0.006    0.000    0.699    0.003 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/persistence.py:84(_encode)
+        1    0.000    0.000    0.612    0.612 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/persistence.py:246(__init__)
+       14    0.425    0.030    0.611    0.044 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/engine.py:321(cylindric_wedge)
+        1    0.000    0.000    0.600    0.600 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/persistence.py:322(_validate_previous_completion)
+    78429    0.582    0.000    0.582    0.000 {built-in method numpy.zeros}
+        1    0.000    0.000    0.522    0.522 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/persistence.py:499(_validate_publication)
+        1    0.000    0.000    0.521    0.521 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/persistence.py:576(<listcomp>)
+     4138    0.422    0.000    0.422    0.000 {method 'read' of '_io.BufferedReader' objects}
+       26    0.002    0.000    0.352    0.014 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/persistence.py:366(_flush)
+     2988    0.001    0.000    0.349    0.000 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/persistence.py:36(<lambda>)
+    14336    0.317    0.000    0.324    0.000 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/geometry/visibility_compiled.py:74(_diff)
+       15    0.000    0.000    0.318    0.021 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/numba/core/dispatcher.py:342(_compile_for_args)
+    22/15    0.001    0.000    0.315    0.021 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/numba/core/dispatcher.py:860(compile)
+   116736    0.032    0.000    0.303    0.000 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/geometry/visibility_compiled.py:90(_descriptor)
+   145515    0.105    0.000    0.291    0.000 /opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/contextlib.py:502(enter_context)
+    38960    0.250    0.000    0.277    0.000 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/numpy/_core/numeric.py:97(zeros_like)
+     8411    0.275    0.000    0.275    0.000 {method 'astype' of 'numpy.ndarray' objects}
+      673    0.269    0.000    0.269    0.000 {built-in method _hashlib.openssl_sha256}
+      662    0.268    0.000    0.268    0.000 {built-in method posix.fsync}
+      4/2    0.000    0.000    0.252    0.126 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/numba/core/dispatcher.py:79(compile)
+      4/2    0.000    0.000    0.252    0.126 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/numba/core/dispatcher.py:86(_compile_cached)
+      4/2    0.000    0.000    0.252    0.126 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/numba/core/dispatcher.py:101(_compile_core)
+      4/2    0.000    0.000    0.252    0.126 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/numba/core/compiler.py:713(compile_extra)
+    28672    0.035    0.000    0.251    0.000 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/numpy/_core/fromnumeric.py:2548(all)
+      4/2    0.000    0.000    0.250    0.125 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/numba/core/compiler.py:433(compile_extra)
+      4/2    0.000    0.000    0.249    0.125 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/numba/core/compiler.py:500(_compile_bytecode)
+      4/2    0.000    0.000    0.249    0.125 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/numba/core/compiler.py:456(_compile_core)
+   138/69    0.000    0.000    0.248    0.004 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/numba/core/compiler_lock.py:32(_acquire_compile_lock)
+      4/2    0.000    0.000    0.248    0.124 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/numba/core/compiler_machinery.py:342(run)
+   108/54    0.002    0.000    0.248    0.005 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/numba/core/compiler_machinery.py:267(_runPass)
+       14    0.017    0.001    0.246    0.018 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/gvf_prepared.py:122(prepare_gvf_step)
+  324/162    0.000    0.000    0.244    0.002 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/numba/core/compiler_machinery.py:271(check)
+   131247    0.179    0.000    0.219    0.000 /opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/contextlib.py:558(__exit__)
+    14418    0.218    0.000    0.218    0.000 {method 'copy' of 'numpy.ndarray' objects}
+    28674    0.065    0.000    0.216    0.000 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/numpy/_core/fromnumeric.py:86(_wrapreduction_any_all)
+   377615    0.153    0.000    0.207    0.000 <frozen importlib._bootstrap>:405(parent)
+      260    0.000    0.000    0.205    0.001 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/osgeo/gdal.py:5547(FlushCache)
+      260    0.205    0.001    0.205    0.001 {built-in method osgeo._gdal.Dataset_FlushCache}
+    24576    0.066    0.000    0.203    0.000 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/cylinder_longwave.py:286(_longwave_fused_primary_block)
+   344538    0.175    0.000    0.175    0.000 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/numba/core/serialize.py:30(_numba_unpickle)
+   233916    0.088    0.000    0.174    0.000 {built-in method builtins.all}
+        4    0.000    0.000    0.167    0.042 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/numba/core/typed_passes.py:439(run_pass)
+    40135    0.045    0.000    0.164    0.000 <frozen _collections_abc>:771(get)
+   145515    0.076    0.000    0.154    0.000 /opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/contextlib.py:534(_push_cm_exit)
+      4/2    0.000    0.000    0.152    0.076 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/numba/core/typed_passes.py:107(run_pass)
+      4/2    0.000    0.000    0.152    0.076 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/numba/core/typed_passes.py:68(type_inference_stage)
+      4/2    0.000    0.000    0.151    0.075 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/numba/core/typeinfer.py:1064(propagate)
+      8/4    0.000    0.000    0.151    0.038 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/numba/core/typeinfer.py:147(propagate)
+     32/6    0.001    0.000    0.149    0.025 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/numba/core/typeinfer.py:564(__call__)
+     40/6    0.000    0.000    0.149    0.025 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/numba/core/typeinfer.py:574(resolve)
+     40/6    0.000    0.000    0.148    0.025 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/numba/core/typeinfer.py:1531(resolve_call)
+     40/6    0.000    0.000    0.148    0.025 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/numba/core/typing/context.py:268(resolve_function_type)
+     40/6    0.000    0.000    0.148    0.025 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/numba/core/typing/context.py:320(_resolve_user_function_type)
+    221/7    0.000    0.000    0.148    0.021 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/numba/core/typing/templates.py:356(apply)
+     37/7    0.001    0.000    0.148    0.021 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/numba/core/types/functions.py:285(get_call_type)
+     55/5    0.000    0.000    0.147    0.029 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/numba/core/typing/templates.py:614(generic)
+     55/5    0.000    0.000    0.147    0.029 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/numba/core/typing/templates.py:705(_get_impl)
+        7    0.000    0.000    0.146    0.021 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/numba/core/types/functions.py:535(get_call_type)
+      6/2    0.000    0.000    0.146    0.073 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/numba/core/typing/templates.py:756(_build_impl)
+        7    0.000    0.000    0.146    0.021 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/numba/core/dispatcher.py:302(get_call_template)
+      105    0.000    0.000    0.145    0.001 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/cache/geometry.py:56(content_fingerprint)
+
+
+
+
+===== sorted by internal time =====
+Mon Sep 21 17:12:52 2026    /Users/alansynn/Workspace/solweig-light-claude-v5/optimization_v6_continue/evidence/campaign_synthetic/runs/profile_t1024_tile0_0/pstats/profile_r0.pstats
+
+         13696321 function calls (13669123 primitive calls) in 136.120 seconds
+
+   Ordered by: internal time
+   List reduced from 3389 to 80 due to restriction <80>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+   116736   28.693    0.000   28.776    0.000 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/geometry/visibility_compiled.py:17(_decode)
+     8064   18.477    0.002   18.477    0.002 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/ground_view.py:198(_gather_block_parallel)
+   694445   12.485    0.000   14.625    0.000 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/engine.py:1710(_operate)
+    38912   12.283    0.000   20.581    0.001 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/patch_radiation.py:271(_classes)
+    24576    9.357    0.000    9.391    0.000 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/cylinder_longwave.py:92(_longwave_primary)
+      240    7.030    0.029    7.030    0.029 {built-in method osgeo._gdal.Band_FlushCache}
+    28672    6.498    0.000    6.511    0.000 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/_sleef_classifier.py:141(atan_array)
+     4284    5.762    0.001    5.828    0.001 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/geometry/visibility.py:128(decode_patch)
+       14    5.550    0.396    5.550    0.396 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/wall_shadows.py:203(_wall23_serial)
+    14336    4.214    0.000    4.239    0.000 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/cylinder_shortwave.py:59(_shortwave_cylinder)
+       24    3.493    0.146    3.493    0.146 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/comfort/utci.py:398(_utci_uniform_serial)
+  2228356    1.849    0.000    1.849    0.000 {built-in method numpy.asarray}
+   249085    1.843    0.000    1.843    0.000 {method 'update' of '_hashlib.HASH' objects}
+     8064    1.749    0.000    8.435    0.001 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/ground_view.py:502(_postprocess_block)
+       17    1.035    0.061    8.303    0.488 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/engine.py:1340(Lside_veg_v2022a)
+       14    0.916    0.065   28.280    2.020 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/gvf_prepared.py:204(run_prepared_gvf_step)
+   116736    0.860    0.000   30.752    0.000 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/geometry/visibility_compiled.py:127(decode_block)
+       24    0.782    0.033   37.117    1.547 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/cylinder_longwave.py:310(define_patch_characteristics_primary)
+     2142    0.772    0.000    6.651    0.003 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/geometry/visibility.py:254(__getitem__)
+   168384    0.721    0.000    0.861    0.000 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/engine.py:1694(_divide)
+       24    0.699    0.029    0.700    0.029 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/comfort/wbgt.py:716(black_globe_temperature)
+       24    0.609    0.025  119.748    4.989 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/engine.py:1481(Solweig_2022a_calc)
+    78429    0.582    0.000    0.582    0.000 {built-in method numpy.zeros}
+      240    0.507    0.002    1.162    0.005 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/persistence.py:202(_stored_bytes_digest)
+   862829    0.495    0.000    2.276    0.000 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/engine.py:1698(_operands)
+    28672    0.457    0.000    0.874    0.000 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/_math_profile.py:69(tan32)
+       14    0.425    0.030    0.611    0.044 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/engine.py:321(cylindric_wedge)
+     4138    0.422    0.000    0.422    0.000 {method 'read' of '_io.BufferedReader' objects}
+        1    0.405    0.405  136.110  136.110 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/pipeline.py:91(_run_tile)
+   116736    0.405    0.000   31.366    0.000 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/patch_radiation.py:101(_block)
+    14336    0.317    0.000    0.324    0.000 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/geometry/visibility_compiled.py:74(_diff)
+       14    0.301    0.021   31.204    2.229 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/cylinder_shortwave.py:126(kside_cylinder_anisotropic)
+     8411    0.275    0.000    0.275    0.000 {method 'astype' of 'numpy.ndarray' objects}
+      673    0.269    0.000    0.269    0.000 {built-in method _hashlib.openssl_sha256}
+      662    0.268    0.000    0.268    0.000 {built-in method posix.fsync}
+    38960    0.250    0.000    0.277    0.000 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/numpy/_core/numeric.py:97(zeros_like)
+    14418    0.218    0.000    0.218    0.000 {method 'copy' of 'numpy.ndarray' objects}
+      260    0.205    0.001    0.205    0.001 {built-in method osgeo._gdal.Dataset_FlushCache}
+   131247    0.179    0.000    0.219    0.000 /opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/contextlib.py:558(__exit__)
+   344538    0.175    0.000    0.175    0.000 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/numba/core/serialize.py:30(_numba_unpickle)
+   377615    0.153    0.000    0.207    0.000 <frozen importlib._bootstrap>:405(parent)
+    29290    0.136    0.000    0.136    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+      245    0.132    0.001    0.132    0.001 {built-in method osgeo._gdal_array.BandRasterIONumPy}
+   214320    0.126    0.000    0.126    0.000 {method 'tobytes' of 'numpy.ndarray' objects}
+    28672    0.124    0.000    0.137    0.000 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/_sleef_classifier.py:128(tan_array)
+     1480    0.117    0.000    0.126    0.000 {built-in method io.open}
+    14336    0.114    0.000    0.759    0.000 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/geometry/visibility_compiled.py:146(diff_from_shared_decoded)
+   145515    0.105    0.000    0.291    0.000 /opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/contextlib.py:502(enter_context)
+    14336    0.105    0.000   12.839    0.001 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/patch_radiation.py:119(_shortwave_visibility_blocks)
+       91    0.103    0.001    0.103    0.001 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/pipeline_demand.py:139(_minmax_1d)
+      197    0.095    0.000    0.095    0.000 {method 'write' of '_io.BufferedWriter' objects}
+   233916    0.088    0.000    0.174    0.000 {built-in method builtins.all}
+       61    0.087    0.001    0.087    0.001 {built-in method posix.replace}
+5317/5304    0.083    0.000    0.125    0.000 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/llvmlite/binding/ffi.py:210(__call__)
+   189079    0.083    0.000    0.083    0.000 {method 'reshape' of 'numpy.ndarray' objects}
+   278528    0.078    0.000    0.078    0.000 {built-in method numpy._core._multiarray_umath.count_nonzero}
+   145515    0.076    0.000    0.154    0.000 /opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/contextlib.py:534(_push_cm_exit)
+    40559    0.072    0.000    0.120    0.000 <frozen os>:674(__getitem__)
+   132186    0.070    0.000    0.072    0.000 {built-in method builtins.sorted}
+664697/664691    0.069    0.000    0.072    0.000 {built-in method builtins.isinstance}
+    24576    0.066    0.000    0.203    0.000 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/cylinder_longwave.py:286(_longwave_fused_primary_block)
+    28674    0.065    0.000    0.216    0.000 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/numpy/_core/fromnumeric.py:86(_wrapreduction_any_all)
+    28672    0.063    0.000    6.593    0.000 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/_math_profile.py:87(atan32)
+       24    0.060    0.002    3.575    0.149 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/comfort/utci.py:412(utci_calculator_uniform)
+   116736    0.057    0.000    0.099    0.000 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/geometry/visibility_compiled.py:133(<dictcomp>)
+   377672    0.054    0.000    0.054    0.000 {method 'rpartition' of 'str' objects}
+   137088    0.050    0.000    0.050    0.000 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/gvf_prepared.py:249(<genexpr>)
+   131247    0.047    0.000    0.047    0.000 /opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/contextlib.py:472(__init__)
+    40135    0.045    0.000    0.164    0.000 <frozen _collections_abc>:771(get)
+     3161    0.043    0.000    0.043    0.000 {built-in method numpy.array}
+40513/40509    0.039    0.000    0.057    0.000 <frozen importlib._bootstrap>:1207(_handle_fromlist)
+   145635    0.039    0.000    0.048    0.000 /opt/homebrew/Cellar/python@3.11/3.11.16/Frameworks/Python.framework/Versions/3.11/lib/python3.11/contextlib.py:539(_push_exit_callback)
+   278528    0.039    0.000    0.116    0.000 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/numpy/_core/numeric.py:483(count_nonzero)
+   233472    0.038    0.000    0.045    0.000 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/patch_radiation.py:104(<genexpr>)
+   195618    0.037    0.000    0.037    0.000 {built-in method builtins.hasattr}
+    98304    0.036    0.000   19.559    0.000 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/cylinder_longwave.py:350(<genexpr>)
+   234392    0.035    0.000    0.035    0.000 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/numba/typed/typedlist.py:280(_numba_type_)
+    28672    0.035    0.000    0.251    0.000 /Users/alansynn/Workspace/solweig-light/.venv-light/lib/python3.11/site-packages/numpy/_core/fromnumeric.py:2548(all)
+   233472    0.033    0.000    0.041    0.000 /Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/geometry/visibility_compiled.py:130(<genexpr>)
+     6745    0.033    0.000    0.033    0.000 {method 'read' of '_io.FileIO' objects}
+
+
