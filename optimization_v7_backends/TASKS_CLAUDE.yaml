@@ -1,416 +1,416 @@
 {
-  "schema": "solweig-backend-tasks-v1",
-  "format_note": "JSON-compatible YAML 1.2; also parseable with Python json",
-  "status": "specification_only",
-  "branch": "perf/cpu-optimization",
-  "tasks": [
-    {
-      "id": "B7-00",
-      "title": "Record source, instructions, model routing and protected branch state",
-      "status": "completed",
-      "depends_on": [],
-      "role": "coordinator",
-      "dossier": "DESIGN_AUTHORITY.md",
-      "owned_scope": [
-        "optimization_v7_backends/evidence/inventory/"
-      ],
-      "gate": [
-        "same branch and actual HEAD recorded",
-        "accepted v6 mechanisms/failures preserved",
-        "sanitized model/provider attribution"
-      ],
-      "status_note_utc": "2026-09-22"
-    },
-    {
-      "id": "B7-01",
-      "title": "Read-only toolchain/platform census and isolated environment choice",
-      "status": "completed",
-      "depends_on": [
-        "B7-00"
-      ],
-      "role": "capability_owner",
-      "dossier": "dossiers/06_dispatch_packaging.md",
-      "owned_scope": [
-        "optimization_v7_backends/evidence/capability/"
-      ],
-      "gate": [
-        "available vs missing vs untested distinguished",
-        "no privileged/global/credential changes",
-        "candidate shortlist fixed"
-      ],
-      "status_note_utc": "2026-09-22"
-    },
-    {
-      "id": "B7-02",
-      "title": "Capture actual reducer and freeze typed argument/output contract",
-      "status": "completed",
-      "depends_on": [
-        "B7-00"
-      ],
-      "role": "contract_owner",
-      "dossier": "KERNEL_CONTRACT.md",
-      "owned_scope": [
-        "tests/optimization_v7/reference/",
-        "optimization_v7_backends/evidence/captures/"
-      ],
-      "gate": [
-        "call-through actual baseline captures",
-        "seven outputs and native scalar types preserved",
-        "reference environment immutable"
-      ],
-      "status_note_utc": "2026-09-22"
-    },
-    {
-      "id": "B7-03",
-      "title": "Freeze small A/B/C protocol and current residual profile",
-      "status": "completed",
-      "depends_on": [
-        "B7-01",
-        "B7-02"
-      ],
-      "role": "performance_owner",
-      "dossier": "BENCHMARK_PROTOCOL.md",
-      "owned_scope": [
-        "benchmarks/protocols/optimization_v7/",
-        "tools/optimization_v7/"
-      ],
-      "gate": [
-        "effective thread probes",
-        "small tuning/evaluation split and budgets frozen",
-        "actual island fraction or uncertainty recorded"
-      ],
-      "status_note_utc": "2026-09-22"
-    },
-    {
-      "id": "B7-10",
-      "title": "Implement equivalent-layout Numba control B",
-      "status": "completed",
-      "depends_on": [
-        "B7-02",
-        "B7-03"
-      ],
-      "role": "numba_worker",
-      "dossier": "dossiers/01_numba_and_layout_controls.md",
-      "owned_scope": [
-        "experiments/optimization_v7/numba_layout/"
-      ],
-      "gate": [
-        "A/B bitwise actual kernel results",
-        "packing/scratch counted",
-        "no native backend attribution for layout gains"
-      ],
-      "status_note_utc": "2026-09-22"
-    },
-    {
-      "id": "B7-20",
-      "title": "Native CPU SIMD implementation",
-      "status": "completed",
-      "depends_on": [
-        "B7-01",
-        "B7-02",
-        "B7-03"
-      ],
-      "role": "native_worker",
-      "dossier": "dossiers/02_native_simd.md",
-      "owned_scope": [
-        "experiments/optimization_v7/native/"
-      ],
-      "gate": [
-        "ISPC or Highway concrete working kernel",
-        "actual typed-domain and ISA qualification",
-        "separate author/reviewer"
-      ],
-      "activate_when": "compatible user-space native toolchain",
-      "status_note_utc": "2026-09-22"
-    },
-    {
-      "id": "B7-21",
-      "title": "Dr.Jit LLVM implementation",
-      "status": "review_in_progress",
-      "depends_on": [
-        "B7-01",
-        "B7-02",
-        "B7-03"
-      ],
-      "role": "drjit_worker",
-      "dossier": "dossiers/03_drjit_llvm.md",
-      "owned_scope": [
-        "experiments/optimization_v7/drjit/"
-      ],
-      "gate": [
-        "explicit LLVM non-AD",
-        "FastMath and actual pool recorded",
-        "both symbolic sweeps synchronized"
-      ],
-      "activate_when": "Dr.Jit LLVM is locally available or safely installable",
-      "status_note_utc": "2026-09-22"
-    },
-    {
-      "id": "B7-22",
-      "title": "PoCL CPU implementation",
-      "status": "completed_below_threshold_closed",
-      "depends_on": [
-        "B7-01",
-        "B7-02",
-        "B7-03"
-      ],
-      "role": "opencl_worker",
-      "dossier": "dossiers/04_opencl_pocl_cpu.md",
-      "owned_scope": [
-        "experiments/optimization_v7/opencl/"
-      ],
-      "gate": [
-        "real CPU device identity/capabilities",
-        "strict FP probes",
-        "queue/copy overhead included"
-      ],
-      "activate_when": "CPU OpenCL runtime without privileged setup and useful portability discriminator",
-      "status_note_utc": "2026-09-22"
-    },
-    {
-      "id": "B7-23",
-      "title": "Optional pointwise MLX/Halide prototype",
-      "status": "not_executed_by_design",
-      "depends_on": [
-        "B7-03"
-      ],
-      "role": "pointwise_worker",
-      "dossier": "dossiers/05_pointwise_optional.md",
-      "owned_scope": [
-        "experiments/optimization_v7/pointwise/"
-      ],
-      "gate": [
-        "named current residual",
-        "A/B/C actual same typed island",
-        "CPU target and exactness"
-      ],
-      "activate_when": "measured pointwise/stencil residual justifies a separate island",
-      "status_note_utc": "2026-09-22"
-    },
-    {
-      "id": "B7-24",
-      "title": "Optional second island or backend follow-on",
-      "status": "nominated_not_executed",
-      "depends_on": [
-        "B7-30",
-        "B7-31"
-      ],
-      "role": "numerical_specialist",
-      "dossier": "dossiers/05_pointwise_optional.md",
-      "owned_scope": [
-        "experiments/optimization_v7/follow_on/"
-      ],
-      "gate": [
-        "one bounded measured residual",
-        "new boundary frozen before port"
-      ],
-      "activate_when": "first island outcome leaves sufficient practical opportunity; not every catalog framework",
-      "status_note_utc": "2026-09-22"
-    },
-    {
-      "id": "B7-30",
-      "title": "Completion-triggered independent review service",
-      "status": "completed_for_numba_b_ispc_opencl; drjit_review_in_progress",
-      "depends_on": [
-        "B7-02",
-        "B7-03"
-      ],
-      "role": "independent_reviewer",
-      "dossier": "VALIDATION_POLICY.md",
-      "owned_scope": [
-        "optimization_v7_backends/evidence/reviews/"
-      ],
-      "gate": [
-        "one immutable candidate per review",
-        "author differs from reviewer",
-        "negative cases and actual logs inspected"
-      ],
-      "service_rule": "Invoked separately when a variant finishes B7-10/20/21/22/23/24. Later edits require fresh affected review; this row alone does not approve them.",
-      "status_note_utc": "2026-09-22"
-    },
-    {
-      "id": "B7-31",
-      "title": "Exclusive A/B/C adapter and small-pipeline comparisons",
-      "status": "completed_A_B_C_native; drjit_appendix_pending",
-      "depends_on": [
-        "B7-10",
-        "B7-30"
-      ],
-      "role": "performance_owner",
-      "dossier": "BENCHMARK_PROTOCOL.md",
-      "owned_scope": [
-        "optimization_v7_backends/evidence/trials/"
-      ],
-      "gate": [
-        "each timed C has completed implementation and review",
-        "sync and bridge costs measured",
-        "fixed CPU envelope and raw failures preserved"
-      ],
-      "per_variant_requires": "B7-20/21/22/23/24 terminal implementation result plus its individual B7-30 review; unavailable/rejected variants are not timed as passed.",
-      "status_note_utc": "2026-09-22"
-    },
-    {
-      "id": "B7-32",
-      "title": "Select smallest evidence-backed portfolio",
-      "status": "completed_C_native_selected; drjit_may_append",
-      "depends_on": [
-        "B7-31"
-      ],
-      "role": "coordinator",
-      "dossier": "THROUGHPUT.md",
-      "owned_scope": [
-        "optimization_v7_backends/evidence/selection/"
-      ],
-      "gate": [
-        "C beats both A/B end-to-end or choose B/A",
-        "no overlapping-gain product",
-        "unavailable and failed backends explicit"
-      ],
-      "status_note_utc": "2026-09-22"
-    },
-    {
-      "id": "B7-40",
-      "title": "Integrate selected optional adapter or Numba B",
-      "status": "completed",
-      "depends_on": [
-        "B7-32"
-      ],
-      "role": "integrator",
-      "dossier": "dossiers/06_dispatch_packaging.md",
-      "owned_scope": [
-        "src/solweig_light/backends/",
-        "src/solweig_light/radiation/cylinder_longwave.py",
-        "src/solweig_light/radiation/engine.py",
-        "src/solweig_light/pipeline.py"
-      ],
-      "gate": [
-        "default public behavior unchanged",
-        "fallback versus admitted failure distinct",
-        "review selected final diff"
-      ],
-      "status_note_utc": "2026-09-22"
-    },
-    {
-      "id": "B7-41",
-      "title": "Resource, lifecycle and identity integration",
-      "status": "completed",
-      "depends_on": [
-        "B7-40"
-      ],
-      "role": "integrator",
-      "dossier": "dossiers/06_dispatch_packaging.md",
-      "owned_scope": [
-        "src/solweig_light/runtime.py",
-        "src/solweig_light/identities.py",
-        "src/solweig_light/models.py",
-        "tests/optimization_v7/runtime/"
-      ],
-      "gate": [
-        "thread+memory bounded across runtimes",
-        "backend/compiler/device identity",
-        "async completion before release"
-      ],
-      "activate_when": "selected implementation changes runtime/dependency identity; otherwise record unchanged",
-      "status_note_utc": "2026-09-22"
-    },
-    {
-      "id": "B7-42",
-      "title": "Optional packaging and core-only regression",
-      "status": "completed",
-      "depends_on": [
-        "B7-40",
-        "B7-41"
-      ],
-      "role": "packaging_worker",
-      "dossier": "dossiers/06_dispatch_packaging.md",
-      "owned_scope": [
-        "pyproject.toml",
-        "tests/optimization_v7/installed/",
-        "optimization_v7_backends/evidence/packaging/"
-      ],
-      "gate": [
-        "fresh installed winner outside source path",
-        "core without optional library works",
-        "actual platform support stated"
-      ],
-      "status_note_utc": "2026-09-22"
-    },
-    {
-      "id": "B7-50",
-      "title": "Combined small chronology and concurrency qualification",
-      "status": "completed",
-      "depends_on": [
-        "B7-42"
-      ],
-      "role": "evidence_owner",
-      "dossier": "VALIDATION_POLICY.md",
-      "owned_scope": [
-        "optimization_v7_backends/evidence/integration/"
-      ],
-      "gate": [
-        "real 24/48-step small TIFF pipeline",
-        "intermediates and every carried state",
-        "all public workflows affected scope checked"
-      ],
-      "status_note_utc": "2026-09-22"
-    },
-    {
-      "id": "B7-51",
-      "title": "Freeze final source, protocol and actual-target availability",
-      "status": "in_progress",
-      "depends_on": [
-        "B7-50"
-      ],
-      "role": "evidence_owner",
-      "dossier": "BENCHMARK_PROTOCOL.md",
-      "owned_scope": [
-        "optimization_v7_backends/evidence/freeze/"
-      ],
-      "gate": [
-        "all dynamic scope fields fixed",
-        "actual 24 spatial jobs distinguished from bands",
-        "missing data/reference does not block honest small-scope completion"
-      ],
-      "status_note_utc": "2026-09-22"
-    },
-    {
-      "id": "B7-52",
-      "title": "Single actual-target CPU campaign",
-      "status": "blocked_actual_target_unverified",
-      "depends_on": [
-        "B7-51"
-      ],
-      "role": "performance_owner",
-      "dossier": "VALIDATION_POLICY.md",
-      "owned_scope": [
-        "optimization_v7_backends/evidence/final_batch/"
-      ],
-      "gate": [
-        "whole declared wall boundary",
-        "numeric/resource coverage explicit",
-        "one run plus at most one causal retry"
-      ],
-      "activate_when": "actual target manifest/reference/hardware available; otherwise blocked/unverified",
-      "status_note_utc": "2026-09-22"
-    },
-    {
-      "id": "B7-53",
-      "title": "Final independent disposition and same-branch handover",
-      "status": "pending",
-      "depends_on": [
-        "B7-51"
-      ],
-      "role": "independent_reviewer",
-      "dossier": "BRANCH_AND_CI.md",
-      "owned_scope": [
-        "optimization_v7_backends/evidence/handover/"
-      ],
-      "gate": [
-        "B7-52 actual outcome or blocked state included",
-        "measured claims only",
-        "same branch unmerged and unpushed by this task"
-      ],
-      "status_note_utc": "2026-09-22"
-    }
-  ]
+ "schema": "solweig-backend-tasks-v1",
+ "format_note": "JSON-compatible YAML 1.2; also parseable with Python json",
+ "status": "specification_only",
+ "branch": "perf/cpu-optimization",
+ "tasks": [
+  {
+   "id": "B7-00",
+   "title": "Record source, instructions, model routing and protected branch state",
+   "status": "completed",
+   "depends_on": [],
+   "role": "coordinator",
+   "dossier": "DESIGN_AUTHORITY.md",
+   "owned_scope": [
+    "optimization_v7_backends/evidence/inventory/"
+   ],
+   "gate": [
+    "same branch and actual HEAD recorded",
+    "accepted v6 mechanisms/failures preserved",
+    "sanitized model/provider attribution"
+   ],
+   "status_note_utc": "2026-09-22"
+  },
+  {
+   "id": "B7-01",
+   "title": "Read-only toolchain/platform census and isolated environment choice",
+   "status": "completed",
+   "depends_on": [
+    "B7-00"
+   ],
+   "role": "capability_owner",
+   "dossier": "dossiers/06_dispatch_packaging.md",
+   "owned_scope": [
+    "optimization_v7_backends/evidence/capability/"
+   ],
+   "gate": [
+    "available vs missing vs untested distinguished",
+    "no privileged/global/credential changes",
+    "candidate shortlist fixed"
+   ],
+   "status_note_utc": "2026-09-22"
+  },
+  {
+   "id": "B7-02",
+   "title": "Capture actual reducer and freeze typed argument/output contract",
+   "status": "completed",
+   "depends_on": [
+    "B7-00"
+   ],
+   "role": "contract_owner",
+   "dossier": "KERNEL_CONTRACT.md",
+   "owned_scope": [
+    "tests/optimization_v7/reference/",
+    "optimization_v7_backends/evidence/captures/"
+   ],
+   "gate": [
+    "call-through actual baseline captures",
+    "seven outputs and native scalar types preserved",
+    "reference environment immutable"
+   ],
+   "status_note_utc": "2026-09-22"
+  },
+  {
+   "id": "B7-03",
+   "title": "Freeze small A/B/C protocol and current residual profile",
+   "status": "completed",
+   "depends_on": [
+    "B7-01",
+    "B7-02"
+   ],
+   "role": "performance_owner",
+   "dossier": "BENCHMARK_PROTOCOL.md",
+   "owned_scope": [
+    "benchmarks/protocols/optimization_v7/",
+    "tools/optimization_v7/"
+   ],
+   "gate": [
+    "effective thread probes",
+    "small tuning/evaluation split and budgets frozen",
+    "actual island fraction or uncertainty recorded"
+   ],
+   "status_note_utc": "2026-09-22"
+  },
+  {
+   "id": "B7-10",
+   "title": "Implement equivalent-layout Numba control B",
+   "status": "completed",
+   "depends_on": [
+    "B7-02",
+    "B7-03"
+   ],
+   "role": "numba_worker",
+   "dossier": "dossiers/01_numba_and_layout_controls.md",
+   "owned_scope": [
+    "experiments/optimization_v7/numba_layout/"
+   ],
+   "gate": [
+    "A/B bitwise actual kernel results",
+    "packing/scratch counted",
+    "no native backend attribution for layout gains"
+   ],
+   "status_note_utc": "2026-09-22"
+  },
+  {
+   "id": "B7-20",
+   "title": "Native CPU SIMD implementation",
+   "status": "completed",
+   "depends_on": [
+    "B7-01",
+    "B7-02",
+    "B7-03"
+   ],
+   "role": "native_worker",
+   "dossier": "dossiers/02_native_simd.md",
+   "owned_scope": [
+    "experiments/optimization_v7/native/"
+   ],
+   "gate": [
+    "ISPC or Highway concrete working kernel",
+    "actual typed-domain and ISA qualification",
+    "separate author/reviewer"
+   ],
+   "activate_when": "compatible user-space native toolchain",
+   "status_note_utc": "2026-09-22"
+  },
+  {
+   "id": "B7-21",
+   "title": "Dr.Jit LLVM implementation",
+   "status": "completed_exact_reviewed_trials_rejected (comparison_complete_no_winner; F1 repair landed fc3f4f68)",
+   "depends_on": [
+    "B7-01",
+    "B7-02",
+    "B7-03"
+   ],
+   "role": "drjit_worker",
+   "dossier": "dossiers/03_drjit_llvm.md",
+   "owned_scope": [
+    "experiments/optimization_v7/drjit/"
+   ],
+   "gate": [
+    "explicit LLVM non-AD",
+    "FastMath and actual pool recorded",
+    "both symbolic sweeps synchronized"
+   ],
+   "activate_when": "Dr.Jit LLVM is locally available or safely installable",
+   "status_note_utc": "2026-09-22"
+  },
+  {
+   "id": "B7-22",
+   "title": "PoCL CPU implementation",
+   "status": "completed_below_threshold_closed",
+   "depends_on": [
+    "B7-01",
+    "B7-02",
+    "B7-03"
+   ],
+   "role": "opencl_worker",
+   "dossier": "dossiers/04_opencl_pocl_cpu.md",
+   "owned_scope": [
+    "experiments/optimization_v7/opencl/"
+   ],
+   "gate": [
+    "real CPU device identity/capabilities",
+    "strict FP probes",
+    "queue/copy overhead included"
+   ],
+   "activate_when": "CPU OpenCL runtime without privileged setup and useful portability discriminator",
+   "status_note_utc": "2026-09-22"
+  },
+  {
+   "id": "B7-23",
+   "title": "Optional pointwise MLX/Halide prototype",
+   "status": "not_executed_by_design",
+   "depends_on": [
+    "B7-03"
+   ],
+   "role": "pointwise_worker",
+   "dossier": "dossiers/05_pointwise_optional.md",
+   "owned_scope": [
+    "experiments/optimization_v7/pointwise/"
+   ],
+   "gate": [
+    "named current residual",
+    "A/B/C actual same typed island",
+    "CPU target and exactness"
+   ],
+   "activate_when": "measured pointwise/stencil residual justifies a separate island",
+   "status_note_utc": "2026-09-22"
+  },
+  {
+   "id": "B7-24",
+   "title": "Optional second island or backend follow-on",
+   "status": "nominated_not_executed",
+   "depends_on": [
+    "B7-30",
+    "B7-31"
+   ],
+   "role": "numerical_specialist",
+   "dossier": "dossiers/05_pointwise_optional.md",
+   "owned_scope": [
+    "experiments/optimization_v7/follow_on/"
+   ],
+   "gate": [
+    "one bounded measured residual",
+    "new boundary frozen before port"
+   ],
+   "activate_when": "first island outcome leaves sufficient practical opportunity; not every catalog framework",
+   "status_note_utc": "2026-09-22"
+  },
+  {
+   "id": "B7-30",
+   "title": "Completion-triggered independent review service",
+   "status": "completed_all_tracks (numba_b/ispc/opencl/drjit reviews landed)",
+   "depends_on": [
+    "B7-02",
+    "B7-03"
+   ],
+   "role": "independent_reviewer",
+   "dossier": "VALIDATION_POLICY.md",
+   "owned_scope": [
+    "optimization_v7_backends/evidence/reviews/"
+   ],
+   "gate": [
+    "one immutable candidate per review",
+    "author differs from reviewer",
+    "negative cases and actual logs inspected"
+   ],
+   "service_rule": "Invoked separately when a variant finishes B7-10/20/21/22/23/24. Later edits require fresh affected review; this row alone does not approve them.",
+   "status_note_utc": "2026-09-22"
+  },
+  {
+   "id": "B7-31",
+   "title": "Exclusive A/B/C adapter and small-pipeline comparisons",
+   "status": "completed_A_B_C_native_plus_drjit_appendix",
+   "depends_on": [
+    "B7-10",
+    "B7-30"
+   ],
+   "role": "performance_owner",
+   "dossier": "BENCHMARK_PROTOCOL.md",
+   "owned_scope": [
+    "optimization_v7_backends/evidence/trials/"
+   ],
+   "gate": [
+    "each timed C has completed implementation and review",
+    "sync and bridge costs measured",
+    "fixed CPU envelope and raw failures preserved"
+   ],
+   "per_variant_requires": "B7-20/21/22/23/24 terminal implementation result plus its individual B7-30 review; unavailable/rejected variants are not timed as passed.",
+   "status_note_utc": "2026-09-22"
+  },
+  {
+   "id": "B7-32",
+   "title": "Select smallest evidence-backed portfolio",
+   "status": "completed_C_native_selected_drjit_appended",
+   "depends_on": [
+    "B7-31"
+   ],
+   "role": "coordinator",
+   "dossier": "THROUGHPUT.md",
+   "owned_scope": [
+    "optimization_v7_backends/evidence/selection/"
+   ],
+   "gate": [
+    "C beats both A/B end-to-end or choose B/A",
+    "no overlapping-gain product",
+    "unavailable and failed backends explicit"
+   ],
+   "status_note_utc": "2026-09-22"
+  },
+  {
+   "id": "B7-40",
+   "title": "Integrate selected optional adapter or Numba B",
+   "status": "completed",
+   "depends_on": [
+    "B7-32"
+   ],
+   "role": "integrator",
+   "dossier": "dossiers/06_dispatch_packaging.md",
+   "owned_scope": [
+    "src/solweig_light/backends/",
+    "src/solweig_light/radiation/cylinder_longwave.py",
+    "src/solweig_light/radiation/engine.py",
+    "src/solweig_light/pipeline.py"
+   ],
+   "gate": [
+    "default public behavior unchanged",
+    "fallback versus admitted failure distinct",
+    "review selected final diff"
+   ],
+   "status_note_utc": "2026-09-22"
+  },
+  {
+   "id": "B7-41",
+   "title": "Resource, lifecycle and identity integration",
+   "status": "completed",
+   "depends_on": [
+    "B7-40"
+   ],
+   "role": "integrator",
+   "dossier": "dossiers/06_dispatch_packaging.md",
+   "owned_scope": [
+    "src/solweig_light/runtime.py",
+    "src/solweig_light/identities.py",
+    "src/solweig_light/models.py",
+    "tests/optimization_v7/runtime/"
+   ],
+   "gate": [
+    "thread+memory bounded across runtimes",
+    "backend/compiler/device identity",
+    "async completion before release"
+   ],
+   "activate_when": "selected implementation changes runtime/dependency identity; otherwise record unchanged",
+   "status_note_utc": "2026-09-22"
+  },
+  {
+   "id": "B7-42",
+   "title": "Optional packaging and core-only regression",
+   "status": "completed",
+   "depends_on": [
+    "B7-40",
+    "B7-41"
+   ],
+   "role": "packaging_worker",
+   "dossier": "dossiers/06_dispatch_packaging.md",
+   "owned_scope": [
+    "pyproject.toml",
+    "tests/optimization_v7/installed/",
+    "optimization_v7_backends/evidence/packaging/"
+   ],
+   "gate": [
+    "fresh installed winner outside source path",
+    "core without optional library works",
+    "actual platform support stated"
+   ],
+   "status_note_utc": "2026-09-22"
+  },
+  {
+   "id": "B7-50",
+   "title": "Combined small chronology and concurrency qualification",
+   "status": "completed",
+   "depends_on": [
+    "B7-42"
+   ],
+   "role": "evidence_owner",
+   "dossier": "VALIDATION_POLICY.md",
+   "owned_scope": [
+    "optimization_v7_backends/evidence/integration/"
+   ],
+   "gate": [
+    "real 24/48-step small TIFF pipeline",
+    "intermediates and every carried state",
+    "all public workflows affected scope checked"
+   ],
+   "status_note_utc": "2026-09-22"
+  },
+  {
+   "id": "B7-51",
+   "title": "Freeze final source, protocol and actual-target availability",
+   "status": "completed_actual_target_unverified (freeze 4ab7961a + addendum)",
+   "depends_on": [
+    "B7-50"
+   ],
+   "role": "evidence_owner",
+   "dossier": "BENCHMARK_PROTOCOL.md",
+   "owned_scope": [
+    "optimization_v7_backends/evidence/freeze/"
+   ],
+   "gate": [
+    "all dynamic scope fields fixed",
+    "actual 24 spatial jobs distinguished from bands",
+    "missing data/reference does not block honest small-scope completion"
+   ],
+   "status_note_utc": "2026-09-22"
+  },
+  {
+   "id": "B7-52",
+   "title": "Single actual-target CPU campaign",
+   "status": "blocked_actual_target_unverified",
+   "depends_on": [
+    "B7-51"
+   ],
+   "role": "performance_owner",
+   "dossier": "VALIDATION_POLICY.md",
+   "owned_scope": [
+    "optimization_v7_backends/evidence/final_batch/"
+   ],
+   "gate": [
+    "whole declared wall boundary",
+    "numeric/resource coverage explicit",
+    "one run plus at most one causal retry"
+   ],
+   "activate_when": "actual target manifest/reference/hardware available; otherwise blocked/unverified",
+   "status_note_utc": "2026-09-22"
+  },
+  {
+   "id": "B7-53",
+   "title": "Final independent disposition and same-branch handover",
+   "status": "in_progress",
+   "depends_on": [
+    "B7-51"
+   ],
+   "role": "independent_reviewer",
+   "dossier": "BRANCH_AND_CI.md",
+   "owned_scope": [
+    "optimization_v7_backends/evidence/handover/"
+   ],
+   "gate": [
+    "B7-52 actual outcome or blocked state included",
+    "measured claims only",
+    "same branch unmerged and unpushed by this task"
+   ],
+   "status_note_utc": "2026-09-22"
+  }
+ ]
 }

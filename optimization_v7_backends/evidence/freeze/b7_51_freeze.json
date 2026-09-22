@@ -29,5 +29,19 @@
   "baseline_venv": "python 3.12.13 / numba 0.67.0 / numpy 2.4.6 (oracle, unmutated)",
   "worktree_venvs": "python 3.12.13 / numba 0.67.0 / numpy 2.4.6 (+drjit 1.5.0 where needed)",
   "toolchains": "ISPC 1.31.0 (LLVM 22.1.8), Apple clang arm64; dylib built on demand with FMA-audit gate"
+ },
+ "post_freeze_addendum": {
+  "note": "HEAD advanced past the frozen source sha by evidence-only commits; no src/ or tests/ file changed after the freeze pin.",
+  "commits": [
+   {
+    "sha": "4ab7961a",
+    "what": "this freeze record itself"
+   },
+   {
+    "sha": "fc3f4f68",
+    "what": "drjit F1 repair landing (evidence prose only; llvm_longwave.py sha re-verified 592d12a2 identical to trial records; worktree src/tests bit-clean)"
+   }
+  ],
+  "verify": "git diff 009a1e66..HEAD --stat -- src tests -> empty"
  }
 }
