@@ -31,6 +31,7 @@ both profiles, in the original order of guard failures.
 from contextlib import contextmanager
 from enum import Enum
 import inspect
+import os
 
 import numpy as np
 from numba import njit, prange
@@ -175,6 +176,32 @@ def _longwave_primary_serial(sh,vs,vb,sun,shade,solid,sine,cosine,directions,gat
         output[pixel,1]=np.float32(np.float32(np.float32(np.float32(accum[5]+accum[6])+accum[7])+accum[8])+accum[9])
         output[pixel,2:7]=accum[5:10]
     return output
+
+
+_LW_BACKEND_ENV='SOLWEIG_LIGHT_LW_BACKEND'
+
+
+def _lw_kernel(parallel):
+    """Kernel resolver for the primary-output reduction.
+
+    Default (env unset): the unchanged baseline Numba kernels. With
+    SOLWEIG_LIGHT_LW_BACKEND=native, dispatch to the optional ISPC backend
+    (solweig_light.backends.native_lw, B7-32 selection); inputs outside the
+    backend's reviewed admission domain fall back to the Numba kernel before
+    the backend launches (its guard raises pre-launch), and a requested
+    backend that cannot build fails loudly instead of silently falling back.
+    """
+    kernel=_longwave_primary if parallel else _longwave_primary_serial
+    backend=os.environ.get(_LW_BACKEND_ENV,'').strip().lower()
+    if backend not in ('native','ispc'):
+        return kernel
+    from ..backends.native_lw import native_longwave_primary, UnsupportedInput
+    def dispatch(*args):
+        try:
+            return native_longwave_primary(*args)
+        except UnsupportedInput:
+            return kernel(*args)
+    return dispatch
 
 
 @njit(cache=True, fastmath=False, parallel=True)
@@ -334,7 +361,7 @@ def define_patch_characteristics_primary(*args,block_pixels=128,parallel=True,**
     difference=np.asarray([np.abs(e._operate(np.subtract,values['solar_azimuth'],value)) for value in azi])
     solar_gate=(difference>90)&(difference<270)&(values['solar_altitude']>0)
     output=np.empty((7,rows*cols),dtype=np.float32)
-    kernel=_longwave_primary if parallel else _longwave_primary_serial
+    kernel=_lw_kernel(parallel)
     factor=e._operate(np.subtract,1,ewall)[()]
     if block_pixels<1:raise ValueError('block_pixels must be positive')
     prepared=_class_coefficients(values['solar_altitude'],values['solar_azimuth'],geometry,values['asvf'],solar_gate) if rows*cols else None

@@ -90,6 +90,18 @@ source and the final installed-wheel checks passed 97 tests without skips. See t
 [local CPU optimization report](reports/local_cpu_optimization.md) for the
 complete matrix, exactness evidence, review status and limitations.
 
+### Optional native longwave backend
+
+The cylinder-longwave primary reduction can optionally run on an exact ISPC
+backend (B7-32 selection; bitwise-identical outputs, ~3.5x faster at the
+kernel boundary single-threaded, ~1.5x on whole small-scene records). It is
+off by default; set `SOLWEIG_LIGHT_LW_BACKEND=native` to enable. Inputs
+outside the backend's reviewed admission domain fall back to the Numba
+kernel before launch, and the shared library is built on demand into
+`~/.cache/solweig-light/native` (override with
+`SOLWEIG_LIGHT_NATIVE_CACHE`); a missing ISPC toolchain fails loudly rather
+than silently falling back. Evidence: `optimization_v7_backends/evidence/`.
+
 P7/P8 still require the full original-upstream and tuned-CPU matrix, larger
 2048/default-3600 or explicit memory-limit coverage, multi-day execution,
 final-source Linux evidence and hosted CI. CUDA is unavailable on the
