@@ -1,0 +1,1 @@
+{"fixture": "adv16384", "boundary": "adapter_total", "schedule": "serial", "label": "adapter_adv16384_serial_1T", "variant": "A", "adapter": "/Users/alansynn/Workspace/solweig-light/tools/optimization_v7/adapter_a.py", "reps": 4}

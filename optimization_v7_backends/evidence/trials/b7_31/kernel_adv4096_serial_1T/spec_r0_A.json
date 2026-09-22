@@ -1,0 +1,1 @@
+{"fixture": "adv4096", "boundary": "kernel_only", "schedule": "serial", "label": "kernel_adv4096_serial_1T", "variant": "A", "adapter": "/Users/alansynn/Workspace/solweig-light/tools/optimization_v7/adapter_a.py", "reps": 4}

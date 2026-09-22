@@ -1,0 +1,1026 @@
+{
+ "schema": "solweig-v7-b7-31-trials-v1",
+ "task": "B7-31 clean A/B/C trials per frozen b7_03 protocol",
+ "started_utc": "2026-09-22T06:07:32Z",
+ "finished_utc": "2026-09-22T06:10:20Z",
+ "host": {
+  "machine": "Apple M1 Pro",
+  "load_before": 16.66,
+  "load_after": 13.52,
+  "lease": "exclusive agent lease requested; ambient user apps present and recorded, no other agent measured"
+ },
+ "protocol": "benchmarks/protocols/optimization_v7/b7_03_protocol.json",
+ "reps_note": "per child: sample 0 = process-cold guard (disk cache may be warm), samples 1..3 = 3 paired warm reps",
+ "order_note": "frozen alternating rotation [A,B,C]/[B,C,A]/[C,A,B]",
+ "budget_note": "4T configs are A/B comparisons; C_native is single-thread by design and recorded as a different-budget reference, never gated",
+ "analyses": [
+  {
+   "config": "kernel_adv4096_serial_1T",
+   "boundary": "kernel_only",
+   "numba_threads": "1",
+   "held_out": false,
+   "variants": {
+    "A": {
+     "warm_samples_s": [
+      0.006087707937695086,
+      0.005734083009883761,
+      0.0060194580582901835,
+      0.006003167014569044,
+      0.005899250041693449,
+      0.006003667018376291,
+      0.005948291975073516,
+      0.006027083029039204,
+      0.005692332983016968
+     ],
+     "cold_guard_s": [
+      0.38804820796940476,
+      0.2214720839401707,
+      0.2135840420378372
+     ],
+     "warm_median_s": 0.006003167014569044,
+     "digest_count": 3,
+     "rejected_reason": null,
+     "identity": {
+      "variant": "A_baseline_numba",
+      "numba": "0.67.0",
+      "numpy": "2.4.6",
+      "effective_num_threads": 1,
+      "threading_layer": null,
+      "requested_env_NUMBA_NUM_THREADS": "1",
+      "kernels": [
+       "_longwave_primary (parallel prange)",
+       "_longwave_primary_serial"
+      ]
+     }
+    },
+    "B": {
+     "warm_samples_s": [
+      0.0011797919869422913,
+      0.0011549170594662428,
+      0.001174209057353437,
+      0.0015117920702323318,
+      0.0011766660027205944,
+      0.0013274160446599126,
+      0.0016787090571597219,
+      0.0011909999884665012,
+      0.001399290980771184
+     ],
+     "cold_guard_s": [
+      0.5071687919553369,
+      0.5082511660875753,
+      0.5040017910068855
+     ],
+     "warm_median_s": 0.0011909999884665012,
+     "digest_count": 3,
+     "rejected_reason": null,
+     "identity": {
+      "variant": "B_numba_layout_W8",
+      "numba": "0.67.0",
+      "numpy": "2.4.6",
+      "W": 8,
+      "candidate_sha256": "fcd9cf054146e15dba7fe126dc72227b28bee1d3985a49cd29f306acc7f74566",
+      "effective_num_threads": 1,
+      "threading_layer": null,
+      "requested_env_NUMBA_NUM_THREADS": "1",
+      "pack_engine": "numba, schedule-matched"
+     }
+    },
+    "C_native": {
+     "warm_samples_s": [
+      0.001680959016084671,
+      0.0017084169667214155,
+      0.001717166043817997,
+      0.0015915000112727284,
+      0.001563000027090311,
+      0.0017542500281706452,
+      0.001595041947439313,
+      0.0015719580696895719,
+      0.0015703749377280474
+     ],
+     "cold_guard_s": [
+      0.0026667910860851407,
+      0.002058542100712657,
+      0.002627250039950013
+     ],
+     "warm_median_s": 0.001595041947439313,
+     "digest_count": 3,
+     "rejected_reason": null,
+     "identity": {
+      "variant": "C_native_ispc_g8",
+      "gang": 8,
+      "effective_threads": 1,
+      "thread_control_method": "none (synchronous single-thread kernel)",
+      "adapter": "lw_native.primary as-shipped (no chunking)",
+      "binary_sha256": {
+       "liblw_native_g4.dylib": "1062373e5e3822ff4463c8327512c9156cac908b04173bbeffbf45903764201f",
+       "liblw_native_g8.dylib": "eb1071fcef64e5763839b65240986e9519d3de1906cf821925d1e0922582b46a"
+      },
+      "adapter_sha256": "a1ce7547562a44a9548f9c34ccd3c3f0f0c5aaac4ed130975eb894bbe562ddd6",
+      "numpy": "2.4.6"
+     }
+    }
+   },
+   "digests_equal": true,
+   "errors": [],
+   "ratio_C_over_B": 0.7467,
+   "ratio_C_over_A": 3.7636,
+   "ratio_B_over_A": 5.0404,
+   "wall_s": 17.3
+  },
+  {
+   "config": "kernel_adv4096_parallel_4T",
+   "boundary": "kernel_only",
+   "numba_threads": "4",
+   "held_out": false,
+   "variants": {
+    "A": {
+     "warm_samples_s": [
+      0.0016460840124636889,
+      0.001672667101956904,
+      0.0016370840603485703,
+      0.0016321669099852443,
+      0.00161875004414469,
+      0.0016487500397488475,
+      0.0016697500832378864,
+      0.0016998329665511847,
+      0.0018557088915258646
+     ],
+     "cold_guard_s": [
+      0.20375987503211945,
+      0.20588583301287144,
+      0.22628629207611084
+     ],
+     "warm_median_s": 0.0016487500397488475,
+     "digest_count": 3,
+     "rejected_reason": null,
+     "identity": {
+      "variant": "A_baseline_numba",
+      "numba": "0.67.0",
+      "numpy": "2.4.6",
+      "effective_num_threads": 4,
+      "threading_layer": null,
+      "requested_env_NUMBA_NUM_THREADS": "4",
+      "kernels": [
+       "_longwave_primary (parallel prange)",
+       "_longwave_primary_serial"
+      ]
+     }
+    },
+    "B": {
+     "warm_samples_s": [
+      0.0005797080229967833,
+      0.0004819579189643264,
+      0.00047954206820577383,
+      0.0005277090240269899,
+      0.0004859169712290168,
+      0.0005026659928262234,
+      0.0010445829248055816,
+      0.0007612089393660426,
+      0.0012450420763343573
+     ],
+     "cold_guard_s": [
+      1.3459184580715373,
+      1.3858133750036359,
+      1.464822708046995
+     ],
+     "warm_median_s": 0.0005277090240269899,
+     "digest_count": 3,
+     "rejected_reason": null,
+     "identity": {
+      "variant": "B_numba_layout_W8",
+      "numba": "0.67.0",
+      "numpy": "2.4.6",
+      "W": 8,
+      "candidate_sha256": "fcd9cf054146e15dba7fe126dc72227b28bee1d3985a49cd29f306acc7f74566",
+      "effective_num_threads": 4,
+      "threading_layer": null,
+      "requested_env_NUMBA_NUM_THREADS": "4",
+      "pack_engine": "numba, schedule-matched"
+     }
+    },
+    "C_native": {
+     "warm_samples_s": [
+      0.0016029999824240804,
+      0.0016642078990116715,
+      0.0015891249058768153,
+      0.0015743749681860209,
+      0.0016637080116197467,
+      0.001722250017337501,
+      0.0015848330222070217,
+      0.0015724169788882136,
+      0.0019558329368010163
+     ],
+     "cold_guard_s": [
+      0.0028268329333513975,
+      0.0021467909682542086,
+      0.002084915991872549
+     ],
+     "warm_median_s": 0.0016029999824240804,
+     "digest_count": 3,
+     "rejected_reason": null,
+     "identity": {
+      "variant": "C_native_ispc_g8",
+      "gang": 8,
+      "effective_threads": 1,
+      "thread_control_method": "none (synchronous single-thread kernel)",
+      "adapter": "lw_native.primary as-shipped (no chunking)",
+      "binary_sha256": {
+       "liblw_native_g4.dylib": "1062373e5e3822ff4463c8327512c9156cac908b04173bbeffbf45903764201f",
+       "liblw_native_g8.dylib": "eb1071fcef64e5763839b65240986e9519d3de1906cf821925d1e0922582b46a"
+      },
+      "adapter_sha256": "a1ce7547562a44a9548f9c34ccd3c3f0f0c5aaac4ed130975eb894bbe562ddd6",
+      "numpy": "2.4.6"
+     }
+    }
+   },
+   "digests_equal": true,
+   "errors": [],
+   "wall_s": 19.8
+  },
+  {
+   "config": "kernel_adv16384_serial_1T",
+   "boundary": "kernel_only",
+   "numba_threads": "1",
+   "held_out": true,
+   "variants": {
+    "A": {
+     "warm_samples_s": [
+      0.024304207996465266,
+      0.023342209053225815,
+      0.02337566704954952,
+      0.024480125051923096,
+      0.023909582989290357,
+      0.02393866702914238,
+      0.023906375048682094,
+      0.024084000033326447,
+      0.02350320795085281
+     ],
+     "cold_guard_s": [
+      0.2287538331001997,
+      0.2368910409277305,
+      0.27306279190815985
+     ],
+     "warm_median_s": 0.023909582989290357,
+     "digest_count": 3,
+     "rejected_reason": null,
+     "identity": {
+      "variant": "A_baseline_numba",
+      "numba": "0.67.0",
+      "numpy": "2.4.6",
+      "effective_num_threads": 1,
+      "threading_layer": null,
+      "requested_env_NUMBA_NUM_THREADS": "1",
+      "kernels": [
+       "_longwave_primary (parallel prange)",
+       "_longwave_primary_serial"
+      ]
+     }
+    },
+    "B": {
+     "warm_samples_s": [
+      0.007751083001494408,
+      0.004801415954716504,
+      0.00480304192751646,
+      0.00814074999652803,
+      0.004688750021159649,
+      0.004780583083629608,
+      0.008445832994766533,
+      0.005094457999803126,
+      0.005010124994441867
+     ],
+     "cold_guard_s": [
+      0.4965706249931827,
+      0.5008335830643773,
+      0.5315047919284552
+     ],
+     "warm_median_s": 0.005010124994441867,
+     "digest_count": 3,
+     "rejected_reason": null,
+     "identity": {
+      "variant": "B_numba_layout_W8",
+      "numba": "0.67.0",
+      "numpy": "2.4.6",
+      "W": 8,
+      "candidate_sha256": "fcd9cf054146e15dba7fe126dc72227b28bee1d3985a49cd29f306acc7f74566",
+      "effective_num_threads": 1,
+      "threading_layer": null,
+      "requested_env_NUMBA_NUM_THREADS": "1",
+      "pack_engine": "numba, schedule-matched"
+     }
+    },
+    "C_native": {
+     "warm_samples_s": [
+      0.006527208024635911,
+      0.006499209091998637,
+      0.006269584060646594,
+      0.006615916034206748,
+      0.0068876249715685844,
+      0.0067295830231159925,
+      0.0066769999684765935,
+      0.006247166893444955,
+      0.0062818750739097595
+     ],
+     "cold_guard_s": [
+      0.010080666048452258,
+      0.009534957935102284,
+      0.009655041038058698
+     ],
+     "warm_median_s": 0.006527208024635911,
+     "digest_count": 3,
+     "rejected_reason": null,
+     "identity": {
+      "variant": "C_native_ispc_g8",
+      "gang": 8,
+      "effective_threads": 1,
+      "thread_control_method": "none (synchronous single-thread kernel)",
+      "adapter": "lw_native.primary as-shipped (no chunking)",
+      "binary_sha256": {
+       "liblw_native_g4.dylib": "1062373e5e3822ff4463c8327512c9156cac908b04173bbeffbf45903764201f",
+       "liblw_native_g8.dylib": "eb1071fcef64e5763839b65240986e9519d3de1906cf821925d1e0922582b46a"
+      },
+      "adapter_sha256": "a1ce7547562a44a9548f9c34ccd3c3f0f0c5aaac4ed130975eb894bbe562ddd6",
+      "numpy": "2.4.6"
+     }
+    }
+   },
+   "digests_equal": true,
+   "errors": [],
+   "ratio_C_over_B": 0.7676,
+   "ratio_C_over_A": 3.6631,
+   "ratio_B_over_A": 4.7723,
+   "wall_s": 17.4
+  },
+  {
+   "config": "kernel_adv65536_serial_1T",
+   "boundary": "kernel_only",
+   "numba_threads": "1",
+   "held_out": true,
+   "variants": {
+    "A": {
+     "warm_samples_s": [
+      0.09332425007596612,
+      0.09332849993370473,
+      0.09308404196053743,
+      0.09689858311321586,
+      0.09382533305324614,
+      0.0933350840350613,
+      0.09305054205469787,
+      0.09650991694070399,
+      0.09441874991171062
+     ],
+     "cold_guard_s": [
+      0.33291137497872114,
+      0.32249262498226017,
+      0.35580250003840774
+     ],
+     "warm_median_s": 0.0933350840350613,
+     "digest_count": 3,
+     "rejected_reason": null,
+     "identity": {
+      "variant": "A_baseline_numba",
+      "numba": "0.67.0",
+      "numpy": "2.4.6",
+      "effective_num_threads": 1,
+      "threading_layer": null,
+      "requested_env_NUMBA_NUM_THREADS": "1",
+      "kernels": [
+       "_longwave_primary (parallel prange)",
+       "_longwave_primary_serial"
+      ]
+     }
+    },
+    "B": {
+     "warm_samples_s": [
+      0.03653987497091293,
+      0.021518124965950847,
+      0.01958179206121713,
+      0.030371042084880173,
+      0.0191084579564631,
+      0.018773875082843006,
+      0.032792082987725735,
+      0.01919254194945097,
+      0.01931108394637704
+     ],
+     "cold_guard_s": [
+      0.666902375058271,
+      0.6030953340232372,
+      0.5348056249786168
+     ],
+     "warm_median_s": 0.01958179206121713,
+     "digest_count": 3,
+     "rejected_reason": null,
+     "identity": {
+      "variant": "B_numba_layout_W8",
+      "numba": "0.67.0",
+      "numpy": "2.4.6",
+      "W": 8,
+      "candidate_sha256": "fcd9cf054146e15dba7fe126dc72227b28bee1d3985a49cd29f306acc7f74566",
+      "effective_num_threads": 1,
+      "threading_layer": null,
+      "requested_env_NUMBA_NUM_THREADS": "1",
+      "pack_engine": "numba, schedule-matched"
+     }
+    },
+    "C_native": {
+     "warm_samples_s": [
+      0.028966624988242984,
+      0.026265415945090353,
+      0.027145750005729496,
+      0.025684166001155972,
+      0.02630537503864616,
+      0.02767062501516193,
+      0.02664033300243318,
+      0.026487417053431273,
+      0.02656108303926885
+     ],
+     "cold_guard_s": [
+      0.03519637498538941,
+      0.03965941700153053,
+      0.04215966607443988
+     ],
+     "warm_median_s": 0.02656108303926885,
+     "digest_count": 3,
+     "rejected_reason": null,
+     "identity": {
+      "variant": "C_native_ispc_g8",
+      "gang": 8,
+      "effective_threads": 1,
+      "thread_control_method": "none (synchronous single-thread kernel)",
+      "adapter": "lw_native.primary as-shipped (no chunking)",
+      "binary_sha256": {
+       "liblw_native_g4.dylib": "1062373e5e3822ff4463c8327512c9156cac908b04173bbeffbf45903764201f",
+       "liblw_native_g8.dylib": "eb1071fcef64e5763839b65240986e9519d3de1906cf821925d1e0922582b46a"
+      },
+      "adapter_sha256": "a1ce7547562a44a9548f9c34ccd3c3f0f0c5aaac4ed130975eb894bbe562ddd6",
+      "numpy": "2.4.6"
+     }
+    }
+   },
+   "digests_equal": true,
+   "errors": [],
+   "ratio_C_over_B": 0.7372,
+   "ratio_C_over_A": 3.514,
+   "ratio_B_over_A": 4.7664,
+   "wall_s": 22.4
+  },
+  {
+   "config": "adapter_adv16384_serial_1T",
+   "boundary": "adapter_total",
+   "numba_threads": "1",
+   "held_out": true,
+   "variants": {
+    "A": {
+     "warm_samples_s": [
+      0.024260375066660345,
+      0.02348962496034801,
+      0.024380958057008684,
+      0.023552792030386627,
+      0.023007874959148467,
+      0.023829874931834638,
+      0.02354308299254626,
+      0.023045541951432824,
+      0.023126958985812962
+     ],
+     "cold_guard_s": [
+      0.23728558409493417,
+      0.2721906250808388,
+      0.22994883288629353
+     ],
+     "warm_median_s": 0.02354308299254626,
+     "digest_count": 3,
+     "rejected_reason": null,
+     "identity": {
+      "variant": "A_baseline_numba",
+      "numba": "0.67.0",
+      "numpy": "2.4.6",
+      "effective_num_threads": 1,
+      "threading_layer": null,
+      "requested_env_NUMBA_NUM_THREADS": "1",
+      "kernels": [
+       "_longwave_primary (parallel prange)",
+       "_longwave_primary_serial"
+      ]
+     }
+    },
+    "B": {
+     "warm_samples_s": [
+      0.014603166957385838,
+      0.011249792063608766,
+      0.011308374931104481,
+      0.013459666981361806,
+      0.01309450005646795,
+      0.0115554160438478,
+      0.012778333039022982,
+      0.011531999916769564,
+      0.01175349997356534
+     ],
+     "cold_guard_s": [
+      0.9163000830449164,
+      0.9807919580489397,
+      0.9617946669459343
+     ],
+     "warm_median_s": 0.01175349997356534,
+     "digest_count": 3,
+     "rejected_reason": null,
+     "identity": {
+      "variant": "B_numba_layout_W8",
+      "numba": "0.67.0",
+      "numpy": "2.4.6",
+      "W": 8,
+      "candidate_sha256": "fcd9cf054146e15dba7fe126dc72227b28bee1d3985a49cd29f306acc7f74566",
+      "effective_num_threads": 1,
+      "threading_layer": null,
+      "requested_env_NUMBA_NUM_THREADS": "1",
+      "pack_engine": "numba, schedule-matched"
+     }
+    },
+    "C_native": {
+     "warm_samples_s": [
+      0.0068573750322684646,
+      0.006456166040152311,
+      0.006549707963131368,
+      0.006598458043299615,
+      0.006771499989554286,
+      0.0065778749994933605,
+      0.006992583046667278,
+      0.006626709015108645,
+      0.007181124994531274
+     ],
+     "cold_guard_s": [
+      0.00965999998152256,
+      0.010094083030708134,
+      0.009767374955117702
+     ],
+     "warm_median_s": 0.006626709015108645,
+     "digest_count": 3,
+     "rejected_reason": null,
+     "identity": {
+      "variant": "C_native_ispc_g8",
+      "gang": 8,
+      "effective_threads": 1,
+      "thread_control_method": "none (synchronous single-thread kernel)",
+      "adapter": "lw_native.primary as-shipped (no chunking)",
+      "binary_sha256": {
+       "liblw_native_g4.dylib": "1062373e5e3822ff4463c8327512c9156cac908b04173bbeffbf45903764201f",
+       "liblw_native_g8.dylib": "eb1071fcef64e5763839b65240986e9519d3de1906cf821925d1e0922582b46a"
+      },
+      "adapter_sha256": "a1ce7547562a44a9548f9c34ccd3c3f0f0c5aaac4ed130975eb894bbe562ddd6",
+      "numpy": "2.4.6"
+     }
+    }
+   },
+   "digests_equal": true,
+   "errors": [],
+   "ratio_C_over_B": 1.7737,
+   "ratio_C_over_A": 3.5528,
+   "ratio_B_over_A": 2.0031,
+   "wall_s": 17.3
+  },
+  {
+   "config": "adapter_adv65536_serial_1T",
+   "boundary": "adapter_total",
+   "numba_threads": "1",
+   "held_out": true,
+   "variants": {
+    "A": {
+     "warm_samples_s": [
+      0.09394108399283141,
+      0.09502162493299693,
+      0.09328445908613503,
+      0.09336754202377051,
+      0.09311875002458692,
+      0.09289395797532052,
+      0.09729579102713615,
+      0.09441387502010912,
+      0.09416012500878423
+     ],
+     "cold_guard_s": [
+      0.38310029194690287,
+      0.31950637500267476,
+      0.3681145419832319
+     ],
+     "warm_median_s": 0.09394108399283141,
+     "digest_count": 3,
+     "rejected_reason": null,
+     "identity": {
+      "variant": "A_baseline_numba",
+      "numba": "0.67.0",
+      "numpy": "2.4.6",
+      "effective_num_threads": 1,
+      "threading_layer": null,
+      "requested_env_NUMBA_NUM_THREADS": "1",
+      "kernels": [
+       "_longwave_primary (parallel prange)",
+       "_longwave_primary_serial"
+      ]
+     }
+    },
+    "B": {
+     "warm_samples_s": [
+      0.04851304099429399,
+      0.046282249968498945,
+      0.0456690420396626,
+      0.047508624964393675,
+      0.045740083092823625,
+      0.04532187501899898,
+      0.04719149996526539,
+      0.04602766700554639,
+      0.04657908296212554
+     ],
+     "cold_guard_s": [
+      2.32747466606088,
+      1.8024808750487864,
+      1.1398777079302818
+     ],
+     "warm_median_s": 0.046282249968498945,
+     "digest_count": 3,
+     "rejected_reason": null,
+     "identity": {
+      "variant": "B_numba_layout_W8",
+      "numba": "0.67.0",
+      "numpy": "2.4.6",
+      "W": 8,
+      "candidate_sha256": "fcd9cf054146e15dba7fe126dc72227b28bee1d3985a49cd29f306acc7f74566",
+      "effective_num_threads": 1,
+      "threading_layer": null,
+      "requested_env_NUMBA_NUM_THREADS": "1",
+      "pack_engine": "numba, schedule-matched"
+     }
+    },
+    "C_native": {
+     "warm_samples_s": [
+      0.026252999901771545,
+      0.029495000024326146,
+      0.025932040996849537,
+      0.025641208048909903,
+      0.02614974998869002,
+      0.026305667008273304,
+      0.026339542004279792,
+      0.025787291931919754,
+      0.026323416968807578
+     ],
+     "cold_guard_s": [
+      0.04043533303774893,
+      0.04033887491095811,
+      0.03975125006400049
+     ],
+     "warm_median_s": 0.026252999901771545,
+     "digest_count": 3,
+     "rejected_reason": null,
+     "identity": {
+      "variant": "C_native_ispc_g8",
+      "gang": 8,
+      "effective_threads": 1,
+      "thread_control_method": "none (synchronous single-thread kernel)",
+      "adapter": "lw_native.primary as-shipped (no chunking)",
+      "binary_sha256": {
+       "liblw_native_g4.dylib": "1062373e5e3822ff4463c8327512c9156cac908b04173bbeffbf45903764201f",
+       "liblw_native_g8.dylib": "eb1071fcef64e5763839b65240986e9519d3de1906cf821925d1e0922582b46a"
+      },
+      "adapter_sha256": "a1ce7547562a44a9548f9c34ccd3c3f0f0c5aaac4ed130975eb894bbe562ddd6",
+      "numpy": "2.4.6"
+     }
+    }
+   },
+   "digests_equal": true,
+   "errors": [],
+   "ratio_C_over_B": 1.7629,
+   "ratio_C_over_A": 3.5783,
+   "ratio_B_over_A": 2.0297,
+   "wall_s": 24.7
+  },
+  {
+   "config": "adapter_adv16384_parallel_4T",
+   "boundary": "adapter_total",
+   "numba_threads": "4",
+   "held_out": true,
+   "variants": {
+    "A": {
+     "warm_samples_s": [
+      0.007008541957475245,
+      0.006115208030678332,
+      0.0064240420470014215,
+      0.00615845900028944,
+      0.006176542025059462,
+      0.006102291983552277,
+      0.006220625014975667,
+      0.006381375016644597,
+      0.006385084008798003
+     ],
+     "cold_guard_s": [
+      0.21943091705907136,
+      0.19976129196584225,
+      0.20727183297276497
+     ],
+     "warm_median_s": 0.006220625014975667,
+     "digest_count": 3,
+     "rejected_reason": null,
+     "identity": {
+      "variant": "A_baseline_numba",
+      "numba": "0.67.0",
+      "numpy": "2.4.6",
+      "effective_num_threads": 4,
+      "threading_layer": null,
+      "requested_env_NUMBA_NUM_THREADS": "4",
+      "kernels": [
+       "_longwave_primary (parallel prange)",
+       "_longwave_primary_serial"
+      ]
+     }
+    },
+    "B": {
+     "warm_samples_s": [
+      0.0038958329241722822,
+      0.003429290954954922,
+      0.0038217499386519194,
+      0.003929874976165593,
+      0.003957042004913092,
+      0.0038987089646980166,
+      0.005025083082728088,
+      0.0034622909734025598,
+      0.0036053339717909694
+     ],
+     "cold_guard_s": [
+      2.175696084043011,
+      2.196466458030045,
+      2.1718627919908613
+     ],
+     "warm_median_s": 0.0038958329241722822,
+     "digest_count": 3,
+     "rejected_reason": null,
+     "identity": {
+      "variant": "B_numba_layout_W8",
+      "numba": "0.67.0",
+      "numpy": "2.4.6",
+      "W": 8,
+      "candidate_sha256": "fcd9cf054146e15dba7fe126dc72227b28bee1d3985a49cd29f306acc7f74566",
+      "effective_num_threads": 4,
+      "threading_layer": null,
+      "requested_env_NUMBA_NUM_THREADS": "4",
+      "pack_engine": "numba, schedule-matched"
+     }
+    },
+    "C_native": {
+     "warm_samples_s": [
+      0.007021792000159621,
+      0.006612041965126991,
+      0.006304332986474037,
+      0.006473417044617236,
+      0.006489624967798591,
+      0.00651374994777143,
+      0.006732207955792546,
+      0.006589583004824817,
+      0.0063092909986153245
+     ],
+     "cold_guard_s": [
+      0.01078675000462681,
+      0.00790616706945002,
+      0.008125417050905526
+     ],
+     "warm_median_s": 0.00651374994777143,
+     "digest_count": 3,
+     "rejected_reason": null,
+     "identity": {
+      "variant": "C_native_ispc_g8",
+      "gang": 8,
+      "effective_threads": 1,
+      "thread_control_method": "none (synchronous single-thread kernel)",
+      "adapter": "lw_native.primary as-shipped (no chunking)",
+      "binary_sha256": {
+       "liblw_native_g4.dylib": "1062373e5e3822ff4463c8327512c9156cac908b04173bbeffbf45903764201f",
+       "liblw_native_g8.dylib": "eb1071fcef64e5763839b65240986e9519d3de1906cf821925d1e0922582b46a"
+      },
+      "adapter_sha256": "a1ce7547562a44a9548f9c34ccd3c3f0f0c5aaac4ed130975eb894bbe562ddd6",
+      "numpy": "2.4.6"
+     }
+    }
+   },
+   "digests_equal": true,
+   "errors": [],
+   "wall_s": 20.4
+  },
+  {
+   "config": "warm_serial_1T",
+   "boundary": "adapter_total",
+   "numba_threads": "1",
+   "held_out": true,
+   "variants": {
+    "A": {
+     "warm_samples_s": [
+      0.028320124954916537,
+      0.027726458967663348,
+      0.029655167018063366,
+      0.027085874928161502,
+      0.02684941701591015,
+      0.026644083089195192,
+      0.028808499919250607,
+      0.027832459076307714,
+      0.028219499974511564
+     ],
+     "cold_guard_s": [
+      0.21646216593217105,
+      0.21843279199674726,
+      0.2514852500753477
+     ],
+     "warm_median_s": 0.027832459076307714,
+     "digest_count": 3,
+     "rejected_reason": null,
+     "identity": {
+      "variant": "A_baseline_numba",
+      "numba": "0.67.0",
+      "numpy": "2.4.6",
+      "effective_num_threads": 1,
+      "threading_layer": null,
+      "requested_env_NUMBA_NUM_THREADS": "1",
+      "kernels": [
+       "_longwave_primary (parallel prange)",
+       "_longwave_primary_serial"
+      ]
+     }
+    },
+    "B": {
+     "warm_samples_s": [
+      0.026492625009268522,
+      0.025001333095133305,
+      0.026153333019465208,
+      0.029661707929335535,
+      0.025032250094227493,
+      0.025180374970659614,
+      0.02918658300768584,
+      0.0271112920017913,
+      0.026256749988533556
+     ],
+     "cold_guard_s": [
+      0.9611245419364423,
+      0.9286580410553142,
+      0.9704779590247199
+     ],
+     "warm_median_s": 0.026256749988533556,
+     "digest_count": 3,
+     "rejected_reason": null,
+     "identity": {
+      "variant": "B_numba_layout_W8",
+      "numba": "0.67.0",
+      "numpy": "2.4.6",
+      "W": 8,
+      "candidate_sha256": "fcd9cf054146e15dba7fe126dc72227b28bee1d3985a49cd29f306acc7f74566",
+      "effective_num_threads": 1,
+      "threading_layer": null,
+      "requested_env_NUMBA_NUM_THREADS": "1",
+      "pack_engine": "numba, schedule-matched"
+     }
+    },
+    "C_native": {
+     "warm_samples_s": [
+      0.018308000057004392,
+      0.018339499947614968,
+      0.018146708025597036,
+      0.018337290966883302,
+      0.018226624932140112,
+      0.018207290908321738,
+      0.02230341697577387,
+      0.019111208035610616,
+      0.018978332984261215
+     ],
+     "cold_guard_s": [
+      0.019672082969918847,
+      0.01825116598047316,
+      0.024606707971543074
+     ],
+     "warm_median_s": 0.018337290966883302,
+     "digest_count": 3,
+     "rejected_reason": null,
+     "identity": {
+      "variant": "C_native_ispc_g8",
+      "gang": 8,
+      "effective_threads": 1,
+      "thread_control_method": "none (synchronous single-thread kernel)",
+      "adapter": "lw_native.primary as-shipped (no chunking)",
+      "binary_sha256": {
+       "liblw_native_g4.dylib": "1062373e5e3822ff4463c8327512c9156cac908b04173bbeffbf45903764201f",
+       "liblw_native_g8.dylib": "eb1071fcef64e5763839b65240986e9519d3de1906cf821925d1e0922582b46a"
+      },
+      "adapter_sha256": "a1ce7547562a44a9548f9c34ccd3c3f0f0c5aaac4ed130975eb894bbe562ddd6",
+      "numpy": "2.4.6"
+     }
+    }
+   },
+   "digests_equal": true,
+   "errors": [],
+   "ratio_C_over_B": 1.4319,
+   "ratio_C_over_A": 1.5178,
+   "ratio_B_over_A": 1.06,
+   "wall_s": 11.8
+  },
+  {
+   "config": "warm_parallel_4T",
+   "boundary": "adapter_total",
+   "numba_threads": "4",
+   "held_out": true,
+   "variants": {
+    "A": {
+     "warm_samples_s": [
+      0.027016500011086464,
+      0.031443041982129216,
+      0.02914604195393622,
+      0.02928262494970113,
+      0.028759249951690435,
+      0.02904850000049919,
+      0.02882833406329155,
+      0.031090749893337488,
+      0.027389041963033378
+     ],
+     "cold_guard_s": [
+      1.3481951669091359,
+      0.21715795795898885,
+      0.22817204194143414
+     ],
+     "warm_median_s": 0.02904850000049919,
+     "digest_count": 3,
+     "rejected_reason": null,
+     "identity": {
+      "variant": "A_baseline_numba",
+      "numba": "0.67.0",
+      "numpy": "2.4.6",
+      "effective_num_threads": 4,
+      "threading_layer": null,
+      "requested_env_NUMBA_NUM_THREADS": "4",
+      "kernels": [
+       "_longwave_primary (parallel prange)",
+       "_longwave_primary_serial"
+      ]
+     }
+    },
+    "B": {
+     "warm_samples_s": [
+      0.10276174999307841,
+      0.1092567079467699,
+      0.10855433403048664,
+      0.09341383294668049,
+      0.08762958296574652,
+      0.08825137501116842,
+      0.16758512507658452,
+      0.10159224993549287,
+      0.09900108294095844
+     ],
+     "cold_guard_s": [
+      2.2411035409895703,
+      2.256399416946806,
+      2.242982333060354
+     ],
+     "warm_median_s": 0.10159224993549287,
+     "digest_count": 3,
+     "rejected_reason": null,
+     "identity": {
+      "variant": "B_numba_layout_W8",
+      "numba": "0.67.0",
+      "numpy": "2.4.6",
+      "W": 8,
+      "candidate_sha256": "fcd9cf054146e15dba7fe126dc72227b28bee1d3985a49cd29f306acc7f74566",
+      "effective_num_threads": 4,
+      "threading_layer": null,
+      "requested_env_NUMBA_NUM_THREADS": "4",
+      "pack_engine": "numba, schedule-matched"
+     }
+    },
+    "C_native": {
+     "warm_samples_s": [
+      0.018004083074629307,
+      0.018574457964859903,
+      0.0189364580437541,
+      0.01798412506468594,
+      0.018205457949079573,
+      0.018217208911664784,
+      0.019191083032637835,
+      0.01825808302965015,
+      0.019584542023949325
+     ],
+     "cold_guard_s": [
+      0.019065874977968633,
+      0.020628249971196055,
+      0.024209999945014715
+     ],
+     "warm_median_s": 0.01825808302965015,
+     "digest_count": 3,
+     "rejected_reason": null,
+     "identity": {
+      "variant": "C_native_ispc_g8",
+      "gang": 8,
+      "effective_threads": 1,
+      "thread_control_method": "none (synchronous single-thread kernel)",
+      "adapter": "lw_native.primary as-shipped (no chunking)",
+      "binary_sha256": {
+       "liblw_native_g4.dylib": "1062373e5e3822ff4463c8327512c9156cac908b04173bbeffbf45903764201f",
+       "liblw_native_g8.dylib": "eb1071fcef64e5763839b65240986e9519d3de1906cf821925d1e0922582b46a"
+      },
+      "adapter_sha256": "a1ce7547562a44a9548f9c34ccd3c3f0f0c5aaac4ed130975eb894bbe562ddd6",
+      "numpy": "2.4.6"
+     }
+    }
+   },
+   "digests_equal": true,
+   "errors": [],
+   "wall_s": 17.5
+  }
+ ]
+}
