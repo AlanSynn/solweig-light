@@ -19,5 +19,11 @@
  "native_bitwise_equal_to_default": true,
  "differing_files": [],
  "file_count": 10,
- "finished_utc": "2026-09-22T06:25:24.988844+00:00"
+ "finished_utc": "2026-09-22T06:25:24.988844+00:00",
+ "native_tpw4_concurrency": {
+  "bitwise_equal_to_default": true,
+  "differing_files": [],
+  "file_count": 10,
+  "note": "numba 4-thread pool blocks calling the single-thread ISPC kernel concurrently; thread-safety per call (own output buffer)"
+ }
 }
