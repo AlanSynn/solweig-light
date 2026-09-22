@@ -29,6 +29,9 @@ from numba import njit, prange
 # Private compiled decode helpers; importing this module is cycle-free
 # (geometry/__init__ is docstring-only) and the kernels need them as globals.
 from ..geometry.visibility_compiled import _decode_at
+# The exact-table classification kernel evaluates the same SLEEF scalar core
+# that atan_array loops over; numba needs it as a module-level global.
+from ._sleef_classifier import atan_fma
 
 
 @dataclass(frozen=True)
@@ -142,6 +145,19 @@ def _fused_enabled():
     return os.environ.get('SOLWEIG_LIGHT_FUSED_RAD') == '1'
 
 
+def _classes_exact_enabled():
+    """Exact finite-state classification tables are opt-in:
+    SOLWEIG_LIGHT_PATCH_CLASS_TABLES=1, default OFF.
+
+    The retained per-block NumPy classification stays the dispatch default.
+    The gate arms the exact-table route: deduplicated per-state coefficient
+    construction (equal full source-state tuples share one verbatim scalar
+    evaluation) plus a single compiled block pass that reproduces the
+    retained route's elementwise arithmetic bitwise on admitted inputs.
+    """
+    return os.environ.get('SOLWEIG_LIGHT_PATCH_CLASS_TABLES') == '1'
+
+
 def _packed_leaves(channel,allow_lazy=False):
     """Admitted packed leaves of a channel, or None when fusion is unsupported.
 
@@ -242,6 +258,23 @@ def _supported(values,cubes):
     return all(np.asarray(value).dtype==np.float32 for value in values) and all(getattr(value,'dtype',None)==np.dtype(np.float32) for value in cubes)
 
 
+def _class_coefficient(azimuth,altitude,patch_azimuth):
+    """One patch's scalar coefficient chain, verbatim from the retained loop.
+
+    Kept as its own function so the exact-table route can evaluate it once
+    per equal source state without changing any operation, operand order,
+    intermediate dtype, or the separate coefficient cast.
+    """
+    from . import engine as e
+    difference=np.abs(e._operate(np.subtract,azimuth,patch_azimuth))
+    deg2rad=e._divide(np.pi,180.0)
+    xi=np.cos(e._operate(np.multiply,difference,deg2rad))
+    if not isinstance(altitude,np.ndarray):
+        raise TypeError('tan(): solar_altitude must be a tensor-origin array')
+    yi=e._operate(np.multiply,e._operate(np.multiply,2,xi),np.tan(e._operate(np.multiply,altitude,deg2rad)))
+    return np.where(yi>0,0.0,yi)
+
+
 def _class_coefficients(altitude,azimuth,geometry,asvf,active=None):
     """Evaluate scalar operations in patch order before broadcasting their results.
 
@@ -257,14 +290,27 @@ def _class_coefficients(altitude,azimuth,geometry,asvf,active=None):
         return None
     indices=np.flatnonzero(np.ones(geometry.altitude.size,dtype=bool) if active is None else active)
     coefficients=np.empty(indices.size,dtype=field.dtype)
+    if _classes_exact_enabled():
+        # Exact finite-state table (R04+G06): within one call the solar
+        # scalars are fixed, so the coefficient bits are a pure function of
+        # the patch azimuth source state. Patches with an equal full
+        # source-state tuple (exact float32 bit pattern: signed zeros and NaN
+        # payloads stay distinct) share one verbatim evaluation of the chain
+        # and the stored float32 coefficient is scattered to the class
+        # members. No reassociation: the original intermediate dtypes and the
+        # separate coefficient cast run exactly as the retained loop does.
+        states=np.ascontiguousarray(geometry.azimuth).view(np.uint32)
+        evaluated={}
+        for column,patch in enumerate(indices):
+            key=int(states[patch])
+            if key in evaluated:
+                coefficients[column]=evaluated[key]
+            else:
+                coefficients[column]=_class_coefficient(azimuth,altitude,geometry.azimuth[patch])
+                evaluated[key]=coefficients[column]
+        return indices,coefficients,e._divide(180.0,np.pi)
     for column,patch in enumerate(indices):
-        difference=np.abs(e._operate(np.subtract,azimuth,geometry.azimuth[patch]))
-        deg2rad=e._divide(np.pi,180.0)
-        xi=np.cos(e._operate(np.multiply,difference,deg2rad))
-        if not isinstance(altitude,np.ndarray):
-            raise TypeError('tan(): solar_altitude must be a tensor-origin array')
-        yi=e._operate(np.multiply,e._operate(np.multiply,2,xi),np.tan(e._operate(np.multiply,altitude,deg2rad)))
-        coefficients[column]=np.where(yi>0,0.0,yi)
+        coefficients[column]=_class_coefficient(azimuth,altitude,geometry.azimuth[patch])
     return indices,coefficients,e._divide(180.0,np.pi)
 
 
@@ -278,12 +324,30 @@ def _classes(altitude,azimuth,geometry,asvf,start,stop,active=None,prepared=None
     if prepared is not None:
         indices,coefficients,rad2deg=prepared
         if indices.size:
-            # Both raster operations remain float32 and retain their grouping.
-            from ._math_profile import tan32, atan32
-            delta=np.add(tan32(field),coefficients[None,:])
-            degrees=np.multiply(atan32(delta),np.asarray(rad2deg,dtype=field.dtype))
-            sun[:,indices]=degrees<geometry.altitude[indices]
-            shade[:,indices]=degrees>geometry.altitude[indices]
+            if _classes_exact_enabled():
+                # Exact finite-state tables (R04): the retained tan32 field
+                # pass feeds one compiled pass whose per-element sequence —
+                # float32 add, the SLEEF scalar arctangent atan_array loops
+                # over, float32 multiply, the two strict comparisons — is the
+                # retained route's elementwise arithmetic without the array
+                # temporaries and dispatch overhead. Typed arithmetic only.
+                from ._math_profile import tan32
+                heights=np.ascontiguousarray(tan32(field)).reshape(-1)
+                if indices[0]==0 and indices.size==indices[-1]+1:
+                    _classes_table(heights,coefficients,
+                                   np.asarray(rad2deg,dtype=field.dtype)[()],
+                                   geometry.altitude[indices],sun,shade)
+                else:
+                    _classes_table_masked(heights,coefficients,
+                                          np.asarray(rad2deg,dtype=field.dtype)[()],
+                                          geometry.altitude[indices],indices,sun,shade)
+            else:
+                # Both raster operations remain float32 and retain their grouping.
+                from ._math_profile import tan32, atan32
+                delta=np.add(tan32(field),coefficients[None,:])
+                degrees=np.multiply(atan32(delta),np.asarray(rad2deg,dtype=field.dtype))
+                sun[:,indices]=degrees<geometry.altitude[indices]
+                shade[:,indices]=degrees>geometry.altitude[indices]
         return sun,shade
     for patch in range(geometry.altitude.size):
         if active is not None and not active[patch]:
@@ -291,6 +355,46 @@ def _classes(altitude,azimuth,geometry,asvf,start,stop,active=None,prepared=None
         a,b=e.shaded_or_sunlit(altitude,azimuth,geometry.altitude[patch],geometry.azimuth[patch],field)
         sun[:,patch],shade[:,patch]=a[:,0],b[:,0]
     return sun,shade
+
+
+@njit(cache=True, fastmath=False, error_model='numpy')
+def _classes_table(heights,coefficients,radians_to_degrees,altitudes,sun,shade):
+    """Exact finite-state classification of one block in a single compiled pass.
+
+    Contiguous-column form (the whole-vault state set): per element this
+    reproduces the retained route's elementwise NumPy operations exactly —
+    the float32 add of the ``tan32`` field value and the per-state
+    coefficient, the source-derived SLEEF scalar arctangent (the same
+    ``atan_fma`` core ``atan_array`` loops over), the float32 multiply by
+    the degree factor, and the two strict comparisons against the patch
+    altitude. No reassociation, no fused multiply-add, serial over rows so
+    the route adds no thread interactions; only the float32/bool temporaries
+    and per-op dispatch of the retained route are removed.
+    """
+    for row in range(heights.shape[0]):
+        value=heights[row]
+        for column in range(coefficients.shape[0]):
+            delta=np.float32(value+coefficients[column])
+            degrees=np.float32(atan_fma(delta)*radians_to_degrees)
+            sun[row,column]=degrees<altitudes[column]
+            shade[row,column]=degrees>altitudes[column]
+
+
+@njit(cache=True, fastmath=False, error_model='numpy')
+def _classes_table_masked(heights,coefficients,radians_to_degrees,altitudes,indices,sun,shade):
+    """Masked-column form of :func:`_classes_table` for solar-gate subsets.
+
+    Identical per-element arithmetic; only the destination columns are
+    indirections through the active-patch indices, as the retained route's
+    ``sun[:,indices]`` assignment writes them.
+    """
+    for row in range(heights.shape[0]):
+        value=heights[row]
+        for column in range(coefficients.shape[0]):
+            delta=np.float32(value+coefficients[column])
+            degrees=np.float32(atan_fma(delta)*radians_to_degrees)
+            sun[row,indices[column]]=degrees<altitudes[column]
+            shade[row,indices[column]]=degrees>altitudes[column]
 
 
 @njit(cache=True, fastmath=False, parallel=True)
