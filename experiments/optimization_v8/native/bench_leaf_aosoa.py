@@ -43,7 +43,8 @@ sys.path.insert(0, str(_MODULE_DIR))
 sys.path.insert(0, str(_MODULE_DIR.parents[2] / 'tests' / 'optimization_v8'
                        / 'native'))          # conftest helpers (read-only)
 
-from conftest import SERIAL, adversarial_inputs, to_aosoa  # noqa: E402
+from native_test_helpers import (SERIAL, adversarial_inputs,  # noqa: E402
+                                 to_aosoa)
 import lw_native_aosoa  # noqa: E402
 
 B, P = 8192, 153

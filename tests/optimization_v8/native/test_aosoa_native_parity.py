@@ -26,9 +26,10 @@ from solweig_light.geometry.visibility import PackedVisibility, _EncodedPatch
 from solweig_light.geometry.visibility_compiled import _decode, _descriptor
 
 import direct_aosoa as da
-from conftest import (F32, SERIAL, _pin_args, adversarial_inputs,
-                      aosoa_rows, bitwise_equal, lw_primary_reference,
-                      run_native, to_aosoa, u32)
+from native_test_helpers import (F32, SERIAL, _pin_args, adversarial_inputs,
+                                 aosoa_rows, bitwise_equal,
+                                 lw_primary_reference, run_native, to_aosoa,
+                                 u32)
 
 B_GRID = (1, 7, 8, 9, 11, 13)            # W=8 tails W-1/W/W+1 and primes
 P_GRID = (1, 2, 3, 5, 7, 11, 13, 153, 609)

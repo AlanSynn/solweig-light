@@ -57,7 +57,7 @@ for _p in (str(_MODULE_DIR),
     if _p not in sys.path:
         sys.path.insert(0, _p)
 
-from conftest import adversarial_inputs, pack_mask  # noqa: E402
+from native_test_helpers import adversarial_inputs, pack_mask  # noqa: E402
 from lw_reference_oracle import kernel_pair  # noqa: E402
 import direct_aosoa as da  # noqa: E402
 import lw_native_aosoa  # noqa: E402
@@ -154,16 +154,33 @@ def _kernel_leaf_native(views, sun_a, shade_a, base, B, entry):
     return out
 
 
-def run(check_only: bool) -> int:
+def run(check_only: bool, block_sizes='128,1024', max_loadavg=None) -> int:
+    sizes = tuple(int(s) for s in str(block_sizes).split(','))
     parallel, serial = kernel_pair()
     b_name, b_fn, b_kernel = _find_b_consumer()
     load_start = os.getloadavg()
+    if max_loadavg is not None and load_start[0] > max_loadavg:
+        # Tier gate: abort BEFORE any timed work; archive with the check
+        # tag so a gate-refusal is never mistaken for a measurement.
+        _archive({'recorded_utc': datetime.now(timezone.utc).strftime(
+                      '%Y-%m-%dT%H:%M:%SZ'),
+                  'status': ('INFORMATIONAL / NON-PROMOTION (N8-31 owns '
+                             'protocol cells)'),
+                  'mode': 'check-only (gate refused; no timing)',
+                  'block_sizes': list(sizes), 'mixes': list(MIXES),
+                  'patches': P_PATCHES, 'reps': 0,
+                  'ambient_loadavg_start': load_start,
+                  'gate': f'max_loadavg={max_loadavg} exceeded at start'},
+                 check_only=True)
+        print(f'[gate] 1-min loadavg {load_start[0]:.2f} > {max_loadavg}; '
+              'aborting before any timed work', file=sys.stderr)
+        return 2
     record = {
         'recorded_utc': datetime.now(timezone.utc).strftime(
             '%Y-%m-%dT%H:%M:%SZ'),
         'status': 'INFORMATIONAL / NON-PROMOTION (N8-31 owns protocol cells)',
         'mode': 'check-only (no timing)' if check_only else 'TIMED',
-        'block_sizes': list(BLOCK_SIZES),
+        'block_sizes': list(sizes),
         'mixes': list(MIXES),
         'patches': P_PATCHES,
         'reps': 0 if check_only else REPS,
@@ -173,7 +190,7 @@ def run(check_only: bool) -> int:
         'per_block': [],
     }
 
-    for B in BLOCK_SIZES:
+    for B in sizes:
         for mix in MIXES:
             rng = np.random.default_rng(100_003 * B + 7919 * MIXES.index(mix))
             base = adversarial_inputs(B, P_PATCHES, seed=97 * B)
@@ -315,5 +332,13 @@ if __name__ == '__main__':
     ap = argparse.ArgumentParser()
     ap.add_argument('--check-only', action='store_true',
                     help='parity smoke only; no timing loops')
+    ap.add_argument('--block-sizes', default='128,1024',
+                    help='comma list of block sizes (default 128,1024 keeps '
+                         'the frozen-harness invocation bit-identical)')
+    ap.add_argument('--max-loadavg', type=float, default=None,
+                    help='operational guard: abort before any timed work '
+                         'when the 1-min loadavg exceeds this (tier gate; '
+                         'per-cell loadavg still goes to stderr for the '
+                         'censor threshold)')
     ns = ap.parse_args()
-    sys.exit(run(ns.check_only))
+    sys.exit(run(ns.check_only, ns.block_sizes, ns.max_loadavg))

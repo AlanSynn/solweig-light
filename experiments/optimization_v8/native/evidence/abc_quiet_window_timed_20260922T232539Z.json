@@ -1,0 +1,183 @@
+{
+  "ambient_loadavg_end": [
+    6.84326171875,
+    6.23828125,
+    6.11328125
+  ],
+  "ambient_loadavg_start": [
+    6.56884765625,
+    6.1748046875,
+    6.0908203125
+  ],
+  "b_consumer": "lw_b_control.py:lw_primary_b",
+  "block_sizes": [
+    128
+  ],
+  "mixes": [
+    "all-binary",
+    "mix",
+    "all-raw"
+  ],
+  "mode": "TIMED",
+  "n1_note": "producer cost is reported per block size and mix; the direct producer reverses vs decode+transpose at B=128 in 3 of 6 N8-11 cells, so C1 end-to-end totals at 128 must include that penalty honestly",
+  "patches": 153,
+  "per_block": [
+    {
+      "B": 128,
+      "adapter_ms": {
+        "BC_float32_views_x3": {
+          "median_ms": 0.0007080379873514175,
+          "min_ms": 0.0006249174475669861
+        },
+        "BC_pack_masks_x2": {
+          "median_ms": 0.027999980375170708,
+          "min_ms": 0.027708010748028755
+        }
+      },
+      "kernel_ms": {
+        "A0_parallel_dense": {
+          "median_ms": 0.27945893816649914,
+          "min_ms": 0.23762485943734646
+        },
+        "A0_serial_dense": {
+          "median_ms": 0.1987498253583908,
+          "min_ms": 0.19362499006092548
+        },
+        "B1_numba_adapter": {
+          "median_ms": 0.18862495198845863,
+          "min_ms": 0.13537495397031307
+        },
+        "B1k_numba_parallel_leaf": {
+          "median_ms": 0.15070801600813866,
+          "min_ms": 0.10820804163813591
+        },
+        "C1_native_aosoa_adapter": {
+          "median_ms": 0.11320807971060276,
+          "min_ms": 0.10320800356566906
+        },
+        "C1k_native_entry_leaf": {
+          "median_ms": 0.042582862079143524,
+          "min_ms": 0.04233280196785927
+        }
+      },
+      "mix": "all-binary",
+      "parity": "pass (A0==C1==C1k==B1==B1k)",
+      "producer_ms": {
+        "A_decode_block_x3": {
+          "median_ms": 0.39116689004004,
+          "min_ms": 0.38312491960823536
+        },
+        "BC_produce_blocks_aosoa": {
+          "median_ms": 0.34300005063414574,
+          "min_ms": 0.34037488512694836
+        }
+      }
+    },
+    {
+      "B": 128,
+      "adapter_ms": {
+        "BC_float32_views_x3": {
+          "median_ms": 0.0007499475032091141,
+          "min_ms": 0.0006668269634246826
+        },
+        "BC_pack_masks_x2": {
+          "median_ms": 0.029582995921373367,
+          "min_ms": 0.029209069907665253
+        }
+      },
+      "kernel_ms": {
+        "A0_parallel_dense": {
+          "median_ms": 0.3069171216338873,
+          "min_ms": 0.2354579046368599
+        },
+        "A0_serial_dense": {
+          "median_ms": 0.1637078821659088,
+          "min_ms": 0.16062497161328793
+        },
+        "B1_numba_adapter": {
+          "median_ms": 0.15833298675715923,
+          "min_ms": 0.1364171039313078
+        },
+        "B1k_numba_parallel_leaf": {
+          "median_ms": 0.14779088087379932,
+          "min_ms": 0.10850001126527786
+        },
+        "C1_native_aosoa_adapter": {
+          "median_ms": 0.1051661092787981,
+          "min_ms": 0.09395810775458813
+        },
+        "C1k_native_entry_leaf": {
+          "median_ms": 0.04000007174909115,
+          "min_ms": 0.03979192115366459
+        }
+      },
+      "mix": "mix",
+      "parity": "pass (A0==C1==C1k==B1==B1k)",
+      "producer_ms": {
+        "A_decode_block_x3": {
+          "median_ms": 0.2972078509628773,
+          "min_ms": 0.29075006023049355
+        },
+        "BC_produce_blocks_aosoa": {
+          "median_ms": 0.3237500786781311,
+          "min_ms": 0.3031669184565544
+        }
+      }
+    },
+    {
+      "B": 128,
+      "adapter_ms": {
+        "BC_float32_views_x3": {
+          "median_ms": 0.0006670597940683365,
+          "min_ms": 0.000666128471493721
+        },
+        "BC_pack_masks_x2": {
+          "median_ms": 0.027750153094530106,
+          "min_ms": 0.027416972443461418
+        }
+      },
+      "kernel_ms": {
+        "A0_parallel_dense": {
+          "median_ms": 0.3368749748915434,
+          "min_ms": 0.20145880989730358
+        },
+        "A0_serial_dense": {
+          "median_ms": 0.110207824036479,
+          "min_ms": 0.10875007137656212
+        },
+        "B1_numba_adapter": {
+          "median_ms": 0.16974983736872673,
+          "min_ms": 0.13395794667303562
+        },
+        "B1k_numba_parallel_leaf": {
+          "median_ms": 0.14608283527195454,
+          "min_ms": 0.118291936814785
+        },
+        "C1_native_aosoa_adapter": {
+          "median_ms": 0.12150011025369167,
+          "min_ms": 0.09987503290176392
+        },
+        "C1k_native_entry_leaf": {
+          "median_ms": 0.043042004108428955,
+          "min_ms": 0.040499959141016006
+        }
+      },
+      "mix": "all-raw",
+      "parity": "pass (A0==C1==C1k==B1==B1k)",
+      "producer_ms": {
+        "A_decode_block_x3": {
+          "median_ms": 0.04229182377457619,
+          "min_ms": 0.040624989196658134
+        },
+        "BC_produce_blocks_aosoa": {
+          "median_ms": 0.042999861761927605,
+          "min_ms": 0.041041988879442215
+        }
+      }
+    }
+  ],
+  "recorded_utc": "2026-09-22T23:25:39Z",
+  "reps": 9,
+  "stat": "min_ms (median_ms recorded alongside)",
+  "status": "INFORMATIONAL / NON-PROMOTION (N8-31 owns protocol cells)"
+}

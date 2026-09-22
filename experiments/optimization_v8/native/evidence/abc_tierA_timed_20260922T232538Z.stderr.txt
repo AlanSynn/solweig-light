@@ -1,0 +1,3 @@
+  timed cell done: B=128 mix=all-binary (loadavg 6.6)
+  timed cell done: B=128 mix=mix (loadavg 6.6)
+  timed cell done: B=128 mix=all-raw (loadavg 6.8)

@@ -23,7 +23,8 @@ import json
 
 import numpy as np
 import pytest
-from conftest import (F32, adversarial_inputs, run_native, to_aosoa)
+from native_test_helpers import (F32, adversarial_inputs, run_native,
+                                 to_aosoa)
 
 import lw_native_aosoa
 from lw_native_aosoa import (NativeArtifactError, NativeExecutionError,

@@ -1,0 +1,60 @@
+{
+  "record": "N8-31 tier-A comparison transcription: B=128 A/B/C cells under the amended ambient-host gate (pre-tier-B; informational)",
+  "recorded_utc": "2026-09-22T19:40 local",
+  "tier": {
+    "label": "ambient-host tier; INFORMATIONAL / NON-PROMOTION",
+    "cannot_alone_support": ["N8-32 selection", "any default-enablement"],
+    "authority": "trials/n8_31_frozen_cells_addendum.json amendment_2026-09-22T1945Z (pre-results; zero tag=timed records existed at amendment time)"
+  },
+  "archives": [
+    "experiments/optimization_v8/native/evidence/abc_quiet_window_timed_20260922T232539Z.json",
+    "experiments/optimization_v8/native/evidence/abc_tierA_timed_20260922T232538Z.stderr.txt (per-cell loadavg)",
+    "gate-refusal + smoke check archives: abc_quiet_window_check_20260922T232442Z.json, _232451Z.json"
+  ],
+  "cells": "B=128 x mixes {all-binary, mix, all-raw} x REPS=9, min_ms; parity A0==C1==C1k==B1==B1k PASS in all three cells (bitwise per harness parity check)",
+  "ambient_envelope": {
+    "start": [6.57, 6.17, 6.09],
+    "end": [6.84, 6.24, 6.11],
+    "per_cell": [6.6, 6.6, 6.8],
+    "censored_cells": 0,
+    "gate": "start loadavg 6.57 <= 8.0; memory view 3.17 GB >= 1.5 GB floor (tier A)",
+    "note": "min-of-9 under stable recorded ambient; arms interleaved in one process per the frozen harness"
+  },
+  "end_to_end_min_ms": {
+    "all-binary": {"A0p": 0.621, "A0s": 0.577, "B1": 0.503, "C1": 0.471},
+    "mix":        {"A0p": 0.526, "A0s": 0.452, "B1": 0.469, "C1": 0.427},
+    "all-raw":    {"A0p": 0.242, "A0s": 0.150, "B1": 0.205, "C1": 0.171}
+  },
+  "verdict_end_to_end": "C wins all three mixes vs A0-parallel and B1; wins all-binary and mix vs A0-serial; LOSES all-raw vs A0-serial (0.171 vs 0.150, +14%)",
+  "kernel_leaf_min_ms": {
+    "C1k_native": [0.040, 0.042],
+    "B1k_numba": [0.108, 0.118],
+    "A0s": [0.109, 0.194],
+    "A0p": [0.201, 0.238],
+    "ratio": "native leaf ~2.6-2.9x B1k, ~4-5x A0p"
+  },
+  "producer_accounting": {
+    "all-binary": {"A_decode_x3": 0.383, "BC_produce": 0.340, "delta": -0.043},
+    "mix": {"A_decode_x3": 0.291, "BC_produce": 0.303, "delta": 0.012},
+    "all-raw": {"A_decode_x3": 0.041, "BC_produce": 0.041, "delta": 0.0},
+    "note": "mix reversal consistent with N8-11's recorded note, smaller magnitude at P=153; does not flip any end-to-end verdict"
+  },
+  "attribution_all_raw_loss": {
+    "cause": "harness-charged BC_pack_masks_x2 adapter = 0.0277 min_ms: the harness's dense->AoSoA mask transpose",
+    "pipeline_relevance": "the integrated row C path uses N8-11 classify_block_aosoa which emits AoSoA masks at the source, so the routed pipeline does NOT pay this transpose; charged here per protocol regardless",
+    "kernel_only_all_raw": "C1 0.100 < A0s 0.109"
+  },
+  "honest_losses_and_conservatism": [
+    "all-raw vs A0-serial is the only end-to-end loss and is adapter-attributed as above; recorded unedited",
+    "A0 parallel is SLOWER than serial at B=128 in all mixes (pool overhead at tiny blocks); results reported against BOTH A labels so no label shopping is possible",
+    "ambient tier means absolute numbers carry desktop-load uncertainty; only intra-run relative ordering is used"
+  ],
+  "n6_envelope_context": "Tier B (B=1024) remains a REQUIRED cell; scene-size envelope for continuity: ~2.25 GB routed-call overhead at 1024^2, ~9 GB at 2048^2, P=153. The BINDING envelope statement lands in the first QUALIFIED record (tier-B based), per the n8-rev-n8-40 N6 follow-through.",
+  "n7_fairness_note": "Block-level cells exclude the per-driver-call resolve_lw_backend() JSON stat+read; N7 requires driver-level (tier-B / pipeline campaign) accounting to include one resolve per call in BOTH arms (shipped-state row A pays it in repo state, which is the fair baseline).",
+  "concurrent_repair_verified": "n8-13's N-D2 conftest repair (native_test_helpers.py) verified by integrator: native standalone 194 passed (0.88s); native-first combined order native/region/integration/policy/dx 451 passed -- the second known_interference instance (native-first collection errors) is closed by the same repair.",
+  "next": [
+    "tier B (B=1024) on strict quiet-window cron 96eaac3e: loadavg < 2.0 AND memory view >= 4.4 GB; harness invocation --block-sizes 1024",
+    "n8-rev-n8-13 delta review queued after tier B: harness CLI delta (default-identity verified by integrator: default '128,1024' == BLOCK_SIZES), N-D2 repair, and both tier archives",
+    "N8-32 selection waits for tier B; this record cannot substitute for it"
+  ]
+}
