@@ -1,0 +1,52 @@
+{
+  "schema": "solweig-v7-protocol-freeze-v1",
+  "task": "B7-03",
+  "frozen_before_variant_results": true,
+  "frozen_at_head": "dca2035c4046ac4387f694a6c7b66967e590500c",
+  "gates_source": "optimization_v7_backends/BENCHMARK_PROTOCOL.md (proposed gates frozen verbatim)",
+  "gates": {
+    "capability_and_exactness": "mandatory for every timed C; no performance exemption",
+    "kernel_only_triage": ">=1.20x vs B is a triage signal, not a requirement",
+    "adapter_total_gate": "paired median >=1.10x over B on >=1 representative held-out workload, no >3% median regression on another supported guard workload",
+    "warm_small_batch_gate": "paired median >=1.05x over BOTH A and B on warm small-batch total; cold-first-use guard must show no material regression",
+    "below_threshold": "keep B/A or experiment only; no optional backend on performance grounds"
+  },
+  "controls": {
+    "A": "accepted Numba _longwave_primary/_longwave_primary_serial at frozen HEAD, env default",
+    "B": "same new layout/scheduling in Numba; if C requires a layout change, B implements the identical transformation; bitwise vs A on all fixtures before timing",
+    "C": "foreign backend kernel matched to the frozen typed graph; adapter boundary includes validation, packing, conversion, invocation, sync, host materialization, fallback calls"
+  },
+  "fixtures": {
+    "source": "optimization_v7_backends/evidence/captures/b7_02_fixtures.npz + b7_02_capture_manifest.json",
+    "exactness_set": "all 520 captured calls replay bitwise (test_v7_contract_freeze.py) on A; C must match on its admitted subset and reject the rest",
+    "kernel_only_sizes": "B in {4096, 16384, 65536} x P=153, synthetic adversarial blocks (conftest builders, seed 20260922+pixels), both serial-equivalent and parallel-equivalent schedules",
+    "adapter_sizes": "same blocks including validation/decision overhead; packed-decode outputs used as prepared inputs (decoder outside island, per KERNEL_CONTRACT)",
+    "warm_small_batch": "real 35x32 reference scene, 24 records, runtime configs {serial default, threads_per_worker=4 cpu_budget=4}",
+    "held_out_rule": "tuning on 64^2 fixture only; 128^2 and 256^2 + real scene are evaluation/held-out"
+  },
+  "budgets": {
+    "development_discrimination": "2 alternating paired repetitions on one dense and one vegetation fixture with matched chronology",
+    "final_small_selection": "3 paired repetitions on held-out small cases",
+    "order": "frozen alternating A/C then C/A (and separate B/C), or seeded recorded order",
+    "no_exhaustive_grid": true
+  },
+  "thread_and_resource_policy": {
+    "process_isolation": "T1/T2 are separate processes per runtime/thread configuration",
+    "pool_query": "request pools before import; log requested H, configured max, effective mask/pool, backend selected, device type AFTER init",
+    "equivalence": "equal CPU budgets define fairness, not env var names; 4x2 vs 1x4 are different budgets and labeled as such",
+    "exclusive_lease": "benchmark owner holds exclusive host lease; no other builds/tests/measurement during timed trials on this M1 Pro",
+    "runtime_fingerprints": "numba/llvm/pocl/drjit/ispc versions, ISA (arm64 + NEON/Apple Silicon), math flags recorded per trial"
+  },
+  "measured_context_frozen_before_variants": {
+    "island_fraction_small_scene": "real 35x32 scene serial: kernel 4.7% of wall, whole-Lcyl wrapper 21.3%; tpw4: 9.3% / 18.9% (dev-tier, 3 reps)",
+    "island_scale_probe": "bare kernel share of Lcyl wrapper: 2.2% (64^2), 1.5% (128^2), 1.5% (256^2); synthetic dense-cube wrapper is packing-dominated (_block dense fallback 82%) - NOT the real path",
+    "real_path_island_parts": "packed decode_block 44ms, kernel 27ms, _classes 24ms per 24-record small scene under profiler",
+    "interpretation": "the bare reducer is a minor island end-to-end; expected pipeline effect of any C win is small. Recorded BEFORE variant results per freeze discipline. Follow-on island B7-24 pre-nominated: the Lcyl wrapper residual (packing+classification), NOT auto-executed",
+    "island_decision": "goal fixes island = _longwave_primary reducer with decoder outside; proceed, with the above as qualified expectation, not a redefinition"
+  },
+  "target_scale_context": {
+    "workload": "24 spatial 1024^2 tiles x 24 records, P=153, <=1800s budget, 8P-core M1 Pro 16GiB",
+    "kernel_estimate_at_scale": "65K-pixel probe 16.6ms serial => ~250ms/record at 1M pixels serial; ~6s/tile chronology single-thread, ~1s parallel - a minor but non-zero share of budget; campaign data is the only authoritative measure",
+    "corpus_status": "actual 24-tile 1024^2 corpus NOT confirmed present in repo; final campaign remains blocked/unverified until B7-51 freeze checks data+references"
+  }
+}

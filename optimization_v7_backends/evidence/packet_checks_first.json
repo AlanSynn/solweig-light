@@ -1,0 +1,29 @@
+{
+  "schema": "solweig-v7-packet-checks-v1",
+  "measurement_class": "packet_helper_tests_only",
+  "executed_at_utc": "2026-09-21T21:47:16.749959+00:00",
+  "python": "3.13.5",
+  "host_system": "Linux",
+  "tests_run": 38,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "successful": true,
+  "solweig_executed": false,
+  "framework_backend_executed": false,
+  "user_repository_modified": false,
+  "claude_or_provider_called": false,
+  "start_prompt_characters": 3972,
+  "scope": "Stdlib analytical models, declared-record checks, document/task structure and disposable local Git/installer behavior. Synthetic helper records are not measurements.",
+  "test_log": "test_changed_source (test_packet.Claims.test_changed_source) ... ok\ntest_consistent_declared_record (test_packet.Claims.test_consistent_declared_record) ... ok\ntest_duplicate_ids (test_packet.Claims.test_duplicate_ids) ... ok\ntest_gpu_not_cpu (test_packet.Claims.test_gpu_not_cpu) ... ok\ntest_missing_reference (test_packet.Claims.test_missing_reference) ... ok\ntest_templates_do_not_pass (test_packet.Claims.test_templates_do_not_pass) ... ok\ntest_thread_oversubscription (test_packet.Claims.test_thread_oversubscription) ... ok\ntest_timeout_and_memory (test_packet.Claims.test_timeout_and_memory) ... ok\ntest_two_scenes_not_24 (test_packet.Claims.test_two_scenes_not_24) ... ok\ntest_unsynchronized (test_packet.Claims.test_unsynchronized) ... ok\ntest_conflict_no_overwrite (test_packet.LocalGitTools.test_conflict_no_overwrite) ... ok\ntest_evidence_never_overwritten (test_packet.LocalGitTools.test_evidence_never_overwritten) ... ok\ntest_existing_worker_destination_refused (test_packet.LocalGitTools.test_existing_worker_destination_refused) ... ok\ntest_installer_preserves_and_idempotent (test_packet.LocalGitTools.test_installer_preserves_and_idempotent) ... ok\ntest_opus_requires_routing_assertion (test_packet.LocalGitTools.test_opus_requires_routing_assertion) ... ok\ntest_preflight_readonly (test_packet.LocalGitTools.test_preflight_readonly) ... ok\ntest_symlink_instruction_refused (test_packet.LocalGitTools.test_symlink_instruction_refused) ... ok\ntest_worker_dry_run_and_apply (test_packet.LocalGitTools.test_worker_dry_run_and_apply) ... ok\ntest_wrong_branch_refused (test_packet.LocalGitTools.test_wrong_branch_refused) ... ok\ntest_breakeven_strict (test_packet.Models.test_breakeven_strict) ... ok\ntest_impossible (test_packet.Models.test_impossible) ... ok\ntest_invalid_values (test_packet.Models.test_invalid_values) ... ok\ntest_known_sensitivity (test_packet.Models.test_known_sensitivity) ... ok\ntest_model_label (test_packet.Models.test_model_label) ... ok\ntest_multiple_disjoint (test_packet.Models.test_multiple_disjoint) ... ok\ntest_overlap_rejected (test_packet.Models.test_overlap_rejected) ... ok\ntest_phase_parallel (test_packet.Models.test_phase_parallel) ... ok\ntest_phase_serial_not_divided (test_packet.Models.test_phase_serial_not_divided) ... ok\ntest_required (test_packet.Models.test_required) ... ok\ntest_resource_rejection (test_packet.Models.test_resource_rejection) ... ok\ntest_unchanged (test_packet.Models.test_unchanged) ... ok\ntest_agent_frontmatter_minimal (test_packet.Specification.test_agent_frontmatter_minimal) ... ok\ntest_dag (test_packet.Specification.test_dag) ... ok\ntest_dossiers_exist_and_tasks_pending (test_packet.Specification.test_dossiers_exist_and_tasks_pending) ... ok\ntest_no_placeholders_installed_as_solweig (test_packet.Specification.test_no_placeholders_installed_as_solweig) ... ok\ntest_provenance_honesty (test_packet.Specification.test_provenance_honesty) ... ok\ntest_single_campaign_policy (test_packet.Specification.test_single_campaign_policy) ... ok\ntest_start_length (test_packet.Specification.test_start_length) ... ok\n\n----------------------------------------------------------------------\nRan 38 tests in 0.230s\n\nOK\n",
+  "tested_code_sha256": {
+    "tools/_common.py": "f9b24f795f5c09e54d0d8179712960360643baec3f4b8ae811f1225476222db0",
+    "tools/claim_check.py": "4d68ec4556e6c9642f5412af07de55ddd39cde8843228d198ae0dc694ca32bf1",
+    "tools/install_assets.py": "7e260584c856d06086443ba22ca85ec613630236a491982d3e6a2c810c7a7b13",
+    "tools/performance_model.py": "a80243c9d770987d9432d348c08c5e148485a018ab37c7fc3e1c89bd1c52b133",
+    "tools/preflight.py": "d984287a42e39875c1c598aaccf5c7a6053a61ae9964efcfe0105bd9cc814cba",
+    "tools/prepare_worker.py": "2b330a31b614c031037ff53c9d78a1485149fc3e203c72bb6de4ad5b28562c0b",
+    "tools/run_packet_checks.py": "3576c2d23330ba2fc13fdbf4f0d53f38924baad239e1fb83421cf71e70e696c6",
+    "tests/test_packet.py": "1ea1df16e6c48a3259580e8fb85de93b2e80bd052a638b8999105cb4104dd05d"
+  }
+}

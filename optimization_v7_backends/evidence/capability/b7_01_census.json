@@ -1,0 +1,56 @@
+{
+  "schema": "solweig-v7-capability-census-v1",
+  "task": "B7-01",
+  "recorded_at_utc": "2026-09-22T00:00:00Z",
+  "host": {
+    "os": "macOS 26.6.2 arm64 (Apple M1 Pro, 8P+2E cores, 16GiB)",
+    "xcode_clt": "Apple clang 21.0.0 (clang-2100.1.1.101) via /opt/homebrew opt toolchain"
+  },
+  "environments": {
+    "project_venv": {
+      "path": "/Users/alansynn/Workspace/solweig-light/.venv",
+      "python": "3.12.13",
+      "numba": "0.67.0",
+      "numpy": "2.4.6",
+      "role": "accepted baseline / oracle environment - MUST NOT be mutated by v7 work; no new packages installed here"
+    },
+    "system_python": {
+      "executable": "/opt/homebrew/bin/python3 (3.14.7)",
+      "numpy": "2.5.1",
+      "scipy": "1.18.1",
+      "mlx": "0.32.1",
+      "role": "observation only; not the baseline environment"
+    }
+  },
+  "toolchain_status": {
+    "clang++": {"state": "available", "version": "Apple clang 21.0.0", "note": "native backend build path"},
+    "cmake": {"state": "available", "version": "4.4.3"},
+    "ispc": {"state": "installing_user_space", "detail": "brew bottled 1.31.0 (pulls llvm@22); install launched 2026-09-22 by coordinator, single brew owner"},
+    "highway": {"state": "available", "detail": "brew formula highway present; fallback native track if ISPC unsuitable"},
+    "drjit": {"state": "missing_installable", "detail": "pip-installable into isolated worker venv (user-space); not installed into project venv"},
+    "pyopencl": {"state": "missing_installable", "detail": "pip-installable; needs an ICD; PoCL 7.2 bottled via brew (installing)"},
+    "pocl": {"state": "installing_user_space", "detail": "brew bottled 7.2 (deps hwloc, llvm, opencl-icd-loader); single brew owner"},
+    "system_opencl_framework": {"state": "present", "detail": "/System/Library/Frameworks/OpenCL.framework exists; Apple CPU OpenCL device availability to be probed empirically, PoCL is the CPU ICD path"},
+    "mlx_cpu": {"state": "available_not_activated", "detail": "system python 0.32.1; B7-23 conditional on measured pointwise residual; stays OFF initially per goal"},
+    "halide": {"state": "missing", "detail": "not installed; conditional track only"}
+  },
+  "candidate_shortlist_fixed": [
+    "B7-20 native: ISPC (primary) with Apple clang++/Highway fallback",
+    "B7-21 Dr.Jit LLVM (non-AD, FastMath disabled), isolated venv",
+    "B7-22 PoCL CPU via PyOpenCL strict-FP, isolated venv + brew pocl ICD"
+  ],
+  "not_activated": [
+    "B7-23 MLX CPU/Halide pointwise - requires measured pointwise residual justification first",
+    "GPU probes - out of CPU selection path"
+  ],
+  "policy_compliance": {
+    "privileged_or_global_changes": "none; brew user-space + isolated venvs only",
+    "oracle_env_mutated": false,
+    "frameworks_installed": "only the three nominated tracks; not every surveyed framework"
+  },
+  "gates": {
+    "available_vs_missing_vs_untested_distinguished": true,
+    "no_privileged_global_credential_changes": true,
+    "candidate_shortlist_fixed": true
+  }
+}

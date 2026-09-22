@@ -1,0 +1,16 @@
+{
+  "schema": "solweig-actual-kernel-capture-v1",
+  "status": "template_not_executed",
+  "reference_class": "actual_untouched_kernel",
+  "source_sha": null,
+  "source_dependency_sha256": null,
+  "math_profile": null,
+  "environment": null,
+  "native_signature": null,
+  "input_records": [],
+  "output_columns": 7,
+  "outputs": [],
+  "typed_node_ledger": null,
+  "fixture_manifest_sha256": null,
+  "call_through_verified": false
+}

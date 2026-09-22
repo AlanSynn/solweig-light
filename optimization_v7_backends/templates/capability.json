@@ -1,0 +1,23 @@
+{
+  "schema": "solweig-cpu-backend-capability-v1",
+  "status": "not_probed",
+  "backend_id": null,
+  "backend_version": null,
+  "requested_device": "cpu",
+  "observed_device_type": null,
+  "observed_device_id": null,
+  "compiler": null,
+  "flags": [],
+  "isa": null,
+  "scalar_specializations": [],
+  "fp_contract_off_verified": false,
+  "denormal_profile_verified": false,
+  "requested_threads": null,
+  "effective_threads": null,
+  "thread_control_method": null,
+  "source_sha256": null,
+  "binary_sha256": null,
+  "zero_copy_verified": false,
+  "qualified_fixtures": [],
+  "unsupported_reasons": []
+}

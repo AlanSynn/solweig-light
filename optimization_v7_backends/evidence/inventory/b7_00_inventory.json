@@ -1,0 +1,73 @@
+{
+  "schema": "solweig-v7-inventory-v1",
+  "task": "B7-00",
+  "recorded_at_utc": "2026-09-22T00:00:00Z",
+  "recorded_by": "coordinator (GLM-5.3 session via Claude Code)",
+  "branch": {
+    "name": "perf/cpu-optimization",
+    "head": "dca2035c4046ac4387f694a6c7b66967e590500c",
+    "head_subject": "Land R04+G06 patch-classification exact tables (C6-81r implementation)",
+    "untouched_by_v7": true,
+    "remote_sync": "branch exists on origin; v7 task does not push"
+  },
+  "dirty_untracked_files_protected": [
+    "optimization_v4/",
+    "optimization_v5_claude/evidence/inherited_v4/",
+    "optimization_v5_claude/evidence/input_provenance.json",
+    "optimization_v5_claude/evidence/v5_hypothetical_throughput.json",
+    "optimization_v5_claude/evidence/v5_packet_checks.json",
+    "optimization_v7_backends/"
+  ],
+  "reducer_source": {
+    "path": "src/solweig_light/radiation/cylinder_longwave.py",
+    "blob_at_head": "27ba6ce48454399c7b97285c8408511d050a32da",
+    "matches_source_status_json": true,
+    "nominal_island": "_longwave_primary (parallel njit) + _longwave_primary_serial",
+    "call_chain": "Lcyl_v2022a_by_demand -> Lcyl_v2022a_primary -> define_patch_characteristics_primary -> _longwave_fused_primary_block (OFF, guarded) else _block + kernel(sh,vs,vb,...)",
+    "fused_route": "stays OFF per DESIGN_AUTHORITY fixed-8 (existing slow fused-radiation route)",
+    "prepared_decoder": "stays OFF per fixed-8"
+  },
+  "platform_local_qualification_target": {
+    "os": "macOS 26.6.2 (Darwin 25.6.0, build 25G83)",
+    "arch": "arm64",
+    "cpu": "Apple M1 Pro",
+    "logical_cores": 10,
+    "performance_cores": 8,
+    "efficiency_cores": 2,
+    "ram_bytes": 17179869184,
+    "note": "Backend qualification is per this local OS/ISA only (PLAN B7-40)."
+  },
+  "inherited_evidence_context": {
+    "prior_packet_checks_host": "Linux (2026-09-21), python 3.13.5, 40 helper tests green",
+    "prior_packet_checks_class": "packet_helper_tests_only - analytical, not measurements",
+    "prior_solweig_execution_by_packet_author": false,
+    "interpretation_fix": "historic 598.9s = two scenes, not the 24-tile target; v6 timings are dev-tier; RuntimeOptions alone is not effective native-thread control"
+  },
+  "model_routing_attribution": {
+    "session_model": "GLM-5.3 (served by GLM) via Claude Code harness",
+    "anthropic_opus_verified_route": "not verified in this session",
+    "policy": "opus aliases may map to GLM; independent reviews by GLM are labeled 'independent GLM review', never claimed as Anthropic Opus",
+    "astra_codex_calls": "none required or made"
+  },
+  "v6_accepted_mechanisms_preserved": [
+    "R04+G06 patch-classification exact tables (HEAD commit)",
+    "primary-output driver _longwave_primary with 10 accumulators / 7 columns",
+    "full-diagnostics public path untouched (FULL_DIAGNOSTICS default demand)",
+    "packed visibility decoder _decode_at and guarded _block fallback",
+    "slim smoke-on-push CI (green at 3m42s) - no broadening",
+    "existing numerical/reference policies and inherited failure dispositions"
+  ],
+  "prohibitions_acknowledged": [
+    "no new branch/reset/push/PR/merge",
+    "no broad CI expansion",
+    "no privileged installs or credential changes",
+    "no destructive cleanup of dirty files",
+    "no Torch/CUDA in own-met core",
+    "no reduction of patches/timesteps/resolution/rays/vegetation/radiation/state"
+  ],
+  "gates": {
+    "same_branch_and_actual_head_recorded": true,
+    "accepted_v6_mechanisms_preserved": true,
+    "sanitized_model_provider_attribution": true
+  }
+}
