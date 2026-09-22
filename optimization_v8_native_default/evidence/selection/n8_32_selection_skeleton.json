@@ -1,0 +1,38 @@
+{
+  "record": "N8-32 selection SKELETON (pre-tier-B; placeholders marked). Not a selection. Becomes the selection record when tier-B numbers land and every placeholder is filled.",
+  "recorded_utc": "2026-09-22T24:05Z",
+  "dossier": "PROMOTION_POLICY.md (frozen before any candidate results)",
+  "decision_inputs_final": {
+    "tier_A_B128": {
+      "status": "FINAL (ambient tier, informational)",
+      "record": "trials/n8_31_tierA_record.json",
+      "uniform_end_to_end": {"all-binary": {"A0p": 0.6207, "A0s": 0.5767, "B1": 0.4757, "C1": 0.4719}, "mix": {"A0p": 0.5262, "A0s": 0.4514, "B1": 0.4396, "C1": 0.427}, "all-raw": {"A0p": 0.2421, "A0s": 0.1494, "B1": 0.175, "C1": 0.169}},
+      "reads": "C beats A0-parallel and B1 everywhere; beats A0-serial in binary (-18.2%) and mix (-5.4%); sole loss all-raw vs A0-serial (+13.1%, harness-charged pack_masks the integrated path does not pay). Native leaf 2.56-2.92x B1k, 5.0-5.9x A0p leaf."
+    }
+  },
+  "decision_inputs_placeholder": {
+    "tier_B_B1024": "PENDING quiet-window cron 51454019 (loadavg < 2.0, view >= 1.5 GB). REQUIRED before any selection. Transcribe via tools/optimization_v8/n8_31_transcribe.py (uniform composition, R13-D1-proof).",
+    "driver_level_accounting": "PENDING -- N7 fairness: one resolve_lw_backend() per driver call in BOTH arms at the pipeline boundary; belongs to the qualification campaign cells (N8-42/43), cited here so selection does not assume it."
+  },
+  "portfolio_candidates": {
+    "native_C_region_row": {"component": "AosoaNativeCConsumer + BLOCK_FANOUT owner + source-emitted AoSoA (produce/classify)", "evidence_state": "tier-A favorable; tier-B required"},
+    "numba_B_region_row": {"component": "AosoaBConsumer (SELF_PARALLEL)", "evidence_state": "never beats C at b128; tier-B required"},
+    "producer_AoSoA_only": {"component": "direct producers independent of consumer row", "evidence_state": "N1 accounting: wins binary, tie raw, small mix reversal"},
+    "policy_selector": {"component": "resolve_lw_backend records-blind selection", "evidence_state": "wired, inert in shipped state"},
+    "rejected_or_off": {"routes": ["fusion", "prepared-decoder"], "reason": "no genuinely changed design evidence; stays off per goal"}
+  },
+  "decision_rules_from_dossier": {
+    "three_decisions": ["arithmetic admitted (declared domain)", "worth using (beats A0 AND B1 under matched budgets)", "default deployable (ordinary wheel install, no user action, native really executes)"],
+    "gates_at_qualification_not_selection": "geometric mean A0/auto >= 1.10 across primary cells; per-cell paired medians A0/auto >= 1.05 AND B1/auto >= 1.05; <=3% protected-cell regression; >=80% verified native coverage; cold-entry bound; >=4 predeclared cells incl. default block=128 no-env and production B=1024 (H=4 if supported)",
+    "outcome_label_branches": {
+      "tier_B native loses or ties B1": "numba_improvement_only_native_goal_open (integrate B transparently if it beats A0; report native shortfall; promotion incomplete per goal)",
+      "tier_B native beats A0 and B1 at 1024, tier-A confirms 128": "proceed N8-40 formal -> N8-41 wheels -> qualification gates decide local_installed_default_qualified",
+      "tier_B window never opens": "native_development_only for the production block; explicit unverified -- do not extrapolate from tier A"
+    }
+  },
+  "bindings": [
+    "N6: first qualified record states the scene-size envelope (~2.25 GB @1024^2, ~9 GB @2048^2, P=153)",
+    "N7: driver-level accounting includes the per-call selector read in both arms",
+    "no gate loosening after candidate failures; censored runs preserved"
+  ]
+}
