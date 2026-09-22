@@ -1,0 +1,123 @@
+{
+  "schema": "b7-30-f2-w8-ir-audit-v1",
+  "condition": "F2 from b7_30_numba_b_review.json: direct W=8 IR/asm dump before B7-31/32 selection freeze",
+  "candidate_module": "/Users/alansynn/Workspace/solweig-v7-numba/experiments/optimization_v7/numba_layout/longwave_primary_b.py",
+  "candidate_sha256": {
+    "longwave_primary_b.py": "fcd9cf054146e15dba7fe126dc72227b28bee1d3985a49cd29f306acc7f74566",
+    "ir_audit.py": "93384200c64a46e9fe8c3438a0a390a181f3505bc36f508252f38a1ae2a29538"
+  },
+  "W": 8,
+  "specializations": {
+    "B_W8_serial_f64": {
+      "llvm_ir_lines": 2249,
+      "contraction_fmuladd_calls": 0,
+      "explicit_fma_calls": 0,
+      "fastmath_flagged_ops": 0,
+      "vector_fop_instructions": 75,
+      "vector_f32_fop_instructions": 47,
+      "vector_f64_fop_instructions": 28,
+      "vector_iop_instructions": 8,
+      "scalar_fadd_f32": 15,
+      "scalar_fmul_f32": 13,
+      "fdiv_instructions": 6,
+      "select_instructions": 3,
+      "asm_fmadd": 0,
+      "asm_fmsub": 0,
+      "asm_fmla_vector": 0,
+      "asm_fdiv": 6,
+      "asm_vector_loads": 0,
+      "gate_branch_in_ir": true
+    },
+    "B_W8_serial_f32": {
+      "llvm_ir_lines": 2205,
+      "contraction_fmuladd_calls": 0,
+      "explicit_fma_calls": 0,
+      "fastmath_flagged_ops": 0,
+      "vector_fop_instructions": 75,
+      "vector_f32_fop_instructions": 75,
+      "vector_f64_fop_instructions": 0,
+      "vector_iop_instructions": 8,
+      "scalar_fadd_f32": 25,
+      "scalar_fmul_f32": 37,
+      "fdiv_instructions": 6,
+      "select_instructions": 3,
+      "asm_fmadd": 0,
+      "asm_fmsub": 0,
+      "asm_fmla_vector": 0,
+      "asm_fdiv": 6,
+      "asm_vector_loads": 0,
+      "gate_branch_in_ir": true
+    },
+    "B_W8_parallel_f64": {
+      "llvm_ir_lines": 2841,
+      "contraction_fmuladd_calls": 0,
+      "explicit_fma_calls": 0,
+      "fastmath_flagged_ops": 0,
+      "vector_fop_instructions": 67,
+      "vector_f32_fop_instructions": 39,
+      "vector_f64_fop_instructions": 28,
+      "vector_iop_instructions": 8,
+      "scalar_fadd_f32": 15,
+      "scalar_fmul_f32": 13,
+      "fdiv_instructions": 6,
+      "select_instructions": 6,
+      "asm_fmadd": 0,
+      "asm_fmsub": 0,
+      "asm_fmla_vector": 0,
+      "asm_fdiv": 6,
+      "asm_vector_loads": 0,
+      "gate_branch_in_ir": true
+    },
+    "B_W8_parallel_f32": {
+      "llvm_ir_lines": 2797,
+      "contraction_fmuladd_calls": 0,
+      "explicit_fma_calls": 0,
+      "fastmath_flagged_ops": 0,
+      "vector_fop_instructions": 67,
+      "vector_f32_fop_instructions": 67,
+      "vector_f64_fop_instructions": 0,
+      "vector_iop_instructions": 8,
+      "scalar_fadd_f32": 25,
+      "scalar_fmul_f32": 37,
+      "fdiv_instructions": 6,
+      "select_instructions": 6,
+      "asm_fmadd": 0,
+      "asm_fmsub": 0,
+      "asm_fmla_vector": 0,
+      "asm_fdiv": 6,
+      "asm_vector_loads": 0,
+      "gate_branch_in_ir": true
+    }
+  },
+  "verdicts": {
+    "B_W8_serial_f64": {
+      "no_contraction": true,
+      "no_fastmath_flags": true,
+      "no_asm_fma": true,
+      "simd_vector_ops_present": true,
+      "gate_branch_in_ir": true
+    },
+    "B_W8_serial_f32": {
+      "no_contraction": true,
+      "no_fastmath_flags": true,
+      "no_asm_fma": true,
+      "simd_vector_ops_present": true,
+      "gate_branch_in_ir": true
+    },
+    "B_W8_parallel_f64": {
+      "no_contraction": true,
+      "no_fastmath_flags": true,
+      "no_asm_fma": true,
+      "simd_vector_ops_present": true,
+      "gate_branch_in_ir": true
+    },
+    "B_W8_parallel_f32": {
+      "no_contraction": true,
+      "no_fastmath_flags": true,
+      "no_asm_fma": true,
+      "simd_vector_ops_present": true,
+      "gate_branch_in_ir": true
+    }
+  },
+  "all_no_contraction": true
+}
