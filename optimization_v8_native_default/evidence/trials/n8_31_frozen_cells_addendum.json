@@ -44,5 +44,16 @@
     },
     "harness_delta_required": "quiet_window_abc.py gains operational CLI args (--block-sizes, default '128,1024' = unchanged behavior; --max-loadavg guard mirroring the tier instructions). Default invocation semantics unchanged; delta covered by the queued n8-rev-n8-13 review.",
     "unchanged": "B=128 and B=1024 both remain REQUIRED cells for N8-32; INFORMATIONAL/NON-PROMOTION status unchanged; min-of-N, parity-before-timing, censored-run rules unchanged"
+  },
+  "amendment_2026-09-22T1955Z_tierB_memory_correction": {
+    "title": "Tier-B memory floor corrected: 4.4 GB -> 1.5 GB view (pre-results; zero B=1024 timed records exist)",
+    "reason": "The 4.4 GB view requirement originated in host_quiet_window_note.json as N8-23's installed-gates admission (1.74 GB whole-scene reservation + parent vs 0.5x-available) and was carried into tier B by conflation. Code audit: the harness's B=1024 cell allocates (B,P) float32 inputs (~627 KB x3), bool sun/shade (~157 KB x2), uint32 [G,P,W] AoSoA (~627 KB x3), (B,7) outputs -- order ~10 MB total, independent of scene size. The whole-scene ~2.25 GB routed-call envelope (N6) governs the DRIVER/pipeline campaign (N8-50/51), not harness block cells.",
+    "tier_B_gate_corrected": "loadavg < 2.0 (UNCHANGED -- the binding constraint for timing validity) AND memory view >= 1.5 GB (>= 100x actual need, matches tier A floor)",
+    "unchanged": [
+      "cells: B=1024 x 3 mixes x REPS=9, parity before timing, min-of-N",
+      "informational/non-promotion status",
+      "N6 envelope obligation on the first qualified record (whole-scene pipeline campaign still must state ~2.25 GB @1024^2)",
+      "N8-23 installed gates remain memory-gated at 4.33 GB (separate task, unchanged)"
+    ]
   }
 }
