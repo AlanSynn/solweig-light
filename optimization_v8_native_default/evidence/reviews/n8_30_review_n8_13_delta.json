@@ -1,0 +1,141 @@
+{
+  "schema": "sw8-n8-30-delta-review-v1",
+  "review_of": "n8-13/N8-31 delta commit 823ab00a (vs parent 46ce7c3d): (1) quiet_window_abc.py CLI delta (--block-sizes default '128,1024', --max-loadavg start gate); (2) N-D2 conftest repair (native_test_helpers.py, rewiring of conftest.py/test_aosoa_native_admission.py/test_aosoa_native_parity.py/bench_leaf_aosoa.py); (3) tier-A transcription record trials/n8_31_tierA_record.json",
+  "review_target_task": "n8-rev-n8-13 delta review dispatched by team-lead 2026-09-22 (queued post tier-A; tier B has NOT run and was not waited for)",
+  "reviewer": "n8-rev-n8-13 delta review service (independent; did not author the harness delta, the test repair, or the coordinator commits)",
+  "review_utc": "2026-09-22",
+  "worktree": "/Users/alansynn/Workspace/solweig-v8-native @ 823ab00a (perf/native-optimization, clean for reviewed paths)",
+  "verdict": "APPROVE-WITH-NOTES",
+  "blocking_defects": [],
+  "required_repairs": [
+    "R13-D1: n8_31_tierA_record.json end_to_end_min_ms is not reproducible from abc_quiet_window_timed_20260922T232539Z.json under any single composition rule (see N13-1). Re-transcribe the table under one stated composition (protocol-uniform: produce+views+pack+kernel, all min_ms, round-to-3) or annotate each cell with the composition actually used. No verdict direction changes under recomputation, so this is a transcription-fidelity repair, not a re-measurement.",
+    "R13-D2: record states tier-A memory view '3.17 GB' with no committed source (N13-4). Add the provenance (coordinator observation log at run time) or restate as '~3.2 GB (inactive+free) per host_quiet_window_note.json' with an explicit note that the harness archives no memory measurement."
+  ],
+  "recommended_repairs": [
+    "N13-2 fix: attribution quantity 'BC_pack_masks_x2 = 0.0277 min_ms' mislabels its statistic -- all-raw pack min is 0.0274 (0.0277 matches the all-raw median truncated, or all-binary's min). Correct to 0.0274 min / 0.0278 median; the attribution conclusion (loss ~ one mask transpose) is unchanged.",
+    "N13-3 fix: kernel_leaf ratio '~4-5x A0p' is actually 4.97/5.61/5.92 per cell (~5-6x). Conservative direction (understates the native leaf win); correct for the tier-B record.",
+    "N13-5 fix: record next[] cites the superseded tier-B memory floor 4.4 GB; amendment 1955Z (which the record postdates) corrected it to 1.5 GB. Update the pointer; also fix the 'recorded_utc' field that holds a local timestamp.",
+    "N13-7 fix (harness, next touch): validate --block-sizes at argparse level (positive ints) so junk values get a clean refusal instead of a traceback, and B=0 cannot produce vacuous parity passes."
+  ],
+  "checks": {
+    "delta1_cli": "PASS",
+    "delta2_nd2_conftest_repair": "PASS",
+    "delta3_tierA_fidelity": "PASS-WITH-REQUIRED-CORRECTIONS (R13-D1, R13-D2)"
+  },
+  "executed_probes": {
+    "default_identity": {
+      "method": "in-process run(check_only=True) with _archive redirected to /tmp sink (no evidence/ writes); parse assertion vs BLOCK_SIZES",
+      "results": {
+        "parse_default_equals_BLOCK_SIZES": true,
+        "rc": 0,
+        "record_block_sizes": [128, 1024],
+        "record_key_set_equals_parent_46ce7c3d": true,
+        "record_keys": ["recorded_utc", "status", "mode", "block_sizes", "mixes", "patches", "reps", "stat", "b_consumer", "ambient_loadavg_start", "per_block", "ambient_loadavg_end", "n1_note"],
+        "n_cells": 6,
+        "cell_parities": ["pass (A0==C1==C1k==B1==B1k)", "pass (A0==C1==C1k==B1==B1k)", "pass (A0==C1==C1k==B1==B1k)", "pass (A0==C1==C1k==B1==B1k)", "pass (A0==C1==C1k==B1==B1k)", "pass (A0==C1==C1k==B1==B1k)"]
+      }
+    },
+    "gate_refusals": {
+      "method": "run(check_only=True, block_sizes='128', max_loadavg in {0.0, -1.0}), sink capture",
+      "results": {
+        "rc_both": 2,
+        "stderr_both": "[gate] 1-min loadavg ... ; aborting before any timed work",
+        "refusal_record_mode": "check-only (gate refused; no timing)",
+        "refusal_reps": 0,
+        "refusal_check_tag_forced": true,
+        "matches_committed_artifact": "abc_quiet_window_check_20260922T232442Z.json (refused at load 10.177 > 8.0, same schema)"
+      }
+    },
+    "junk_block_sizes": {
+      "abc": "ValueError before kernel_pair/parity/gate; no archive; exit via traceback (1)",
+      "128_trailing_comma": "ValueError: invalid literal for int() with base 10: ''",
+      "empty_string": "ValueError: invalid literal for int() with base 10: ''",
+      "zero": "parses clean; --check-only completes with 3 vacuous B=0 cells reporting parity pass (N13-7)"
+    },
+    "side_effect_audit": "evidence/ listing identical before/after all probes (6 abc_quiet_window* files, unchanged); all writes confined to /tmp/n8rev_n8_13/ and evidence/reviews/"
+  },
+  "tierA_recomputation": {
+    "traces_exactly": [
+      "ambient start [6.57,6.17,6.09] and end [6.84,6.24,6.11] (evidence 6.5688/6.1748/6.0908, 6.8433/6.2383/6.1133)",
+      "per_cell [6.6,6.6,6.8] == stderr transcript",
+      "kernel_leaf_min_ms ranges C1k [0.040,0.042], B1k [0.108,0.118], A0s [0.109,0.194], A0p [0.201,0.238]",
+      "B1k/C1k ratio 2.6-2.9x (2.556/2.727/2.921)",
+      "producer_accounting all 3 cells incl. deltas -0.043/0.012/0.0",
+      "parity 'pass (A0==C1==C1k==B1==B1k)' in all 3 cells",
+      "censored_cells 0 (all cells under the 12 loadavg censor threshold)",
+      "kernel_only_all_raw: C1 0.100 < A0s 0.109",
+      "verdict directions and +14% loss arithmetic on the record's own table"
+    ],
+    "does_not_trace": [
+      "end_to_end_min_ms (N13-1): uniform all-min composition produce+views+pack+kernel gives all-binary B1 0.504/C1 0.472 (claimed 0.503/0.471 = views dropped), all-raw B1 0.203/C1 0.169 (claimed 0.205/0.171 = needs produce median), A0s all-raw 0.149 (claimed 0.150 = needs component-wise rounding); mix row matches views-included. Max discrepancy 0.002 ms in both directions.",
+      "pack_masks attribution 0.0277 (N13-2) and ratio ~4-5x A0p (N13-3)",
+      "memory view 3.17 GB (N13-4): no committed artifact contains any memory measurement"
+    ],
+    "verdict_robustness": "Recomputed uniformly (all min): C1 wins all-binary (0.472 vs A0s 0.577), mix (0.427 vs 0.452), all-raw remains the sole loss (0.169 vs 0.149, +13%); C1 < B1 in all mixes (0.472<0.504, 0.427<0.469, 0.169<0.203). Every direction-level conclusion in the record survives."
+  },
+  "amendment_1955Z_allocation_audit": "VERIFIED against tests/optimization_v8/reference/test_typed_graph_identity.py::adversarial_inputs: at B=1024,P=153,W=8,G=128 -- (B,P) f32 x3 = 626,688 B each (~627 KB as stated), bool sun/shade 156,672 B x2 (~157 KB), uint32 [G,P,W] AoSoA 128*153*8*4 = 626,688 B x3 (~627 KB), (B,7) f32 outputs 28.7 KB, lup (B,) 4 KB, per-P vectors tiny. Order ~4-10 MB total, independent of scene size: the 1.5 GB view floor is >= 150x actual need. N6 whole-scene ~2.25 GB envelope correctly left governing the driver/pipeline campaign, unchanged.",
+  "obligations": [
+    "R13-D1 and R13-D2 land as a record-correction commit (no re-measurement needed; the evidence archive is authoritative and intact)",
+    "N13-7 folds into the next harness touch or tier-B runbook, not a re-open of this delta"
+  ],
+  "notes": [
+    {
+      "id": "N13-1",
+      "severity": "required-correction",
+      "note": "end_to_end_min_ms not traceable under a single composition rule. Cell-by-cell reproductions: all-binary B1/C1 only with views excluded; mix C1 only with views included; all-raw B1/C1 only with produce MEDIAN (0.043) + views/pack/kernel min; A0s all-raw only as 0.041+0.109 component-wise-rounded. Discrepancies 0.001-0.002 ms in BOTH directions (all-binary favors C by 0.001, all-raw penalizes C by 0.002) -- no direction-shopping pattern. All verdicts survive uniform recomputation, so the finding is fidelity, not fabrication."
+    },
+    {
+      "id": "N13-2",
+      "severity": "recommended",
+      "note": "Attribution statistic mislabeled: all-raw BC_pack_masks_x2 min_ms is 0.0274 (median 0.0278); the quoted 0.0277 matches the median truncated or all-binary's min. The attribution itself (all-raw e2e loss ~= one dense->AoSoA mask transpose charged by the harness but not paid by the integrated classify_block_aosoa path) remains arithmetically sound: loss 0.021 vs pack cost 0.027."
+    },
+    {
+      "id": "N13-3",
+      "severity": "recommended",
+      "note": "A0p/C1k per-cell ratios are 4.97/5.61/5.92, i.e. ~5-6x, not the stated ~4-5x (commit's '2.6-5x' has the same upper-end shortfall). Conservative direction only."
+    },
+    {
+      "id": "N13-4",
+      "severity": "required-correction",
+      "note": "Tier-A gate claim 'memory view 3.17 GB >= 1.5 GB' has no committed measurement: harness archives record loadavg only; host_quiet_window_note.json (17:52 local, pre-run) says '~3.2 GB (inactive+free)'. Gate satisfaction is plausible but the precise number is unevidenced. Provenance or restate."
+    },
+    {
+      "id": "N13-5",
+      "severity": "recommended",
+      "note": "Record next[] still cites the tier-B floor 'memory view >= 4.4 GB' superseded by amendment_2026-09-22T1955Z (1.5 GB); record (23:40 UTC / 19:40 local) postdates the amendment. Also 'recorded_utc' holds local time mislabeled as UTC. Conservative direction (stricter than binding)."
+    },
+    {
+      "id": "N13-6",
+      "severity": "informational",
+      "note": "Gate ordering: a refused invocation still pays kernel_pair() + _find_b_consumer() before the loadavg check (both untimed; oracle/JIT setup). The 'refuses BEFORE any timed work' claim holds exactly as stated; the pre-gate setup cost is note-level. Gate refusal archives check-tagged even for timed invocations (check_only=True hardcoded) -- correct anti-masquerade behavior. Boundary semantics: refuse on load > max, so exactly 8.0 proceeds, matching '<= 8.0'."
+    },
+    {
+      "id": "N13-7",
+      "severity": "recommended",
+      "note": "--block-sizes input validation: junk ('abc', '128,', '') raises a bare ValueError traceback before any work (cannot mask parity -- parse precedes kernel_pair -- and no archive is written), but a clean argparse refusal would be better; '0' parses and yields vacuous B=0 parity-pass cells under --check-only (and would emit meaningless timing rows in a timed run). No lower bound exists. Fix at next harness touch."
+    },
+    {
+      "id": "N13-8",
+      "severity": "informational",
+      "note": "N-D2 repair is a verbatim body-move: native_test_helpers.py carries the identical sys.path bootstrap, lw_identity_grid importlib reuse, kernel_pair() import-time call, and all formerly-conftest-exported names (F32, SERIAL, _pin_args, adversarial_inputs, aosoa_rows, bitwise_equal, lw_primary_reference, u32, WIDTH, POISON, pack_payload, pack_mask, to_aosoa, run_native); conftest.py retains the session fixture plus F401 re-exports and the module-under-test import, preserving side effects for anything relying on conftest having run. Module name unique tree-wide (single .py); zero bare 'from conftest import' remain under tests/optimization_v8/native/. Residual bare-conftest hits in v5/v6/installed trees are other packages' established patterns; the installed/conftest.py match is docstring-only."
+    }
+  ],
+  "rerun": {
+    "combined_native_first": "PASS -- 451 passed, 4 warnings in 37.50s (.venv/bin/python -m pytest tests/optimization_v8/native/ tests/optimization_v8/region/ tests/optimization_v8/integration/ tests/optimization_v8/policy/ tests/optimization_v8/dx/ -q); coordinator claimed 451/~37s",
+    "standalone_native": "PASS -- 194 passed, 1 warning in 0.85s; coordinator claimed 194"
+  },
+  "scope_guard": "No timed benchmarking executed (check-only paths and test suites only); no builds; no commits; writes confined to optimization_v8_native_default/evidence/reviews/ and /tmp/n8rev_n8_13/ (probe scripts + redirected archive sink). evidence/ of experiments/optimization_v8/native/ verified byte-identical listing before/after probes.",
+  "commands_run": [
+    "git show 823ab00a (stat + per-file diffs: quiet_window_abc.py, conftest.py, native_test_helpers.py, both test files, bench_leaf_aosoa.py, n8_40_integration_record.json)",
+    "grep -rn 'from conftest import|import conftest' tests/optimization_v8/native/  (0 hits)",
+    "grep -rn 'native_test_helpers' tests/ experiments/ src/  (6 hits, all native tree); find -name 'native_test_helpers*'  (1 .py)",
+    ".venv/bin/python -m pytest tests/optimization_v8/native/ tests/optimization_v8/region/ tests/optimization_v8/integration/ tests/optimization_v8/policy/ tests/optimization_v8/dx/ -q  (451 passed, 37.50s)",
+    ".venv/bin/python -m pytest tests/optimization_v8/native/ -q  (194 passed, 0.85s)",
+    ".venv/bin/python /tmp/n8rev_n8_13/probe_gate_junk.py  (junk parses + gate rc=2 probes)",
+    ".venv/bin/python /tmp/n8rev_n8_13/probe_default_and_gate.py  (default check-only run, schema assertion, gate record capture)",
+    ".venv/bin/python /tmp/n8rev_n8_13/probe_b0.py  (B=0 vacuous-pass probe)",
+    ".venv/bin/python /tmp/n8rev_n8_13/recompute_tierA.py  (full record-vs-evidence recomputation, composition enumeration)",
+    "grep for memory-view provenance (3.17/3.2 GB) across evidence trees; host_quiet_window_note.json read",
+    "adversarial_inputs shape audit vs amendment 1955Z allocation arithmetic"
+  ]
+}
