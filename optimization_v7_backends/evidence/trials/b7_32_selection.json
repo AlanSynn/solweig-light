@@ -25,14 +25,17 @@
     "B_as_candidate": "NOT GATED (control): dominated by C at every gated boundary (0.74x adapter, 0.70x warm); 3.5x regression vs A on the real scene under tpw4 (parallel pack launch overhead x216 small calls); kernel-only advantage (4.8-5.0x) does not survive its pack cost at the adapter boundary"
   },
   "selection": {
-    "portfolio": ["C_native_ispc_lw_primary_g8 as optional CPU backend"],
+    "portfolio": [
+      "C_native_ispc_lw_primary_g8 as optional CPU backend"
+    ],
     "actions": [
       "B7-40: integrate C_native (as-shipped single-thread ctypes adapter, gang 8) behind an opt-in env/config switch; default path remains baseline Numba A unchanged; unsupported inputs fall back to numba BEFORE any side effect; a native-side failure inside the admitted domain surfaces as an error (never a silent fallback)",
       "B7-41: identity/runtime checks + bitwise replay tests for the integrated path",
       "B7-42: packaging (ISPC source + build script shipped; dylib built locally, not committed)",
       "B7-50: small chronology qualification (48-step real scenes)",
       "B7-51: freeze with actual_target_unverified (24-tile 1024^2 corpus absent, recorded in freeze/b7_51_corpus_availability.json)"
-    ]
+    ],
+    "drjit_track_status": "comparison_complete_no_winner; selection unchanged (C_native)"
   },
   "rejections": {
     "B_numba_layout_integration": "Dominated by C at every gated boundary at equal budget; unconditional integration is disqualified by the measured warm_parallel regression (101.59 vs A 29.05 ms); conditional (size/thread-aware) dispatch would be new unmeasured behavior. Win region recorded: 4T parallel mid-blocks 1.59x over A (single size measured) and kernel-only 4.8-5.0x at 1T. Future condition that could flip this: B7-24 decode-side block-major emit eliminating pack cost from the adapter boundary, plus a pack='numpy'/serial-pack heuristic measured on the real scene; not executed in this round per budget discipline.",
@@ -42,5 +45,17 @@
   "interpretation_honesty": {
     "expected_pipeline_effect": "the reducer is a minor island end-to-end (1.5-2.2% of Lcyl wrapper at scale per frozen b7_03 context); the 3.5x adapter win at 1T maps to a small end-to-end effect on large serial workloads, and the warm win (1.5x on 24-record small scenes) is the more representative integrated outcome; the final campaign remains actual_target_unverified while the 24-tile corpus is absent",
     "no_invention": "all numbers are from b7_31_trials.json; nothing projected"
+  },
+  "drjit_appendix": {
+    "review": "evidence/reviews/b7_30_drjit_review.json (APPROVE-WITH-NOTES, exact-eligible)",
+    "trials": "evidence/trials/b7_31_appendix_drjit.json (4 configs, 3 paired warm reps, equal budgets via dr.set_thread_count, all digests bitwise-equal across A / C_native / C_drjit)",
+    "measured_1T_equal_budget": {
+      "kernel_B128_pipeline_block": "A 0.19ms, C_native 0.08ms, C_drjit 0.49ms",
+      "warm_real_scene_serial": "A 27.12ms, C_native 18.19ms, C_drjit 103.55ms",
+      "warm_real_scene_4T": "A-4T 29.09ms, C_drjit-4t 74.65ms, C_native 18.31ms (1T ref)",
+      "adapter_65536_serial": "A 95.69ms, C_native 27.74ms, C_drjit 177.40ms"
+    },
+    "verdict": "C_drjit REJECTED for integration: loses to baseline A at every matched-budget boundary (2.6x slower at the pipeline block size, 3.8x on the warm sequence, 1.85x at large B) and to C_native everywhere. The author dev-tier claim of 2-10x faster at B=96/128 does not reproduce at the honest adapter boundary on the real call sequence; per-call JIT dispatch + pack transpose dominate. The review-approved exactness (520/520 bitwise, FastMath-off IR evidence) is confirmed by the trials digests.",
+    "notes": "F5 (two-pool budgets) and F6 (warm DRJIT disk cache, process-cold only) labels apply; F1 evidence-prose repair pending with the author."
   }
 }

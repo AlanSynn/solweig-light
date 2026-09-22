@@ -15,6 +15,7 @@ Two frozen fixture families (b7_03_protocol.json):
 """
 import importlib.util
 import json
+import os
 import sys
 import types
 from pathlib import Path
@@ -50,6 +51,38 @@ def _load_conftest():
 
 
 def _adversarial(pixels):
+    # Adversarial fixtures come from the frozen conftest builders, whose
+    # module imports the engine (GDAL). Interpreters without GDAL (e.g. the
+    # drjit worktree venv) load a byte-cache primed by the baseline venv:
+    # identical seed, identical float32 bits, conftest never imported.
+    cache = Path(os.environ.get('V7_ADV_FIXTURE_CACHE', '/tmp/v7_adv_fixtures.npz'))
+    prefix = f'adv{pixels}__'
+    if cache.exists():
+        with np.load(cache) as z:
+            if any(k.startswith(prefix) for k in z.files):
+                inputs = {}
+                for k in z.files:
+                    if k.startswith(prefix):
+                        arr = z[k]
+                        inputs[k[len(prefix):]] = arr[()] if arr.ndim == 0 else arr
+                return {'kind': 'single', 'pixels': pixels, 'label': None,
+                        'inputs': inputs}
+    fixture = _adversarial_build(pixels)
+    payload = {}
+    if cache.exists():
+        try:
+            with np.load(cache) as existing:
+                payload = {k: existing[k] for k in existing.files}
+        except (OSError, ValueError):
+            payload = {}
+    for name, value in fixture['inputs'].items():
+        payload[prefix + name] = np.asarray(value)
+    Path(cache).parent.mkdir(parents=True, exist_ok=True)
+    np.savez(cache, **payload)
+    return fixture
+
+
+def _adversarial_build(pixels):
     rng = np.random.default_rng(20260922 + pixels)
     conf = _load_conftest()
     sh, vs, vb = conf.lw_blocks(rng, pixels, 153)

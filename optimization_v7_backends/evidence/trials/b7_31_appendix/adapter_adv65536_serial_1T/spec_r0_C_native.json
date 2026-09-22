@@ -1,0 +1,1 @@
+{"fixture": "adv65536", "boundary": "adapter_total", "schedule": "serial", "label": "adapter_adv65536_serial_1T", "drjit_threads": 1, "variant": "C_native", "adapter": "/Users/alansynn/Workspace/solweig-light/tools/optimization_v7/adapter_c_native.py", "reps": 4}

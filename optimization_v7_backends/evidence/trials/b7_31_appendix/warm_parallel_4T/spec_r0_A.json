@@ -1,0 +1,1 @@
+{"fixture": "warm_parallel", "boundary": "adapter_total", "schedule": null, "label": "warm_parallel_4T", "drjit_threads": 4, "variant": "A", "adapter": "/Users/alansynn/Workspace/solweig-light/tools/optimization_v7/adapter_a.py", "reps": 4}

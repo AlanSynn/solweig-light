@@ -1,0 +1,1 @@
+{"fixture": "adv128", "boundary": "kernel_only", "schedule": "serial", "label": "kernel_adv128_serial_1T", "drjit_threads": 1, "variant": "C_drjit", "adapter": "/Users/alansynn/Workspace/solweig-light/tools/optimization_v7/adapter_c_drjit.py", "reps": 4}
