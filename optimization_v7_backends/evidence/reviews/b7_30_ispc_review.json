@@ -1,0 +1,71 @@
+{
+  "schema": "solweig-v7-review-v1",
+  "task": "B7-30",
+  "variant": "B7-20-ispc-native",
+  "candidate_base": "c66ff3b6",
+  "candidate_path": "/Users/alansynn/Workspace/solweig-v7-native/experiments/optimization_v7/native/",
+  "routing": "independent GLM review; no verified Anthropic Opus route in this session",
+  "reviewer_method": "sandboxed copy of candidate (binaries verified by sha256 against capability.json) at /tmp/b7_30_review; candidate directory untouched; fresh NUMBA_CACHE_DIR; worktree venv .venv-v7 (python 3.12.13, numpy 2.4.6, numba 0.67.0); baseline oracle = worktree src blob 27ba6ce48454399c7b97285c8408511d050a32da (git hash-object verified at worktree HEAD c66ff3b6)",
+  "reruns": [
+    {
+      "command": "cd /tmp/b7_30_review/root/experiments/optimization_v7/native && NUMBA_CACHE_DIR=/tmp/b730-numba-cache NUMBA_NUM_THREADS=4 .venv-v7/bin/python replay_fixtures.py",
+      "exit": 0,
+      "summary": "EXACTNESS GATE PASS reproduced: 520 calls x gangs 4/8 = 1040/1040 uint32-view bitwise matches (NaN payload/sign included), 0 unexpected rejections, 0 canary mutations, per-case counts identical to shipped replay_log.json modulo wall_s (10 cases: pipeline_serial_default 432, pipeline_parallel_tpw4 432, adversarial_64 128, others 8/4). Bitwise method confirmed from source: np.array_equal(a.view(np.uint32), b.view(np.uint32))."
+    },
+    {
+      "command": "cd /tmp/b7_30_review/root/experiments/optimization_v7/native && NUMBA_CACHE_DIR=/tmp/b730-numba-cache NUMBA_NUM_THREADS=4 .venv-v7/bin/python guard_tests.py",
+      "exit": 0,
+      "summary": "ALL PASS reproduced: 22/22 pre-launch rejections, input canary 4/4 (mixed payloads, both surfaces x gangs), input-input aliasing admitted + bitwise vs parallel AND serial baseline 2/2, size sweep 340 comparisons (B x {1,2,7,153,609} x {f64,f32} x gangs, B incl 17/96/128/129 tails) all bitwise, payload sweep 84 comparisons (finite/nan/inf/ninf/negzero/denorm/mixed) all bitwise with equal NaN masks, B=0 both gangs, guard-page OOB probe clean both gangs. guard_log.json identical to shipped modulo wall_s."
+    },
+    {
+      "command": "ispc lw_primary.ispc --emit-asm -o <tgt>.s --target=neon-i32x4|neon-i32x8 -O2 --opt=disable-fma --math-lib=default --pic (reviewer rebuild in /tmp/b7_30_review/fma_check, ISPC 1.31.0 LLVM 22.1.8)",
+      "exit": 0,
+      "summary": "FMA audit independently reproduced. Reviewer-rebuilt assembly is BYTE-IDENTICAL to the shipped lw_primary_g4.s / lw_primary_g8.s (diff clean), proving the shipped asm derives from this source + these flags. grep -cE 'fmadd|fmla|fmsub|fnmadd|fnmsub|fnmla' = 0 hits in both targets. Reviewer additionally grepped frecp*/frsqrt/faddp/fsubp/fmlal = 0 (no reciprocal approximation, no tree/pairwise reduction). pi materialized from immediate (mov w10 #4059; movk w10 #16457, lsl #16 -> 0x40490FDB) followed by hardware fdiv.4s at all 4 reflection sites; f64 chains present as fmul.2d/fadd.2d with fcvtn (RN) narrowing casts (48 in g4, 96 in g8); solar_gate compiles to ldrb + cbz/cbnz real uniform branch (inactive sun/shade expressions not executed). --opt=disable-fma confirmed present in build.sh COMMON_FLAGS applied to both targets."
+    },
+    {
+      "command": ".venv-v7/bin/python /tmp/b7_30_review/spot_checks.py (reviewer-written adversarial probes)",
+      "exit": 0,
+      "summary": "(a) Consistent P=610 block (all arrays (B,610)) rejected by the actual P bound: 'P=610 outside admitted 1..609' - the shipped test only resizes sh and is rejected earlier by shape mismatch, so the reviewer supplemented it. (b) Consistent P=609 admitted and bitwise vs both baselines both gangs. (c) View-created bool arrays with non-0/1 storage bytes (2/3): ISPC uint8 '!=0' semantics MATCH numba bitwise (both gangs, sun/shade and solar_gate) - no divergence. (d) Guard-page negative control via raw ctypes with B claimed 4096 over physically 17-row arrays flush at a PROT_NONE page: fatal memory fault (rc=-10) both gangs - probe mechanism real; honest control run clean (rc=0). (e) Placement dump: only vb (first-placed input) is flush with the guard page; out is the lowest array, 43367 bytes below it."
+    }
+  ],
+  "findings": [
+    {
+      "id": "F1",
+      "severity": "low",
+      "description": "Guard-page probe claim is overstated in codegen_notes.md ('places every input and the output flush against a PROT_NONE page'). Reviewer layout dump shows the arrays form one contiguous slab placed top-down: only vb (placed first) ends flush at the guard page; every other array's overflow lands in the next array's mapped bytes, and out is the LOWEST array, so a write overflow past out would land in lup/gate region and cannot fault. The probe also checks no-fault only, not out contents.",
+      "evidence": "Reviewer placement dump (spot_checks.py section 5): vb end_rel_guard=+0 FLUSH-GUARD; out end_rel_guard=-43367. Mitigations that keep this low: the dominant OOB class (unmasked tail reads at pixel row B) faults on vb and the reviewer's negative control proved it does (rc=-10 both gangs); loads and stores derive from the same ISPC foreach mask; the 340-point size sweep bitwise-compares all valid outputs; input canaries cover write-to-input.",
+      "recommendation": "For the B7-40 integration review, re-place out first (flush at guard) and add an out-content check in the probe; fix the wording in codegen_notes.md."
+    },
+    {
+      "id": "F2",
+      "severity": "low",
+      "description": "The shipped 'reject P=610' guard case only resizes sh to (17,610); the adapter rejects it earlier via the vs shape check, so the case does not exercise the P bound itself.",
+      "evidence": "guard_tests.py:137 sets only a[0]; lw_native.py validates vs shape against sh.shape before the P check is reached. Reviewer supplementary check with a fully consistent P=610 block: rejected with 'P=610 outside admitted 1..609' - the bound is real and enforced; and P=609 is admitted and bitwise-correct. Count claim 22/22 rejections holds.",
+      "recommendation": "Make the guard case fully consistent (all [*,610] arrays) so it isolates the P bound."
+    },
+    {
+      "id": "F3",
+      "severity": "low",
+      "description": "proof_record.md quotes chunked 4-thread kernel ~10.7-10.9 ms (~2x) at B=65536, but the shipped timing_log.json records 9.68/9.50 ms -> 2.19x/2.21x vs baseline A 21.20/21.02 ms. Stale numbers in the prose; direction and claim magnitude unaffected.",
+      "evidence": "timing_log.json B65536_P153 reps vs proof_record.md 'Cost and selection' section. The 2.2x kernel-level claim as relayed to review is supported by the log arithmetic.",
+      "recommendation": "Sync proof_record.md numbers to timing_log.json (or annotate which run each quote is from)."
+    },
+    {
+      "id": "F4",
+      "severity": "note",
+      "description": "The chunked 4-thread schedule is a timing-script construct (timing_dev.py), not an adapter feature: it bypasses the guarded adapter (raw cached ctypes pointers, no validation, lifetimes held only by local Python references, no per-chunk failure isolation - a mid-chunk failure propagates through ThreadPoolExecutor.map with the output partially written). Legality of the schedule itself is sound: pixels are independent, chunks disjoint in inputs and output, shared tables read-only, kernel stateless with no ISPC tasking, ctypes CDLL releases the GIL. Bitwise equality is asserted after every chunked rep at exactly the timed B sizes (16384 and 65536). Author self-flagged this in proof_record notes (3).",
+      "evidence": "timing_dev.py:141-166; timing_log.json bitwise_check + in-rep assert; proof_record.md 'Independent verdict' note (3).",
+      "recommendation": "A threaded integration path must be implemented and re-reviewed in the adapter (validation per chunk or upfront on the full block, explicit buffer lifetime ownership, defined failure semantics) before any B7-40 use; dev-tier timing also runs A always first (not the protocol's frozen alternating order), so final numbers must follow B7-03 freeze with exclusive host lease."
+    },
+    {
+      "id": "F5",
+      "severity": "note",
+      "description": "Portability: arm64 NEON + ISPC 1.31.0 toolchain required; adapter loads macOS .dylib only; binaries are local prototype artifacts, not packaged. Protocol requires portability listed separately - satisfied by capability.json/proof_record wording.",
+      "evidence": "capability.json flags/isa; lw_native.py _load().",
+      "recommendation": "None for selection; required before any packaging decision."
+    }
+  ],
+  "verdict": "APPROVE-WITH-NOTES",
+  "scope": "Approved: the C_native ISPC kernel (lw_primary.ispc, both neon-i32x4 and neon-i32x8 builds) as an exact port of the frozen longwave primary reducer graph for its admitted domain, its guarded single-thread ctypes adapter (lw_native.py) including pre-launch rejection, immutability, aliasing and B=0 behavior, and the shipped exactness/guard/FMA evidence for dev-tier selection use in B7-30 trials. Source-level typed-graph audit confirmed: two ordered patch sweeps; reflection depending only on A0+lup with f32 chain ((a0+lup)*factor*0.5/pi), pi from bits 0x40490FDB, hardware fdiv, no reciprocal; solar_gate true branch order A8,A7,A3,A2 / false branch A7,A2 with a real uniform branch; f64 surface chains with a single RN f32 rounding at the accumulator add (fcvtn) and f32 specialization staying f32; sky chains f32; sweep-2 cast-per-multiply grouping; ordered left-fold outputs 0/1 and copies 2..6; +0.0f accumulator init; lanes own independent pixels (no cross-lane reduction; no faddp anywhere). Not approved / not claimed by this review: an integrated multi-threaded chunked path (does not exist as adapter code), decision-grade performance numbers (dev-tier noisy-host paired reps only; B7-03 protocol trials with exclusive lease remain the authority), and packaging/portability beyond the local prototype.",
+  "recommended_disposition": "Advance C_native (B7-20 ISPC) into the B7-30 A/B/C selection trials as an exact eligible candidate: exactness and guard evidence is reproducible and real (1040/1040 + 340 + 84 bitwise, 22/22 rejections, canaries clean, zero-FMA codegen independently rebuilt byte-identical), and the honest as-shipped cost statement (1T adapter loses to 4-thread numba, ~0.6x; kernel-level chunked 4T ~2.2x at B=65536) is supported by the logs with the F4 integration caveats. Apply F1-F3 doc/test touch-ups in the candidate's own follow-up (they do not block selection)."
+}
