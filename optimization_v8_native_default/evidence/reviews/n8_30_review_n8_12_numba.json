@@ -1,0 +1,109 @@
+{
+ "schema": "sw8-n8-30-review-v1",
+ "review_of": "experiments/optimization_v8/numba/lw_b_control.py + measure_b_control.py + results/measure_b_control.json",
+ "review_target_task": "N8-12 Numba B control (dossiers/02_direct_aosoa.md, packet gate)",
+ "reviewer": "n8-30 review service (independent; did not author N8-12)",
+ "review_utc": "2026-09-22",
+ "worktree": "/Users/alansynn/Workspace/solweig-v8-native @ 16cdc56c (perf/native-optimization)",
+ "verdict": "APPROVE-WITH-NOTES",
+ "state_recheck": {
+  "when": "post-dispatch state update from the coordinator; review re-verified against the CURRENT files",
+  "files_unchanged_since_review": "all N8-12 files byte-identical to the reviewed state (mtimes Sep 22 16:28-16:32, all predating this review's reruns; sha256 at review time: lw_b_control.py 1d142ceb..., measure_b_control.py 7fec8c0c..., measure_b_control.json d721f4f9..., tests 90b9c8e0/701661dd/cd4ffaa2/c5d8a2d1)",
+  "claimed_edits_present": [
+   "docstring cites N6 with failure mechanism (lw_b_control.py:27-35) and N2 with the AoSoA-boundary additions documented (:60-67)",
+   "measure_b_control.py times BOTH producer leaves per size (leaf-A/leaf-B-producer+classify at block_pixels 128 and 1024, 12 JSON entries) with per-cell 'A ahead/B ahead' lines (:302-303) and the N1 regime label on the B=128 rows (:299-301)",
+   "test_b_pin_float32_view_convention_is_binding present with N6 teeth (adapter-fed views match oracle a5=0x43C30000; raw-uint32 feed silently drops the sky term to 0x00000000) and is counted in the 396",
+   "confirmation rerun on the current bytes: 396 passed, 0 failed (2.00 s)"
+  ]
+ },
+ "blocking_defects": [],
+ "required_repairs": [],
+ "recommended_repairs": [
+  "F1: fix the vacuous poison slice in tests/optimization_v8/numba/test_b_control_producer.py:167-170 -- block[:, :, 13:] on a [G,P,W=8] lane axis is an EMPTY slice (verified: shape (2,3,0), assignment no-op); the padding for 13 rows at W=8 is (gang 1, lanes 5..7), i.e. block[1, :, 5:]. Same construction defect exists in N8-11's test_consumer_parity.py:166-171 (out of N8-12 scope; recommend a layout-owned follow-up)."
+ ],
+ "rerun": {
+  "command": ".venv/bin/python -m pytest tests/optimization_v8/numba tests/optimization_v8/reference tests/optimization_v8/layout",
+  "combined": "1289 passed, 0 failed, 0 skipped (2.89 s)",
+  "split": {
+   "tests/optimization_v8/numba": "396 passed, 0 failed, 0 skipped (1.45 s; 110 bitexact + 33 admission + 253 producer)",
+   "tests/optimization_v8/reference": "112 passed, 0 failed",
+   "tests/optimization_v8/layout": "781 passed, 0 failed"
+  },
+  "matches_claim": "true against the CURRENT state: 396 numba / 1289 combined exactly match the post-edit expected counts; the original briefing's 395/1288 was stale, predating the author's final N6-teeth test (see note F2)"
+ },
+ "obligations": [
+  {
+   "name": "bit-exactness",
+   "status": "PASS",
+   "evidence": [
+    "bitwise_equal (lw_reference_oracle.py:168-173) is np.array_equal on .view(np.uint32) -- exact integer equality; grep for allclose/approx/isclose/np.testing over tests/optimization_v8/numba: zero hits",
+    "frozen grid imported READ-ONLY, not copied: conftest.py:30-31 puts tests/optimization_v8/reference on sys.path; test_b_control_bitexact.py:36-39 imports B_GRID/P_GRID/_pin_args/adversarial_inputs from test_typed_graph_identity plus discriminator_args/ordered_args; reference module mtimes 15:33-15:37 all predate the N8-12 authoring window 16:23-16:31",
+    "grid = 6 B x 8 P x 2 surface profiles = 96 cells, each asserting all THREE formulations (parallel/serial/lanes) == oracle, parallel == serial, lanes == serial, AND the frozen _longwave_primary(_serial) cross-pinned on identical dense inputs (test_b_control_bitexact.py:110-126); P=609 boundary dedicated (:137-145); W=4 both-widths cell (:167-177); stride-12 / one-element stride-12 / negative-stride sky columns (:185-214)",
+    "all 8 discriminator pins assert exact bit patterns: mask*Inf NaN 0x7FC00000 (:225), reflected-Inf visible-NaN 0x7FC00000 / occluded +Inf 0x7F800000 (:234,:238), building raw-value predicate 0x40000000/0x00000000 (:249-250), signed zeros with signbit (:256,:259), division-not-reciprocal 0x40601716 != 0x40601715 (:268-269), f32/f64 profile pins 0x3F800001/0x3F800000 (:281-282), RN32 0x4B800001 plus down-chain 0x4C000001 for all three formulations (:296,:298), BOTH sweep-order pins 0x4B800000/0x4B800001 (:334-335,:347-348)",
+    "float32-view convention pinned WITH TEETH (:301-326): adapter-path matches oracle (a5=0x43C30000); the same kernel fed raw uint32 compiles and silently loses the sky term (a5=0x00000000) -- proves the convention is load-bearing"
+   ]
+  },
+  {
+   "name": "semantic fidelity",
+   "status": "PASS",
+   "evidence": [
+    "token-level diff of canonicalized bodies: lw_primary_b_parallel and lw_primary_b_serial arithmetic cores are CHARACTER-IDENTICAL to _longwave_primary / _longwave_primary_serial (cylinder_longwave.py:94-178) modulo exactly the intended substitutions: sh/vs/vb/sun/shade[pixel,patch] -> [gang,patch,lane], lup[pixel]/output[pixel] -> [row], shape unpack, output passed in rather than allocated, row loop with gang=row//width and lane=row-gang*width",
+    "ten float32 accumulators, both ordered p=0..P-1 sweeps, reflection barrier after completed sweep 1, true IEEE division by np.float32(np.pi) verbatim, solar_gate a REAL branch, fastmath=False on all three decorators (lw_b_control.py:87,142,191); no reassociation, no fastmath flag, no barrier reorder, no division->reciprocal anywhere",
+    "index mapping correctness independently established: producer-identity suite (252 cells) shows producer output == oracle-constructed AoSoA on valid lanes and B(produced) == B(manual) == oracle == frozen bitwise (test_b_control_producer.py:100-141)",
+    "lanes kernel preserves per-lane operation ORDER (sweep1 all patches -> reflection -> sweep2) with only loop nesting changed; the building predicate moves inside both gate arms -- a pure function of the same inputs, no bit effect; padding lanes never visited (live bound, lw_b_control.py:211); experimental and NOT dispatched (lw_primary_b:409 dispatches row-major only; b_kernel_pair:416-418)"
+   ]
+  },
+  {
+   "name": "admission parity vs lw_native.primary",
+   "status": "PASS",
+   "evidence": [
+    "guard-for-guard AND order against lw_native.py:169-219 with character-identical _need_array/_scalar_spec/_reflection_spec helpers: sh type/dtype/ndim -> gang gate -> P 1..609 -> rows<0 -> rows==0 early return (beats ALL downstream checks incl. out, pinned test_b_control_admission.py:221-231) -> vs/vb -> C-contig -> sun/shade -> solid/sine/cosine -> solar_gate stride-1 -> sky any-stride -> directions/gate shape-only -> lup -> surface spec -> reflection factor -> out validity + 14-array alias loop in the same order",
+    "0-d f32 reflection_factor: BOTH arms admit it (lw_native.py:138-144 converts to float; lw_b_control.py:302-308 passes the object through into numba, which computes float32 either way) and BOTH reject a Python float with the same message -- NO admission divergence; positive admission pinned bitwise-equal to the scalar form (test_b_control_admission.py:184-191). The N8-04 pin-or-narrow concern is resolved as pin, identically on both arms",
+    "strided/one-element/negative-stride sky columns admitted and bit-verified (test_b_control_bitexact.py:185-214); stride-12 positive admission pinned (test_b_control_admission.py:147-158)",
+    "two precedence divergences, both confined to doubly-invalid corners where BOTH adapters reject (admitted domain unaffected, documented in module docstring lw_b_control.py:53-67): (a) native checks its explicit gang param before sh, B must validate sh ndim before W is readable from the shape; (b) B adds rows-type and G=ceil(rows/W) checks that have no native analog because native derives B from sh.shape",
+    "JUDGMENT (requested by coordinator): both deviations are BOUNDARY-NECESSARY, not admission drift. (a) B's signature carries no gang parameter -- W is DERIVED from sh.shape[2] (the producer's chosen width, data-coupled), so sh must pass isinstance/dtype/ndim before a width exists to test; native's explicit gang merely selects the g4/g8 dylib and is caller-decoupled from shape, so B cannot even express 'gang != data width' -- a strictly SMALLER expressive surface than native, and the divergence is rejection-precedence only on inputs both arms reject. (b) rows is explicit because [G,P,W] cannot recover a tail (G=ceil(rows/W) conflates rows in ((G-1)W, GW]); without the type check rows=9.0 would dispatch a float64 numba specialization and fail INSIDE the kernel (range(float) TypeError post-launch), violating the contract's pre-launch-decline class, and the bool rejection keeps the same TypeError discipline; the G==ceil(rows/W) check is a memory-safety precondition -- rows > G*W would compute gang=row//W >= G and index sh[gang,...] past the allocation (out-of-bounds read in an njit kernel). The N2 framing is likewise structural: producer strictness (duck/subclass/lazy declines) attaches to ACQUIRING the packed buffers upstream; at the ndarray boundary there is no visibility object left to decline"
+   ]
+  },
+  {
+   "name": "binding notes honored (N8-11 review)",
+   "status": "PASS",
+   "evidence": [
+    "N6 float32-view convention: recorded convention is that wave-2 consumers feed float32 views of produced blocks; the adapter constructs sh/vs/vb .view(np.float32) itself INSIDE the admitted call (lw_b_control.py:406-413), so the view cost is counted; run_b and the measure leaves feed views; the mutation check proves the convention load-bearing",
+    "N1 per-B accounting: results table carries BOTH block_pixels=128 and 1024 for all three mixes with separate leaf-A/leaf-B-producer+classify arms per size (measure_b_control.py:162-264); the script's own printout labels the 128 regime 'note N1 regime: do not read the B=1024 rows here' (:299-301)"
+   ]
+  },
+  {
+   "name": "measurement honesty",
+   "status": "PASS",
+   "evidence": [
+    "INFORMATIONAL, NON-PROMOTION labels present in script docstring (:13), JSON label field, and print header (:286); no protocol-cell claims",
+    "loadavg recorded at start, per-block, and end (:157,:266,:277); min-of-N with median co-reported, warmup 3, gc disabled during sampling (:81-95)",
+    "bitwise_equal_A_vs_B: true in ALL 6 configs, computed by the script on the exact timed artifacts after timing (measure_b_control.py:271-274)",
+    "kernel-leaf B-vs-A speedups reproduce from the JSON: 7.3-9.8% (adapter arm, min) at B=1024 -- the '~8-12%' claim is a B=1024-regime number (see note F3); A~=B end-to-end holds at B=1024 (B -3.6% mix, -1.2% all-binary, +1.7% all-raw); lanes slower everywhere"
+   ]
+  },
+  {
+   "name": "ownership and hygiene",
+   "status": "PASS",
+   "evidence": [
+    "git status: zero tracked-file modifications; git diff HEAD empty; N8-12 files confined to experiments/optimization_v8/numba/ and tests/optimization_v8/numba/",
+    "producer untouched: experiments/optimization_v8/layout/direct_aosoa.py mtime Sep 22 16:10:03 (N8-11 review written 16:22) -- unchanged since before its review; sha256 recorded this review: e41e1ce9ba4c4103ec54ae16669d91a762e08c8b; reference suite mtimes 15:33-15:37 all predate N8-12",
+    "no src/ writes; no default enable: lw_primary_b/lw_b_control referenced only by this packet's tests/measure and by N8-13's experiments/optimization_v8/native/quiet_window_abc.py comparison harness (the intended B-arm consumer), never by src/ or the default dispatch path"
+   ]
+  }
+ ],
+ "notes": [
+  "F1 (test defect, non-blocking): test_padding_lanes_poisoned_after_production poisons via block[:, :, 13:] on [G=2,P,W=8] -- the lane axis ends at 7, so the slice is EMPTY and the assignment a no-op (numpy-verified: shape (2,3,0)); the real padding is (gang 1, lanes 5..7). The test is vacuous. The PROPERTY it claims IS genuinely proven elsewhere in the same suite: pack_aosoa (test_b_control_bitexact.py:46-59) pre-fills every padding lane with 0x7FC00000, so all 96 grid cells x 3 formulations plus W=4/609/RN32 pins run with truly poisoned padding and match the oracle bitwise, and the 252-cell producer test compares producer output (uninitialized np.empty padding) against poisoned manual blocks bitwise. Same construction defect in N8-11's test_consumer_parity.py:166-171 (cited as evidence by the N8-11 review; recommend a layout-owned follow-up repair).",
+  "F2 (RESOLVED, was a stale briefing count): the original review briefing said 395/1288; the CURRENT files measure 396/1289 (110 + 33 + 253), all passing, 0 skipped -- exactly the post-edit expected counts. The delta is the author's final test_b_pin_float32_view_convention_is_binding (N6 teeth), which this review examined and counted throughout; no author miscount stands.",
+  "F3 (regime unpins in claims, non-blocking): '~8-12% B kernel leaf' and 'lanes 3-4x slower' are B=1024-regime numbers -- at the production block size 128 the kernel-leaf delta is 18-28% and lanes is only 1.6-2.2x; '2.86 of 3.44 ms' does not reproduce exactly from the archived JSON (min 2.850 of 3.419 ms, median 2.881 of 3.631 ms, at B=1024 mix). The conclusions (producer+classify dominates ~83% of end-to-end at B=1024; A~=B end-to-end; lanes slower, experimental, not dispatched) all stand; the script's own printout carries the N1 regime labels but the prose claims lack the pins.",
+  "Per-block loadavg values are identical across all six blocks -- plausible for a short run under steady load, but they carry little information; the start/end envelope is the meaningful record."
+ ],
+ "scope_guard": "Nothing outside optimization_v8_native_default/evidence/reviews/ was written; no network; no commits; no timed benchmarking (only the pytest reruns, 1.45 s + 2.89 s, cached kernels); producer/reference/frozen sources read only.",
+ "commands_run": [
+  ".venv/bin/python -m pytest tests/optimization_v8/numba -q",
+  ".venv/bin/python -m pytest tests/optimization_v8/reference tests/optimization_v8/layout tests/optimization_v8/numba -q",
+  "python3 token-level canonicalized diff of lw_b_control.py kernels vs cylinder_longwave.py:94-178",
+  "python3 numpy slice-emptiness check for the F1 poison indexing",
+  "git status / git diff --stat HEAD / stat / shasum provenance checks"
+ ]
+}

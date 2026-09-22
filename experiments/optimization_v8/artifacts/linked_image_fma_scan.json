@@ -1,0 +1,18 @@
+{
+  "record": "N8-21 disposition of N8-20 review note N2: linked-image FMA scan of the FINAL staged artifact (otool -tV through the reviewed build_native.fma_audit regex), maintainer-side evidence only -- NOT a runtime loader gate (BUILD_DESIGN section 8.2 forbids subprocess tools at load; see test_linked_image_scan.py for the reasoning note and the repeatable check)",
+  "scanned_utc": "2026-09-22T00:00:00Z",
+  "artifact": "experiments/optimization_v8/packaging/stage/lw-g8-42aeba6a50dc5937/liblw_native_g8.dylib",
+  "dylib_sha256": "eb1071fcef64e5763839b65240986e9519d3de1906cf821925d1e0922582b46a",
+  "generation": "lw-g8-42aeba6a50dc5937",
+  "tool": "otool -tV (arg-list, maintainer host; the same tool class the N8-20 driver already requires for macho_facts)",
+  "audit_regex": "build_native.fma_audit (B7 mnemonic set)",
+  "mnemonics": ["fmadd", "fmla", "fmsub", "fnmadd", "fnmsub", "fnmla"],
+  "instruction_lines": 7406,
+  "fma_hits": 0,
+  "passed": true,
+  "positive_control": {
+    "what": "clang -arch arm64 -dynamiclib -O2 -ffp-contract=fast on float f(float a,float b,float c){return a*b+c;}",
+    "result": "1 hit: fmadd -- the same scan flags a genuinely contracted linked image, so the 0 above is not vacuous"
+  },
+  "conclusion": "The linked image of the shipped generation is contraction-free; the .s re-emission audit and the final dylib agree. Runtime rescan declined: the dylib is sha256-pinned by the manifest, so any post-publication mutation already fails the loader content gate -- a once-at-build scan fully closes the determinism question and belongs in build_native.py verify (N8-20 scope) where tools are guaranteed present."
+}

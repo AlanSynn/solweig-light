@@ -1,0 +1,95 @@
+{
+ "schema": "sw8-n8-30-review-v1",
+ "review_of": "experiments/optimization_v8/region/{region_plan.py,region_pool.py,consumers.py,__init__.py} + tests/optimization_v8/region/",
+ "review_target_task": "N8-14 region dispatch + bounded multicore owner (dossiers/03_region_multicore.md)",
+ "reviewer": "n8-30 review service (independent; did not author N8-14)",
+ "review_utc": "2026-09-22",
+ "worktree": "/Users/alansynn/Workspace/solweig-v8-native @ 16cdc56c (perf/native-optimization)",
+ "verdict": "APPROVE-WITH-NOTES",
+ "blocking_defects": [],
+ "required_repairs": [],
+ "recommended_repairs": [
+  "R1 (note N4): _track_pool (region_pool.py:801-809) silently declines to track pools beyond _MAX_TRACKED_POOLS=64 after pruning; such an explicit RegionPool would escape fork poisoning. Raise or warn loudly instead of silently dropping tracking, consistent with the module's own loud-cap philosophy. Unreachable via shared_pool() (8-budget cap); explicit-construction path only.",
+  "R2 (note N5): add a dedicated test that a successful session on the SAME pool after a cancelled session is clean (structurally sound -- _session/active_sessions reset in finally blocks region_pool.py:618-623,587-591; reviewer probe confirmed bitwise==serial -- but the suite has no direct pin).",
+  "R3 (note N6): add a mixed-mode reuse test (BLOCK_FANOUT session, then SELF_PARALLEL on the same pool with live workers): reviewer probe confirms in-flight==1 and no worker spawns; currently only fresh pools are tested (test_region_pool_budget.py:93-108).",
+  "R4 (note N7): record sha256 baselines for direct_aosoa.py and lw_native_aosoa.py in a review/evidence file so future read-only verification does not rest on mtime alone (native_handle.py and lw_b_control.py already have hash/structure corroboration)."
+ ],
+ "rerun": {
+  "command": ".venv/bin/python -m pytest tests/optimization_v8/region/ -q",
+  "runs": [
+   {"result": "151 passed, 3 warnings in 34.05s"},
+   {"result": "151 passed, 3 warnings in 34.18s (with -rs: zero skips -- native C-arm tests ran against the real staged artifact)"}
+  ],
+  "expected": 151,
+  "warnings": "exactly 3, all DeprecationWarning from os.fork in a multi-threaded process (one per real-fork test in test_region_fork_policy.py) -- matches the author's claim",
+  "per_file_collected": {
+   "test_region_plan.py": 31,
+   "test_region_pool_budget.py": 12,
+   "test_region_cancellation.py": 10,
+   "test_region_composition.py": 77,
+   "test_region_consumers.py": 6,
+   "test_region_scratch.py": 12,
+   "test_region_fork_policy.py": 3
+  }
+ },
+ "obligations": [
+  {
+   "obligation": "1. EXACTNESS: bitwise uint32 parallel==serial per-arm AND cross-arm; block grid identical to the serial loop's",
+   "status": "PASS",
+   "finding": "All comparisons go through outputs_bitwise_equal -> np.array_equal(u32(a), u32(b)) with u32 = ascontiguousarray().view(np.uint32) (region_case.py:88-93) -- bitwise on raw float32 bits, frozen-suite convention. A-arm: 11 shapes x budgets {1,2,4} x seeds {0,1} = 66 cases assert serial==parallel AND parallel==whole-call oracle (test_region_composition.py:31-58). B-arm: serial==parallel==whole lw_primary_b call, plus report.max_in_flight==1 (:61-92). C-arm: serial==parallel==whole NativeHandle.execute over 3 shapes incl. tail 257 (:105-137). Cross-arm A==B, A==C on one adversarial case through the same boundary (:140-160); repeated-execution stability on one pool over 4 runs (:163-177). Block-grid identity is structural, not just tested: block_spans() is literally the serial loop expression (region_plan.py:88-90); regions are pure block-INDEX ranges over total_blocks=ceil(n/b) (:99-105) and never touch pixels; both executors build spans exclusively via plan.block_spans() (region_pool.py:604-606, 919-921), so no other span source exists. Pinned by property tests over 8 (total,b) grids incl. b=7 and edges 0/1/127/128/129 (test_region_plan.py:23-30) and gapless ascending exact partition with region edges subset of block edges (:33-54). Zero skips in both reruns: the native C-arm genuinely executed."
+  },
+  {
+   "obligation": "2. THREAD BUDGET: runtime-observed in-flight <= N for BLOCK_FANOUT; in-flight==1 + quiescence for SELF_PARALLEL; no second-pool budget blowup",
+   "status": "PASS",
+   "finding": "Observed, not configured: max_in_flight is maintained under the pool lock around real block execution, incremented before slot acquire and decremented after release (region_pool.py:402-404, 424-425), and reported per call. test_max_in_flight_never_exceeds_budget asserts <= N and >= 2 for N>=2 with a GIL-releasing sleep forcing genuine overlap (test_region_pool_budget.py:37-52); a live thread census taken INSIDE blocks bounds threading.active_count() to baseline+N-1 (:55-76); N=1 spawns zero threads with in_flight==1 (:79-90). Workers spawned: exactly N-1, lazily, once (region_pool.py:521-536); the submitting thread works the same queue (run(), :436-451), so executing threads <= N by construction; slots are also N (_SlotPool(budget), :475). SELF_PARALLEL: a plain sequential for-loop leasing one slot at a time (region_pool.py:653-688) -- in-flight==1 structurally; nothing is ever enqueued, so pre-existing workers stay blocked on queue.get() (quiescent); asserted with the real numba kernel (test_region_composition.py:90) and workers==0 on a fresh pool (test_region_pool_budget.py:93-108); reviewer probe additionally confirmed in-flight==1 and zero worker spawns on a pool with LIVE workers from a prior fanout session (the previously untested case). No overlap path between the modes: sessions are exclusive (PoolSessionConflict at region_pool.py:573-586) and re-entry from inside a block hits the same guard (:111-127); a concurrent second submission is refused under an actively held session (:130-162). Numba layer sizing to the same N is test-wiring (conftest.py:41-42 LW_TEST_THREADS used for both set_num_threads and RegionPool) -- an integrator contract, honestly documented (docstring :39-45). Second-pool paths: shared_pool() is keyed (pid,budget), hard-capped at 8 distinct live budgets with loud PoolRegistryBound, closed/poisoned entries replaced in place (region_pool.py:812-837; test :165-192). Notes N2/N3 below record the two declarative/per-owner residuals."
+  },
+  {
+   "obligation": "3. CANCELLATION: defined first-error order, no partial results as success, native failure stays loud, pool reusable after cancel",
+   "status": "PASS",
+   "finding": "First-error order is DEFINED (lowest ADMITTED block index; _raise_first, region_pool.py:710-743) and proven immune to wall-clock inversion: block 7 fails immediately, block 2 fails 250 ms later, block 2's error is raised (test_region_cancellation.py:61-88). The original exception object is re-raised with type intact: KeyError identity (:29-44), UnsupportedInput stays a TypeError so the dispatcher's fallback decision is unchanged (:91-105), NativeExecutionError never swallowed or converted (:108-119) -- including a synthetic post-launch failure through the REAL handle wrapper (test_region_consumers.py:179-209). No starts after cancel and nothing past the failing block starts, under a barrier-held in-flight scenario (:122-164). No report is returned and nothing is published as success on failure -- the raise happens before RegionReport construction (region_pool.py:628-630, 638-640); structural output checks run before any dispatch (:203-220; execute validates at :597-599). Drain is bounded (all queued items are dequeued and retired exactly once; run() loops until outstanding==0, :436-451). Pool reusable after a cancelled session: state is reset in finally blocks (:618-623, 587-591) and a reviewer probe ran a clean bitwise-correct session on the same pool after a cancelled one -- no dedicated in-suite test (note N5, R2). Note N1 records the theoretical multi-failure divergence corner."
+  },
+  {
+   "obligation": "4. SCRATCH: alias/mutation safety, dispatch-size independence, boundedness",
+   "status": "PASS",
+   "finding": "Dispatch-size independence incl. region_blocks=10**6: identical bits and allocation count == min(budget, blocks-per-region) regardless of region count (test_region_scratch.py:59-74); bounded by slots not blocks: 32 blocks in one region -> exactly 4 allocations at budget 4 (:77-83). Alias safety: byte-extent disjointness of concurrently leased slots plus same-object reuse across leases (:86-96); two simultaneously-leased distinct slots OBSERVED under a barrier (:99-122). Reuse invisibility: NaN-poisoning every slot buffer between runs changes nothing, and the canary has teeth -- a read-before-write consumer detects the poison (:125-172). Fixed-shape arenas: full-capacity lease + [:rows] tail view (consumers.py:88-91, region_pool.py:224-227); shape/dtype rebinding rejected loudly with ScratchShapeError, and a misbinding consumer's tail block fails with that type through the region (:175-203). Slots == budget, one exclusive free-list lease per executing block (region_pool.py:303-345, 408-423)."
+  },
+  {
+   "obligation": "5. FORK HOOK: strictly lock-free after_in_child; fork-while-active exercised; no constructed-pool escape",
+   "status": "PASS",
+   "finding": "The hook body (_poison_child_pools, region_pool.py:865-878) was inspected statement-by-statement: a global int increment (_FORK_GENERATION += 1), _POOLS.clear() (dict clear), a per-pool plain attribute write (pool._poisoned = True), _LIVE_POOLS.clear() (list clear). No with, no .acquire, no lock construction or use; RegionPool defines no __slots__/__setattr__ override and no descriptor shadows _poisoned (the read-only `poisoned` property intercepts only its own name), so the write is a plain instance-dict store. The hook never touches queues, slots or worker state, and a poisoned pool is refused service at both _ensure_workers and _session_guard (:524-529, 575-578). Escape analysis: the hook is registered at module import (:881-882) and EVERY RegionPool registers itself inside __init__ via _track_pool (:477) before the constructor returns, so no pool exists untracked-at-fork except one refused by the 64-pool tracking cap (note N4 -- unreachable via shared_pool's 8-budget cap). Real-fork tests: child use of the inherited pool raises ForkedRegionPool, child re-prepare via the cleared table reproduces the parent's bits bitwise, parent pool unpoisoned and reusable (test_region_fork_policy.py:45-94); fork WHILE a block is held in-flight mid-session: child runs clean on a fresh owner, parent session completes bitwise==serial (:97-171); shared_pool() in the child is a fresh instance with advanced fork generation (:174-208). Children are minimal (pure numpy consumer, os._exit) per the file's own safety note. All 3 DeprecationWarnings in the suite are these os.fork calls, as claimed."
+  },
+  {
+   "obligation": "6. COMMON BOUNDARY: no backend special-casing in planner/pool; arms read-only; lazy native import",
+   "status": "PASS",
+   "finding": "region_plan.py imports only dataclasses/annotations; region_pool.py imports contextlib/enum/os/queue/threading/dataclasses/typing/numpy + RegionPlan, and the sole non-stdlib runtime import (solweig_light.runtime in resolve_budget) is lazy inside the function (:783-784). grep for numba|ispc|opencl|drjit|native|loader|lw_b|lw_primary|aosoa hits ONLY docstrings/comments in the planner/pool -- no backend module is imported and the only runtime discriminator is `mode is ExecutionMode.BLOCK_FANOUT` (:609), a parallelism class, not a backend id. A deliberately non-SOLWEIG consumer (AddTwoArrays) runs through the boundary (test_region_consumers.py:30-57); the consumer contract is enforced by name/callable shape only (:60-82). All backend specifics live in consumers.py and are lazy: lw_b_control inside AosoaBConsumer.__init__ (consumers.py:172) and loader.native_handle inside _NativeHandleReduce.__init__ (:110) -- importing region.consumers does no IO and no backend import. Arms read-only: every loader/layout/native/numba source mtime (16:01-16:37) predates the region files (16:38-16:50); lw_b_control.py sha256 1d142ceb3cdf4045bc2a17f8eecc628e5cd4dad9 matches the prefix the N8-12 review pinned in its state_recheck; native_handle.py structure still matches the N8-10 review's line citations (registry :163-164, registry_snapshot :204-207, dir lock :170-178). direct_aosoa.py / lw_native_aosoa.py rest on mtime only (note N7)."
+  },
+  {
+   "obligation": "7. REGISTRY GROWTH: no-growth assertion vs N8-10 snapshot is real; shared-pool registry bounded",
+   "status": "PASS",
+   "finding": "Real and executed: registry_snapshot() is the N8-10 loader's actual registry diagnostic (native_handle.py:204-207, keyed registry -> generation under _REGISTRY_LOCK); the test snapshots before, runs TWO full region workflows (512 rows, R=2, budget 4) through DenseKernelConsumer over the REAL prepared handle (native_handle_reduce -> prepare_native_handle), and asserts the snapshot unchanged (test_region_consumers.py:156-176). It RAN in both reviewer reruns (zero skips with -rs), so the staged artifact path was genuinely exercised -- no skip-degradation of the claim. The region-pool registry itself: keyed (pid,budget), MAX_POOL_BUDGET_SLOTS=8 with loud PoolRegistryBound on a 9th distinct live budget, closed/poisoned entries replaced in place, reuse of existing budgets uncapped (region_pool.py:812-837; test_region_pool_budget.py:180-192); the worker-based growth argument (threads share one pid; NativeHandle.execute writes no registry entries) is consistent with the N8-10 review's structural read of execute()."
+  },
+  {
+   "obligation": "8. OWNERSHIP: only region/ deliverables + region/ tests; no src/ changes; no timed benchmarking; HEAD unchanged",
+   "status": "PASS",
+   "finding": "HEAD is 16cdc56c (branch tip, unchanged). git status shows ONLY untracked packet directories (benchmarks/, experiments/, optimization_v8_native_default/, tests/optimization_v8/, tools/) -- zero modifications to tracked files, hence no src/ change. N8-14 outputs are confined to experiments/optimization_v8/region/{__init__,region_plan,region_pool,consumers}.py + tests/optimization_v8/region/ (a filesystem sweep for *region* outside those dirs finds only the pre-existing dossier 03_region_multicore.md and the agents/sw8-region.md task brief). No timing artifacts: RegionReport carries functional counts only ('no timing', region_pool.py:691-707); the only sleeps are liveness-forcing delays in mechanics tests, explicitly disclaimed as such (test_region_pool_budget.py:13-18); no results/ or timing JSONs exist under either region dir."
+  }
+ ],
+ "notes": [
+  "N1 (cancellation corner): with TWO OR MORE failing blocks, a lower-index block can rarely be skipped by cancellation after a higher-index block's error is admitted (dequeue-to-start window in _FanoutSession.handle, region_pool.py:392-406), so the raised error can differ from strict serial's choice in that corner. The defined rule -- lowest ADMITTED index -- is deterministic, tested for wall-clock inversion, and always raises a real admitted error with type intact; the docstring phrase 'exactly the error a serial loop would have raised first' (:91-92) is slightly stronger than what is guaranteed for multi-failure races. Single-failure and all-admitted cases match serial exactly.",
+  "N2 (declarative mode): the owner enforces the budget against the DECLARED parallelism class; an internally-parallel consumer misdeclaring BLOCK_FANOUT would exceed N and the owner cannot detect it. Documented honestly in-suite (test_region_consumers.py:106-115); an integrator contract, same class as any thread-safety declaration.",
+  "N3 (per-owner, not process-wide): concurrent sessions on two DISTINCT budgets (or two explicit pools) are not mutually excluded and can sum to N1+N2 threads; shared_pool caps distinct budgets at 8 but does not sum-cap. The module docstring acknowledges this ('live threads bounded by sum(N_i-1) over live pools', :80-81); the workflow binding of ONE threads_per_worker per process is the intended guard. Minor related nit: explicit resolve_budget validates <= cpu_count but not the runtime cpu_budget tightening that the None path inherits (:766-784).",
+  "N4 (fork-tracking cap is silent): _track_pool (region_pool.py:801-809) prunes closed/poisoned pools at the 64-pool cap and then SILENTLY declines to track further pools; a 65th explicit live RegionPool would escape fork poisoning (its inherited workers do not exist in the child). Unreachable through shared_pool() (8-budget loud cap) and outside every test; inconsistent with the module's own 'misconfiguration must fail loudly' philosophy -- see R1.",
+  "N5: no dedicated test for a successful session on the same pool AFTER a cancelled session (structurally reset via finally blocks; reviewer probe confirmed bitwise==serial) -- see R2.",
+  "N6: mixed-mode single-pool reuse (fanout session, then SELF_PARALLEL with live workers) is structurally quiescent and reviewer-probe-confirmed but untested in-suite -- see R3.",
+  "N7: read-only verification for layout/direct_aosoa.py and native/lw_native_aosoa.py rests on mtime ordering alone (no hash baseline recorded in prior reviews), unlike native_handle.py and lw_b_control.py which have hash/structure corroboration -- see R4."
+ ],
+ "scope_guard": "Nothing outside optimization_v8_native_default/evidence/reviews/ was written by this review; no network; no commits; no timed benchmarking (pytest reruns only, 34.05 s + 34.18 s, plus short functional probes: reuse-after-cancel, mixed-mode quiescence, fork-hook body dump). All arm sources read only.",
+ "commands_run": [
+  ".venv/bin/python -m pytest tests/optimization_v8/region/ -q  -> 151 passed, 3 warnings (x2; second with -rs, zero skips)",
+  ".venv/bin/python -m pytest tests/optimization_v8/region/ --collect-only -q  -> 151 collected (per-file breakdown in rerun)",
+  ".venv/bin/python - <<'EOF' probes: (a) clean session on same pool after cancelled session, bitwise==serial; (b) SELF_PARALLEL on pool with live fanout workers: in-flight==1, worker_count unchanged; (c) fanout after self-parallel still bitwise==serial; (d) inspect.getsource(_poison_child_pools) statement dump -> attribute writes + container clears only",
+  "grep -n backend-name pattern over region_plan.py/region_pool.py -> docstring/comment hits only",
+  "shasum lw_b_control.py -> 1d142ceb... matches N8-12 review state_recheck prefix; stat -f '%m' mtime sweep over loader/layout/native/numba/region sources",
+  "find . -iname '*region*' outside owned dirs -> only dossier 03 + agents/sw8-region.md (pre-existing packet files)"
+ ]
+}

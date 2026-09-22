@@ -1,0 +1,55 @@
+{
+ "host": {
+  "cpu": "Apple M1 Pro",
+  "memsize_bytes": 17179869184,
+  "python": "/Users/alansynn/Workspace/solweig-v8-native/.venv/bin/python"
+ },
+ "scene": {
+  "dir": "/Users/alansynn/Workspace/solweig-v8-native/tests/reference/state_sequence_original_cpu/scene",
+  "fixture_files_sha256": {
+   "Building_DSM.tif": "e13aefb56d224680fd0a04fbf1886faf840d73db032aa4bbe2bbc651c4d8f80a",
+   "DEM.tif": "a550dd0b6519621fff999eb6cc7bce224c27a3c5cc17d73660c41b52767a7105",
+   "Trees.tif": "aacbcf3ffe3296c1ad4528138555b19d59358210a4c2b5b1c636074975fc8bdc",
+   "met.txt": "37132c8851294b39e8cb57087a22527f155704e61ba8c37a0e4f36c9f591b0ac",
+   "manifest.json": "fe013dcdfebb28db2e45141afe86a1ac3b1c19b2987a82befaa9e6628c4fc5b6"
+  },
+  "prepared_files_sha256_count": 10,
+  "prepared_digest": "f289988976c4cfad"
+ },
+ "scene_survey": {
+  "distinct_sizes": {
+   "2x2": 31,
+   "2x3": 28,
+   "3x2": 28,
+   "3x3": 28,
+   "4x4": 4,
+   "32x35": 81,
+   "32x48": 97
+  },
+  "largest_square_min_side": 32,
+  "largest_examples": [
+   "tests/reference/optional_original_cpu/base/processed_inputs/Building_DSM/Building_DSM_0_0.tif",
+   "tests/reference/optional_original_cpu/base/processed_inputs/DEM/DEM_0_0.tif",
+   "tests/reference/optional_original_cpu/base/processed_inputs/SVF/SkyViewFactor_0_0.tif",
+   "tests/reference/optional_original_cpu/base/processed_inputs/Trees/Trees_0_0.tif"
+  ],
+  "exists_128_or_256_square_real_fixture": false,
+  "note": "census over real reference TIFFs only (no synthetic scenes)"
+ },
+ "threads": 4,
+ "cpu_budget": 4,
+ "pairs_b128": 5,
+ "pairs_b1024": 3,
+ "user_native_cache_before": {
+  "exists": true,
+  "dylibs": [
+   "liblw_native_g4.dylib",
+   "liblw_native_g8.dylib"
+  ],
+  "build_stamp": {
+   "kernel_sha256": "52652a598cd85ead04747a83a52b1184035c880aa0b32cf518efef06b961663c",
+   "ispc": "/opt/homebrew/bin/ispc",
+   "built_utc": "2026-09-22T06:25:24Z"
+  }
+ }
+}

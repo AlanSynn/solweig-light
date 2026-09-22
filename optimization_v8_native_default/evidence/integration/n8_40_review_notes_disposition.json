@@ -1,0 +1,44 @@
+{
+  "record": "n8-40 disposition of n8_30_review_n8_40_integration notes (verdict APPROVE-WITH-NOTES, no blocking defects)",
+  "review_records": [
+    "optimization_v8_native_default/evidence/reviews/n8_30_review_n8_40_integration.json",
+    "optimization_v8_native_default/evidence/reviews/n8_30_review_n8_40_integration.md"
+  ],
+  "repo_state": {
+    "branch": "perf/native-optimization",
+    "base": "16cdc56c",
+    "worktree": "/Users/alansynn/Workspace/solweig-v8-native",
+    "committed": false
+  },
+  "N1": {
+    "summary": "Integration-record and module-docstring wording ('without touching any of it') overstates shipped-state inertness: row A DOES import and run the selector (per-call registry read in repo state); only the execution machinery is untouched.",
+    "disposition": "ADOPTED as deferred docstring fix AT NEXT TOUCH of the reviewed files. No edit now: the files are under a fresh APPROVE review and the invalidation rule (later edits re-open the affected review) outweighs a wording nit. The review record itself is the authoritative statement of the shipped-state behavior.",
+    "files": [
+      "src/solweig_light/radiation/_lw_dispatch.py (module docstring)",
+      "optimization_v8_native_default/evidence/integration/n8_40_integration_record.json (wiring_design.selection wording)"
+    ]
+  },
+  "N2": {
+    "summary": "A present-but-broken selector module silently resolves row A (reviewer-executed probe) — fail-safe direction; dies with N8-41 vendoring.",
+    "disposition": "RECORDED, no change. Correct direction (a broken selector must never activate an accelerated row). Folded into n841-7."
+  },
+  "N3": {
+    "summary": "Repo-only name surface: bootstrap makes `policy` importable as a namespace package and a foreign `region` package WITH a shutdown_all_pools attribute would execute foreign code per tile at teardown.",
+    "disposition": "RECORDED, no change (repo-gated; an installed wheel has no experiments tree). Eliminated by N8-41 vendoring. Folded into n841-7."
+  },
+  "N4": {
+    "summary": "Stale state: the integration test's inline comment ('n8-14 repair pending') and an earlier snapshot of the record's found_defect section predate the LANDED n8-14 repair; assertions remain valid.",
+    "disposition": "RECORDED. The record's found_defect section has been updated to REPAIRED (integrator-verified, delta review n8-rev-n8-14 in flight). The TEST comment is intentionally left as-is under the same no-post-review-edit rule as N1; it describes a safety-net filter that remains correct regardless."
+  },
+  "N6_position_scene_size": {
+    "summary": "Reviewer position (adopted): DEFER a dispatch-level scene-size guard to record scope — unreachable in shipped state, MemoryError is loud, producer decline allocates nothing, and a hardcoded cap would embed an unqualified policy constant in src.",
+    "disposition": "ADOPTED. BINDING FOLLOW-THROUGH: the first qualified record (N8-31/N8-32 transcription) MUST state the scene-size envelope — approximately 2.25 GB routed-call overhead at 1024^2 and ~9 GB at 2048^2, P=153 (whole-scene uint32 AoSoA x3 + bool sun/shade x2, per the integration record's memory note). N8-31's end-to-end cells must include this accounting; N8-32 cannot qualify a scope it has not stated."
+  },
+  "N7_registry_read": {
+    "summary": "Per-call registry file read on every routed-eligible driver call — flag for N8-31 throughput fairness.",
+    "disposition": "RECORDED. N8-31's end-to-end accounting must include one resolve_lw_backend() (one small JSON stat+read) per driver call in the routed arm's cost; the shipped-state arm pays it too in repo state (row A), which is the fair baseline for the comparison."
+  },
+  "new_obligations": {
+    "n841-7": "N8-41 vendoring eliminates, in one move: the sys.path bootstrap + namespace-name surface (N3), the broken-selector-silent-row-A import boundary (N2), and the foreign-region teardown hazard. Additionally at next touch: soften the 'without touching any of it' docstring wording (N1). See n8_41_pre_wiring_notes.json."
+  }
+}

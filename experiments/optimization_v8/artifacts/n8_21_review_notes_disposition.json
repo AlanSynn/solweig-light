@@ -1,0 +1,55 @@
+{
+  "record": "n8-21 disposition of n8_30_review_n8_21_artifacts notes (verdict APPROVE-WITH-NOTES)",
+  "review_records": [
+    "optimization_v8_native_default/evidence/reviews/n8_30_review_n8_21_artifacts.json",
+    "optimization_v8_native_default/evidence/reviews/n8_30_review_n8_21_artifacts.md"
+  ],
+  "repo_state": {
+    "branch": "perf/native-optimization",
+    "base": "16cdc56c",
+    "worktree": "/Users/alansynn/Workspace/solweig-v8-native",
+    "committed": false
+  },
+  "N1": {
+    "summary": "auto_load crashed (PermissionError / AttributeError / KeyError) on three exotic present-but-corrupt states instead of quietly declining; _gate_candidate caught only VerifyFailure.",
+    "disposition": "REPAIRED loader-side (build_native.py untouched per instruction; its isinstance hardening routes to N8-41 delta review).",
+    "changes": [
+      "installed_loader.py: added module constant _VALIDATOR_FAILURE_SIGNALS = (OSError, AttributeError, KeyError, ValueError, TypeError) -- the review's named corruption-signal set; non-signal programming errors (e.g. NameError) still crash loudly rather than being masked as packaging defects.",
+      "installed_loader.py _gate_candidate: 'except _VALIDATOR_FAILURE_SIGNALS' clause after the VerifyFailure clause -> _corrupt(package, 'content verification raised an untyped validator failure (<ClassName>): <repr>'); fail-closed recorded declined-corrupt, failure class named in reason and in the raised CorruptNativeArtifact.",
+      "installed_loader.py attempt_load in-lock block (review section 2 TOCTOU bullet, folded into N1): the _verified_manifest re-read + QUALIFIED_TARGETS lookup now also converts _VALIDATOR_FAILURE_SIGNALS into a recorded declined-corrupt outcome carrying a CorruptNativeArtifact naming the failure class. Initially believed untestable without racing the verify->dlopen window; the reviewer's delta section 9 proved the _verified_manifest seam deterministic (see N6)."
+    ],
+    "regression_tests": [
+      "test_installed_loader.py CORRUPT_CASES += unreadable-listed-member-permissionerror (chmod 0o000 on the listed dylib -> PermissionError from _sha256_file)",
+      "test_installed_loader.py CORRUPT_CASES += artifacts-entries-are-strings-attributeerror (manifest artifacts = [<path string>] -> AttributeError from entry.get in validate_manifest, fires before the generation-name check so edit_in_place suffices)",
+      "test_installed_loader.py CORRUPT_CASES += fma-audit-without-asm-sha-keyerror (rederive after popping fma_audit.asm_sha256; fma_audit is non-volatile so the fingerprint/name change keeps the name gate consistent; validate_manifest only requires passed is True -> KeyError at build_native.py:632)"
+    ],
+    "assertions_per_test": "auto -> quiet None + capfd empty + reason recorded privately with the failure class name + builder_spy empty + IoSpy.assert_pure_load (zero writes/subprocess/network); explicit -> CorruptNativeArtifact matching 'packaging defect' with the failure class name in the message (shared CORRUPT_CASES template via assert_quiet_decline).",
+    "teeth_check": "with ONLY the _gate_candidate broadened clause temporarily stripped, all three tests fail exactly as the reviewer observed (raw PermissionError/AttributeError/KeyError propagate out of auto_load; KeyError traceback pinned at build_native.py:632); fix restored and re-run green.",
+    "counts": {
+      "tests/optimization_v8/artifacts/": "48 passed after N6 (44 + 3 N1 + 1 N6 seam)",
+      "artifacts+loader+packaging": "214 passed after N6 (reviewer-verified 210 baseline + 3 + 1; the 208/211 figures in the repair instruction derived from the stale pre-scan-pair handoff counts that review note N2 already corrected)",
+      "tests/optimization_v8/policy/ (N8-22 consumer of installed_loader)": "84 passed (run because policy/conftest.py imports installed_loader and the repair touched it)",
+      "full tests/optimization_v8/": "tree moved under the repair: 1955 collected at rerun time vs 1700 at review time (in-flight teammate suites landed meanwhile). My +3 all pass; remaining failures are order-dependent cross-suite interference in teammate files (region/test_region_*.py fails 11 even standalone; installed/ fails only in full-tree ordering and is fully green standalone: 11 passed 6 labelled-skipped). No failure is in or caused by the artifacts/loader/packaging scope; failure counts varied 125 -> 13 -> 8 across identical full-tree reruns, matching the known thread-cap/ordering flake pattern, not a deterministic regression."
+    }
+  },
+  "N3": {
+    "summary": "empty platform requirements list loads within the arm64 domain (lying by omission); consider positively requiring the expected cpu-feature strings.",
+    "disposition": "RECORDED, no code change. Routed to N8-41 (already reflected in optimization_v8_native_default/evidence/integration/n8_41_pre_wiring_notes.json item n841-5). Loader-side hard failure on unexpected strings is already fail-closed; positively requiring expected strings tightens the wheel-side manifest contract and belongs with wheel assembly."
+  },
+  "N4": {
+    "summary": "manifest stamp's dylib_sha256 assumes artifacts[0] is the dylib.",
+    "disposition": "RECORDED, no code change. Routed to N8-41 (n8_41_pre_wiring_notes.json item n841-6: make the dylib slot explicit at wheel assembly). The loader gate already requires the dylib name to be PRESENT among listed artifacts (declines otherwise), so the assumption cannot dlopen a wrong artifact today; it is a stamp-fidelity concern for hypothetical multi-artifact wheels."
+  },
+  "N5": {
+    "summary": "sys.path sibling bootstrapping in installed_loader.py is experiment-stage only; must be vendored under the package when installed tests move in.",
+    "disposition": "RECORDED, no code change. Routed to N8-41 (n8_41_pre_wiring_notes.json item n841-6). The bootstrap imports loader/packaging siblings from experiments/optimization_v8/, which ceases to exist in an installed wheel; N8-41 must vendor installed_loader (and its build_native imports) under the package."
+  },
+  "N6": {
+    "summary": "delta note: the in-lock untyped-failure clause is deterministically testable at the _verified_manifest seam; the author's 'no deterministic test -- racing verify->dlopen required' was overstated.",
+    "disposition": "ADOPTED. test_installed_loader.py::test_in_lock_untyped_validator_failure_declines_not_crashes monkeypatches the seam to raise KeyError (mid-load manifest swap consequence) and asserts auto -> quiet None with declined-corrupt reason naming the class + builder_spy empty + IoSpy pure, explicit -> CorruptNativeArtifact 'packaging defect' + class name. Cites the reviewer's delta section 9 in its docstring. WRITING THE TEST EXPOSED A REAL GAP: in-lock declines (the N1 clause and the pre-existing NativeHandleError branch) were cached in _REGISTRY but never reached the private decline log, so decline_reasons() showed nothing for them; installed_loader.py now calls _record for a non-LOADED in-lock outcome after publication (_record's cache guard sees the _REGISTRY entry and appends only the diagnostic line -- no double caching). Teeth: with only the in-lock untyped-failure clause stripped the test fails via raw KeyError propagation; with only the _record line stripped it fails on the empty decline log; both restored -> 48/48 green."
+  },
+  "N2_handoff_count_note": {
+    "summary": "prior handoff counts 42/208/1698 predated the linked-image-scan pair; reviewer verified the then-current tree at 44/210/1700.",
+    "disposition": "superseded counts (n8-30 delta note N7 reconciliation): the authoritative post-repair numbers are 48 artifacts (44 + 3 N1 regressions + 1 N6 seam test) and 214 combined artifacts+loader+packaging (reviewer-verified 210 baseline + 3 + 1). Full-tree totals are ambient-dependent, not a fixed count: the tree grew from 1700 to ~1955 collected while in-flight teammate suites landed mid-repair, and identical full-tree reruns varied 125 -> 13 -> 8 failures (known order-dependent teammate flake; the reviewer's own delta rerun saw 1948 passed / 1 such flake). No full-tree failure was in or caused by the artifacts scope."
+  }
+}

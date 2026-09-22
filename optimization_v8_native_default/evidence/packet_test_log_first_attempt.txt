@@ -1,0 +1,66 @@
+test_amdahl (test_tools.CostTests.test_amdahl) ... ok
+test_amdahl_invalid (test_tools.CostTests.test_amdahl_invalid) ... ok
+test_call_count (test_tools.CostTests.test_call_count) ... ok
+test_call_invalid (test_tools.CostTests.test_call_invalid) ... ok
+test_cpu_budget (test_tools.CostTests.test_cpu_budget) ... ok
+test_memory_budget (test_tools.CostTests.test_memory_budget) ... ok
+test_no_fraction (test_tools.CostTests.test_no_fraction) ... ok
+test_partial_dispatch (test_tools.CostTests.test_partial_dispatch) ... ok
+test_phase (test_tools.CostTests.test_phase) ... ok
+test_required (test_tools.CostTests.test_required) ... ok
+test_unreachable (test_tools.CostTests.test_unreachable) ... ok
+test_full_sha_required (test_tools.GitToolTests.test_full_sha_required) ... ok
+test_installer_conflict_no_partial_write (test_tools.GitToolTests.test_installer_conflict_no_partial_write) ... ok
+test_installer_dryrun (test_tools.GitToolTests.test_installer_dryrun) ... ok
+test_installer_preserves_and_idempotent (test_tools.GitToolTests.test_installer_preserves_and_idempotent) ... ok
+test_no_existing_dest_removal (test_tools.GitToolTests.test_no_existing_dest_removal) ... ok
+test_preflight_readonly (test_tools.GitToolTests.test_preflight_readonly) ... ok
+test_source_surface_is_not_runtime (test_tools.GitToolTests.test_source_surface_is_not_runtime) ... ok
+test_symlink_refused (test_tools.GitToolTests.test_symlink_refused) ... ok
+test_worker_detached_apply (test_tools.GitToolTests.test_worker_detached_apply) ... ok
+test_worker_dryrun (test_tools.GitToolTests.test_worker_dryrun) ... ok
+test_wrong_branch_refused (test_tools.GitToolTests.test_wrong_branch_refused) ... ok
+test_agents_minimal (test_tools.PacketTests.test_agents_minimal) ... ok
+test_ast_defaults (test_tools.PacketTests.test_ast_defaults) ... ok
+test_dag (test_tools.PacketTests.test_dag) ... ok
+test_dossier_links (test_tools.PacketTests.test_dossier_links) ... ok
+test_key_product_contracts (test_tools.PacketTests.test_key_product_contracts) ... ok
+test_pending_tasks (test_tools.PacketTests.test_pending_tasks) ... ok
+test_source_status_honest (test_tools.PacketTests.test_source_status_honest) ... ok
+test_start_length (test_tools.PacketTests.test_start_length) ... FAIL
+test_bad_pair (test_tools.PolicyTests.test_bad_pair) ... ok
+test_fabricated_overcoverage (test_tools.PolicyTests.test_fabricated_overcoverage) ... ok
+test_fallback_only (test_tools.PolicyTests.test_fallback_only) ... ok
+test_force_native_not_default (test_tools.PolicyTests.test_force_native_not_default) ... ok
+test_guard_regression (test_tools.PolicyTests.test_guard_regression) ... ok
+test_invalid_runtime_hash (test_tools.PolicyTests.test_invalid_runtime_hash) ... ok
+test_loses_to_numba_control (test_tools.PolicyTests.test_loses_to_numba_control) ... ok
+test_missing_wheel (test_tools.PolicyTests.test_missing_wheel) ... ok
+test_no_default (test_tools.PolicyTests.test_no_default) ... ok
+test_protocol_not_frozen (test_tools.PolicyTests.test_protocol_not_frozen) ... ok
+test_small_evidence_remains_target_unverified (test_tools.PolicyTests.test_small_evidence_remains_target_unverified) ... ok
+test_synthetic_wellformed_is_not_production_proof (test_tools.PolicyTests.test_synthetic_wellformed_is_not_production_proof) ... ok
+test_template_rejected (test_tools.PolicyTests.test_template_rejected) ... ok
+test_two_scene_target_rejected (test_tools.PolicyTests.test_two_scene_target_rejected) ... ok
+test_escape_rejected (test_tools.WheelTests.test_escape_rejected) ... ok
+test_magic_rejected (test_tools.WheelTests.test_magic_rejected) ... ok
+test_native_any_rejected (test_tools.WheelTests.test_native_any_rejected) ... ok
+test_native_purelib_rejected (test_tools.WheelTests.test_native_purelib_rejected) ... ok
+test_no_native_rejected_when_required (test_tools.WheelTests.test_no_native_rejected_when_required) ... ok
+test_platform_native_static_only (test_tools.WheelTests.test_platform_native_static_only) ... ok
+test_source_wheel_allowed (test_tools.WheelTests.test_source_wheel_allowed) ... ok
+test_symlink_rejected (test_tools.WheelTests.test_symlink_rejected) ... ok
+
+======================================================================
+FAIL: test_start_length (test_tools.PacketTests.test_start_length)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/optimization_v8_native_default/tests/test_tools.py", line 202, in test_start_length
+    def test_start_length(self):self.assertLessEqual(len((ROOT/'START_HERE.txt').read_text()),4000)
+                                ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 4017 not less than or equal to 4000
+
+----------------------------------------------------------------------
+Ran 52 tests in 0.761s
+
+FAILED (failures=1)

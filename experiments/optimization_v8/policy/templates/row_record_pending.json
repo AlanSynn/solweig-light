@@ -1,0 +1,13 @@
+{
+  "schema": "sw8-lw-default-row-record-v1",
+  "status": "pending",
+  "row": null,
+  "host_class": null,
+  "created_utc": null,
+  "source_commit": null,
+  "artifact_identity": null,
+  "promotion_record": null,
+  "cells": [],
+  "independent_review": null,
+  "notes": "PENDING TEMPLATE, NOT EVIDENCE. Never place this file's content into qualification_registry.json as-is: the selector only activates records with status 'qualified' and every field populated and verifiable (see lw_default_policy.validate_row_record). artifact_identity.kind is BOUND to row ('installed-native-generation' for row C, 'python-module' for row B); cross-wires decline malformed. source_commit (and the promotion record's source_sha) are format-checked only, NOT HEAD-anchored -- transcription (N8-31/N8-32) must deliberately pin the frozen campaign commit. Transcription happens in N8-31/N8-32/N8-44 after the PROMOTION_POLICY gates are actually satisfied and independently reviewed."
+}

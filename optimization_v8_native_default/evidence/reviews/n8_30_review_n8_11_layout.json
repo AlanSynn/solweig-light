@@ -1,0 +1,109 @@
+{
+ "schema": "sw8-n8-30-review-v1",
+ "review_of": "experiments/optimization_v8/layout/direct_aosoa.py + measure_direct_aosoa.py + results/measure_direct_aosoa.json; tests/optimization_v8/layout/{conftest.py,test_producer_layout.py,test_classification_aosoa.py,test_consumer_parity.py}",
+ "review_target_task": "N8-11 direct AoSoA producer (dossiers/02_direct_aosoa.md)",
+ "reviewer": "n8-30 review service (independent; did not author N8-11)",
+ "review_utc": "2026-09-22",
+ "worktree": "/Users/alansynn/Workspace/solweig-v8-native @ 16cdc56c (perf/native-optimization)",
+ "verdict": "APPROVE-WITH-NOTES",
+ "blocking_defects": [],
+ "required_repairs": [],
+ "rerun": {
+  "command": ".venv/bin/python -m pytest tests/optimization_v8/layout tests/optimization_v8/reference -p no:cacheprovider -q",
+  "combined": "893 passed, 0 failed (3.21 s)",
+  "split": {"tests/optimization_v8/layout": "781 passed, 0 failed", "tests/optimization_v8/reference": "112 passed, 0 failed"},
+  "matches_claim": true
+ },
+ "obligations": [
+  {
+   "id": "1-bit-exactness",
+   "status": "PASS",
+   "finding": "All payload comparisons are exact integer equality on uint32 bits, never float tolerance: test_producer_layout.py:105-109/121/131 compare produce_block_aosoa output (uint32) against _decode(...).view(np.uint32) via np.array_equal; test_consumer_parity.py:118-119 compare lw_primary_aosoa_serial(...).view(np.uint32) against BOTH the independent NumPy oracle and the frozen _longwave_primary_serial over all seven columns. grep for allclose/approx/isclose/assert_equal across tests/optimization_v8/layout: zero hits. Grid actually covered: B in {0,1,3,4,5,7,8,9,11,13,16,97,128} (test_producer_layout.py:82,112-121), P in {1,2,3,153} spans plus P=609 boundary (test:83,124-132) and {7,153,609} for classification (test_classification_aosoa.py:47-49); raw-mode bit pool includes signed zeros (0x00000000/0x80000000), min/max subnormals (0x00000001/0x007FFFFF), +/-Inf (0x7F800000/0xFF800000), two NaN payloads (0x7FC00000/0x7FC00001), near-one pair (0x3F7FFFFF/0x3F800001), pi bits and 0x4B7FFFFF (test:38-40); consumer VALUE_POOL adds 2^24, 2^-24, 2^-25, 1+2^-23, 1-2^-24, max-float, min-normal (test_consumer_parity.py:39-43); sub-block spans (5,None),(0,7),(3,130) (test:97); strided (non-unit-stride) asvf field for classification (test_classification_aosoa.py:129-140). Both widths {8,4} and both orders parametrized throughout."
+  },
+  {
+   "id": "2-error-order",
+   "status": "PASS",
+   "finding": "(a) _produce_patchmajor (direct_aosoa.py:102-132) iterates patch -> gang -> lane with pixel = start+gang*W+lane ascending, then a bounded tail pass: within each patch the pixel visit order is exactly _decode's row order (visibility_compiled.py:20-34), and the code-extraction and byte-assembly expressions are character-identical, so the first reserved-code IndexError fires at the same (patch,pixel) by construction with no preflight. (b) test_reserved_code_raised_for_every_position (test_producer_layout.py:198-214) sweeps EVERY (patch in 4, pixel in 13) single-injection position and asserts raise-parity with decode_block on the same channel; test_reserved_code_blocked_preflight_leaves_out_untouched (test:217-228) proves the blocked order validates pre-launch (out stays fully POISON). Caveat recorded as note N3: the message carries no position, so a direct first-offending-position assertion is not constructible; the identity rests on the verified loop order plus the exhaustive raise-parity. (c) _preflight_packed (direct_aosoa.py:135-152) is _preflight_flat's exact order (patch-major, mode-4 skipped, row ascending) over the zero-copy per-patch views, and _run_order charges it inside the blocked arm before _produce_blocked (direct_aosoa.py:227-229)."
+  },
+  {
+   "id": "3-admission-locks",
+   "status": "PASS",
+   "finding": "_admitted_leaf (direct_aosoa.py:83-85) is verbatim _packed_leaves' admitted() (patch_radiation.py:172-177): type-is PackedVisibility or isinstance MappedVisibility, with LazyDiffVisibility additionally declined at the entry (direct_aosoa.py:243,259-260). _leased (direct_aosoa.py:206-220) reproduces decode_block/_fused_guard guard-for-guard and in order: id-sorted deduplicated owners, enter_context then _check_open per owner, then per-leaf range contract 0<=start<=stop<=shape[0]*shape[1] and 0<=patches<=shape[2] with the identical message 'Visibility block interval out of range'; stack closed on any raise. Range messages asserted in parity for decode_block, produce_block_aosoa and produce_blocks_aosoa (test:268-277); closed-owner RuntimeError 'Native visibility is closed' parity (test:303-319, visibility_native.py:80); admission declines duck/subclass/lazy/dense for both entries (test:254-265). Poison tests genuinely poison: producer out pre-filled 0xDEADBEEF and padding asserted equal to POISON after the call (test:157-169); payload-exact-size no-out-of-interval-read case (test:172-177); classification sun/shade pre-filled True with padding asserted still all-True (test_classification_aosoa.py:76-88); consumer-side post-production poison of lanes 13:15 with all-outputs-finite assertion (test_consumer_parity.py:155-184). Lease observability: instrumented lock records acquire/release around the whole producer call (test:389-397), shared-owner dedup in the 3-channel entry (test:400-409), close() serializes on the same lock (test:412-430), payload digests unchanged (test:437-450), returned blocks outlive owner close (test:453-460)."
+  },
+  {
+   "id": "4-no-hidden-copy",
+   "status": "PASS",
+   "finding": "The charged path calls only _descriptor (per-patch readonly np.frombuffer views + mode bytes, cached per channel; visibility_compiled.py:90-102); output materialization is one per-block np.empty [G,P,W] (direct_aosoa.py:248,264). No ascontiguousarray/flatten/copy/fancy-gather over the payload anywhere in the producer: grep of direct_aosoa.py finds _fused_descriptor only in docstrings (never called), np.ascontiguousarray solely on the rows-sized tan32(field) temporary at direct_aosoa.py:344 (byte-identical to the retained route's patch_radiation.py:335), and .copy() solely inside pack_masks_aosoa (direct_aosoa.py:371), which is the measured ALTERNATIVE adapter, not the direct path. The flat-copy _fused_descriptor is timed once per mix under the key flat_copy_build_s_informational and never charged (measure_direct_aosoa.py:160,172-180). Embedded correctness cross-checks in the results JSON report bitwise_equal_decode True for both orders and the adapter at both widths, and bitwise_equal_classes True."
+  },
+  {
+   "id": "5-classification",
+   "status": "PASS",
+   "finding": "classify_block_aosoa (direct_aosoa.py:315-352) mirrors _classes (patch_radiation.py:317-357) structurally: same field slice, same prepared-is-None delegation, same heights/factor construction, same contiguous-vs-masked dispatch condition (indices[0]==0 and indices.size==indices[-1]+1), reusing _class_coefficients by import (direct_aosoa.py:78) so the R04+G06 coefficient tables are the SAME objects/values, not a reimplementation. _classes_table_aosoa/_classes_table_masked_aosoa (direct_aosoa.py:270-312) are elementwise identical to _classes_table/_classes_table_masked (patch_radiation.py:360-397): float32 add of tan32 height and coefficient, the same SLEEF scalar core (atan32 dispatches to atan_array which loops atan_fma per element: _math_profile.py:87-92, _sleef_classifier.py:141-146), float32 degree multiply, strict < / > with both-false-at-boundary preserved. Tests assert bitwise mask equality against retained _classes in BOTH dispatch regimes (SOLWEIG_LIGHT_PATCH_CLASS_TABLES=0 and =1, test_classification_aosoa.py:52-73) at P in {7,153,609}, widths {8,4}, spans including (0,1),(0,0),(3,131); prepared-tuple reuse parity (test:110-120); NaN/+Inf/-Inf asvf rows pin actual both-false cells and shade != ~sun (test:91-107); float64 asvf declines to None (test:123-126); pack helper output equals direct production and tail padding stays False (test:143-157). Prepared passthrough is the same tuple-contract _classes itself uses, so it cannot diverge from the retained route."
+  },
+  {
+   "id": "6-rn32-safety",
+   "status": "PASS",
+   "finding": "The producer kernels (direct_aosoa.py:88-203: _produce_patchmajor, _preflight_packed, _produce_blocked) contain no float conversion of any visibility payload: codebook codes write the uint32 literals 0/0x3f800000/0x40000000; raw mode assembles little-endian bytes into uint32 exactly as _decode does; inputs are never bool-cast. Grep for float(/astype/asarray(dtype=...)/view(np.float32) over direct_aosoa.py: np.float32 occurrences are confined to the classification kernels (asvf-field arithmetic identical to the retained tables) and to lw_primary_aosoa_serial, the explicitly-labelled TEST/proof consumer that operates on float32 VIEWS of already-produced blocks and reproduces the frozen kernel's own arithmetic (cylinder_longwave.py:137-178)."
+  },
+  {
+   "id": "7-measurement-honesty",
+   "status": "PASS",
+   "finding": "Logical-bytes accounting is justified and the tracemalloc caveat is disclosed twice (script docstring measure_direct_aosoa.py:19-23 and the JSON provenance note: decode allocates inside numba where tracemalloc is blind, so measured peaks would favor the producer). timed() is min-of-N with median co-reported, warmup 3, gc disabled during sampling (measure:76-90). Flat-copy and descriptor first-build are labelled informational (JSON keys flat_copy_build_s_informational, descriptor_first_build_s); no protocol-cell claims (N8-31 scope untouched). Provenance records git head/branch/platform/python/numpy/threads/timestamp. Every claimed headline number reproduces exactly from results/measure_direct_aosoa.json: B=1024/W=8 mix 0.782 vs 0.816 ms, all-binary 0.985 vs 1.052, all-raw 0.075 vs 0.170 (2.3x), 612 vs 1224 KiB logical bytes per channel-block, classification 0.394 vs 0.611 ms, descriptor first build 0.228-0.274 ms. All 12 block cells and 4 classification cells are present in the JSON, including the unfavorable ones (see note N1). Scope caveat on the summary sentence recorded as N1."
+  },
+  {
+   "id": "8-ownership",
+   "status": "PASS",
+   "finding": "git status at review time shows zero tracked-file modifications (no M entries; only untracked N8 work dirs). N8-11 artifacts are confined to experiments/optimization_v8/layout/{direct_aosoa.py,measure_direct_aosoa.py,results/measure_direct_aosoa.json} and tests/optimization_v8/layout/{conftest.py,test_producer_layout.py,test_classification_aosoa.py,test_consumer_parity.py}. No src/ writes; grep for aosoa/direct_aosoa outside those dirs (excluding .venv/__pycache__) returns nothing; sibling experiments/optimization_v8/{loader,packaging} and tests/optimization_v8/reference belong to other packets. Reference oracle imported read-only; not modified."
+  }
+ ],
+ "notes": [
+  {
+   "id": "N1",
+   "severity": "note",
+   "where": "experiments/optimization_v8/layout/results/measure_direct_aosoa.json (blocks cells B=128) vs author claim 'producer beats decode+transpose adapter on every mix'",
+   "finding": "The every-mix win holds at B=1024 (all three mixes, both widths) and the claim's parenthetical correctly pins P=153, B=1024. At B=128 however the comparison REVERSES in 3 of 6 cells: W=8 mix 0.067 vs 0.037 ms, W=4 mix 0.068 vs 0.057 ms, W=4 all-binary 0.111 vs 0.102 ms (producer slower than decode+transpose). N8-04 names block_pixels=128 as the production block size, so the direct producer's advantage is a full-tile (1024-pixel) result, not a per-block one. Nothing is hidden -- all cells are in the JSON -- but downstream readers must not generalize the headline to the 128-pixel block regime, and default-path selection evidence remains N8-31's protocol cells.",
+   "repair_if_touched": "State the B-qualifier directly in the headline sentence of the dossier/results summary (not only in the parenthetical measurements), and repeat it in any wave-2 handover that cites the producer win."
+  },
+  {
+   "id": "N2",
+   "severity": "note",
+   "where": "experiments/optimization_v8/layout/direct_aosoa.py:83-85 vs visibility_compiled.py:130",
+   "finding": "Admission equals _packed_leaves exactly but is STRICTER than decode_block: decode_block admits any isinstance(leaf, PackedVisibility) (including subclasses that are not MappedVisibility), while the producer declines them to the legacy route. The divergence is conservative (declined inputs keep the unchanged legacy behavior; no observable changes), and matching _packed_leaves is the newer sanctioned convention for private compiled routes. Likewise LazyDiffVisibility is always declined here, whereas decode_block supports lazy pairs via _decode_diff -- consistent with the claim and dossier (lazy retains legacy), but worth remembering when the diffuse stream needs an AoSoA producer later.",
+   "repair_if_touched": "None required; document that decode-admissible PackedVisibility subclasses intentionally keep the legacy route."
+  },
+  {
+   "id": "N3",
+   "severity": "note",
+   "where": "tests/optimization_v8/layout/test_producer_layout.py:198-214",
+   "finding": "'Same first-offending (patch,pixel)' is not directly assertable: the IndexError message ('Reserved visibility code') carries no position in either route. The property is established by (i) the verified-by-inspection loop-order identity (patchmajor's patch -> ascending-pixel order is _decode's) and (ii) the exhaustive single-injection raise-parity sweep vs decode_block over all (patch,pixel) positions. Multiple reserved codes in different patches are not injected (observably indistinguishable given the message), and the sweep runs at start=0 only (mid-interval starts are covered by the valid-payload bit tests). If a future refactor makes positions observable (e.g. richer diagnostics), add the positional assertion.",
+   "repair_if_touched": "Add a multi-injection case and a start>0 injection once any position-bearing diagnostic exists."
+  },
+  {
+   "id": "N4",
+   "severity": "note",
+   "where": "test grids across tests/optimization_v8/layout/",
+   "finding": "Combined N8-11 coverage reaches P in {1,2,3,7,13,153,609}; the obligation grid's P=5 and P=11 appear in no N8-11 suite (they exist in the N8-04 reference suite's grid). B=11 is covered at layout level but absent at consumer level. Consumer sky_down/sky_side columns are freshly allocated contiguous arrays; the stride-12/negative/one-element sky-column cases are the frozen kernel's own coverage in the N8-04 reference suite, and the AoSoA consumer does not modify that code path. None of these gaps can hide a layout defect: mode interactions need P>=3 (covered), and the proof consumer is the frozen kernel with re-indexed reads.",
+   "repair_if_touched": "Add P=5 and a stride-12 sky column case to test_consumer_parity.py for grid completeness."
+  },
+  {
+   "id": "N5",
+   "severity": "note",
+   "where": "experiments/optimization_v8/layout/direct_aosoa.py:102-132 (patchmajor) vs :227-229 (blocked)",
+   "finding": "Error-path write asymmetry: on a reserved code, patchmajor has already written all earlier (patch,pixel) outputs into the caller's buffer before raising -- the same observable class as _decode partially filling its bits array -- while blocked guarantees an untouched out via preflight (poison-tested). Both propagate the IndexError so callers must discard, but a caller supplying out= and catching the error gets different residual content depending on order.",
+   "repair_if_touched": "One docstring line on produce_block_aosoa noting partial writes are possible on the patchmajor error path."
+  },
+  {
+   "id": "N6",
+   "severity": "note",
+   "where": "experiments/optimization_v8/layout/direct_aosoa.py:376-429 and produce_block_aosoa docstring :241",
+   "finding": "The proof consumer's bitwise parity is conditioned on being fed the FLOAT32 views of the produced blocks (tests pass .view(np.float32); docstring states it). Feeding the raw uint32 blocks would silently change numba type promotion in expressions like np.float32(1)-sh and could diverge from the frozen graph. lw_primary_aosoa_serial is test/proof-only so this is a convention, not a defect, but wave-2 consumers (N8-12/N8-13) must bind the same convention or re-derive the comparison types.",
+   "repair_if_touched": "Assert the input dtype (float32 views) at the top of lw_primary_aosoa_serial's wrapper, or document the requirement in the N8-12/13 handover."
+  }
+ ],
+ "scope_guard": "Nothing outside optimization_v8_native_default/evidence/reviews/ was written by this review; reference oracle and adversarial grid imported read-only; no network; no commits; no timed benchmarking.",
+ "commands_run": [
+  ".venv/bin/python -m pytest tests/optimization_v8/layout tests/optimization_v8/reference -p no:cacheprovider -q  -> 893 passed in 3.21s",
+  ".venv/bin/python -m pytest tests/optimization_v8/layout -p no:cacheprovider -q -> 781 passed",
+  ".venv/bin/python -m pytest tests/optimization_v8/reference -p no:cacheprovider -q -> 112 passed"
+ ]
+}

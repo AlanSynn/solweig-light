@@ -1,0 +1,31 @@
+{
+  "evidence_kind": "hypothetical_arithmetic_not_benchmark",
+  "calls": 98304,
+  "overhead_seconds": {
+    "25": 2.4576,
+    "50": 4.9152,
+    "100": 9.8304,
+    "200": 19.6608
+  },
+  "scenarios": [
+    {
+      "f": 0.5,
+      "s": 2,
+      "delta": 0.02,
+      "total_speedup": 1.2987012987012987
+    },
+    {
+      "f": 0.6,
+      "s": 3,
+      "delta": 0.03,
+      "total_speedup": 1.5873015873015872
+    },
+    {
+      "f": 0.7,
+      "s": 4,
+      "delta": 0.03,
+      "total_speedup": 1.9801980198019802
+    }
+  ],
+  "required_region_for_total_2x_at_f_0_6_delta_0_03": 8.571428571428573
+}

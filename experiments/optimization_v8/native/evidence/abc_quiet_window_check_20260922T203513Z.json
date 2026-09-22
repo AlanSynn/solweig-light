@@ -1,0 +1,38 @@
+{
+  "ambient_loadavg_end": [
+    12.720703125,
+    9.0185546875,
+    7.8515625
+  ],
+  "ambient_loadavg_start": [
+    12.720703125,
+    9.0185546875,
+    7.8515625
+  ],
+  "b_consumer": "lw_b_control.py:lw_primary_b",
+  "block_sizes": [
+    128,
+    1024
+  ],
+  "mode": "check-only (no timing)",
+  "n1_note": "producer cost is reported per block size; the direct producer reverses vs decode+transpose at B=128 in 3 of 6 N8-11 cells, so C1 end-to-end totals at 128 must include that penalty honestly",
+  "patches": 153,
+  "per_block": [
+    {
+      "B": 128,
+      "adapter_ms": {},
+      "kernel_ms": {},
+      "parity": "pass (A0==C1==B1)",
+      "producer_ms": {}
+    },
+    {
+      "B": 1024,
+      "adapter_ms": {},
+      "kernel_ms": {},
+      "parity": "pass (A0==C1==B1)",
+      "producer_ms": {}
+    }
+  ],
+  "recorded_utc": "2026-09-22T20:35:12Z",
+  "reps": 0
+}

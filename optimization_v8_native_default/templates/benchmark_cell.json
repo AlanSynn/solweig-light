@@ -1,0 +1,24 @@
+{
+  "schema": "sw8-benchmark-cell-v1",
+  "id": null,
+  "kind": "primary",
+  "evidence_kind": "template_not_execution",
+  "workload_manifest_sha256": null,
+  "source_controls": {
+    "A0": null,
+    "B1": null,
+    "C1": null
+  },
+  "cpu_budget": null,
+  "thread_observed": false,
+  "default_env_unset": false,
+  "main_defaults_covered": false,
+  "region_boundary": null,
+  "native_executed_work": 0,
+  "eligible_work": 0,
+  "pairs_current": [],
+  "pairs_control": [],
+  "clean_complete": false,
+  "raw_evidence_paths": [],
+  "note": "Each pair is {baseline_s, candidate_s}; all relevant bridge/IO cost included. This is not a result."
+}

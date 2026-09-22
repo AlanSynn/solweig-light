@@ -1,0 +1,18 @@
+{
+  "schema": "sw8-packet-checks-v1",
+  "evidence_kind": "packet_tools_only",
+  "created_utc": "2026-09-22T19:25:50.985155+00:00",
+  "python": "3.12.13",
+  "tests_run": 52,
+  "failures": 0,
+  "errors": 4,
+  "skipped": 0,
+  "elapsed_seconds": 2.01,
+  "passed": false,
+  "solweig_executed": false,
+  "native_benchmark_executed": false,
+  "wheel_runtime_verified": false,
+  "repository_user_branch_changed": false,
+  "production_native_default_qualified": false,
+  "note": "Synthetic records and dummy repositories/wheel archives test helpers, not the model."
+}

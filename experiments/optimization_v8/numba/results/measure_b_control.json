@@ -1,0 +1,348 @@
+{
+ "label": "INFORMATIONAL, NON-PROMOTION -- protocol cells belong to N8-31",
+ "provenance": {
+  "timestamp_utc": "2026-09-22T20:32:50.136449+00:00",
+  "git_head": "16cdc56cbc8755675487b9c9c1f5a7e987e2c9e4",
+  "branch": "perf/native-optimization",
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "python": "3.12.13",
+  "numpy": "2.4.6",
+  "numba_threads": 4,
+  "loadavg_start": [
+   5.802734375,
+   6.47412109375,
+   6.91796875
+  ],
+  "loadavg_end": [
+   5.658203125,
+   6.4326171875,
+   6.900390625
+  ]
+ },
+ "blocks": [
+  {
+   "block_pixels": 128,
+   "mix": "mix",
+   "rows": 128,
+   "width": 8,
+   "loadavg": [
+    5.802734375,
+    6.47412109375,
+    6.91796875
+   ],
+   "arms": {
+    "A-end-to-end": {
+     "min_s": 0.0004823340568691492,
+     "median_s": 0.0005698744207620621,
+     "repeats": 100
+    },
+    "B-end-to-end": {
+     "min_s": 0.0005124169401824474,
+     "median_s": 0.0005654373671859503,
+     "repeats": 100
+    },
+    "leaf-A-producer+classify": {
+     "min_s": 0.0002697499003261328,
+     "median_s": 0.0003335210494697094,
+     "repeats": 100
+    },
+    "leaf-B-producer+classify": {
+     "min_s": 0.0003207919653505087,
+     "median_s": 0.00034318759571760893,
+     "repeats": 100
+    },
+    "leaf-A-frozen-kernel": {
+     "min_s": 0.00015408312901854515,
+     "median_s": 0.00021222862415015697,
+     "repeats": 100
+    },
+    "leaf-B-row-parallel-adapter": {
+     "min_s": 0.00011858297511935234,
+     "median_s": 0.0001635414082556963,
+     "repeats": 100
+    },
+    "leaf-B-row-parallel-raw": {
+     "min_s": 8.466700091958046e-05,
+     "median_s": 0.00013891689013689756,
+     "repeats": 100
+    },
+    "leaf-B-lanes-raw": {
+     "min_s": 0.0002007919829338789,
+     "median_s": 0.0002289164112880826,
+     "repeats": 100
+    }
+   },
+   "bitwise_equal_A_vs_B": true
+  },
+  {
+   "block_pixels": 128,
+   "mix": "all-binary",
+   "rows": 128,
+   "width": 8,
+   "loadavg": [
+    5.802734375,
+    6.47412109375,
+    6.91796875
+   ],
+   "arms": {
+    "A-end-to-end": {
+     "min_s": 0.0006383750587701797,
+     "median_s": 0.0007482706569135189,
+     "repeats": 100
+    },
+    "B-end-to-end": {
+     "min_s": 0.0005651670508086681,
+     "median_s": 0.0006434795213863254,
+     "repeats": 100
+    },
+    "leaf-A-producer+classify": {
+     "min_s": 0.0004174578934907913,
+     "median_s": 0.0004346041241660714,
+     "repeats": 100
+    },
+    "leaf-B-producer+classify": {
+     "min_s": 0.00039275013841688633,
+     "median_s": 0.0004141454119235277,
+     "repeats": 100
+    },
+    "leaf-A-frozen-kernel": {
+     "min_s": 0.00015324982814490795,
+     "median_s": 0.00023993756622076035,
+     "repeats": 100
+    },
+    "leaf-B-row-parallel-adapter": {
+     "min_s": 0.0001105419360101223,
+     "median_s": 0.0001551461173221469,
+     "repeats": 100
+    },
+    "leaf-B-row-parallel-raw": {
+     "min_s": 9.587500244379044e-05,
+     "median_s": 0.0001463540829718113,
+     "repeats": 100
+    },
+    "leaf-B-lanes-raw": {
+     "min_s": 0.0002412919420748949,
+     "median_s": 0.0002553544472903013,
+     "repeats": 100
+    }
+   },
+   "bitwise_equal_A_vs_B": true
+  },
+  {
+   "block_pixels": 128,
+   "mix": "all-raw",
+   "rows": 128,
+   "width": 8,
+   "loadavg": [
+    5.802734375,
+    6.47412109375,
+    6.91796875
+   ],
+   "arms": {
+    "A-end-to-end": {
+     "min_s": 0.00023591588251292706,
+     "median_s": 0.0003447710769250989,
+     "repeats": 100
+    },
+    "B-end-to-end": {
+     "min_s": 0.00020612520165741444,
+     "median_s": 0.0002530834171921015,
+     "repeats": 100
+    },
+    "leaf-A-producer+classify": {
+     "min_s": 9.616604074835777e-05,
+     "median_s": 9.754148777574301e-05,
+     "repeats": 100
+    },
+    "leaf-B-producer+classify": {
+     "min_s": 9.412504732608795e-05,
+     "median_s": 9.479187428951263e-05,
+     "repeats": 100
+    },
+    "leaf-A-frozen-kernel": {
+     "min_s": 0.00013591721653938293,
+     "median_s": 0.00019283290021121502,
+     "repeats": 100
+    },
+    "leaf-B-row-parallel-adapter": {
+     "min_s": 0.00011116708628833294,
+     "median_s": 0.0001310619991272688,
+     "repeats": 100
+    },
+    "leaf-B-row-parallel-raw": {
+     "min_s": 9.304098784923553e-05,
+     "median_s": 0.00012866698671132326,
+     "repeats": 100
+    },
+    "leaf-B-lanes-raw": {
+     "min_s": 0.00017491704784333706,
+     "median_s": 0.00017674989067018032,
+     "repeats": 100
+    }
+   },
+   "bitwise_equal_A_vs_B": true
+  },
+  {
+   "block_pixels": 1024,
+   "mix": "mix",
+   "rows": 1024,
+   "width": 8,
+   "loadavg": [
+    5.802734375,
+    6.47412109375,
+    6.91796875
+   ],
+   "arms": {
+    "A-end-to-end": {
+     "min_s": 0.0032985841389745474,
+     "median_s": 0.003640624927356839,
+     "repeats": 25
+    },
+    "B-end-to-end": {
+     "min_s": 0.0034187089186161757,
+     "median_s": 0.0036307501140981913,
+     "repeats": 25
+    },
+    "leaf-A-producer+classify": {
+     "min_s": 0.002721457974985242,
+     "median_s": 0.002865999937057495,
+     "repeats": 25
+    },
+    "leaf-B-producer+classify": {
+     "min_s": 0.002849833806976676,
+     "median_s": 0.002881166059523821,
+     "repeats": 25
+    },
+    "leaf-A-frozen-kernel": {
+     "min_s": 0.0005181659944355488,
+     "median_s": 0.0005569998174905777,
+     "repeats": 25
+    },
+    "leaf-B-row-parallel-adapter": {
+     "min_s": 0.0004688331391662359,
+     "median_s": 0.0004991658497601748,
+     "repeats": 25
+    },
+    "leaf-B-row-parallel-raw": {
+     "min_s": 0.00044941692613065243,
+     "median_s": 0.0004672498907893896,
+     "repeats": 25
+    },
+    "leaf-B-lanes-raw": {
+     "min_s": 0.001905541867017746,
+     "median_s": 0.001961667090654373,
+     "repeats": 25
+    }
+   },
+   "bitwise_equal_A_vs_B": true
+  },
+  {
+   "block_pixels": 1024,
+   "mix": "all-binary",
+   "rows": 1024,
+   "width": 8,
+   "loadavg": [
+    5.802734375,
+    6.47412109375,
+    6.91796875
+   ],
+   "arms": {
+    "A-end-to-end": {
+     "min_s": 0.004000625107437372,
+     "median_s": 0.00424966705031693,
+     "repeats": 25
+    },
+    "B-end-to-end": {
+     "min_s": 0.004048292059451342,
+     "median_s": 0.004255041945725679,
+     "repeats": 25
+    },
+    "leaf-A-producer+classify": {
+     "min_s": 0.003324249992147088,
+     "median_s": 0.0033611671533435583,
+     "repeats": 25
+    },
+    "leaf-B-producer+classify": {
+     "min_s": 0.003356959205120802,
+     "median_s": 0.0034970000851899385,
+     "repeats": 25
+    },
+    "leaf-A-frozen-kernel": {
+     "min_s": 0.0005757499020546675,
+     "median_s": 0.0006141250487416983,
+     "repeats": 25
+    },
+    "leaf-B-row-parallel-adapter": {
+     "min_s": 0.0005193341057747602,
+     "median_s": 0.000573707977309823,
+     "repeats": 25
+    },
+    "leaf-B-row-parallel-raw": {
+     "min_s": 0.0005072499625384808,
+     "median_s": 0.0005489590112119913,
+     "repeats": 25
+    },
+    "leaf-B-lanes-raw": {
+     "min_s": 0.0023241250310093164,
+     "median_s": 0.002432707929983735,
+     "repeats": 25
+    }
+   },
+   "bitwise_equal_A_vs_B": true
+  },
+  {
+   "block_pixels": 1024,
+   "mix": "all-raw",
+   "rows": 1024,
+   "width": 8,
+   "loadavg": [
+    5.802734375,
+    6.47412109375,
+    6.91796875
+   ],
+   "arms": {
+    "A-end-to-end": {
+     "min_s": 0.0011243748012930155,
+     "median_s": 0.0012581250630319118,
+     "repeats": 25
+    },
+    "B-end-to-end": {
+     "min_s": 0.0011057921219617128,
+     "median_s": 0.0011552919168025255,
+     "repeats": 25
+    },
+    "leaf-A-producer+classify": {
+     "min_s": 0.0006437080446630716,
+     "median_s": 0.0006574590224772692,
+     "repeats": 25
+    },
+    "leaf-B-producer+classify": {
+     "min_s": 0.0006201670039445162,
+     "median_s": 0.0006427501793950796,
+     "repeats": 25
+    },
+    "leaf-A-frozen-kernel": {
+     "min_s": 0.0004130417946726084,
+     "median_s": 0.0004483337979763746,
+     "repeats": 25
+    },
+    "leaf-B-row-parallel-adapter": {
+     "min_s": 0.00038283318281173706,
+     "median_s": 0.000421375036239624,
+     "repeats": 25
+    },
+    "leaf-B-row-parallel-raw": {
+     "min_s": 0.0003799998667091131,
+     "median_s": 0.0004111670423299074,
+     "repeats": 25
+    },
+    "leaf-B-lanes-raw": {
+     "min_s": 0.0014112498611211777,
+     "median_s": 0.0014368328265845776,
+     "repeats": 25
+    }
+   },
+   "bitwise_equal_A_vs_B": true
+  }
+ ]
+}

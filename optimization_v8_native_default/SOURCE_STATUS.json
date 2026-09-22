@@ -1,0 +1,15 @@
+{
+  "schema": "sw8-source-observation-v1",
+  "review_date": "2026-09-22",
+  "repository": "AlanSynn/solweig-light",
+  "integration_branch": "perf/native-optimization",
+  "observed_integration_sha": "16cdc56cbc8755675487b9c9c1f5a7e987e2c9e4",
+  "observed_main_sha": "14e888760727583ef782a4dc0e7a5c7c6e6ff9d1",
+  "upstream_model_sha": "0d7fe742abeeddd890dd58fc76ed7f78bd47faec",
+  "packet_scope": "design_and_helper_tools_only",
+  "solweig_executed_by_packet_author": false,
+  "native_benchmark_executed_by_packet_author": false,
+  "repository_modified_by_packet_author": false,
+  "native_promotion_status": "not_evaluated",
+  "warning": "Recheck actual local HEAD; never reset to these observations."
+}

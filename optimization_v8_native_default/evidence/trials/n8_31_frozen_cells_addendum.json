@@ -1,0 +1,30 @@
+{
+  "record": "N8-31 frozen-cell addendum: review-adopted obligations transcribed BEFORE any N8-31 results exist",
+  "recorded_utc": "2026-09-22T19:20Z",
+  "pre_results_declaration": "At this timestamp optimization_v8_native_default/evidence/trials/ contained no files (this record creates the directory). No A/B/C comparison result, timed or untimed, has been produced under N8-31. This addendum is therefore a pre-results protocol amendment, not a post-hoc gate edit. Base freeze instruments remain authoritative: BENCHMARK_PROTOCOL.md (dossier), native/quiet_window_abc.py (B=128+1024, mixes, A/B/C arms, parity before timing, min-of-N, INFORMATIONAL/NON-PROMOTION), and the n8-13 harness.",
+  "source_of_obligations": {
+    "review": "optimization_v8_native_default/evidence/reviews/n8_30_review_n8_40_integration.json (verdict APPROVE-WITH-NOTES)",
+    "disposition": "optimization_v8_native_default/evidence/integration/n8_40_review_notes_disposition.json"
+  },
+  "binding_cells": [
+    {
+      "id": "n831-cell-scene-envelope",
+      "obligation": "N6 position (reviewer, adopted): NO dispatch-level scene-size guard in src; the size envelope is a RECORD obligation.",
+      "requirement": "The first qualified record (N8-31 transcription or N8-32 selection) MUST state the scene-size envelope explicitly: approximately 2.25 GB routed-call overhead at 1024^2 and approximately 9 GB at 2048^2, P=153 (whole-scene uint32 AoSoA x3 + bool sun/shade x2, per n8_40_integration_record memory note). N8-31 end-to-end cells MUST include whole-process-peak accounting covering the whole-scene producer allocations (produce_blocks_aosoa + classify_block_aosoa outputs plus the legacy-loop inputs they duplicate).",
+      "rationale": "N8-32 cannot qualify a scope it has not stated; BENCHMARK_PROTOCOL memory-pressure kills are censored runs and must be attributable to a stated envelope."
+    },
+    {
+      "id": "n831-cell-registry-fairness",
+      "obligation": "N7 (reviewer): per-call registry read on every routed-eligible driver call.",
+      "requirement": "N8-31 end-to-end accounting MUST include one resolve_lw_backend() call (one small JSON stat+read) per driver call in the routed arm's cost. The fair shipped-state baseline arm (row A in repo state) pays the identical read, so both arms carry it; the cell must record that the read disappears only at N8-41 vendoring if a caching variant is ever proposed.",
+      "rationale": "Omitting it would overstate routed-arm cost relative to a post-vendoring deployment; including it keeps the repo-state comparison faithful to both arms."
+    }
+  ],
+  "unchanged_freezes": [
+    "block=128 and block=1024 both remain required cells",
+    "A (current Numba) / B (equivalent-layout Numba) / C (native) all three arms remain required with parity before timing",
+    "min-of-N and the quiet-host gate (loadavg and free+inactive thresholds in host_quiet_window_note.json) unchanged",
+    "INFORMATIONAL/NON-PROMOTION status of the quiet-window comparison unchanged",
+    "BENCHMARK_PROTOCOL rules on censored runs and single final large workload unchanged"
+  ]
+}

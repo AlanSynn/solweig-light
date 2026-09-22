@@ -1,0 +1,151 @@
+{
+ "schema": "sw8-n8-30-review-v1",
+ "review_of": "experiments/optimization_v8/artifacts/installed_loader.py (+ linked_image_fma_scan.json) + tests/optimization_v8/artifacts/ (conftest.py, test_installed_loader.py 42 tests, test_linked_image_scan.py 2 tests)",
+ "review_target_task": "N8-21 trusted installed-artifact loader (BUILD_DESIGN.md section 8 runtime loader contract)",
+ "reviewer": "n8-30 review service (independent; did not author N8-21)",
+ "review_utc": "2026-09-22",
+ "worktree": "/Users/alansynn/Workspace/solweig-v8-native @ 16cdc56c (perf/native-optimization)",
+ "verdict": "APPROVE-WITH-NOTES",
+ "blocking_defects": [],
+ "delta_recheck": {
+  "subject": "N1 repair (author reports complete)",
+  "diff_region_read": "_VALIDATOR_FAILURE_SIGNALS = (OSError, AttributeError, KeyError, ValueError, TypeError) at installed_loader.py:133-134 (deliberately not bare Exception; NameError-class loader bugs still crash); clause in _gate_candidate (:417-428) -> _corrupt with class name in reason and raised CorruptNativeArtifact; clause in attempt_load in-lock block (:639-662) wrapping _verified_manifest + _instantiate -> recorded declined-corrupt naming the class; build_native.py untouched (917 lines, :632 site unchanged); git diff HEAD empty",
+  "reruns": "tests/optimization_v8/artifacts = 47 passed (44+3); artifacts+loader+packaging = 213 passed (reviewer-verified 210 baseline + 3; 208/211 derived from stale pre-scan-pair handoff counts). Full tree for the record: 1948 passed, 6 skipped, 1 failed — installed/test_installed_wheel_gates.py::test_surface_gate_recorded, a teammate file that never imports installed_loader and passes standalone (7/7): the known order-dependent teammate flake (author observed 125->13->8 across identical reruns), not a repair regression, out of scope",
+  "teeth_independently_confirmed": "/tmp mirror with ONLY the clause neutralized (tuple -> ()): all 3 new regressions fail with raw PermissionError/AttributeError/KeyError propagating out of auto_load, KeyError traceback pinned at build_native.py:632; clause intact -> 47/47 green. Tests use the shared CORRUPT_CASES template, so each also asserts quiet auto (capfd empty, builder_spy empty, IoSpy pure) + loud explicit ('packaging defect' + class name): quiet/loud split preserved",
+  "in_lock_clause": "VERIFIED WORKING and DETERMINISTICALLY TESTABLE: reviewer exercised it without any race by patching the installed_loader._verified_manifest seam to raise KeyError (the mid-load-swap consequence) -> auto quiet None with declined-corrupt 'validation raised an untyped validator failure (KeyError)'; explicit -> CorruptNativeArtifact with 'packaging defect' and the class named. The author's 'no deterministic test — racing verify->dlopen required' is overstated; ~6-line seam test feasible (note N6)",
+  "residual_accepted": "IndexError (artifacts[0] on a mid-load swapped manifest keeping a valid target but empty artifacts) deliberately outside the signal set — unreachable from builder-emitted artifacts, outside the mid-load external-mutation model, consistent with the typed-crash philosophy",
+  "disposition_record_check": "n8_21_review_notes_disposition.json accurate on every checkable claim except one cosmetic self-inconsistency: N2_handoff_count_note says '47/211/1703' vs its own counts block (213; full tree is a moving target mid-wave) — note N7",
+  "outcome": "N1 REPAIRED and independently re-verified; verdict remains APPROVE-WITH-NOTES"
+ },
+ "delta2_addendum": {
+  "subject": "decline-log gap exposed by the author's N6 work + the N6 seam test",
+  "gap": "in-lock declines (the N1 clause AND the pre-existing NativeHandleError branch) were published to _REGISTRY but never reached decline_reasons() — a real gap this review missed",
+  "fix": "attempt_load calls _record(loaded, key) for a non-LOADED in-lock outcome after publication (installed_loader.py:671-676); _record's cache guard sees the _REGISTRY entry and only appends the diagnostic line",
+  "reviewer_verification": {
+   "verify_once_preserved": "first auto_load on an in-lock-declined key performs the 4 content hashes once; two cached repeats add ZERO hashes and the decline log stays at exactly 1 line (served from _REGISTRY; append-only, no repeat spam, no double caching); the LOADED path still never calls _record",
+   "n6_seam_test": "VALID and non-vacuous: it is the deterministic _verified_manifest seam patch this review prescribed; in a mirror with ONLY the _record(loaded, key) line stripped the quiet decline still happens but the test fails at test_installed_loader.py:294 ('no [declined-corrupt] decline recorded') — it pins the logging delta specifically; stripping the in-lock clause fails it earlier with the raw KeyError (established in delta #1). Teeth in both directions",
+   "reruns": "artifacts 48 passed; combined 214 passed; policy (installed_loader consumer) 84 passed; git diff HEAD empty"
+  },
+  "closing_verdict": "APPROVE-WITH-NOTES (final). N1 repaired+verified (delta #1); decline-log gap repaired+verified (delta #2); N6 discharged by the seam test; N2-N5 and N7 stand as recorded. No open items on this reviewer's side; N8-21 may close"
+ },
+ "reviewer_probes": {
+  "staged_generation_verify_subcommand": "PASS (schema, name derivation, hashes, Mach-O walk, FMA re-audit)",
+  "staged_dylib_sha256_recomputed": "eb1071fcef64e5763839b65240986e9519d3de1906cf821925d1e0922582b46a (matches BUILD_DESIGN 9 and the N8-20 review record)",
+  "sysctl_probe_hw_optional_neon_on_this_host": 1,
+  "real_os_fork_probe": "parent handle -> StaleNativeHandle in child (correct); child auto_load minted a FRESH handle under its own pid with bitwise-identical output; parent handle kept executing in the parent",
+  "crash_probe_unreadable_dylib_readable_manifest": "CRASH: PermissionError escapes auto_load (should be a quiet corrupt decline) — note N1",
+  "crash_probe_artifacts_as_strings": "CRASH: AttributeError ('str' object has no attribute 'get') from build_native.validate_manifest escapes auto_load — note N1",
+  "crash_probe_generated_sources_as_strings": "CRASH: AttributeError, same root cause — note N1",
+  "crash_probe_fma_audit_missing_asm_sha256": "CRASH: KeyError 'asm_sha256' from build_native.verify_generation escapes auto_load — note N1",
+  "empty_requirements_manifest_on_arm64": "loads (within the qualified domain: arch/machine/minOS gates are loader-side constants) — note N3",
+  "corrupt_sibling_plus_qualified": "qualified generation loads; corrupt sibling recorded as [declined-corrupt], never silently ignored",
+  "prepare_native_handle_on_staged_generation": "raises CorruptNativeArtifact ('build_stamp.json missing: dylib present but its kernel binding is unverifiable') — the bypass is NECESSARY, not convenient (and prepare would hash the packaged .ispc, forbidden by BUILD_DESIGN 8.2)",
+  "handle_identity_no_copy_drift": "type(h) is native_handle.NativeHandle; type(h).execute is native_handle.NativeHandle.execute (reviewed class attribute, no override); entries eagerly argtypes-bound to reviewed lw_native._PROTO (f32 surface scalars c_float, restypes None); pid pinned; grep: no def execute / NativeHandle redefinition / setattr / prototype code in installed_loader.py",
+  "toctou_swap_in_window": "mutated dylib swapped in after verify_generation passes: process SIGKILLed by dyld arm64 code-signature validation at dlopen (exit 137) — modified bytes CANNOT execute in the window on this platform",
+  "toctou_post_load_mutation_next_generation": "declined-corrupt (content verification failed: hash mismatch) — detection is self-healing at the next workflow generation",
+  "clang_positive_control_reproduced": "-ffp-contract=fast on a*b+c -> fma_audit flags fmadd (passed=False); -ffp-contract=off same source -> 0 hits — the staged 0-hit linked-image scan is not vacuous"
+ },
+ "per_obligation_findings": [
+  {
+   "obligation": "1. contract fidelity (BUILD_DESIGN 8.1-8.5)",
+   "result": "PASS",
+   "citations": {
+    "8.1_package_resources_only": "installed_loader.py:228-244 (importlib.resources.files, filesystem-tree requirement); :545-551 generation root; zero os.environ in module (source-asserted test:316-317, reviewer grep clean); dev-cache positive rejection :557-562 (test:677-699)",
+    "8.1_containment_before_any_open": "member lexical+realpath :252-275 and :383-393 (before any hash — proven by read_opens/hashed assertions tests:588-661); manifest itself :365-373; generation dirs :583-589; native root :552-556; absolute/../NUL/backslash-root rejected lexically :264-269",
+    "8.2_no_compile_download_writes": "structural grep clean (no print/subprocess/tempfile/mkdir/shutil/socket/urllib); hardened IoSpy (builtins.open + io.open + os.open + fs-mutation + spawn + socket sinks — also discharges N8-10 review note N1's spy gap for this suite) proves zero writes/subprocess/network on absent (:307-313), env-set (:320-334), source-no-native (:344-353), qualified (:463-470) and all 13 corrupt mutations (:532-545); the load path never hashes the packaged .ispc (verify_generation hashes only listed generation members)",
+    "8.3_gates_before_dlopen_in_order": "installed_loader.py:359-468: containment -> manifest parse -> member containment -> build_mode -> verify_generation REUSED verbatim (build_native.py:577-642: schema, generation-name derivation, hashes, sizes, Mach-O structural walk, FMA re-audit) -> ABI (:413-436: abi_version, wrapper ABI, python_c_api False, exact exported-symbol set, package name) -> math-profile allow-list (:438-446) -> target/gang + dylib-name presence (:448-459) -> host capability (:461-464 + :316-351: arch/machine/os/minOS/sysctlbyname NEON probe; unrecognized requirements fail closed :348-350); once per (pid, workflow generation, root)",
+    "8.4_absent_vs_corrupt_vs_unqualified": "absent quiet :197-200,:533-551; corrupt recorded+loud 'packaging defect' :203-208 passim; unqualified quiet-auto/loud-explicit :211-214,:462-464; wordings match the SOURCE_FALLBACK.md table (tests :337-341, :542-545, :707-765)",
+    "8.5_expert_path_separation": "auto never references native_lw or expert_build; builder_spy (:149-176) proves _cache_dir/_kernel_digest/_build_needed/_build/_ensure_loaded/native_longwave_primary/expert_build never entered on every auto-path test"
+   },
+   "notes": "8.1 'any user/cache-writable location' is implemented as the legacy dev-cache rejection + containment, not a writability probe — the correct reading (a probe would reject legitimate pip --user installs)."
+  },
+  {
+   "obligation": "2. the prepare_native_handle bypass (critical)",
+   "result": "PASS — no lifetime/concurrency guarantee weakens",
+   "findings": [
+    "Admission is replaced (manifest gate here vs legacy build_stamp + packaged-.ispc hashing in prepare — prepare_native_handle:283-302 is correctly forbidden on the default path by BUILD_DESIGN 8.2), lifetime is reused wholesale: native_handle._load_entries (eager argtypes/restype binding, native_handle.py:532-547), the NativeHandle class (pid pinning, execute, no dlclose), native_handle._dir_lock (installed_loader.py:616), the shared workflow-generation clock (:516-517), taxonomy re-export (:130-132).",
+    "PID pinning preserved: handle._pid captured from native_handle._getpid() at instantiate (:499) and re-resolved at call time by execute(); reviewer's REAL os.fork probe: parent handle raises StaleNativeHandle in the child, the child's auto_load mints a fresh CDLL under its own pid (keys embed pid) with bitwise-identical output, the parent handle keeps executing.",
+    "Workflow-generation bump semantics preserved: all loader caches key on wgen; new_workflow_generation clears native_handle._NEG_CACHE and makes installed-loader keys unreachable (tests :355-371, :450-460, :562-580). Minor cosmetic: _instantiate re-reads current_workflow_generation() rather than the wgen captured at entry — a mid-attempt bump by another thread only duplicates a handle, never reuses a stale one.",
+    "Dir-lock ordering: gate/hashing outside the lock, then lock -> recheck BOTH caches (:618 — strictly better than prepare's in-lock recheck, which skipped _NEG_CACHE; prior N8-10 note N3) -> instantiate -> publish inside the lock (:634-635). No in-process writer to the installed tree exists (auto never writes; expert_build is dev-cache-scoped and never entered), so outside-lock gating cannot observe half-published state.",
+    "TOCTOU verify->dlopen: the window exists (:590 verify vs :480 dlopen) but is EQUAL IN KIND to prepare_native_handle's (native_handle.py:580-583 hashes then CDLLs under a process-local lock no external writer honors). Trust root is the package manager (ARCHITECTURE.md: 'SHA checks provide content integrity, not authenticity'). No weakening. The additional _verified_manifest re-read (:639-643) adds a mid-load manifest re-parse whose non-taxonomy failures (KeyError/OSError) escape uncaught — only reachable via concurrent external mutation of the package tree mid-load; folded into note N1's broad-catch repair.",
+    "Registry publication difference is diagnostics-only: installed outcomes live in installed_loader._REGISTRY; nothing consults native_handle._REGISTRY for the installed tree, and the two cache systems cannot shadow each other (disjoint key spaces)."
+   ]
+  },
+  {
+   "obligation": "3. trust chain end-to-end",
+   "result": "PASS with notes N3/N4",
+   "findings": [
+    "(a) content hash unverified: not achievable short of an external mid-load swap — the dlopen target is exactly the manifest-listed, hash-verified path (gate :455-459 + verify_generation build_native.py:607-613); nothing unlisted is ever opened.",
+    "(b) containment escape: lexical rejection of absolute/..//NUL/backslash-root components (:264-269) + realpath containment at member/generation/native-root/package-root levels; a symlinked member to a co-generation target hashes and dlopens the SAME bytes; the dev cache is rejected even for a fully valid generation (:557-562).",
+    "(c) ISA lying: unrecognized requirement strings fail closed (:348-350, test :757-765); the arm64/machine/minOS domain gates are loader-side constants, so an empty or lying requirements list cannot escape the qualified domain (reviewer probe: empty requirements loads on arm64 — within domain; N3 suggests positively requiring the expected cpu-feature strings).",
+    "(d) corrupt sibling poisoning: every candidate is gated (:577-597); a corrupt sibling is recorded (diagnostic key=None) while the qualified generation loads (reviewer probe + test :773-789); a crafted sibling cannot suppress the qualified one (declines append-and-continue).",
+    "Mutation teeth, 3 adversarial picks: (i) truncated-dylib-fixed-manifest — hash/name made consistent so only the Mach-O walk (or the dlopen failure, with a DIFFERENT message) can catch it; deleting macho_structure_error fails the keyword assertion — real teeth. (ii) math-profile-fast — validate_manifest accepts any non-empty id, so QUALIFIED_MATH_PROFILES (:439-446) is the ONLY defense; deleting it executes a fast-math dylib and the test fails — real teeth, loader-unique. (iii) abi-version-mismatch — SHARED teeth: validate_manifest independently rejects abi_version!=1 with a message containing the keyword, so deleting only the loader's gate would still pass the test; acceptable today because the loader's expectations ARE the imported builder constants (declared single-source-of-truth), noted as N4. Containment mutations additionally assert not-in-read_opens/not-hashed, proving rejection happened BEFORE any open — deleting _member_escape_reason would load the escaped file and fail the None expectation."
+   ]
+  },
+  {
+   "obligation": "4. decline semantics",
+   "result": "PASS WITH NOTES — crash class N1",
+   "findings": [
+    "Auto/explicit wording split matches the taxonomy and the SOURCE_FALLBACK.md table exactly; the raised CorruptNativeArtifact message carries the recorded reason (test :548-559 asserts the reason substring).",
+    "Quiet path provably silent: capfd out/err == '' (assert_quiet_decline :289-299) plus zero IoSpy writes/subprocess/net and zero builder_spy entries on every auto-path test — evidence is spy-based, not absence-of-assertion.",
+    "No hidden fallback-after-failure: one attempt, outcome cached per key, auto returns None on every non-loaded status; _instantiate failure maps to corrupt (:626-629), never to the legacy path.",
+    "DEFECT (N1, required before N8-41 integration): three confirmed exotic present-but-corrupt inputs CRASH auto_load with a raw exception instead of quietly declining — PermissionError (unreadable listed member: _sha256_file inside verify_generation), AttributeError (type-confused artifacts/generated_sources entries: entry.get in build_native.py:442-444/489-495), KeyError (fma_audit.passed true with asm_sha256 absent: build_native.py:632). _gate_candidate catches only build_native.VerifyFailure (:407-410). All three are fail-closed (unverified bytes never execute) and unreachable from builder-emitted artifacts, but they violate the section 8.4 'auto declines to Numba' contract for corrupt states."
+   ]
+  },
+  {
+   "obligation": "5. verify-once per generation",
+   "result": "PASS",
+   "findings": [
+    "Second load: zero re-hash AND no re-dlopen (hash_spy second == [], same handle object; test :439-447).",
+    "Workflow-generation bump re-verifies and mints a fresh handle (:450-460); absent and corrupt declines are cached per (pid, wgen, root) (:355-371, :562-580).",
+    "Growth: one entry per (pid, wgen, package, root) across _REGISTRY/_NEG_CACHE/_ROOT_CACHE — unbounded over many workflow generations in one process, the SAME carried edge as N8-10 note N4 (-> N8-14 scope); _DECLINE_LOG is bounded at 32 (:126, :191-193)."
+   ]
+  },
+  {
+   "obligation": "6. ownership",
+   "result": "PASS with scope note N2",
+   "findings": [
+    "git diff HEAD is empty (zero tracked files touched); everything is untracked additions.",
+    "Footprint = 5 files: installed_loader.py + linked_image_fma_scan.json under experiments/optimization_v8/artifacts/ (N8-21's owned_scope), and conftest.py + test_installed_loader.py + test_linked_image_scan.py under tests/optimization_v8/artifacts/ (not listed in ANY task's owned_scope in TASKS_CLAUDE.yaml — config omission, no trespass on a sibling scope).",
+    "The handoff claim named installed_loader.py + the tests dir; the linked-image-scan pair was added after review dispatch (its counts 42/208/1698 predate the addition) — the CURRENT tree is what was reviewed and rerun: 44/210/1700, all green. The scan pair discharges N8-20 review note N2; disposition assessed SOUND (see followup_verification).",
+    "Staged-original integrity assertion is REAL: session fixture captures digests before any test runs, and test_staged_original_never_mutated (:806-810) re-hashes and compares. Reviewer independently ran `build_native.py verify` on the staged generation: PASS; dylib sha256 recomputed = eb1071fc...2582b46a, byte-for-byte the BUILD_DESIGN section 9 record."
+   ]
+  },
+  {
+   "obligation": "7. reruns",
+   "result": "PASS (claim counts off by the 2 unmentioned linked-image tests)",
+   "findings": [
+    "artifacts+loader+packaging: 210 passed in 8.70s (claim 208; delta = the 2 linked-image-scan tests). Breakdown: artifacts 44 (42 in test_installed_loader.py + 2), loader 122, packaging 44.",
+    "Full tests/optimization_v8/ tree: 1700 passed, 1 pre-existing warning, in 12.98s (claim 1698; same +2). No cross-suite interference.",
+    "Staged-dir-absent run (reviewer /tmp mirror, repo untouched): test_installed_loader.py = 5 passed + 37 [no-staged-artifact] skips in 0.11s — exactly as claimed; the skip chain also means the integrity fixture never hashes when the fixture is absent (fail-safe direction)."
+   ]
+  }
+ ],
+ "followup_verification": {
+  "trigger": "team-lead state update: linked_image_fma_scan.json + test_linked_image_scan.py added post-dispatch; N2 disposition to assess; author's admission-only divergence claim to verify concretely",
+  "admission_only_divergence": "VERIFIED (probes, not the author's word): (1) no copy-drift — handle is native_handle.NativeHandle, execute is the reviewed class attribute, entries eagerly argtypes-bound to the reviewed prototype, pid pinned, no setattr/redefinition in the loader; (2) bypass NECESSARY — prepare_native_handle(artifact_dir=<staged gen>) raises CorruptNativeArtifact (missing build_stamp.json) and would hash the packaged .ispc (8.2-forbidden); (3) TOCTOU fail-safe — CDLL opens the SAME manifest-listed hash-verified resolved path (cand_real -> _load_entries -> <verified dir>/liblw_native_g{gang}.dylib), no post-open re-check (meaningless once mapped); an in-window swap of MUTATED bytes cannot execute (dyld arm64 code-signature validation SIGKILLs at dlopen, exit 137); post-load mutation is caught at the next workflow generation (declined-corrupt); residual validly-signed-replacement exposure equals prepare_native_handle's and sits beyond the package-manager trust root. Equal-or-stronger fail-safety than the bypassed code.",
+  "n8_20_note_N2_disposition": "SOUND. Runtime linked-image FMA scan declined; build-side evidence adopted and routed to N8-41. Merits: the sha256 manifest pin already fails any post-publication mutation (and mutated images cannot even load per the probe above); the scan's unique value — catching .s-re-emission vs linked-image divergence — is a build-machine property fixed at publication, needed exactly once where tools are guaranteed (build_native verify / N8-41); a runtime scan would violate 8.2's no-subprocess-at-load line and, /usr/bin/otool being an xcrun shim, convert clean-CLT hosts (ordinary supported state) into declines. The runtime scan is belt-and-suspenders realizable only at build time; NOT necessary for runtime trust. Evidence quality: linked_image_fma_scan.json records 0 hits over 7406 otool -tV instruction lines with a positive control the reviewer independently reproduced (clang -ffp-contract=fast -> fmadd flagged; -off -> 0 hits); the test adds a synthetic regex-sensitivity pin and a >1000-instruction-lines non-vacuity guard with [no-staged-artifact]/[otool-unavailable] labels.",
+  "counts_confirmed_current_tree": "artifacts 44 (42 + 2 scan tests), artifacts+loader+packaging 210, full tree 1700 — matches the updated expectations exactly; all green at review time"
+ },
+ "notes": [
+  "N1 (REPAIRED and re-verified — see delta_recheck): _VALIDATOR_FAILURE_SIGNALS clause maps the corruption-signal set (OSError/AttributeError/KeyError/ValueError/TypeError) to recorded declined-corrupt with the class named, in both _gate_candidate and the in-lock re-read/lookup; build_native-side isinstance hardening still routed to N8-41 delta review.",
+  "N2: handoff counts (42/208/1698) predate the post-dispatch linked-image-scan pair; current tree verified 44/210/1700 (generous direction); and tests/optimization_v8/artifacts/ is missing from TASKS_CLAUDE.yaml owned_scope for N8-21.",
+  "N3: an empty platform.requirements list loads on arm64 (lying by omission, still inside the loader-side qualified domain); consider positively requiring the expected cpu-feature strings rather than only recognizing unknown ones.",
+  "N4: the abi/wrapper-ABI mutations share teeth with validate_manifest (same imported constants — the declared single-source-of-truth design); _instantiate's stamp records verified['artifacts'][0]['sha256'] as dylib_sha256, which assumes the builder's single-artifact layout (cosmetic metadata for any hypothetical multi-artifact wheel).",
+  "N5: sys.path sibling bootstrapping (installed_loader.py:85-91) is experiment-stage only; N8-41 must vendor the logic under the package without it. Carried edges: per-generation cache growth (N8-14 scope); verify->dlopen external-mutation window equal to N8-10's (package-manager trust root).",
+  "N6: DISCHARGED (delta #2) — the seam test test_in_lock_untyped_validator_failure_declines_not_crashes implements the reviewer-prescribed deterministic _verified_manifest patch with teeth in both directions; the associated decline-log gap (in-lock declines never reaching decline_reasons()) was found and fixed with it.",
+  "N7: n8_21_review_notes_disposition.json N2_handoff_count_note.disposition says '47/211/1703', inconsistent with its own counts block (213 combined) — cosmetic author-side fix."
+ ],
+ "required_repairs": [],
+ "test_commands_run": [
+  ".venv/bin/python -m pytest tests/optimization_v8/artifacts tests/optimization_v8/loader tests/optimization_v8/packaging -p no:cacheprovider -q -> 210 passed in 8.70s",
+  ".venv/bin/python -m pytest tests/optimization_v8/artifacts -p no:cacheprovider -q -> 44 passed",
+  ".venv/bin/python -m pytest tests/optimization_v8/loader -p no:cacheprovider -q -> 122 passed",
+  ".venv/bin/python -m pytest tests/optimization_v8/packaging -p no:cacheprovider -q -> 44 passed",
+  ".venv/bin/python -m pytest tests/optimization_v8/ -p no:cacheprovider -q -> 1700 passed, 1 warning",
+  "staged-absent mirror run of test_installed_loader.py -q -rs -> 5 passed, 37 skipped",
+  ".venv/bin/python experiments/optimization_v8/packaging/build_native.py verify --generation-dir .../stage/lw-g8-42aeba6a50dc5937 -> verified: true",
+  "reviewer probes (in /tmp mirrors, repo untouched): os.fork stale-handle/fresh-load; unreadable-dylib; type-confused manifest entries; missing asm_sha256; empty requirements; corrupt+qualified siblings",
+  "follow-up probes: prepare_native_handle(artifact_dir=staged gen) -> CorruptNativeArtifact (bypass necessary); handle identity/execute-attribute/argtypes checks; in-window mutated-dylib swap -> SIGKILL at dlopen (dyld code-signature validation); post-load mutation -> declined-corrupt at next generation; clang -ffp-contract=fast/off positive+negative control through build_native.fma_audit"
+ ]
+}

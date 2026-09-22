@@ -1,0 +1,239 @@
+{
+  "schema": "solweig-v8-typed-lw-contract-v1",
+  "task": "N8-04",
+  "role": "numerical_owner",
+  "title": "Frozen typed longwave owner/ABI contract for the primary reducer",
+  "frozen_at_head": "16cdc56cbc8755675487b9c9c1f5a7e987e2c9e4",
+  "branch": "perf/native-optimization",
+  "worktree": "/Users/alansynn/Workspace/solweig-v8-native",
+  "purpose": "Executable exactness gates for later variants (N8-12 Numba B, N8-13 native C): any new consumer must reproduce the typed graph below bitwise (uint32 view of all seven output columns) on the admitted domain before it may replace the baseline.",
+
+  "baseline_lineage": {
+    "authoritative_source": "src/solweig_light/radiation/cylinder_longwave.py",
+    "file_blob_at_head": "5ab457928c4bb7b875006e51d60944fcbb9661c7",
+    "file_sha256_at_head": "6591d6a9190b8199fa3bf94c64d1f241d55835c00a6aee1a6fb4d2b53658efa0",
+    "b7_frozen_head": "dca2035c4046ac4387f694a6c7b66967e590500c",
+    "b7_reducer_blob": "27ba6ce48454399c7b97285c8408511d050a32da",
+    "kernels_unchanged_between_b7_and_head": true,
+    "change_between_b7_and_head": "only the _lw_kernel env dispatcher and one driver line were added; _longwave_primary and _longwave_primary_serial bodies are byte-identical",
+    "kernel_fn_sha256": {
+      "_longwave_primary": "69a81582622b19cd147e38a10fb85a826bbbbb8fb17392dd82c18df459067791",
+      "_longwave_primary_serial": "63234c05a407d2dbfc453d4b07337323c5e13f3330835c3f8ab73b12130b7edf"
+    },
+    "compilation": "numba njit(cache=True, fastmath=False); parallel=True (prange over pixels) for _longwave_primary, serial range loop for _longwave_primary_serial",
+    "out_of_scope_family": "_longwave_fused_primary* (env SOLWEIG_LIGHT_FUSED_RAD, default OFF in all captures) is a separate typed family and is NOT frozen by this record"
+  },
+
+  "environment": {
+    "python": "3.12.13",
+    "numpy": "2.4.6",
+    "numba": "0.67.0",
+    "pytest": "9.1.1",
+    "machine": "arm64",
+    "os": "macOS 26.6 arm64",
+    "test_threads": "pinned via numba.set_num_threads(min(4, NUMBA_NUM_THREADS)) in tests/optimization_v8/reference/conftest.py; kernel is thread-count-invariant by construction (per-pixel accumulators, no cross-pixel reduction); parallel==serial asserted bitwise"
+  },
+
+  "signature": {
+    "args_in_order": ["sh", "vs", "vb", "sun", "shade", "solid", "sine", "cosine", "directions", "gate", "solar_gate", "sky_down", "sky_side", "surface_sun", "surface_sh", "lup", "reflection_factor"],
+    "returns": "float32 [B,7], owned by the kernel (freshly allocated)",
+    "input_types": {
+      "sh_vs_vb": "float32 [B,P]; real path C-contiguous writeable; raw values need not be 0/1 (they feed exact predicates)",
+      "sun_shade": "bool [B,P] C-contiguous",
+      "solid_sine_cosine": "float32 [P] C-contiguous readonly",
+      "directions": "float32 [P,4] C-contiguous readonly; NEVER READ by the reducer body (shape/dtype checked only)",
+      "gate": "bool [P,4] C-contiguous readonly; NEVER READ by the reducer body",
+      "solar_gate": "bool [P]; uniform per patch",
+      "sky_down_sky_side": "float32 [P], ANY element stride (real path: stride-12 column-2 views of [P,3] tables); negative strides admitted by the numba kernels",
+      "surface_sun_surface_sh": "TWO admitted provenances: float64 (numpy float64 scalar or Python float -- the real accepted pipeline) and float32 (numpy float32 scalar -- synthetic). These are DIFFERENT typed graphs; both sun and shade scalars must come from the same provenance",
+      "lup": "float32 [B] C-contiguous readonly",
+      "reflection_factor": "np.float32 scalar or 0-d float32 ndarray (stays float32; a Python float would promote the reflection chain to float64 and is NOT admitted)"
+    }
+  },
+
+  "state": {
+    "accumulators": "ten float32 a0..a9 per pixel, initialized to the reference zero +0.0 (bits 0x00000000) at the start of each pixel",
+    "roles": {
+      "a0": "sky down (sweep 1); also the sole reflection input together with lup",
+      "a1": "vegetation down (sweep 1)",
+      "a2": "shade down (sweep 1, both solar_gate branches)",
+      "a3": "sun down (sweep 1, gated branch only)",
+      "a4": "reflected down (sweep 2)",
+      "a5": "sky side (sweep 1)",
+      "a6": "vegetation side (sweep 1)",
+      "a7": "shade side (sweep 1, both branches)",
+      "a8": "sun side (sweep 1, gated branch only)",
+      "a9": "reflected side (sweep 2)"
+    },
+    "output_mapping": "col0 = left-fold(a0,a1,a2,a3,a4); col1 = left-fold(a5,a6,a7,a8,a9); cols 2..6 = a5,a6,a7,a8,a9 verbatim"
+  },
+
+  "operation_graph": {
+    "sweep_1_per_patch_p_in_0_to_P_minus_1": [
+      "shv=sh[pixel,p]; vsv=vs[pixel,p]; vbv=vb[pixel,p]",
+      "sky  = (shv == 1) and (vsv == 1)            [literal promotes to float64 compare; truth-identical to float32 compare]",
+      "veg  = (vsv == 0) or (vbv == 0)             [short-circuit or; value semantics identical to bitwise or]",
+      "building = ( RN32(1.0f - shv) * vbv ) == 1  [float32 subtract, float32 multiply, EXACT comparison; raw non-0/1 values are meaningful, e.g. sh=1-2^-23 with vb=2^23 is building=true]",
+      "a0 = RN32(a0 + RN32(sky * sky_down[p]))     [pure float32 chain: bool -> 0.0f/1.0f multiply]",
+      "a5 = RN32(a5 + RN32(sky * sky_side[p]))     [float32]",
+      "ST chain (profile-dependent, see profiles): c_side  = (((surface_sh ST-op solid[p]) ST-op cosine[p]) ST-op veg)",
+      "a6 = RN32( f64(a6) + c_side )  -- the ONLY rounding is the final store; NEVER a6 = RN32(a6 + RN32(c_side))",
+      "a1 = RN32( f64(a1) + c_down )  with c_down = (((surface_sh ST solid[p]) ST sine[p]) ST veg)",
+      "if solar_gate[p] (REAL branch; the inactive arm is NOT evaluated -- no vector select convenience):",
+      "    a8 = RN32(f64(a8) + ((((surface_sun ST sun_bp) ST solid[p]) ST cosine[p]) ST building))",
+      "    a7 = RN32(f64(a7) + ((((surface_sh  ST shade_bp) ST solid[p]) ST cosine[p]) ST building))",
+      "    a3 = RN32(f64(a3) + ((((surface_sun ST sun_bp) ST solid[p]) ST sine[p])  ST building))",
+      "    a2 = RN32(f64(a2) + ((((surface_sh  ST shade_bp) ST solid[p]) ST sine[p])  ST building))",
+      "else:",
+      "    a7 = RN32(f64(a7) + (((surface_sh ST solid[p]) ST cosine[p]) ST building))",
+      "    a2 = RN32(f64(a2) + (((surface_sh ST solid[p]) ST sine[p])  ST building))"
+    ],
+    "reflection_after_sweep_1": [
+      "reads the COMPLETED first-sweep a0 and lup[pixel] (a barrier between the sweeps: reflection must not be interleaved into sweep 1)",
+      "r0 = RN32(a0 + lup[pixel])                   [float32 add]",
+      "r1 = RN32(r0 * reflection_factor)             [float32 multiply; factor is float32]",
+      "r2 = RN32(r1 * RN32(0.5))                     [float32 multiply]",
+      "reflected = RN32(r2 / RN32(pi))               [IEEE DIVISION by the exact stored float32 pi bits 0x40490FDB; reciprocal rewrite is FORBIDDEN and bit-different]"
+    ],
+    "sweep_2_per_patch_p_in_0_to_P_minus_1": [
+      "mask = (shv == 0) or (vsv == 0) or (vbv == 0)  [occlusion predicate]",
+      "side = RN32(RN32(RN32(reflected * solid[p]) * cosine[p]) * maskf)   [ALL float32]",
+      "down = RN32(RN32(RN32(reflected * solid[p]) * sine[p])  * maskf)",
+      "maskf is the 0.0f/1.0f NUMBER multiply -- NOT a branch: 0*Inf = NaN and signed-zero propagation are preserved observables",
+      "a9 = RN32(a9 + side); a4 = RN32(a4 + down)"
+    ],
+    "output_fold": [
+      "out0 = RN32(RN32(RN32(RN32(a0 + a1) + a2) + a3) + a4)   [strict left fold]",
+      "out1 = RN32(RN32(RN32(RN32(a5 + a6) + a7) + a8) + a9)   [strict left fold]",
+      "out[2:7] = (a5, a6, a7, a8, a9)"
+    ],
+    "forbidden": [
+      "no warp/lane tree sum, dot product, reassociation, sorted-order accumulation or tensor-core approximation anywhere in the graph",
+      "no FMA contraction in any mixed mul+add node (fastmath=False; separate IR operations in the baseline; the native build audits assembly for fused mnemonics)",
+      "no turning mask=false into a +0 skip without the signed-zero/nonfinite proof (it is a multiply and must stay one)",
+      "no evaluation of the inactive solar_gate arm via select"
+    ]
+  },
+
+  "surface_scalar_profiles": {
+    "f64": {
+      "provenance": "numpy float64 scalar or Python float (numba types Python float as float64)",
+      "chain_arithmetic": "surface(float64) * bool->float64 * solid(float32->float64 exact) * cosine/sine(float32->float64 exact) * predicate->float64, all in float64",
+      "accumulator_rule": "a = RN32( f64(a_prev) + c64 ) -- single rounding at the store",
+      "real_pipeline": "CONFIRMED the accepted real-path specialization (B7-02 capture of the 35x32 reference scene)"
+    },
+    "f32": {
+      "provenance": "numpy float32 scalar",
+      "chain_arithmetic": "identical expression tree, every node float32",
+      "accumulator_rule": "a = RN32( a_prev + c32 ) -- float32 add",
+      "note": "synthetic specialization, also frozen with bitwise fixtures in B7-02"
+    },
+    "both_required": "a candidate must implement BOTH profiles or restrict its admission domain to the ones it implements bit-exactly"
+  },
+
+  "observables_pinned_by_tests": [
+    "patch order: [2^24,1,1] vs [1,1,2^24] sky values give a0 = 2^24 (0x4B800000) vs 2^24+2 (0x4B800001); the same multiset lands differently in sweep 2 (a9) via solid",
+    "RN32 accumulation rule: surface=1+2^-25 f64, solid=[2^24,1]: a6 = 0x4B800001 (f64-then-round) while the forbidden RN32(a+RN32(c)) spelling gives 0x4B800000",
+    "pi: reflected for x=11.000000953674316 is 0x40601716 (division) not 0x40601715 (reciprocal)",
+    "0*Inf: sky=false with sky_down=+Inf gives a0 = NaN (0x7FC00000); reflected=+Inf gives a9 = NaN on visible patches (Inf*0.0f) and +Inf on occluded patches",
+    "signed zeros: (+0) + (-0) = +0 in a0/lup and in the ST-chain store; -0.0 surface scalars accumulate onto +0 as +0",
+    "building predicate raw values: sh=1-2^-23 with vb=2^23 => building true (out0 = 2.0 on the pin input); vb=1 => false (out0 = 0.0)",
+    "profile separation: surface=1+2^-25, solid=[1,2^-24], cosine=1, veg on: a6 = 0x3F800001 (f64 profile) vs 0x3F800000 (f32 profile)",
+    "parallel label == serial label bitwise (scheduling is not observable); B=0 returns the (0,7) float32 zero frame without reading patch data",
+    "solar_gate branch non-evaluation has NO value-observable in the admitted domain (sun/shade are bool, surface scalars finite or uniformly applied) -- it remains an IR-level obligation from the contract text"
+  ],
+
+  "owner_abi_obligations": {
+    "dispatch": {
+      "env": "SOLWEIG_LIGHT_LW_BACKEND; unset/other => unchanged Numba kernels; 'native' or 'ispc' (case-insensitive, stripped) => optional native backend",
+      "fallback_rule": "UnsupportedInput raised BEFORE any native work => caller keeps the unchanged Numba reference fallback; any OTHER error (build failure, missing dylib) is a loud RuntimeError -- never a silent fallback",
+      "kernel_selection": "native runs the same kernel for serial and parallel labels (identical schedule: pixels across ISPC lanes, ordered patch sweeps per lane, one thread effective)"
+    },
+    "pre_launch_declines": [
+      "sh/vs/vb not float32 2-d same-shape, or not C-contiguous",
+      "sun/shade not bool [B,P] C-contiguous",
+      "solid/sine/cosine not float32 [P] C-contiguous",
+      "solar_gate not bool [P] stride-1",
+      "sky_down/sky_side not float32 [P] (any element stride IS admitted; the stride is passed natively)",
+      "directions not float32 [P,4] or gate not bool [P,4] (layout unrestricted: never read)",
+      "lup not float32 [B] C-contiguous",
+      "surface scalar provenance not in {np.float32, np.float64, Python float}, or sun/shade provenances mismatched",
+      "reflection_factor not np.float32 scalar or 0-d float32 ndarray (a Python float is REJECTED: it would promote the reflection chain)",
+      "P outside 1..609, or B < 0",
+      "gang not in {4, 8}",
+      "caller-supplied out overlapping ANY input byte extent (alias rejection)"
+    ],
+    "alias_and_writability": [
+      "inputs are NEVER written; bool arrays cross into the ABI as zero-copy uint8 views, never recast copies",
+      "optional caller-owned out: float32 [B,7] C-contiguous; byte-extent overlap with any input is rejected pre-launch",
+      "B == 0: return the (0,7) float32 zero frame WITHOUT launching native code",
+      "the kernel is synchronous: no input can be unmapped or mutated while in flight"
+    },
+    "handle_lease_generation": [
+      "library resolution must be digest-gated: lw_primary.ispc sha256 52652a598cd85ead04747a83a52b1184035c880aa0b32cf518efef06b961663c; a build_stamp.json kernel_sha256 mismatch forces a rebuild (the generation key)",
+      "dylibs live in a per-user cache (SOLWEIG_LIGHT_NATIVE_CACHE or ~/.cache/solweig-light/native), are loaded once per process and pinned (_LIBS keyed by gang); the handle is a process-lifetime lease -- close/unload during in-flight work is impossible because calls are synchronous",
+      "N8-10's workflow-owned handle must keep: PID scoping of the cache, generation = kernel digest (+ toolchain), pre-launch validation BEFORE any native allocation, and no per-block source hash/JSON/build IO inside timed regions",
+      "effective execution is single-thread (native gang=8 on arm64 neon-i32x8); thread policy changes must re-run the exactness gates"
+    ],
+    "error_propagation": [
+      "UnsupportedInput (pre-launch decline) -> caller falls back to the Numba kernel in the original guard order",
+      "RuntimeError from the build (ispc missing, build rc!=0, dylib missing after reported success) -> propagates loudly",
+      "post-launch failures are real backend failures and propagate; there is no partial publication (synchronous kernel, caller-owned or kernel-owned out written in full)"
+    ],
+    "build_contract": {
+      "flags": "-O2 --opt=disable-fma --math-lib=default, no --fast-math",
+      "audit": "the build refuses to emit a library whose assembly contains any fused multiply-add mnemonic (build-time invariant, evidence ships with the build)",
+      "entries": "lw_primary_f32 (surface scalars pinned float) and lw_primary_f64 (surface scalars double); both exported from liblw_native_g4/g8.dylib"
+    }
+  },
+
+  "admitted_input_domain": {
+    "kernel_level": "B >= 0 (B=0 early-returns); P = 1..609; dtypes/strides per signature above; NaN/Inf/subnormal/signed-zero payloads anywhere in the float32 inputs flow through as values",
+    "wrapper_level": "Lcyl_v2022a_primary guards, in order: non-ndarray solar_altitude -> original reference; any of Ta/Tgwall/ewall/solar_altitude/solar_azimuth non-0-d -> reference; unsupported profile arrays -> reference; P outside 0 < P <= 609 -> reference; scalar solar_altitude in the original path raises TypeError (original failure preserved)",
+    "production_target": "P = 153 patches, block_pixels = 128 (rows*cols blocked 8x128+1x96 in the captured 35x32 scene)"
+  },
+
+  "transcendentals": "NONE inside this reducer (no acos/classifier/SLEEF call in the primary kernels -- SLEEF obligations attach to the sky-patch/classification layers OUTSIDE this island; a native port of this island needs no math library beyond IEEE mul/add/div/compare)",
+
+  "verified_discriminators": [
+    {"name": "rn32_rule", "input": "f64 profile, surface=1+2^-25, solid=[2^24,1], cosine=1, vs=0", "contract_bits": "0x4B800001 (a6, col3)", "forbidden_bits": "0x4B800000"},
+    {"name": "profile_separation", "input": "surface=1+2^-25 both provenances, solid=[1,2^-24], cosine=1, vs=0", "f64_bits": "0x3F800001 (a6)", "f32_bits": "0x3F800000"},
+    {"name": "pi_division", "input": "x=11.000000953674316 -> reflected", "division_bits": "0x40601716", "reciprocal_bits": "0x40601715"},
+    {"name": "sweep1_order", "input": "sky_down=[2^24,1,1] vs [1,1,2^24]", "ordered_bits": "0x4B800000 (a0)", "permuted_bits": "0x4B800001"},
+    {"name": "sweep2_order", "input": "reflected=1.0 exactly (lup=2*pi32), solid=[2^24,1,1] vs [1,1,2^24], all occluded", "ordered_bits": "0x4B800000 (a9)", "permuted_bits": "0x4B800001"},
+    {"name": "mask_times_inf", "input": "sky=false, sky_down=+Inf", "bits": "0x7FC00000 (a0)"},
+    {"name": "building_raw_values", "input": "sh=1-2^-23, vb=2^23 vs vb=1, sun=shade=1, gate=1", "true_bits": "0x40000000 (out0)", "false_bits": "0x00000000"}
+  ],
+
+  "assets": {
+    "new_tests": {
+      "dir": "tests/optimization_v8/reference/",
+      "files": {
+        "conftest.py": "a0fe84f3141233091c6547af287ceeec19c2be4f764e3161aa066b8056a1dc57",
+        "lw_reference_oracle.py": "c24fea9265e2eeb48d9cfef24baf25485a7ebf8ccfc40e94c520bc35b8cdf5b7",
+        "test_typed_graph_identity.py": "ea04146a3907c1e244f3232df98b33e27563e012e967a9b345921350c14c0692",
+        "test_rn32_accumulation_rule.py": "b0f45bdbb2cd8e3820019b1e6dbd1b0ebc617fbd2f9b9b469445143490bc481e",
+        "test_sweep_order.py": "0982bc03fb0fc30b98eb8aa81bc56c485adea6f9d327fe20d9d12c28101ccae7"
+      },
+      "counts": {"tests": 112, "passed": 112, "failed": 0, "runtime_seconds_cold": 3.25, "runtime_seconds_cached": 0.62},
+      "oracle": "lw_reference_oracle.lw_primary_reference -- independent NumPy re-implementation of the typed graph (both profiles); st_add_rule='round_chain_first' is the in-file MUTATION used only to give the RN32 test teeth",
+      "mutation_check": "test_mutation_check_forbidden_rule_fails_the_discriminator proves the forbidden RN32(a+RN32(c)) spelling fails the discriminator while agreeing on a benign input (a faithful single-rule mutation)"
+    },
+    "reused_b7_captures": {
+      "dir": "optimization_v7_backends/evidence/captures/",
+      "b7_02_capture_manifest.json": "9caa229fadc61412c341694e8be0f7699e9e83c2ee131ec1319a96b0a8eaf4ca",
+      "b7_02_contract.json": "f15511922ba931d27c9d4e93e5a2889d060ce8bdf1f6041998c8b0f9b7533535d",
+      "b7_02_fixtures.npz": "4a48530a0a517c194cecc0bf564458fa43e55453df78dd288a4d78217d16ad76",
+      "b7_02_typed_ir.txt": "3eff359187bb66b77445ec12ac68dbc52ad03c71686e4d7fce0d161bee56d6b0",
+      "coverage_note": "the 520-call replay (real pipeline serial + 4-thread, plus edges P1/B0/vis-raw/lup-nonfinite/direct scalars) already pins source-matched behavior; N8-04 adds only the adversarial graph-identity, rule and order discriminators -- no duplication, no golden overwritten",
+      "replay_test": "tests/optimization_v7/reference/test_v7_contract_freeze.py sha256 53f168e6416c1d6288e519512716050443bd6d8b7f3016467587ba176b66fc40"
+    }
+  },
+
+  "gates": {
+    "f32_f64_graph_and_both_sweeps_frozen": true,
+    "prior_goldens_not_overwritten": true,
+    "no_changes_under_src_or_backends": true,
+    "not_committed": true
+  }
+}

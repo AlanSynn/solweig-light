@@ -1,0 +1,122 @@
+{
+ "schema": "sw8-n8-30-review-v1",
+ "review_of": "optimization_v8_native_default/evidence/profile/n8_02_profile.json",
+ "review_target_task": "N8-02 packed worker boundary + native entry measurement",
+ "reviewer": "n8-30 review service (independent; did not author N8-02)",
+ "review_utc": "2026-09-22",
+ "worktree": "/Users/alansynn/Workspace/solweig-v8-native @ 16cdc56c (perf/native-optimization)",
+ "verdict": "APPROVE-WITH-NOTES",
+ "blocking_defects": [],
+ "notes": [
+  {
+   "id": "N1",
+   "severity": "note",
+   "where": "n8_02_profile.json answers.c_per_block_preparation_overhead.comparison_b128_s.verdict; tools/optimization_v8/n8_02_analyze.py:208-211",
+   "finding": "The prose claim 'removing it would flip the native island from slower-than-Numba to ~2.3x faster' is derived from Numba-island mean 145.96us vs C-ENTRY-ONLY mean 62.44us (ratio 2.337). The loader-fixed counterfactual the same section computes (island minus warm ensure_loaded = 0.039s total, ~89-90us/call) implies only ~1.55-1.62x. The 2.3x therefore additionally assumes the ctypes marshalling/validation wrapper (~26us/call) disappears, a stronger assumption than 'loader fixed'. Both underlying numbers are present and correct in the record, so the conclusion is reconstructable, but the sentence overstates the loader-only fix.",
+   "repair_if_touched": "Rephrase to '~1.6x on the loader-fixed counterfactual; ~2.3x only if the remaining adapter wrapper also vanishes', or cite the two ratios explicitly."
+  },
+  {
+   "id": "N2",
+   "severity": "note",
+   "where": "n8_02_profile.json answers.d_stage_decomposition_and_rss.process_tree_rss.runtile_child_ru_maxrss_mb; tools/optimization_v8/n8_02_analyze.py:229-232",
+   "finding": "'runtile_child_ru_maxrss_mb' is not ru_maxrss: the analyzer fills both RSS lists from the same ps-based rss_tree peak_sum. Immaterial here (single-process runs; child ru_maxrss 200.1MB vs tree sum 200.2MB, delta 0.05%), but the field name mislabels the source.",
+   "repair_if_touched": "Source that list from the child record's peak_rss_self_bytes (true ru_maxrss) or rename."
+  },
+  {
+   "id": "N3",
+   "severity": "note",
+   "where": "n8_02_profile.json bitwise_output_parity; tools/optimization_v8/n8_02_analyze.py:269-274",
+   "finding": "The record's parity section contains hard-coded booleans only, not per-run digests. The per-run digests DO exist in raw (every child JSON has output_manifest with 10 per-file sha256 plus an aggregate digest; reviewer recomputed: all 22 runtile runs = 7aa97c69a83d24d0 across both arms, both block sizes, instrumented and uninstrumented; pool default = pool native = c059e7b94574a071), so the booleans are TRUE - they are just asserted rather than derived, and the digest values are not surfaced in the summary record.",
+   "repair_if_touched": "Embed the two digest values (runtile, pool) in bitwise_output_parity and derive the booleans from the raw digests in the analyzer."
+  },
+  {
+   "id": "N4",
+   "severity": "note",
+   "where": "n8_02_profile.json first_use_native.run_wall_s; tools/optimization_v8/n8_02_run.py:8-9 docstring; tools/optimization_v8/n8_02_instrument.py:184-186",
+   "finding": "first_use_native.run_wall_s = 1.416s EXCLUDES the 2.478s first-load/build because the instrument itself triggered _ensure_loaded at install time, before the run_tile timer started. This is transparent in the counters (native_prep.first_load_at_install = 2.477646, install_perf_counter = 2.491) and child_total_s = 5.132 is in raw, but the record never surfaces a combined workflow-first-use wall, and the runner docstring calls this run 'workflow_first_use evidence', which overstates it relative to BENCHMARK_PROTOCOL timing boundary 4 (timer must start before imports/init/preparation for that boundary).",
+   "repair_if_touched": "Label the field 'run_tile_wall_after_instrument_preload' or add child_total_s / a boundary-4 wall to the record."
+  },
+  {
+   "id": "N5",
+   "severity": "note",
+   "where": "n8_02_profile.json protocol.scene_survey.note; tools/optimization_v8/n8_02_run.py:231-248",
+   "finding": "Census note says '(no synthetic scenes)' but the actual filter skips only path components '.solweig-light' and 'output_folder' (92 excluded files are prior-run output artifacts), and silently skips 1 corrupt TIFF (wind_original_cpu/invalid_blocks/inputs/WindCoeff_dir000.tif, gdal.Open -> None; the matching ERROR line appears in the campaign console log). Substance independently confirmed by the reviewer with a full unfiltered 390-TIFF scan: zero 128/256-square fixtures, zero min-side>=128 fixtures (see obligation 4), so the claim itself is robust to the filter wording.",
+   "repair_if_touched": "State the actual filter and the 1 skipped corrupt file in the note."
+  },
+  {
+   "id": "N6",
+   "severity": "note",
+   "where": "evidence/profile/raw/n8_02_smoke_default.json, n8_02_smoke_native.json (+ .counters.json)",
+   "finding": "Two pre-campaign smoke artifacts (mtime 15:30, before the 15:31:50Z preflight) sit in raw/ but are referenced nowhere in the record. They corroborate the campaign results (default: 0 admitted; native: 432 f64, 0 rejected) and are harmless, but they are orphaned evidence files.",
+   "repair_if_touched": "One-line mention in the record or move under a clearly-named preflight subdirectory."
+  },
+  {
+   "id": "N7",
+   "severity": "note",
+   "where": "n8_02_profile.json answers.c_per_block_preparation_overhead",
+   "finding": "The headline warm loader-prep range '131-146us' describes block=128 only (warm 130.96us, mean-incl-first 145.67us). The b1024 instrumented run measured 251.6us warm per call (recorded honestly in calls_after_first_load_b1024). Both numbers are in the record; only the summarized range could mislead if quoted without the block size.",
+   "repair_if_touched": "Tag the range 'at b128'."
+  },
+  {
+   "id": "N8",
+   "severity": "note",
+   "where": "tests/reference/state_sequence_original_cpu/scene/manifest.json vs preflight fixture_files_sha256",
+   "finding": "Fixture-provenance observation (outside N8-02's claims): the scene manifest's files_sha256.met.txt (bc8ee636...) does not match the met.txt actually on disk and hashed by the preflight (37132c88...), i.e. the scene's manifest is stale relative to its own directory (met.txt evidently regenerated for 48-step state sequencing; the record's 48-step count is independently confirmed by 48 solweig_calc/lcyl/utci calls). The preflight hashed the real files, which is the correct behavior; the stale manifest deserves a disposition when fixtures are next frozen (N8-03 scope)."
+  }
+ ],
+ "obligation_findings": {
+  "1_record_integrity": {
+   "status": "PASS",
+   "evidence": [
+    "evidence_class 'new_region_measurement' matches what was done: real packed pipeline (pipeline.run_tile) measured in fresh child processes on current source at 16cdc56c; no promotion or candidate claim is made anywhere in the record.",
+    "answers (a)-(d) plus instrumentation_overhead are all present; every spot-checked value in answers.* is byte-identical to the instrumented/timing_paired sections it derives from (analyzer n8_02_analyze.py reads the same record/raw files; no manual overrides except the labelled hard-codes listed in notes N2/N3 and ambient count, which the reviewer recomputed as correct).",
+    "failures: [] matches console 'failures: 0' and all 24 child returncodes 0 (recomputed from raw/n8_02_all_runs.json). No censored, failed, or mislabelled run found; no memory-pressure kills; ambient non-quiet windows recomputed = 6, matching the recorded 6 (all single ~51% macOS system processes at window edges).",
+    "Timing methodology matches BENCHMARK_PROTOCOL: fresh process per run, alternating A,C order within each pair (n8_02_run.py:290-299), env stripped of SOLWEIG_LIGHT_LW_BACKEND/NATIVE_CACHE/FUSED_RAD/PATCH_CLASS_TABLES for the default arm and set only for the native arm (n8_02_run.py:151-164), same NUMBA_CACHE_DIR regime for both arms, Numba pool verified inside children (config=4, set_ok, threading_layer recorded)."
+   ]
+  },
+  "2_raw_data_recomputation": {
+   "status": "PASS (all recomputed values match claims)",
+   "recomputed": [
+    "Island fraction, default b128 (from raw/n8_02_instr_default_b128.counters.json): island.numba_lw_primary total 0.063056s / stage.lcyl_by_demand 0.300185s = 0.21009 -> 21.0% of Lcyl (claimed 0.2101); / run_wall 1.4124 = 0.04464 -> 4.5% of wall (claimed 0.0446); / solweig_calc 0.750655 = 0.0840 (claimed 0.084).",
+    "Island fraction, native b128: native_adapter.admitted 0.095549 / lcyl 0.327919 = 0.29136 -> 29.1% (claimed 0.2914).",
+    "Per-call loader prep, 433 ensure_loaded calls (raw/n8_02_instr_native_b128.counters.json): warm per call = (0.063074 - 0.006498)/432 = 130.96us (claimed 130.96); mean incl. first = 145.67us; claimed range '131-146us' covers exactly these two b128 values. Op-chain counts consistent 1:1 per call: fs.mkdir 433, fs.exists 867 (dylib+stamp), stamp read_text/json_loads 433 each, kernel read_bytes 433 x 10194 B, kernel_digest (sha256) 433.",
+    "Paired end-to-end ratios from raw timing children: b128 med(default)=1.4000, med(native)=1.4099 -> 1.00707 (claimed 1.0071); b1024 med(default)=1.3121, med(native)=1.3397 -> 1.02103 (claimed 1.021).",
+    "Counterfactual loader-fixed island: 0.095549 - (0.063074-0.006498) = 0.038973s -> 0.039s (claimed 0.039); vs Numba island 0.063056 -> 1.618x (claimed ~1.6x).",
+    "Instrumentation overhead deltas recomputed: +0.89%, +1.41%, +2.69%, -1.75% (match record).",
+    "RSS: single-process runtile peaks 209.9/213.1/209.6/212.9 MB -> 200.2-203.2 MB (claimed ~200MB, no double counting for single-process); pool sums 366.8 MB (default) / 453.2 MB (native, 9 pids) match; double-count labelling present on every rss_tree block."
+   ]
+  },
+  "3_methodology_vs_dossier": {
+   "status": "PASS (kernel-entry proof is genuine; derived numbers labelled)",
+   "evidence": [
+    "ACTUAL C ENTRY: n8_02_instrument.py:184-197 wraps the ctypes function pointers by replacing entries[spec] inside lw_native._LIBS[gang][1] after a first load. Production code re-resolves the entry per call (src/solweig_light/backends/native/lw_native.py:230-231: '_, entries = _LIBS[gang]' then 'entries[spec](...)'), so every admitted invocation passes through the wrapper exactly at the function-pointer invocation - one Python frame above the C call, the closest point reachable without editing src/. The 432/96 native_c_entry.f64 counts alongside 432/96 admitted prove interception; this is not resolver-level-only instrumentation.",
+    "Default-arm zero is proven on the real gate: native_lw.native_longwave_primary calls _ensure_loaded() before anything else (src/solweig_light/backends/native_lw.py:130); the instrument wrapped _ensure_loaded and lw_native.primary in the default arm WITHOUT loading (n8_02_instrument.py:276-288), so any pipeline-initiated native call would have produced counts. Counts are 0 in both default instrumented runs, corroborated by the uninstrumented production pool entry leaving a fresh scratch SOLWEIG_LIGHT_NATIVE_CACHE empty (filesystem proof through run_utci_tiles worker children). The sys.modules-native-true artifact is explicitly attributed to the instrument, not the pipeline.",
+    "Counterfactual labelling: 'counterfactual_loader_fixed_island_b128_s' is named as counterfactual and its derivation is reviewer-reproduced (admitted minus warm ensure_loaded); the B7-60 98304-block extrapolation is separately labelled 'diagnostic only'. See note N1 for the one overreaching prose ratio.",
+    "Dense-fallback shapes: none used; measurement_caveats explicitly states no synthetic dense-fallback shape was substituted, and the v7 dense-fallback residual is quoted only as a labelled comparison.",
+    "Stage attribution without double counting: stage totals are a nested hierarchy (solweig_calc > lcyl_by_demand > dpc_primary > decode/classifier/island) and are reported as such; the in-Lcyl decode/classifier portions are labelled '_estimated' with the 3-decodes+1-classifier-per-LW-block pattern and recompute exactly (decode: (0.194498/2052)*3*432/0.300185 = 0.4092; classifier: (0.05432/684)*432/0.300185 = 0.1143; dpc residual by subtraction from dpc: 0.2197). The four fractions_of_lcyl sum to 0.953 = dpc/lcyl (dpc does not cover the whole Lcyl wrapper) - correct, though the record does not spell out why the sum is below 1.",
+    "Instrumentation overhead measured separately per dossier: wrapper self-test in every counters file (~151-157ns/call) plus instrumented-vs-uninstrumented wall deltas with an explicit noise caveat."
+   ]
+  },
+  "4_fixture_census": {
+   "status": "PASS (independently rerun, read-only)",
+   "evidence": [
+    "Reviewer reran the census over ALL 390 TIFFs under tests/reference with NO exclusions (superset of the author's 297): distinct sizes {2x2:31, 2x3:28, 3x2:28, 3x3:28, 4x4:4, 32x35:171, 32x48:99}, 1 unreadable corrupt fixture (wind_original_cpu/invalid_blocks WindCoeff_dir000.tif). Zero TIFFs at 128-square or 256-square; zero with min side >= 128. Claim 'no 128/256-square real fixture exists' HOLDS even under the broader scan.",
+    "Author's 297 count reproduced exactly under their stated filter (skip '.solweig-light' and 'output_folder' path components; 92 excluded + 1 corrupt gdal.Open->None skip).",
+    "Scene identity: manifest raster rows=32, columns=35 (32x35) and gdal read-back of scene/Building_DSM.tif = 32x35; 48 timesteps confirmed by 48 stage.solweig_calc/lcyl_by_demand/utci counts; P=153 corroborated by sibling artifact evidence/contract/n8_04_typed_lw_contract.json:193 ('P = 153 patches ... 8x128+1x96' = 1120 px = 9 blocks, consistent with 432 = 48 x 9)."
+   ]
+  },
+  "5_bitwise_parity": {
+   "status": "PASS (claim true; record-level presentation has note N3)",
+   "evidence": [
+    "Per-run digests exist in raw for BOTH arms: each child JSON carries output_manifest with 10 per-file sha256 and an aggregate digest; reviewer extracted digests for all 24 runs - all 22 runtile runs (default+native, b128+b1024, instrumented+uninstrumented+warmup+firstuse) share 7aa97c69a83d24d0; pool default and pool native share c059e7b94574a071. Outputs are bitwise identical between arms in every single run, as claimed.",
+    "The record's bitwise_output_parity section itself contains only the two boolean claims (plus note), not the digests - see note N3; the booleans are hard-coded in the analyzer but verified true by this review's recomputation from raw."
+   ]
+  }
+ },
+ "review_method": [
+  "Read VALIDATION_POLICY.md, dossiers/01_measurement_and_loader.md, BENCHMARK_PROTOCOL.md, the full record, all 3 instrument/runner/child harness scripts, and the relevant src call path (native_lw.py, lw_native.py, cylinder_longwave.py dispatch).",
+  "Recomputed from raw: island fractions (4 arms), loader warm/mean per-call costs, op-chain counts, both paired median ratios, counterfactual island, instrumentation deltas, ambient non-quiet count, per-run output digests for all 24 runs, run/returncode/failure counts.",
+  "Reran read-only: full 390-TIFF fixture census (superset of author's filter), scene raster size read-back, manifest patch-count cross-check.",
+  "NOT rerun: the instrumented campaign itself (N8-02 is exclusive-owner evidence; duplication adds nothing), and no test suites (no code change under review; raw evidence verified directly). No files edited outside evidence/reviews/."
+ ]
+}

@@ -1,0 +1,128 @@
+{
+  "schema": "solweig-v8-review-v1",
+  "review_task": "N8-30",
+  "reviewed_artifact": "N8-04 (typed longwave owner/ABI contract freeze)",
+  "reviewer_role": "independent_reviewer (N8-30 review service; did not author N8-04)",
+  "verdict": "APPROVE-WITH-NOTES",
+  "review_date": "2026-09-22",
+  "repo_head": "16cdc56cbc8755675487b9c9c1f5a7e987e2c9e4",
+  "branch": "perf/native-optimization",
+  "worktree": "/Users/alansynn/Workspace/solweig-v8-native",
+  "reviewed_files": {
+    "contract_json": "optimization_v8_native_default/evidence/contract/n8_04_typed_lw_contract.json",
+    "contract_md": "optimization_v8_native_default/evidence/contract/n8_04_typed_lw_contract.md",
+    "authoritative_source": "src/solweig_light/radiation/cylinder_longwave.py",
+    "tests": [
+      "tests/optimization_v8/reference/conftest.py",
+      "tests/optimization_v8/reference/lw_reference_oracle.py",
+      "tests/optimization_v8/reference/test_typed_graph_identity.py",
+      "tests/optimization_v8/reference/test_rn32_accumulation_rule.py",
+      "tests/optimization_v8/reference/test_sweep_order.py"
+    ]
+  },
+
+  "obligation_findings": [
+    {
+      "obligation": "1. Contract fidelity vs source (operation graph)",
+      "status": "PASS",
+      "detail": "The frozen graph in n8_04_typed_lw_contract.json/.md matches _longwave_primary and _longwave_primary_serial operation-for-operation. Verified against the code line by line: predicates sh==1&vs==1 / vs==0|vb==0 / (RN32(1f-sh)*vb)==1 with exact compare (cylinder_longwave.py:100-102); pure-f32 sky chains RN32(a+RN32(sky*sky_[down|side])) (:103-104); ST-typed chains with grouping (((surface[solid])*cos|sin)*veg) (:105-108); solar_gate as a REAL branch with gated grouping ((((surface*sun|shade)*solid)*cos|sin)*building) and the shorter else chains (:109-122); reflection RN32(RN32(RN32(RN32(a0+lup)*factor)*RN32(.5))/RN32(pi)) as a true float32 truediv (:124; IR b7_02_typed_ir.txt:1561 '$binop_truediv ... :: float32'); sweep-2 number-multiply mask (:126-130); strict left folds and output[:,2:7]=accum[5:10] (:131-133). Accumulator indices/roles and the [B,7] layout in the contract table match the code exactly. The B7 typed IR independently confirms the typing claims: surface_sun/surface_sh :: float64 in the real-pipeline specialization (IR:21-22), f64 chain then f64 accumulator add then a single (float64,) -> float32 store (IR:1192-1227), bool sky * float32 sky_down :: float32 predicate-as-number (IR block at LINE 103), sky_down/sky_side typed Array(float32,1d,'A') any-stride, and BOTH reflection_factor provenances (float32 scalar IR:2; 0-d float32 array IR:668).",
+      "lineage_verified": {
+        "kernels_unchanged_vs_b7": "git diff dca2035c..HEAD on cylinder_longwave.py adds only 'import os', the _lw_kernel env dispatcher and the single driver line kernel=_lw_kernel(parallel); no hunk touches either kernel body; pre-image blob 27ba6ce4... equals the JSON b7_reducer_blob",
+        "parallel_vs_serial": "extracted function bodies are byte-identical modulo the decorator (parallel=True) and prange->range",
+        "kernel_fn_sha256_reproduced": "sha256(inspect.getsource(fn)) reproduces 69a81582... and 63234c05... exactly",
+        "file_blob_and_sha256": "git blob 5ab457928c4bb7b875006e51d60944fcbb9661c7 and file sha256 6591d6a9...658efa0 match the JSON",
+        "lw_primary_ispc_sha256": "52652a598cd85ead04747a83a52b1184035c880aa0b32cf518efef06b961663c matches"
+      }
+    },
+    {
+      "obligation": "2. Oracle independence",
+      "status": "PASS",
+      "detail": "lw_reference_oracle.py is a genuine vectorized NumPy re-implementation written from the contract text (loop over patches, vector over pixels); it imports nothing from the kernel module (kernel_pair() is a test-side helper that returns the kernels for comparison, not used inside the oracle computation). Shared failure with the kernels would require a shared misreading of the source grouping; excluded three ways: (a) direct source-vs-contract comparison above, (b) reviewer's own exact-rational (Fraction-based) IEEE binary32/64 recomputation of every discriminator pin (all match; see hand_computed below), (c) the B7 520-call capture replay (tests/optimization_v7/reference/test_v7_contract_freeze.py, 5 tests green) pins the kernels against captured real-pipeline goldens, closing source<->contract<->oracle. The forbidden-rule mode is quarantined: st_add_rule='round_chain_first' raises ValueError outside the f64 profile and is banner-labelled MUTATION in module docstring, function docstring and inline comments.",
+      "pins_hand_checked": [
+        "RN32(pi) = 0x40490FDB",
+        "rn32_rule: contract 0x4B800001 vs forbidden 0x4B800000",
+        "profile_separation: f64 0x3F800001 vs f32 0x3F800000",
+        "pi_division: 0x40601716 (division) vs 0x40601715 (reciprocal)",
+        "sweep order: high-first 0x4B800000 vs low-first 0x4B800001",
+        "building raw values: (RN32(1-(1-2^-23))*2^23)==1 True; *1 False"
+      ]
+    },
+    {
+      "obligation": "3. Discriminator validity (RN32 rule)",
+      "status": "PASS",
+      "detail": "Reviewer computed both spellings independently with exact integer/Fraction arithmetic (no numpy/numba float ops in the decision path): contract path accumulates in f64 and rounds once, a6 = RN32(2^24 + 1 + 2^-25); 2^24+1+2^-25 lies strictly above the f32 tie midpoint 2^24+1 of the 2^24 binade (ulp 2), so it rounds to 2^24+2 = 0x4B800001. Forbidden path rounds the chain early: RN32(1+2^-25) = 1.0 (below the 1+2^-24 midpoint), then RN32(2^24 + 1.0) is an exact tie -> round-to-even -> 2^24 = 0x4B800000. The discriminator therefore genuinely distinguishes f64-accumulate-then-round from round-each-add under IEEE binary32/64 semantics. The mutation test exists (test_rn32_accumulation_rule.py:93-114, 'MUTATION CHECK (teeth)' banner), is clearly labelled, and fails as claimed -- reviewer ran it live: kernel a6 = 0x4B800001, oracle = 0x4B800001, mutated mock = 0x4B800000, kernel != mock on the discriminator while kernel == mock on the benign input (solid=1, surface=2.0), proving a faithful single-rule mutation with teeth."
+    },
+    {
+      "obligation": "4. Domain coverage vs KERNEL_CONTRACT.md Tests section",
+      "status": "PASS_WITH_NOTES",
+      "covered": [
+        "B=0 (zero-frame early return), B=1, W=8 tails 7/8/9, primes 11/13 (B_GRID + test_zero_pixels)",
+        "P in {1,2,3,5,7,11,13,153} plus the 609 upper boundary (test_patch_count_upper_boundary_609)",
+        "strided sky columns: stride-12 column views of [P,3] tables, one-element stride-12 views, negative-stride views (test_strided_sky_columns)",
+        "subnormals (+-2^-149), min-normal 2^-126, +-0, +-Inf, NaN, near-one thresholds (1+-2^-23, 1+-2^-24, 2^-24, 2^-25, 2^-49), finite cancellation (6.022047e23/-6.022047e23/1.0 sky triple), raw visibility values (VIS_POOL + building-raw pin)",
+        "parallel == serial bitwise, including (13,609) and (9,153)",
+        "both f32 and f64 surface profiles on the full adversarial grid plus the separation pin; gate patterns all-off/all-on/alternating/half; 0*Inf and Inf*0 NaN pins; signed-zero pins; division-not-reciprocal pin"
+      ],
+      "notes_non_blocking": [
+        "0-d ndarray reflection_factor provenance is declared admitted (contract section 2; exists as a captured specialization in the B7 IR) but is not bitwise-exercised by any test: the v8 tests always pass np.float32 scalars and the v7 replay unpacks 0-d fixtures via value[()] (test_v7_contract_freeze.py:46). N8-12/N8-13 must pin it or narrow the admission.",
+        "KERNEL_CONTRACT.md's 'small 24/48-step real TIFF' end-to-end comparisons and 'verify source and installed wheel separately' are deferred to the candidate gates (N8-12/13 acceptance, L2/L3 tiers per VALIDATION_POLICY) and packaging/DX work (N8-20/N8-23). This is consistent with the contract's own section-5 checklist but must be carried into those acceptances.",
+        "solar_gate inactive-arm non-evaluation has no value-observable in the admitted domain (the contract itself states this); it remains an IR-level obligation, honestly recorded."
+      ]
+    },
+    {
+      "obligation": "5. Golden hygiene",
+      "status": "PASS",
+      "detail": "git status --porcelain shows zero modified tracked files; the only changes are untracked additions (optimization_v8_native_default/, tests/optimization_v8/, tools/optimization_v8/). Nothing under tests/reference/ or optimization_v7_backends/ was touched. All twelve sha256 claims in the contract JSON's assets blocks reproduce exactly (5 new test files, v7 replay test, 4 B7 capture files, lw_primary.ispc)."
+    },
+    {
+      "obligation": "6. Suite run",
+      "status": "PASS",
+      "command": ".venv/bin/python -m pytest tests/optimization_v8/reference/ tests/optimization_v7/reference/ -q",
+      "result": "117 passed in 1.39s (112 v8 collected + 5 v7 goldens), matching the author's claim of 117 expected",
+      "environment_confirmed": "python 3.12.13, numpy 2.4.6, numba 0.67.0, pytest 9.1.1, arm64, macOS 26.6.2 -- matches the contract JSON environment block; conftest pins set_num_threads(min(4, NUMBA_NUM_THREADS)) with no NUMBA_NUM_THREADS export (avoids the known v5 env-vs-set hazard)"
+    }
+  ],
+
+  "hand_computed_discriminators": {
+    "method": "exact rational arithmetic (fractions.Fraction) with explicit round-to-nearest-even binary32 emulation; independent of numpy, numba and the oracle",
+    "rn32_rule": {
+      "input": "f64 profile, surface=1+2^-25, solid=[2^24,1], cosine=1, veg on",
+      "contract_path": "patch0 RN32(2^24+2^-1)=2^24 (below midpoint); patch1 RN32(2^24+1+2^-25) strictly above the 2^24+1 tie midpoint -> 2^24+2 = 0x4B800001",
+      "forbidden_path": "RN32(1+2^-25)=1.0 (below the 1+2^-24 midpoint); RN32(2^24+1.0) exact tie -> round-to-even -> 2^24 = 0x4B800000",
+      "live_kernel_confirmed": "kernel 0x4B800001, oracle 0x4B800001, mutated mock 0x4B800000"
+    },
+    "pi_division": {
+      "x": "11 + 2^-20 (= f32 11.000000953674316, exactly representable)",
+      "division": "RN32(x / RN32(pi)) = 0x40601716",
+      "reciprocal": "RN32(x * RN32(1/RN32(pi))) = 0x40601715"
+    },
+    "profile_separation": {
+      "input": "surface=1+2^-25, solid=[1,2^-24], cosine=1, veg on",
+      "f64": "RN32(1.0 + 2^-24 + 2^-49) above midpoint -> 1+2^-23 = 0x3F800001",
+      "f32": "scalar rounds to 1.0 at provenance; RN32(1.0 + 2^-24) exact tie -> even -> 1.0 = 0x3F800000"
+    },
+    "sweep_order": {
+      "high_first": "[2^24,1,1]: two tie-to-even adds -> 2^24 = 0x4B800000",
+      "low_first": "[1,1,2^24]: 2 + 2^24 exact -> 2^24+2 = 0x4B800001",
+      "applies_to": "both sweeps (sky_down in sweep 1; solid via reflected=1.0 exactly, lup=2*pi32, in sweep 2)"
+    },
+    "building_raw": {
+      "sh=1-2^-23, vb=2^23": "RN32(1-sh)=2^-23 (Sterbenz-exact); 2^-23*2^23=1.0 -> predicate TRUE (out0=2.0=0x40000000)",
+      "vb=1": "2^-23*1=2^-23 != 1 -> FALSE (out0=+0.0)"
+    },
+    "rn32_of_pi": "0x40490FDB"
+  },
+
+  "record_precision_notes": [
+    "admitted_input_domain.wrapper_level in the contract JSON omits 'esky' from the non-0-d guard key list; the code checks ('esky','Ta','Tgwall','ewall','solar_altitude','solar_azimuth') at cylinder_longwave.py:397. Documentation-level incompleteness in a fallback-to-reference path; no effect on the typed graph or the executable gates. Repair: add 'esky' to the enumeration at the next touch of the JSON.",
+    "The '==1/==0 literal promotes to float64 compare' parenthetical is not directly visible in the captured IR dump (it shows 'f32 == Literal[int](1) :: bool' without the unified operand type); it is mathematically truth-identical in both typings (f32->f64 is exact, 1 and 0 are exact), which the contract itself states, so there is no observable divergence. Optional repair: soften to 'mixed literal compare, truth-identical'."
+  ],
+
+  "required_repairs": [],
+
+  "blocking_defects": [],
+
+  "reviewer_verified_hashes": {
+    "method_note": "all sha256 values listed in the contract JSON assets/baseline blocks were recomputed with shasum -a 256 and matched; kernel_fn_sha256 reproduced via sha256(inspect.getsource(fn))"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "schema": "sw8-task-result-v1",
+  "task_id": null,
+  "status": "pending",
+  "base_sha": null,
+  "result_sha": null,
+  "actual_model_provider": null,
+  "owned_files": [],
+  "commands": [],
+  "tests": [],
+  "measurements": [],
+  "failures": [],
+  "unavailable": [],
+  "review_record": null,
+  "next_dependency": null,
+  "note": "No success assumed; preserve raw logs and source-bound evidence."
+}

@@ -1,0 +1,82 @@
+{
+ "schema": "sw8-n8-30-review-v1",
+ "review_of": "benchmarks/protocols/optimization_v8/n8_03_protocol.json (+.md, fixtures, n8_03 tools, n8_03_smoke/ records)",
+ "review_target_task": "N8-03 freeze small protocols, held-outs and promotion gates",
+ "reviewer": "n8-30 review service (independent; did not author N8-03)",
+ "review_utc": "2026-09-22",
+ "worktree": "/Users/alansynn/Workspace/solweig-v8-native @ 16cdc56c (perf/native-optimization)",
+ "verdict": "APPROVE-WITH-NOTES",
+ "blocking_defects": [],
+ "notes": [
+  "N-a P3/P4 have every variable pinned (B=1024, tpw=4, cpu_budget=4, 12 GiB, checkpoint 1, env unset, scene, expected outputs) but no shipped driver accepts those flags: tools/optimization_v8/n8_03_smoke_scene.py exposes only --memory-budget-gib. Executing P3/P4 requires a small comparison-harness driver (owned by the comparison task). No parameter would need inventing; the driver must exist before the first timed pair.",
+  "N-b P3 entry says 'timed = run_utci_tiles / packed run_tile' - an either/or between two different boundaries. The comparison task must pin ONE boundary for P3/P4 and use it for both arms of every pair; the frozen gate text ('at the installed region/pipeline boundary') already requires same-boundary pairing, but the cell text should not leave the choice open.",
+  "N-c smoke records identify scenes by path + label, not by input hash. The scenes are immutable and hash-pinned via the manifests, so identity holds today; timed-run records should embed the input sha256 set (or a fixture tree digest) so identity survives any regeneration.",
+  "N-d unit labels: protocol P1 '~2.22 GiB (simulation ~1.78 GiB + parent ~0.43 GiB)' and the ambient note's 'available >= ~4.5 GiB' are decimal-GB readings of byte counts (2,211,245,261 B = 2.06 GiB; required available 4.42e9 B = 4.12 GiB). The smoke records' own GiB conversions (e.g. 1.716) are correct. Error is in the conservative (stricter) direction; cosmetic one-line clarification suggested.",
+  "N-e T1 pins the reference scene's manifest.json (fe013dcd...) whose INTERNAL met.txt entry is stale (bc8ee636... = the 24-record derivation, vs on-disk 48-record 37132c88... - n8-02 review note N8). The protocol pins the verified on-disk hash, which is the binding value; no protocol impact.",
+  "N-f the protocol does not explicitly require a per-run output manifest (path+size+sha256 list) in every TIMED record; n8_02 did this for all 24 children and it is what makes pairwise bitwise identity provable from raw. Recommend the comparison harness carry the n8_02 output_manifest pattern into every timed record.",
+  "N-g PR1's SOLWEIG_LIGHT_LW_BACKEND=numba is not a recognized backend value at HEAD (accepted: native/ispc, cylinder_longwave.py:200-201), so at HEAD it resolves to the default Numba kernel - i.e. identity with A0, which is exactly the protected-cell semantics (0% regression now; opt-out guard once alternate arms exist). Recorded so nobody mistakes the current trivial pass for evidence."
+ ],
+ "obligation_findings": {
+  "1_gate_fidelity": {
+   "verdict": "PASS",
+   "detail": "Programmatic diff: all 8 PROMOTION_POLICY 'Proposed quantitative gates' bullets plus intro and closing are byte-identical in n8_03_protocol.json gates_verbatim_from_promotion_policy. 1.10 geomean, dual 1.05 per-cell (vs A0 AND vs B1 at installed region/pipeline boundary), 3% protected bound, 80% C-counter coverage with non-double-counted work unit, first-use no build/download, cold-guard 3% paired bound, and full censor/noise rules all present with exact numbers. Nothing loosened; exactness_gates adds a mandatory pre-timing admission (N8-04 contract + green reference suite), i.e. strictly stricter."
+  },
+  "2_cell_implementability": {
+   "verdict": "PASS with notes N-a/N-b",
+   "detail": "P1/P2/P5/P6 executable today via n8_03_smoke_scene.py (P1/P2 ambient + quiet-host requirement with admission numbers; P5/P6 --memory-budget-gib 12 recorded deviation; all smoke-proven). T1 ships a complete command; all cited n8_02_child.py flags verified to exist (--site/--prepared/--backend/--block-pixels/--threads/--cpu-budget/--entry/--run-root/--out). Every P/PR cell pins scene, env, runtime options (verified against src/solweig_light/runtime.py defaults and smoke options_ambient_defaults), entry point, expected output file set (10 named per-flag GeoTIFFs + checkpoint), timesteps=24, and admission. P3/P4 and PR2 lack a shipped driver but miss no pinned variable (N-a); PR1 verified executable at HEAD (N-g)."
+  },
+  "3_fixture_identity": {
+   "verdict": "PASS",
+   "detail": "Scheme IS specified: per-file sha256 for every produced input, in n8_03_scene_manifests.json and the four per-scene scene_manifest.json (identical content). All 16 hashes recomputed with shasum -a 256 - ALL MATCH (not just spot-check). Generator sha256 recomputed c272575d... MATCHES. Met file verified byte-identical to header + first 24 data records of the real-scene met.txt (source sha256 37132c88... recomputed and matching the pin); 25 lines incl. header; provenance recorded in manifest, protocol and builder docstring. No combined fixture tree-digest is defined (per-file is the identity scheme); reviewer tree digests over the sorted path:hash list, for future re-verification: 128_dense = 1eba11e5c29f99d4c3ba3708e156f761aababd023405be7f82a771aae2009f94, 256_veg = 9f7c4aba50d4538bcfdb9b950e60aff5c481e3720c9d13c0444a149756e869d8. Fixture tree is 2.0 MB as claimed."
+  },
+  "4_control_correctness": {
+   "verdict": "PASS",
+   "detail": "B1 and C1 both defined as the direct-AoSoA producer (N8-11) at the same region/pipeline boundary; only the kernel backend differs. A0 = untouched env-unset default at frozen HEAD (n8_02 confirms zero native loader calls under default env). auto = env-unset packaged candidate, used ONLY from N8-43. C0 labelled 'DIAGNOSTIC ONLY, never replaces A0/B1 controls' (matches PROMOTION_POLICY). M0 pin 14e88876... verified = actual main HEAD, no performance claim. B7-60/B7-31 marked historical. The dual 1.05 gate (vs A0 AND vs B1) is frozen verbatim, so B1's layout gain cannot be credited to C. Only residual ambiguity is P3's '/' boundary choice (N-b)."
+  },
+  "5_measured_context": {
+   "verdict": "PASS",
+   "detail": "Every frozen figure matches evidence/profile/n8_02_profile.json: island 21.0%/4.5%/29.1% (0.2101/0.0446/0.2914); prep 130.96us warm B=128 and 251.6us B=1024 (both included, which also answers n8_02 review note N7); adapter warm 220.2us (220.24); C entry 61.9us; Numba island ~146us/call (n8_02's own verdict wording); decode 40.9/46.7/41.5% correctly labelled per-call-mean estimates (0.4092/0.4671/0.4148); end-to-end 1.0071 (5 pairs) / 1.021 (3 pairs); instrumentation delta -1.75%..+2.69% and 157ns/call. Review note N1 respected: no speedup expectation is stated anywhere, the 2.3x C-entry-vs-island figure is absent from both protocol files (grep-verified), and the one ~2.4x figure is prep-cost-vs-C-kernel, matching n8_02's verdict, not a speedup claim. Counter names match n8_02 stage names. Amendment-by-appendix rule recorded."
+  },
+  "6_honest_labels": {
+   "verdict": "PASS",
+   "detail": "All four scenes labelled SYNTHETIC-DEVELOPMENT / 'NOT the actual 24-tile corpus' in manifest label, protocol fixture_label and md, with the BENCHMARK_PROTOCOL cannot-represent rule quoted. target_campaign placeholder records corpus ABSENT (b7_51 record exists) and the 4-tile scale guard EXPLICITLY LABELLED not-actual-target, compatible with actual-target-unverified. The ambient-admission failure is preserved as its own record (ResourceAdmissionError, load 5.00/9.38/14.00, 12 teammate agents), labelled environment-blocked, never a candidate defect, and drives the P1/P2 quiet-host requirement - not hidden. The v5 metfile open dependency is recorded in both JSON and md with its substitution."
+  },
+  "7_consistency": {
+   "verdict": "PASS",
+   "detail": "Protocol JSON parses. All 16 manifest hashes match disk (full recomputation, all four scenes); per-scene manifests identical to the aggregate manifest. Smoke records match the protocol's smoke_verification exactly: all four digests (7e276889a0cb4a78 / 235b32936cf11f7d / e97ddaa7c03a97db / 2c87a101bb8ba29a), stage splits, 10/10 simulation TIFFs, env empty, module origin worktree src, ambient vs pinned 12 GiB admission fields. Digest scheme is defined in code (n8_03_smoke_scene.py output_manifest: sha256 of size+hash-sorted file list, truncated 16). Notes N-c/N-f suggest strengthening timed-run records. The '112 tests collected at freeze' claim reproduced exactly (pytest --collect-only: 112)."
+  }
+ },
+ "review_method": [
+  "Read PROMOTION_POLICY.md, BENCHMARK_PROTOCOL.md, VALIDATION_POLICY.md, then all N8-03 deliverables; protocol JSON, protocol md, both tools, all five smoke records, both manifests and all four per-scene manifests.",
+  "Programmatic verbatim diff of gates (intro + 8 bullets + closing) and of the five timing-boundary bodies against the policy markdown.",
+  "Recomputed with shasum -a 256: all 16 fixture input hashes (four scenes x four files), the generator script hash, and the met source hash; byte-compared the fixture metfile against the source met.txt header + first 24 records.",
+  "Cross-checked every measured_context figure against evidence/profile/n8_02_profile.json and both review records n8_30_review_n8_02_profile.{json,md}; grep-verified absence of the 2.3x figure from the protocol files.",
+  "Verified cited pins exist: M0 = main HEAD 14e88876 (git), n8_02_child.py CLI flags, api entry points, runtime.py defaults and DEFAULT_MEMORY_FRACTION=0.50 (runtime.py:279), n8_00/n8_04/b7_51 evidence files, campaign_synthetic lineage, 112 collected reference tests.",
+  "Smoke runs NOT rerun (per review obligations; smoke records + manifests sufficient). No files outside evidence/reviews/ touched; no network, no commits."
+ ],
+ "recomputed_hashes": {
+  "generator_n8_03_build_scenes.py": "c272575d7ea0f3bb4db46d5790a643dcae2487fff2ebafad665b9b7f55baed99",
+  "met_source_met.txt": "37132c8851294b39e8cb57087a22527f155704e61ba8c37a0e4f36c9f591b0ac",
+  "scene_128_dense": {
+   "DEM_0_0.tif": "07e60ecf82e0677128fd732636ea3d528f376fb65e1e1f05603a94b829d1038d",
+   "Building_DSM_0_0.tif": "e28b66df31c553a273b27ef12cd407d348291b955891cd4638c9a141f6080797",
+   "Trees_0_0.tif": "238d36b7b378e1dd2ea45835d3e3374b3ed7b2451c1f121d337d2796f6e9b945",
+   "metfile_0_0.txt": "bc8ee6361071dd109649857127d6b777571e868bdb06db0e47968b39e99189e4",
+   "reviewer_tree_digest_sorted_path_hash": "1eba11e5c29f99d4c3ba3708e156f761aababd023405be7f82a771aae2009f94"
+  },
+  "scene_128_veg": {
+   "Trees_0_0.tif": "dad16528e1b35c520633999a61634a2036e0bd93a846f521bb323ce82ee65772"
+  },
+  "scene_256_dense": {
+   "DEM_0_0.tif": "85ab26fcec6fa193ca5d5d116eb1560c03b44d9f87c32dce0988b0d3ef29334e",
+   "Building_DSM_0_0.tif": "687655ed2122002eebc16214fa506537a433aec5ca12ef198572c8dc0bee430f",
+   "Trees_0_0.tif": "30f9e56852cc59aa196df9ce281666612a63608ee14cef76ee698227128ccdfa"
+  },
+  "scene_256_veg": {
+   "Trees_0_0.tif": "c080fcf489a88fbed41cf3225a15f1361ad1fcb643a7bd6bf5a0a25e947c7530",
+   "reviewer_tree_digest_sorted_path_hash": "9f7c4aba50d4538bcfdb9b950e60aff5c481e3720c9d13c0444a149756e869d8"
+  },
+  "metfile_256": "bc8ee6361071dd109649857127d6b777571e868bdb06db0e47968b39e99189e4 (all four scenes, as manifest claims)",
+  "note": "all 16 per-file hashes recomputed and matching; only distinguishing members listed per scene"
+ }
+}

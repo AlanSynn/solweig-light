@@ -1,0 +1,16 @@
+{
+  "purpose": "Environmental record: the 2026-09-22 quiet window for N8-13's timed A/B/C comparison and N8-23's memory-gated no-env gates could not open while the host is in active interactive use. Neither may be forced.",
+  "recorded": "2026-09-22T17:52 local",
+  "observations": [
+    "Loadavg sustained ~7-8 (10 cores) with NO single dominant process: aggregate of user desktop (Chrome helpers, WindowServer, Finder, Preview, multiple terminal sessions) plus corporate agents (PaloAlto Traps pmd ~10% CPU, Jamf, GlobalProtect) and 4 other interactive claude sessions.",
+    "Transient spike to 15.6 observed at window-open attempt; n8-13 correctly aborted per ambient gate (loadavg < 2.0), zero timed work executed, harness remains staged and parity-proven.",
+    "Memory view ~3.2 GB (inactive+free) vs >= 4.33 GB required by N8-23's API/CLI no-env gates (1.74 GB scene reservation + 410 MB parent vs 0.5x-available admission). Compressor holds ~5.9 GiB; swapouts cumulative 67.5M - host is genuinely memory-pressured.",
+    "Caffeine prevents system sleep; an unattended overnight drop in loadavg is plausible and the retry is automated via session cron."
+  ],
+  "decisions": [
+    "No user application may be killed to quiet the host (DELEGATION resource-ownership rule).",
+    "Full-tree pytest baseline (pass/fail, not timing-sensitive) may run under ambient CPU load but the N8-23 API/CLI gates inside it remain [host-memory-pressure] skips until the memory view clears 4.33 GB.",
+    "Timed A/B/C comparison runs only under the ambient gate; GO re-issued automatically when loadavg < 2.0 and memory view >= 4.4 GB."
+  ],
+  "implication_for_selection": "N8-31/N8-32 must not assume a quiet host is available on demand; quiet-window cells in the frozen protocol carry the P1/P2 quiet-host requirement and may need overnight scheduling."
+}

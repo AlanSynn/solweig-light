@@ -1,0 +1,158 @@
+{
+  "schema": "sw8-n8-30-review-v1",
+  "review_of": "src/solweig_light/radiation/_lw_dispatch.py (NEW) + src/solweig_light/radiation/cylinder_longwave.py (_lw_region_route seam + guarded call site) + src/solweig_light/pipeline.py (run_tile finally teardown) + tests/optimization_v8/integration/test_lw_dispatch.py",
+  "review_target_task": "N8-40 integration: policy-selected region dispatch wired into the private primary driver (author: team-lead/integrator; this review is independent)",
+  "reviewer": "n8-30 review service (independent; did not author N8-40)",
+  "review_utc": "2026-09-22",
+  "worktree": "/Users/alansynn/Workspace/solweig-v8-native @ base 16cdc56c, branch perf/native-optimization, all N8-40 work uncommitted (tracked diff verified via `git diff src/`: pipeline.py +9 lines, cylinder_longwave.py +20/-0; _lw_dispatch.py untracked NEW; no other tracked changes)",
+  "verdict": "APPROVE-WITH-NOTES",
+  "blocking_defects": [],
+  "required_repairs": [],
+  "recommended_repairs": [
+    "R1 (N1): shipped-state wording — region_route DOES import and run the N8-22 selector in the shipped state (lw_default_policy import + per-call registry file read, repo checkout only). Soften the _lw_dispatch docstring claim 'every call is decided without touching any of it' to name the selector as touched and the EXECUTION machinery (producer/pool/native/loader) as untouched; N8-41 may fix in passing.",
+    "R2 (N2): ImportError conflation — a PRESENT but broken selector module (ImportError at import time) is indistinguishable from an absent experiments tree and silently resolves row A (probe C3). Fail-safe direction (trusted legacy, pre-selection, inside the declared taxonomy); eliminated automatically by N8-41 vendoring. No src change now.",
+    "R3 (N3): teardown/bootstrap name surface (repo checkout only) — post-bootstrap, bare names region (regular package), direct_aosoa, lw_default_policy, lw_b_control, lw_native_aosoa, native_handle, installed_loader become importable, and bare dir names (policy/loader/layout/native) become importable as PEP 420 namespace packages; append-only priority keeps installed distributions winning (executed: numba resolves to site-packages). A FOREIGN top-level `region` module that happens to define shutdown_all_pools would be executed per tile by the pipeline teardown (probe H2). Acceptable until N8-41 vendoring removes the bootstrap; when vendoring, give the teardown an explicit dispatch-owned entry point instead of the bare `from region import ...`.",
+    "R4 (N4): stale state notes — tests/optimization_v8/integration/test_lw_dispatch.py:387 comment 'n8-14 repair pending' is stale: the repair has landed in this tree (shared_pool no longer double-appends at region_pool.py:836, close() untracks via _forget_pool at :568, shutdown_all_pools prunes at :864-866); the LIVE-filtered assertion remains true either way. The integration record's found_defect disposition ('dispatched to n8-14') is likewise superseded by the landed repair (region suite grew 151 -> 153 passed, consistent with repair regressions). Update wording at next touch.",
+    "R5 (N6): record-scope obligation for the first qualified row — require the N8-31/N8-32 record to state the tested scene-size envelope explicitly (the module docstring already promises 'scope limits ... live in the qualification records'). Do NOT add a hardcoded scene-size guard in src now (position defended in obligation F)."
+  ],
+  "rerun": {
+    "command_sets": [
+      {
+        "command": ".venv/bin/python -m pytest tests/optimization_v8/integration/test_lw_dispatch.py -v -rs",
+        "result": "9 passed in 1.85s, ZERO skips — test_row_c_qualified_record_routes_native EXECUTED against the genuine staged generation lw-g8-390acd5f57df1fe7 (no [no-staged-artifact] skip), i.e. the real driver->region->AosoaNativeCConsumer->ISPC chain ran in this review"
+      },
+      {
+        "command": ".venv/bin/python -m pytest tests/optimization_v6/cylinder_lw/ -q",
+        "result": "39 passed, 4 warnings in 8.39s"
+      },
+      {
+        "command": ".venv/bin/python -m pytest tests/optimization_v8/policy/test_legacy_env_parity.py -q",
+        "result": "26 passed in 0.76s (DX env-surface parity gate green against the new seam)"
+      },
+      {
+        "command": ".venv/bin/python -m pytest tests/optimization_v8/region/ -q",
+        "result": "153 passed, 3 warnings in 34.10s (current tree incl. the landed n8-14 repair; 2 more than the N8-14 review's 151)"
+      }
+    ],
+    "interpreter": "/Users/alansynn/Workspace/solweig-v8-native/.venv/bin/python (verified to resolve solweig_light to the WORKTREE src)",
+    "timed_benchmarking": "none (pass/fail suites and untimed functional probes only; host is loaded)"
+  },
+  "obligations": [
+    {
+      "obligation": "A. Shipped-state inertness: empty registry + no env => byte-identical to base, no experiment machinery imported; FULL_DIAGNOSTICS default demand never reaches the dispatch",
+      "status": "PASS",
+      "finding": "Structural: importing cylinder_longwave does not even import _lw_dispatch (the seam import is inside _lw_region_route); _lw_dispatch's module level imports only pathlib/sys/numpy. Lcyl_v2022a_by_demand with the default FULL_DIAGNOSTICS demand returns the untouched public full path (cylinder_longwave.py:456-457) and never reaches the seam; define_patch_characteristics_primary has exactly one caller (Lcyl_v2022a_primary, line 443). Executed probe A: (A1) default-demand Lcyl_v2022a_by_demand call had seam_calls=[], zero machinery modules in sys.modules, ZERO sys.path growth; (A2) shipped parallel Lcyl_v2022a_primary is bitwise-identical (uint32 views) to the forced-legacy run on output fields 0/1 with NOT_REQUESTED singleton identity on fields 2..5 (the complete public 6-tuple), imports NO execution machinery (producer/pool/native/loader all absent from sys.modules), and resolves row A via '[absent] no qualification records'. Precision note N1: the SELECTOR (lw_default_policy) IS imported and run in shipped row A and sys.path grows by the 7 append-only experiment dirs in a repo checkout — execution machinery untouched, but the docstring's 'without touching any of it' overstates (R1). Suites: integration 9 passed; v6 cylinder 39 passed."
+    },
+    {
+      "obligation": "B. Note-N6 discipline: AosoaNativeCConsumer can never hand raw uint32 payloads to the native entry",
+      "status": "PASS",
+      "finding": "Executed three ways. (B1) Through the REAL qualified-row-C chain (genuine staged artifact, real executor), a spy wrapped around lw_native_aosoa.primary_aosoa recorded payloads sh/vs/vb dtype float32 shape (6,153,8) C-contiguous and sun/shade dtype bool — the tail block (rows=41 of 37x53=1961 at block_pixels=128) arrived as 6 whole gangs exactly as the consumer's produce slices them; the float32 view is applied in consume (_lw_dispatch.py:210-212) before the call. (B2) The consumer's produce() output is genuinely raw producer output (uint32/bool verified on a standalone instance), so the discipline is enforced exactly at the consume boundary, not lost earlier. (B3) Defense in depth: the native entry's own admission REJECTS the raw feed — primary_aosoa raised UnsupportedInput 'sh: dtype uint32 != float32 (pass the producer block as block.view(np.float32) -- bound wave-2 consumer convention, N8-11 review note N6)' (lw_native_aosoa.py:177-181, _need_payload). A raw uint32 feed cannot be admitted, let alone silently misread."
+    },
+    {
+      "obligation": "C. Decline-vs-fallback boundary: nothing after a native launch can become a silent fallback; no partial output reachable without an exception",
+      "status": "PASS",
+      "finding": "Structural sweep: the ONLY except clause in the entire routed path is region_route's `except ImportError` around _bootstrap()+`import lw_default_policy` (_lw_dispatch.py:111-115), i.e. strictly PRE-selection. _execute_row has no try; execute_regions collects every BaseException from produce/consume per block into errors and _raise_first re-raises the ORIGINAL object type-intact (region_pool.py:683-688, 418-426, 710-743); the seam and define_patch_characteristics_primary have no try; Lcyl_v2022a_primary has no try. A normal return implies every block started (skipped>0 only exists when an error exists, and errors force the raise before RegionReport construction). The [7,total] buffer is a local of _execute_row — on raise it is discarded, so no partial output can reach the caller. Executed probes: (C1) sabotaging the row-B kernel's 3rd block propagates RuntimeError out of Lcyl_v2022a_primary annotated {'first_failing_block': 2, 'blocks_started': (0, 1, 2), 'region_index': 0}; nothing returned. (C2) double failure raises the canonical lowest-index error, loud. (C4) a post-selection failure (resolve_lw_backend raising OSError) propagates. (C3) one genuine conflation exists and is PRE-selection by construction: a present-but-broken selector module silently resolves row A (note N2/R2) — fail-safe direction (trusted legacy), inside the declared taxonomy, eliminated by N8-41 vendoring. The N8-14 multi-failure corner (their N1) only affects WHICH error is raised, never WHETHER."
+    },
+    {
+      "obligation": "D. Expert-env staging: env=native|ispc intercepts in the seam, selector never consulted; unknown values behave as before; env-read surface unchanged",
+      "status": "PASS",
+      "finding": "The seam intercept (cylinder_longwave.py:194) uses the identical strip().lower() normalization as the pre-existing _lw_kernel read (:214) and returns None before any policy import, so the selector's own expert route (which would demand the N8-21 taxonomy error) is unreachable from the dispatch flow — exactly the n840-6 staged decision. Executed: test_explicit_expert_env_stays_with_legacy_route asserts resolve_lw_backend is never called (called==[]) and output stays bitwise-equal for env in {native, ispc}; test_unknown_legacy_env_value_routes_legacy pins env='numba' to legacy behavior; the DX parity gate test_src_env_var_surface_equals_frozen_dx_baseline is green (26 passed). Grep evidence: _lw_dispatch.py reads NO environment variable; the LW backend variable is read at exactly two sites of the SAME frozen name in the SAME file (the new seam :194 + pre-existing _lw_kernel :214); all other src env names unchanged (SOLWEIG_LIGHT_FUSED_RAD/NATIVE_CACHE/PATCH_CLASS_TABLES/PREPARED_VIS, runtime/worker vars). Precision: the team phrasing 'no second env-read site exists in src' is not literally true — a second READ SITE of the same var was added; what the frozen contract pins (and the DX gate verifies) is the env-var NAME surface, which is unchanged. Recorded here so the wording does not fossilize."
+    },
+    {
+      "obligation": "E. Bootstrap risk: sys.path append set + bare imports cannot change existing package behavior in the shipped state; installed-wheel behavior quiet ImportError -> row A",
+      "status": "PASS",
+      "finding": "_bootstrap IS reachable before selection (it runs on every parallel, lane-aligned driver call, even shipped row A) — but executed probes bound the risk. (E1, wheel) A copy of _lw_dispatch.py served from a fake site-packages layout with no experiments/ ancestor returns None QUIETLY with ZERO sys.path growth (parents[3]/experiments is_dir() is False; the ImportError is swallowed) — shipped wheels are behaviorally untouched. (E2, repo) Post-bootstrap, the bare names actually resolvable are the experiment module names (direct_aosoa, lw_default_policy, ...), the region regular package, and — verified by direct import — the bare dir names as PEP 420 namespace packages (import policy succeeds); append-only priority means every INSTALLED distribution still wins (numba resolves to .venv site-packages). Existing src behavior cannot change: src imports no bare name that the bootstrap can shadow (its numba import keeps resolving to site-packages), and before the first routed call attempt the paths are not even appended. Residual repo-only exposure is note N3/R3 (namespace importability of generic names; foreign `region` with a same-named attribute would be executed by the teardown) — acceptable now, eliminated by N8-41 vendoring."
+    },
+    {
+      "obligation": "F. Memory/scope honesty: whole-scene AoSoA + masks allocated per routed call — pre-launch scene-size guard NOW or defer to record scope (reasoned position)",
+      "status": "PASS (position: DEFER to record scope; no src guard now)",
+      "finding": "Sizing, exactly: a routed call materializes 3x uint32 [G,P,W] + 2x bool [G,P,W] with G*W ~= total pixels, P<=609 (driver guard cylinder_longwave.py:368) => ~14*P bytes/pixel ~= 2.25 GB at 1024^2 x 153 patches, ~9.0 GB at 2048^2. Failure mode is NOT a silent fallback: produce_blocks_aosoa's admission runs BEFORE any allocation (direct_aosoa.py:259-264, so a non-admitted channel allocates nothing — probe suite test_dense_channel_declines_before_launch), and for an admitted channel np.empty raising MemoryError propagates loudly out of the driver (no except in the routed path; obligation C). Position: DEFER. (1) Unreachable in shipped state — row A returns before _execute_row, so no allocation site is reachable without a qualified record, which requires N8-31 comparisons + N8-32 selection + independent review under PROMOTION_POLICY. (2) A hardcoded pixel cap in src would embed an unqualified policy constant in the package — the records-blind selector design (and the module docstring's own promise that scope limits live in the qualification records) puts that decision in the record, not the dispatch. (3) The one genuinely new hazard, allocation-triggered process death (macOS memory-pressure SIGKILL rather than MemoryError), is a scale/envelope property that the first qualified record MUST state (R5) — and N8-31's protocol cells + the B7-60 1024^2 campaign already operate at scales the host demonstrably sustains. Required follow-through (R5): the N8-31/32 record's scope language must name the tested scene-size envelope; that is a record-scope obligation, not a src change."
+    },
+    {
+      "obligation": "G. Test quality: 9 integration tests — real-chain poison/tail coverage, bitwise method, vacuous-assertion sweep",
+      "status": "PASS",
+      "finding": "Non-vacuous on every axis checked. (1) Shape: 37x53=1961 at block_pixels=128 => 15 full blocks + 41-row tail (5 gangs + 1 lane) — probe B1 observed the real tail block arriving at the native entry as 6 gangs x 153 patches, so the tail-gang path is genuinely exercised through the REAL driver->region->consumer chain, not a stub. (2) Bitwise method: _bitwise compares uint32 views of output fields 0 and 1 — the ONLY fields the sole caller consumes (Lcyl_v2022a_primary returns result[0], result[1] + the NOT_REQUESTED singleton x4, so fields 2..5 are identity-identical by construction and the comparison covers the complete public 6-tuple contract; this is not the vacuous-slice lesson — nothing comparable is omitted from the consumed contract). (3) Declines are real: the dense-channel decline uses genuinely dense mats, the lane-misaligned decline uses block_pixels=100 (100%8 != 0), the serial test asserts machinery untouched. (4) The row C test ran HERE against the genuine staged generation (zero skips in my rerun) with a real N8-21 LoadOutcome and manifest-bound hashes. (5) State hygiene: the autouse fixture resets policy state and pools both ways, mirroring the production teardown. Minor (N5): the internal diagnostic columns 2..6 of the routed 7-field stack are not bitwise-asserted against legacy — contract-bounded (unconsumed by any caller; the FULL_DIAGNOSTICS path that consumes diagnostics never routes) and already covered for the native kernel itself by the N8-13 seven-column parity suite; informational only."
+    },
+    {
+      "obligation": "H. pipeline.py teardown: lazy import pattern correctness, foreign-collision containment, per-tile cost",
+      "status": "PASS",
+      "finding": "The teardown (`try: from region import shutdown_all_pools / except ImportError: pass / else: _shutdown_pools()`, pipeline.py:311-316) is correct for its purpose. Containment executed: (H1) a foreign top-level module `region` WITHOUT the attribute raises ImportError at from-import -> caught, no crash. (H2) a foreign `region` WITH a shutdown_all_pools attribute WOULD be executed per tile — real but repo-checkout-gated (the import can only resolve post-bootstrap in a repo; a wheel has no `region`), lowest-priority resolution, and requires a foreign package that shadows both the name and the attribute (note N3/R3; N8-41 vendoring removes it). (H3) in a repo-checkout row-A tile the teardown import itself loads region.region_pool even though no pool was ever created — the pipeline comment 'No-op unless this process dispatched a region route' is true of the SHUTDOWN CALL but not of the IMPORT; cost is one cached import per process plus a dict scan per tile (untimed by policy; trivial), pool threads are daemon so this is hygiene, not hang prevention (n840-1, consistent with the record). shutdown_all_pools itself is the repaired N8-14 implementation (closes live pools, untracks via _forget_pool, prunes) and the integration reuse/shutdown test passes against it."
+    }
+  ],
+  "notes": [
+    "N1 (wording, R1): shipped row A imports and runs the policy selector (and reads the shipped registry file per driver call, repo checkout only); the docstring/record phrase 'without touching any of it / no experiment machinery' is true only of the EXECUTION machinery. Probe A2 executed evidence.",
+    "N2 (conflation, R2): present-but-broken selector module == absent tree -> silent row A (probe C3). Pre-selection, fail-safe, taxonomy-consistent; disappears with N8-41 vendoring.",
+    "N3 (repo-only name surface, R3): post-bootstrap namespace/package importability of generic names + the H2 foreign-region-with-attribute teardown hazard. Not reachable in installed wheels (E1). N8-41 vendor obligation is the fix; recommended the teardown get an explicit dispatch-owned entry point when vendoring.",
+    "N4 (stale state, R4): the integration test's 'n8-14 repair pending' comment and the record's found_defect disposition predate the landed repair (region_pool.py:568/:836/:864-866; region suite 151->153). Assertions remain valid.",
+    "N5 (unconsumed columns): routed diagnostic columns 2..6 unasserted vs legacy — contract-bounded, N8-13 suite owns kernel-level 7-column parity.",
+    "N6 (memory envelope, R5): ~14*P bytes/pixel (2.25 GB @1024^2, 9.0 GB @2048^2, P=153); MemoryError is loud; dense decline allocates nothing; first qualified record must state the scene-size envelope. Deferred guard is the deliberate, defended position.",
+    "N7 (per-call selector IO): resolve_lw_backend reads the registry file on every routed driver call in repo state (empty-registry read; wheels never reach it). Correctness-neutral; flag for N8-31 throughput comparisons so the routed arm is not credited/debited unfairly, and for N8-41 to consider caching."
+  ],
+  "scope_guard": "Nothing outside optimization_v8_native_default/evidence/reviews/ was written inside the repository by this review (probe scripts and fake trees live under /tmp/n840_review/); no network; no commits; no timed benchmarking (pass/fail pytest reruns and untimed functional probes only). src/, tests/, and experiments/ untouched (reviewer-authored probe files only under /tmp).",
+  "commands_run": [
+    "git diff src/ && git status --short (tracked-diff audit: only the three declared files)",
+    "stat -f '%m %Sm %N' experiments/.../region_pool.py src/.../{_lw_dispatch,cylinder_longwave,pipeline}.py tests/.../test_lw_dispatch.py (repair-timeline ordering)",
+    ".venv/bin/python -m pytest tests/optimization_v8/integration/test_lw_dispatch.py -v -rs",
+    ".venv/bin/python -m pytest tests/optimization_v6/cylinder_lw/ -q",
+    ".venv/bin/python -m pytest tests/optimization_v8/policy/test_legacy_env_parity.py -q",
+    ".venv/bin/python -m pytest tests/optimization_v8/region/ -q",
+    ".venv/bin/python /tmp/n840_review/probe_a_inertness.py",
+    ".venv/bin/python /tmp/n840_review/probe_b_note_n6.py",
+    ".venv/bin/python /tmp/n840_review/probe_c_fallback.py",
+    ".venv/bin/python /tmp/n840_review/probe_eh_bootstrap.py",
+    "grep -rn 'environ|getenv' src/solweig_light/ (env-surface enumeration)",
+    "grep -rn 'define_patch_characteristics_primary' src/ tests/ (single-caller audit)"
+  ],
+  "stale_review_notice": {
+    "notice": "team-lead notified mid-review that experiments/optimization_v8/region/region_pool.py changed (n8-14 repair for the _LIVE_POOLS double-append/no-untrack defect the integration tests surfaced) and that a test-only conftest-shadowing fix might land in two region test files.",
+    "resolution": "No re-review was needed: this reviewer independently detected the repair DURING the review (region_pool.py mtime 18:38:11 predates the review's file reads) — every region_pool.py fact cited in this record (shared_pool single registration at :836, _forget_pool all-occurrences identity remove at :843-848, close() untrack at :568, shutdown prune at :864-866) and ALL obligation-C executed evidence (probe C1/C2/C4: error identity, canonical order, loud propagation, _solweig_region_failure annotation) were taken from the REPAIRED file. The semantics-unchanged claim was verified on the repaired file: cancellation order, error object identity/type, _POOLS (pid,budget) keying, 8-budget cap, and the integration reuse/shutdown test all pass as documented.",
+    "current_state_verification_utc": "2026-09-22 (post-notice)",
+    "mtime_audit": "region_pool.py still 18:38:11 (byte-identical to the reviewed state); tests/optimization_v8/region/test_region_composition.py and test_region_consumers.py changed at 18:47:05 — exactly the pre-declared test-only conftest fix (bare `from conftest import LW_TEST_THREADS` replaced by `from region_test_helpers import LW_TEST_THREADS`, a uniquely-named helper module; no executable-code delta, outside this review's A-H scope)",
+    "recertification": [
+      ".venv/bin/python -m pytest tests/optimization_v8/integration/test_lw_dispatch.py -q -> 9 passed (2.62s)",
+      ".venv/bin/python -m pytest tests/optimization_v8/region/ -q -> 153 passed, 3 warnings (34.11s)"
+    ],
+    "verdict_effect": "none — verdict remains APPROVE-WITH-NOTES with identical notes"
+  },
+  "probe_transcripts": {
+    "PROBE_A_inertness": {
+      "script": "/tmp/n840_review/probe_a_inertness.py (fresh interpreter, 37x53x153 packed channels)",
+      "output": [
+        "A1 FULL_DIAGNOSTICS default: demand=CylinderLongwaveDemand.FULL_DIAGNOSTICS, seam_calls=[], machinery=[], sys.path_growth=0",
+        "A2 shipped row A: bitwise equal on fields 0/1, NOT_REQUESTED identity on 2..5, machinery_leaked=[]",
+        "A2 sys.path growth (7 entries, append-only): [repo]/experiments/optimization_v8{,/native,/layout,/numba,/policy,/artifacts,/loader}",
+        "A2 selector: row=A mode=auto-legacy reasons='[absent] no qualification records in the registry (shipped state: every non-legacy row disabled; auto resolves to legacy A)'"
+      ]
+    },
+    "PROBE_B_note_N6": {
+      "script": "/tmp/n840_review/probe_b_note_n6.py (qualified row C over genuine staged generation lw-g8-390acd5f57df1fe7)",
+      "output": [
+        "B1 real-chain payloads: sh/vs/vb (float32, (6, 153, 8), c_contig=True); sun/shade (bool, (6, 153, 8), c_contig=True); tail rows=41 -> 6 gangs",
+        "B2 produce() payloads are raw producer output: sh=uint32 sun=bool rows=32",
+        "B3 raw-uint32 feed rejected: UnsupportedInput: sh: dtype uint32 != float32 (pass the producer block as block.view(np.float32) -- bound wave-2 consumer conven[tion]"
+      ]
+    },
+    "PROBE_C_boundary": {
+      "script": "/tmp/n840_review/probe_c_fallback.py (qualified row B, sabotaged kernel)",
+      "output": [
+        "C1 loud propagation: RuntimeError: synthetic mid-session kernel failure",
+        "   annotation: {'first_failing_block': 2, 'failing_blocks': (2,), 'region_index': 0, 'blocks_started': (0, 1, 2), 'started_after_cancel': 0}",
+        "C2 multi-failure: synthetic failure block 3 | first_failing_block=2",
+        "C3 present-but-broken selector: quiet legacy (row A), bitwise equal to forced-legacy; no signal distinguishes it from an absent tree",
+        "C4 post-selection failure propagates: OSError: registry unreadable",
+        "debug side-evidence: an injected row-B record whose certified module is missing under the fake root declines '[stale] certified consumer module ... is missing' (selector fail-closed, independently re-observed)"
+      ]
+    },
+    "PROBE_EH_bootstrap": {
+      "script": "/tmp/n840_review/probe_eh_bootstrap.py (+ follow-up namespace import check)",
+      "output": [
+        "E1 wheel simulation: region_route -> None, sys.path growth: 0, quiet",
+        "E2 post-bootstrap origins: region -> experiments/.../region/__init__.py; direct_aosoa -> experiments/.../layout/direct_aosoa.py; lw_default_policy -> experiments/.../policy/lw_default_policy.py; numba -> .venv/.../site-packages/numba/__init__.py (installed wins)",
+        "E2 namespace check: `import policy` post-bootstrap SUCCEEDS as PEP 420 namespace package from experiments/optimization_v8/policy (find_spec printed None; direct import is authoritative)",
+        "H1 foreign region without the attr: ImportError caught, no crash",
+        "H2 foreign region WITH the attr: FOREIGN shutdown_all_pools executed",
+        "H3 post-bootstrap row-A tile: teardown import itself loads region.region_pool (no pool created; shutdown is a no-op)"
+      ]
+    }
+  }
+}

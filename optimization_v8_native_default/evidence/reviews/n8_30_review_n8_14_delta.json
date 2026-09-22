@@ -1,0 +1,86 @@
+{
+  "schema": "sw8-n8-30-delta-review-v1",
+  "review_of": "n8-14 repairs on top of n8_30_review_n8_14_region.md: (1) region-pool lifecycle repair in experiments/optimization_v8/region/region_pool.py, (2) conftest-shadowing repair in tests/optimization_v8/region/",
+  "review_target_task": "N8-14 delta vs n8_40_integration_record.json found_defect + known_interference (dispatched by team-lead 2026-09-22)",
+  "reviewer": "n8-rev-n8-14 delta review service (independent; did not author N8-14 or N8-40)",
+  "review_utc": "2026-09-22",
+  "worktree": "/Users/alansynn/Workspace/solweig-v8-native @ 16cdc56c (perf/native-optimization, all uncommitted)",
+  "baseline_review": "optimization_v8_native_default/evidence/reviews/n8_30_review_n8_14_region.md (APPROVE-WITH-NOTES, 151 passed)",
+  "verdict": "APPROVE-WITH-NOTES",
+  "blocking_defects": [],
+  "required_repairs": [],
+  "recommended_repairs": [
+    "R-D1 (integrator-owned, not n8-14): tests/optimization_v8/integration/test_lw_dispatch.py:386-388 comment 'a closed pool can stay listed -- n8-14 repair pending' is now factually wrong -- close() untracks via _forget_pool, so the closed/poisoned filter there is a pure safety net. Update the comment (content may stay; the filter is still correct)."
+  ],
+  "checks": {
+    "defect_closed": {
+      "method": "probe_lifecycle.py (scratch copy /tmp/n8rev14_delta/) against the real worktree package",
+      "executed": [
+        "P1 OK: one shared_pool(2) -> exactly 1 _LIVE_POOLS entry (identity count)",
+        "P2 OK: shutdown_all_pools() -> 0 entries, _POOLS empty",
+        "P3 OK: five create/shutdown cycles -> 0 after each (no accumulation)",
+        "P4 OK: explicit RegionPool(3) tracked exactly once at __init__ (_track_pool at region_pool.py:477), untracked after close()",
+        "P5 OK (positive test of the deliberate case, cheap to construct): pool with an active session refuses close(); shutdown_all_pools() suppresses and the pool STAYS listed with closed=False; after the session ends and close() succeeds it leaves the list"
+      ]
+    },
+    "regression_tests_not_vacuous": {
+      "method": "reintroduced the old bug in a scratch copy (unguarded shared_pool append, single-occurrence _forget_pool remove, prune-less shutdown) and re-ran the two tests' exact assertion logic",
+      "executed": [
+        "old code: one shared_pool() -> 2 entries -> test_live_pool_tracked_exactly_once FAILS",
+        "old code: per cycle the closed pool leaves 1 phantom entry, list grows 1->2->3->4->5 across 5 shutdown cycles -> test_closed_pools_leave_the_live_list FAILS (matches the found_defect description exactly)",
+        "new code: both pass (inside the 153-test suite run)"
+      ]
+    },
+    "adversarial": {
+      "executed": [
+        "P6 OK: shutdown prune drops simulated closed+poisoned leftovers and KEEPS a still-live (closed=False) pool holding an active session -- the prune cannot drop a live pool; poisoned implies fork-hooked (service-refusing), never live",
+        "P7 OK: _FORK_GENERATION untouched by close/_forget_pool/prune; fork-policy tests (3 real os.fork, 3 DeprecationWarnings) green in-suite",
+        "lock ordering: _POOLS_LOCK -> pool._lock is the only nesting; close() releases self._lock before _forget_pool and shutdown_all_pools releases _POOLS_LOCK before calling close() -- no reverse order, no deadlock path introduced",
+        "cosmetic: test_closed_pools_leave_the_live_list's final assert (all(...) over the already-empty tracked list) is vacuous; the two load-bearing asserts before it are proven non-vacuous by the old-code run"
+      ]
+    },
+    "claimed_unchanged_semantics": {
+      "executed": [
+        "region suite standalone: 153 passed, 3 warnings, 34.3s (baseline 151 + exactly the 2 new tests)",
+        "per-file collect-only counts match the baseline review exactly: plan 31, pool_budget 12->14 (+2 new), cancellation 10, composition 77, consumers 6, scratch 12, fork_policy 3",
+        "integration suite tests/optimization_v8/integration/test_lw_dispatch.py standalone: 9 passed (real driver dispatch through the pool, incl. test_region_pool_reuse_and_shutdown)",
+        "policy/ + dx/ standalone: 95 passed",
+        "CLI order region/ integration/ policy/ dx/ (previously 2 collection errors per known_interference): 257 passed, 3 warnings -- collects clean"
+      ]
+    },
+    "conftest_repair": {
+      "executed": [
+        "grep: zero bare `conftest` imports remain under tests/optimization_v8/region/ (docstring mentions only); conftest.py keeps the sessionfinish reset hook and imports region_test_helpers",
+        "region_test_helpers is uniquely named: only the region suite references it; no other module of that name exists anywhere under tests/, experiments/ or src/ (not `conftest`, not shared with any other suite)",
+        "import swap is line-for-line (composition line 23, consumers line 21; net-zero line delta) so all baseline-review line citations in those files still align (spot-checked :31-33, :140-142)",
+        "cross-suite import test_typed_graph_identity still resolves from tests/optimization_v8/reference/ via the verbatim-moved bootstrap (predates the repair, unchanged resolution)"
+      ]
+    },
+    "delta_scope": {
+      "executed": [
+        "mtimes: only region_pool.py + test_region_pool_budget.py (18:38, CHANGE 1) and region_test_helpers.py (new) + conftest.py + test_region_composition.py + test_region_consumers.py (18:46-18:47, CHANGE 2) were touched after the baseline review; every other region file (region_plan.py, consumers.py, region_case.py, __init__.py, 5 other test files) predates it (16:38-16:56)",
+        "baseline-review structural citations in region_pool.py hold exactly where the repair could not shift them: :477 _track_pool in __init__, :526-529/:575-578 poison refusals, :604-606 span construction, :783-784 lazy runtime import; fork hook shifted :881->:892, consistent with the +11 repair lines (NOTE comment + shutdown prune/docstring)",
+        "no out-of-scope delta found in region/"
+      ]
+    }
+  },
+  "obligations": [
+    "R-D1 (integrator): refresh the stale 'repair pending' comment in test_lw_dispatch.py:386-388 (see recommended_repairs)"
+  ],
+  "notes": [
+    "N-D1: the shutdown prune is post-repair a pure safety net -- close() always untracks on success, so no natural path leaves a closed pool listed (P6 had to simulate the stale entry). Consistent with the integration record's 'documented safety net'; keep, do not extend.",
+    "N-D2 (out of n8-14 scope, pre-existing, same bug class): tests/optimization_v8/native/test_aosoa_native_admission.py:26 and test_aosoa_native_parity.py:29 still do bare `from conftest import ...`; same shadowing hazard if policy/ is collected in one session. Belongs to the native suite owner / N8-41 (already covered by the documented native-first interference).",
+    "N-D3: region/conftest.py's numba pinning now lives in region_test_helpers.py; timing is identical (conftest imports it at collection, test modules hit the cached module). No new cross-suite thread-cap surface."
+  ],
+  "rerun": ".venv/bin/python -m pytest tests/optimization_v8/region/ -q -> 153 passed, 3 warnings; CLI order region/ integration/ policy/ dx/ -> 257 passed, 3 warnings",
+  "scope_guard": "nothing outside optimization_v8_native_default/evidence/reviews/ was written (scratch probes under /tmp/n8rev14_delta/ only); no network; no commits; no timed benchmarking",
+  "commands_run": [
+    ".venv/bin/python -m pytest tests/optimization_v8/region/ -q",
+    ".venv/bin/python -m pytest tests/optimization_v8/integration/test_lw_dispatch.py -q",
+    ".venv/bin/python -m pytest tests/optimization_v8/policy tests/optimization_v8/dx -q",
+    ".venv/bin/python -m pytest tests/optimization_v8/region tests/optimization_v8/integration tests/optimization_v8/policy tests/optimization_v8/dx -q  (CLI order)",
+    ".venv/bin/python -m pytest tests/optimization_v8/region/test_*.py --collect-only -q (per-file counts)",
+    ".venv/bin/python /tmp/n8rev14_delta/probe_lifecycle.py old|new (lifecycle + adversarial probes)",
+    "grep sweeps: bare conftest imports, region_test_helpers uniqueness, region mtimes"
+  ]
+}

@@ -1,0 +1,89 @@
+{
+  "record": "n8-40 integration: policy-selected region dispatch wired into the private primary driver (staged; rows disabled in shipped state)",
+  "recorded_utc": "2026-09-22T18:40Z",
+  "repo_state": {
+    "branch": "perf/native-optimization",
+    "base": "16cdc56c",
+    "worktree": "/Users/alansynn/Workspace/solweig-v8-native",
+    "committed": false,
+    "integrator": "team-lead (integrator-owned shared files only)"
+  },
+  "changed_shared_files": [
+    "src/solweig_light/radiation/_lw_dispatch.py (NEW: staged dispatch; the only src caller of the experiment machinery)",
+    "src/solweig_light/radiation/cylinder_longwave.py (_lw_region_route seam + guarded call site in define_patch_characteristics_primary; expert-env intercept)",
+    "src/solweig_light/pipeline.py (run_tile finally: shutdown_all_pools teardown, n840-1)"
+  ],
+  "new_tests": [
+    "tests/optimization_v8/integration/test_lw_dispatch.py (9 tests)"
+  ],
+  "wiring_design": {
+    "seam": "define_patch_characteristics_primary, after prepared coefficients, before the block loop; fires only when parallel and rows*cols; None returns the untouched legacy loop",
+    "selection": "policy.lw_default_policy.resolve_lw_backend() once per driver call (dossier step 1: resolve at the N8-40 call site); shipped empty registry resolves [absent] -> row A -> None without importing any machinery",
+    "row_b": "whole-scene produce_blocks_aosoa + classify_block_aosoa, then region.consumers.AosoaBConsumer (SELF_PARALLEL) through execute_regions (shared owner, default budget)",
+    "row_c": "same production, then the integrator-owned AosoaNativeCConsumer (BLOCK_FANOUT; per-block note-N6 float32 views; ISPC entry single-threaded per call so parallelism comes from the owner)",
+    "producer": "direct_aosoa.produce_blocks_aosoa + classify_block_aosoa on the WHOLE scene per call (memory note in module docstring; qualified scope limits live in future records, not in code)"
+  },
+  "decisions": [
+    {
+      "id": "n840-6 staged expert migration",
+      "decision": "env=native|ispc is intercepted in cylinder_longwave._lw_region_route and served by the legacy B7-32 route (byte-identical behavior); the N8-22 expert route (installed loader + loud taxonomy) activates with the N8-41 wheels when installed artifacts exist. Deliberate migration per DX_CONTRACT; flip obligation carried in n8_41_pre_wiring_notes.json.",
+      "test": "test_explicit_expert_env_stays_with_legacy_route (also asserts the policy selector is never consulted)"
+    },
+    {
+      "id": "n841-6 bootstrap (interim)",
+      "decision": "repo-checkout sys.path bootstrap appends experiments/optimization_v8{,/native,/layout,/numba,/policy,/artifacts,/loader} at LOWEST priority; an installed wheel has no experiments tree and resolves to row A. Vendoring under the package remains N8-41's obligation. Dispatch module imports lw_default_policy BARE to share module identity with the policy suite.",
+      "risk": "generic namespace names (policy/loader/region) could collide with foreign packages; low-priority append means existing modules win; recorded for N8-41 to eliminate by vendoring"
+    },
+    {
+      "id": "decline semantics",
+      "decision": "producer/admission decline BEFORE launch (dense channel, lane-misaligned block_pixels, classify fallback route) returns None -> trusted legacy loop (fallback outside the admitted domain, the shipped B7-32 semantic). Post-selection machinery failure and post-launch native errors propagate loudly. Tests: test_dense_channel_declines_before_launch, test_lane_misaligned_block_pixels_decline.",
+      "tests": ["test_dense_channel_declines_before_launch", "test_lane_misaligned_block_pixels_decline"]
+    },
+    {
+      "id": "serial and degenerate calls never dispatch",
+      "decision": "parallel=False and rows*cols==0 keep the legacy kernels; dispatch is dormant for the public FULL_DIAGNOSTICS path by construction (it only enters via define_patch_characteristics_primary).",
+      "test": "test_serial_demand_never_dispatches"
+    },
+    {
+      "id": "single env-read site",
+      "decision": "the dispatch module reads NO env vars; the expert intercept lives in the driver seam so src keeps exactly the frozen env-read surface. First integration attempt read the env in _lw_dispatch.py and the DX parity gate correctly failed it; fixed by moving the intercept, not by amending the frozen baseline.",
+      "test": "tests/optimization_v8/policy/test_legacy_env_parity.py::test_src_env_var_surface_equals_frozen_dx_baseline (green)"
+    },
+    {
+      "id": "pool teardown placement",
+      "decision": "shutdown_all_pools() in pipeline.run_tile's finally (per-tile hygiene; lazy import, no-op when the machinery was never bootstrapped). Pool threads are daemon so this is hygiene + early budget release, not hang prevention (n840-1)."
+    }
+  ],
+  "found_defect": {
+    "id": "n8-14 _LIVE_POOLS double-append + no untrack on close",
+    "detail": "RegionPool.__init__ registers itself in _LIVE_POOLS with a dedup guard (region_pool.py:803-809) and shared_pool appended again unguarded (region_pool.py:836): one live pool was listed twice. shutdown_all_pools closed pools but nothing untracked them (close()'s _forget_pool used single-occurrence remove), so duplicates survived every close and accumulated across shutdown cycles. _POOLS keying/reuse, budget bound, and execution semantics were correct throughout; impact was phantom entries in the tracking list.",
+    "disposition": "REPAIRED by n8-14 (integrator-verified): shared_pool append removed (_track_pool is the single registration point), _forget_pool removes all occurrences by identity, shutdown_all_pools prunes closed/poisoned; a pool whose close is refused by an active session correctly stays listed. Probe green (1 after create, 0 after shutdown, 0 after 5 cycles); region suite 153 passed standalone incl. 2 new regression tests; full tree 1965 passed / 6 skipped. Delta review n8-rev-n8-14 pending. The integration test's `not p.closed and not p.poisoned` filter is retained as a documented safety net."
+  },
+  "verification": {
+    "integration_suite": "tests/optimization_v8/integration/test_lw_dispatch.py: 9 passed (bitwise uint32-view parity of routed vs legacy over IDENTICAL adversarial packed inputs, 37x53 tail-block/tail-gang shape; shipped-state test uses the REAL shipped registry file)",
+    "guard_runs": [
+      "tests/optimization_v6/cylinder_lw/: 39 passed",
+      "tests/optimization_v8/{integration,policy,region,dx}/: 255 passed",
+      "tests/optimization_v8/{numba,installed,layout}/: 1188 passed, 6 skipped",
+      "tests/optimization_v8/: 1963 passed, 6 skipped (full tree, one invocation)"
+    ],
+    "known_interference": "collecting tests/optimization_v8/native/ FIRST in a combined invocation errors at collection for two native modules; every other ordering and standalone runs are green (pre-existing cross-suite conftest interference class, documented in full_tree_failures.json, reproducible without any N8-40 change). Second instance located precisely during repair verification: tests/optimization_v8/region/test_region_composition.py:23 and test_region_consumers.py:21 use bare `from conftest import LW_TEST_THREADS`; with policy/ collected, bare `conftest` can resolve to tests/optimization_v8/policy/conftest.py (its bootstrap puts its dir on sys.path) -> ImportError; CLI order `region/ integration/ policy/ dx/` reproduces, alphabetical full-tree order masks it. Same class as the installed/ shadowing bug; repair dispatched to n8-14 (uniquely-named helpers module, installed_test_helpers.py pattern)."
+  },
+  "review": {
+    "reviewer": "n8-rev-n8-40",
+    "verdict": "APPROVE-WITH-NOTES",
+    "blocking_defects": 0,
+    "required_repairs": 0,
+    "records": [
+      "optimization_v8_native_default/evidence/reviews/n8_30_review_n8_40_integration.json",
+      "optimization_v8_native_default/evidence/reviews/n8_30_review_n8_40_integration.md"
+    ],
+    "disposition": "optimization_v8_native_default/evidence/integration/n8_40_review_notes_disposition.json",
+    "note": "N1/N4 are deferred doc fixes at next touch (no post-review edits now); N2/N3 die with n841-7 vendoring; reviewer N6 position adopted -> the scene-size envelope (~2.25 GB @1024^2, ~9 GB @2048^2, P=153) is a BINDING statement in the first qualified record; N7 -> N8-31 fairness flag (one resolve_lw_backend per driver call in end-to-end accounting)."
+  },
+  "next": [
+    "n8-rev-n8-14 delta review of the two n8-14 repairs (in flight)",
+    "n8-13 timed A/B/C comparison (cron-gated quiet window; ambient gate aborted the first GO)",
+    "N8-31 comparisons, N8-32 selection, then N8-41 (vendor machinery, flip expert route, wheels)"
+  ]
+}

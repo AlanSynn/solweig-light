@@ -1,0 +1,135 @@
+{
+ "schema": "sw8-n8-30-review-v1",
+ "review_of": "experiments/optimization_v8/packaging/ (BUILD_DESIGN.md, build_native.py, wheel_tags.py, SOURCE_FALLBACK.md, stage/lw-g8-42aeba6a50dc5937/, stage/dylib_comparison.json) + tests/optimization_v8/packaging/ (44 tests)",
+ "review_target_task": "N8-20 source-fallback and bundled-native wheel build (build-time architecture + proof on the B7 kernel)",
+ "reviewer": "n8-30 review service (independent; did not author N8-20)",
+ "review_utc": "2026-09-22",
+ "worktree": "/Users/alansynn/Workspace/solweig-v8-native @ 16cdc56c (perf/native-optimization)",
+ "verdict": "APPROVE-WITH-NOTES",
+ "blocking_defects": [],
+ "reviewer_recomputed_hashes": {
+  "staged_dylib_sha256": "eb1071fcef64e5763839b65240986e9519d3de1906cf821925d1e0922582b46a",
+  "staged_dylib_bytes": 34280,
+  "b7_cache_dylib_sha256": "eb1071fcef64e5763839b65240986e9519d3de1906cf821925d1e0922582b46a",
+  "dylib_byte_identical_to_b7_cache": true,
+  "staged_asm_sha256": "bbdfdc9588d8349cbf9e554631d682d3313269cc99d4a321f22f5c4957afc0e8",
+  "b7_cache_build_asm_sha256": "bbdfdc9588d8349cbf9e554631d682d3313269cc99d4a321f22f5c4957afc0e8",
+  "staged_header_sha256": "7d2b2ed46fc630083623da1aa425269ad38f15e5aec2d24d9b8c8af290ab2d5f",
+  "kernel_sha256": "52652a598cd85ead04747a83a52b1184035c880aa0b32cf518efef06b961663c",
+  "kernel_matches_b7_build_stamp": true,
+  "kernel_byte_identical_to_b7_build_input": true,
+  "generation_name_rederived_by_reviewer": "lw-g8-42aeba6a50dc5937",
+  "generation_name_matches_dir_and_manifest": true,
+  "validate_manifest_result": "[] (no violations)",
+  "verify_generation_result": "PASS",
+  "macho_structure_error_on_real_dylib": "None (clean)",
+  "reviewer_fma_scan_of_shipped_dylib_disassembly": "0 hits across 7412 otool -tV instruction lines (fmadd|fmla|fmsub|fnmadd|fnmsub|fnmla, word-bounded); same 0 hits on the B7 cache dylib",
+  "otool_facts_vs_manifest": "LC_ID_DYLIB = bare basename 'liblw_native_g8.dylib'; sole external dep /usr/lib/libSystem.B.dylib == manifest link_deps; LC_BUILD_VERSION minos 26.0 == platform.os_min_version; arm64"
+ },
+ "per_obligation_findings": [
+  {
+   "obligation": "1. DOSSIER FIDELITY (BUILD_DESIGN.md vs PACKAGING_AND_DISTRIBUTION.md)",
+   "result": "PASS",
+   "findings": [
+    "Same distribution, no solweig-light-native: BUILD_DESIGN.md:32 'No second package'; driver hardcodes package 'solweig-light' (build_native.py:60, PACKAGE_NAME).",
+    "Platform-specific wheels only: BUILD_DESIGN.md section 6 + wheel_tags.py:65-99 reject 'any' platform tag, Root-Is-Purelib: true, and abi3-without-verified-surface for native wheels; a C-ABI/no-Python-C-API generic py3 + concrete platform tag is admitted per the dossier's explicit allowance; no manual renaming (checker is verify-side).",
+    "Arg-list subprocesses, no /bin/zsh: every external tool goes through run_tool() (build_native.py:138-153) with an argv list, shell=False, and an allow-listed env (_build_env, :121-135). Grep over the driver finds '/bin/zsh' and '/opt/homebrew' only inside docstrings asserting their absence; no shell=True, no shell strings.",
+    "No unsigned compiler fetch / curl-pipe-shell: no curl/wget/urllib/network code anywhere in the driver; tool resolution is --ispc > SOLWEIG_LIGHT_ISPC > PATH (:161-181), version pin-checked against 1.31.0 before any compile (:184-200).",
+    "Versioned manifest with all dossier-listed fields: manifest_version 1; kernel+generated_sources sha256 (:380-387, :722-727); abi.wrapper_abi_layout_version 'lw-region-abi-1' (:66-67); toolchain ispc+cc with version/path/binary sha256 (:199-200, :203-208); build.target/ispc_flags/cc_flags/link_deps (:388-393); math_profile (:394-399); scalar_profiles f32/f64 (:737-743); platform.os_min_version/arch/requirements/link_deps from otool (:266-301); artifacts sha256+bytes (:716-721); fma_audit disassembly audit (:745-746). All verified present in the staged manifest.json.",
+    "Immutable generation names + atomic publication: content-derived name (sha256 of canonical JSON minus generation/created_utc, :82-83, :507-518), single os.rename publication point with temp-dir cleanup (:526-568), republish refused (exit 7), all tested.",
+    "Two declared build modes, native-release FAILING: --mode native (default) fails loudly (exit 3 ISPC missing / 4 tool failure / 5 FMA audit / 6 verification / 7 collision, :88-114); --mode source publishes artifacts:[] and never invokes ISPC even when present (:768-814), exercised under PATH=/usr/bin:/bin.",
+    "Source fallback compiler-free: build_native.py lives under experiments/ (maintainer-only), pyproject.toml untouched (git diff empty), so 'pip install .' keeps main's exact build requirements; the no-native label is explicit.",
+    "Loader contract with path containment / no runtime writes / no runtime compiler: BUILD_DESIGN.md section 8 items 1-5 and SOURCE_FALLBACK.md table state importlib.resources resolution, real-path containment, symlink/../escape rejection, no compile/download/HOME/temp/cache/site-packages writes, absent=quiet decline vs corrupt=recorded decline + loud explicit request, expert dev path excluded from auto. Matches the dossier Runtime loader section and ARCHITECTURE.md identity/trust ('SHA checks provide content integrity, not authenticity').",
+    "GPL/third-party license notices obligation mentioned: BUILD_DESIGN.md:43-44 keeps the source .ispc/.sh/.py package-data globs 'for source transparency and license obligations'; SOURCE_FALLBACK.md:23 repeats it. pyproject.toml already ships backends/native/*.ispc/*.sh/*.py and radiation/SLEEF_LICENSE.txt under license GPL-3.0-or-later. The mention is thin (full notices-for-release verification is correctly deferred to N8-41 wheel assembly, section 10) but present.",
+    "CI boundary honest: section 10 scopes wheel assembly + fresh-venv/local-readiness tests to N8-41 as mandatory before any native-default claim; 'this packet does not authorize upload'; no CI/push triggered (no commits, no tracked-file modifications)."
+   ]
+  },
+  {
+   "obligation": "2. MANIFEST/ARTIFACT VERIFICATION (reviewer recompute)",
+   "result": "PASS",
+   "findings": [
+    "All hashes recomputed with shasum -a 256 by the reviewer (not via the driver's own code path): dylib, asm, header, kernel all match manifest.json, dylib_comparison.json, and the B7 dev cache (dylib and build/ asm byte-identical; kernel byte-identical to ~/.cache/solweig-light/native/build/lw_primary.ispc and equal to build_stamp.json kernel_sha256). The byte-parity claim is true.",
+    "Generation-name derivation reproduced independently by the reviewer in a fresh Python process (json.dumps sort_keys/separators over non-volatile fields, sha256, first 16 hex, lw-<tag>- prefix) -> lw-g8-42aeba6a50dc5937 == dir name == manifest.generation. The immutable-name claim is reproducible.",
+    "validate_manifest(staged) -> [] and verify_generation(staged) -> PASS; reviewer's own Mach-O walk on the real dylib -> None.",
+    "otool facts independently confirmed: LC_ID_DYLIB is the bare basename (cwd-scoped relative -o claim true, build_native.py:702-708), sole external dependency /usr/lib/libSystem.B.dylib (system library; nothing to bundle, no Homebrew path), LC_BUILD_VERSION minos 26.0 == manifest platform.os_min_version, cputype arm64.",
+    "Portable baseline confirmed: recorded flags are -O2 --opt=disable-fma --math-lib=default --pic (ISPC) and -arch arm64 -dynamiclib (link), target neon-i32x8 — an explicit target, not host detection; no -march=native/-mcpu=native equivalent baked in. Portable target + separately dispatched variants per the dossier platform rules.",
+    "Note: minos 26.0 means the artifact requires macOS 26+ as built; recorded honestly, and the example wheel tag macosx_26_0_arm64 in wheel_tags tests is consistent with it. N8-41 must derive its platform tag from this recorded fact rather than the build host's marketing version."
+   ]
+  },
+  {
+   "obligation": "3. FMA GATE SOUNDNESS",
+   "result": "PASS",
+   "findings": [
+    "Mnemonic set fmadd/fmla/fmsub/fnmadd/fnmsub/fnmla (build_native.py:76-77) matches the stated B7 audit_fma set; word-boundary regex avoids substring false positives/negatives.",
+    "The audit targets the SHIPPED asm, not a build log: the .s is published inside the generation, bound into the manifest as fma_audit.asm_sha256 (verified equal by reviewer), and verify_generation() re-checks that hash AND re-runs the audit on the shipped .s at every verification (:624-642). A contraction inserted after audit changes the .s hash and fails verification on two independent checks; immutability (exit 7) prevents in-place replacement.",
+    "Strictly, the audited .s is the emitted assembly of a second ISPC invocation (same source+flags, :689-697), not a disassembly of the linked dylib — determinism between the two compilations is assumed, not mechanically proven by the driver. The reviewer closed this loop directly: otool -tV disassembly of the SHIPPED dylib contains ZERO FMA mnemonics across 7412 instruction lines (same for the B7 cache dylib). The gate outcome is true of the actual shipped artifact. See note N2 for the residual-process recommendation.",
+    "BUILD_DESIGN.md section 2 documents exactly this mechanism (audit gate exit 5, nothing published on failure), so the contract text and code agree."
+   ]
+  },
+  {
+   "obligation": "4. TEST TEETH",
+   "result": "PASS",
+   "findings": [
+    "Real defects injected and refusal asserted: 11 manifest mutations including malformed sha256 fixtures ('0'*63+'g', 'xyz', 'deadbeef') rejected by validate_manifest (test_manifest_schema.py:58-92) — this is the test-caught 'malformed sha256 accepted' defect's regression guard; truncated dylib with stale hash -> 'hash mismatch' and truncated dylib with RECORDED matching hash -> Mach-O walk 'truncated or corrupt' (test_atomic_publication.py:103-118) — the regression guard for the 'magic-only check missed truncation' defect; forged generation name rejected; mid-publish producer explosion leaves staging empty with no temp leak (:36-41); path escape 'sub/x' refused; republish immutability exit 7; unparseable kernel exit 4 with clean staging.",
+    "Skip labels genuine and environment-conditional: reviewer re-ran the suite under 'env -i HOME=... PATH=/usr/bin:/bin' -> 41 passed, 3 skipped, all three labelled [ispc-unavailable] (test_build_modes.py:73, :96; test_atomic_publication.py:65). Not unconditional: the same tests pass when ISPC is reachable.",
+    "No fake passes found: the byte-parity test hashes a freshly built dylib and compares to the recorded driver sha (test_build_modes.py:96-111); the staged-asm re-audit reads the real 213KB shipped .s through the same gate (test_fma_gate.py:56-63); positive schema tests run full verify_generation, not just field presence.",
+    "Minor teeth gap (note N3): the exit-5 FMA build-failure path is exercised at the audit-function level with synthetic bad asm; no end-to-end build test drives a contracting kernel through the driver to exit 5. Constructing an ISPC source that provably contracts despite --opt=disable-fma is not deterministic, so this is a reasonable scope choice, but the driver-level wiring of audit_or_fail is covered only by code reading + the staged re-audit."
+   ]
+  },
+  {
+   "obligation": "5. HONEST LABELS + DISCIPLINE",
+   "result": "PASS",
+   "findings": [
+    "Staged dylib git exclusion verified: 'git check-ignore -v' maps experiments/.../liblw_native_g8.dylib to ~/.config/git/ignore:50 (*.dylib); it appears in no git status line. Disclosed in the handoff; the exclusion is user-global, so a different machine WOULD offer the dylib for commit — N8-41 must add an explicit repo-level ignore rule (note N4).",
+    "3x compile accounting corroborated by the reviewer's runs: the full-suite run executes exactly two kernel compiles (test_native_release_publishes_verified_generation — the immutability retry fails at exit 7 before compiling — and test_native_release_artifact_matches_b7_cache), plus one stage build = 3 total, consistent with 'one over a budget of 2'. The ISPC-hidden run (0.21s vs 4.25s) confirms the skipped tests are precisely the compiling ones. However the budget-overrun disclosure is recorded only in the review-request handoff, not in any deliverable file (note N1).",
+    "SOURCE_FALLBACK.md explicitly labels source installs 'NOT native-qualified' (bold, :15-19) and forbids output/CLI/checkpoint text implying native execution; absent-vs-corrupt loader semantics table matches the dossier.",
+    "No default-enable anywhere: git diff over tracked files is empty — the packet touches zero runtime code, no backend env defaults, no pyproject changes. Purely build-time + tests.",
+    "Ownership clean: author files confined to experiments/optimization_v8/packaging/ and tests/optimization_v8/packaging/ (conftest + 5 test modules); other untracked dirs (layout/, loader/, dx/, reference/) belong to parallel Wave-1 workers. Only hygiene noise: two __pycache__ dirs inside the owned scope from test imports."
+   ]
+  },
+  {
+   "obligation": "6. TEST SUITE RUN (reviewer-executed)",
+   "result": "PASS",
+   "findings": [
+    "Normal: .venv/bin/python -m pytest tests/optimization_v8/packaging -p no:cacheprovider -q -> 44 passed in 4.25s (matches the claimed 44/3.7s).",
+    "ISPC hidden (env -i, PATH=/usr/bin:/bin): 41 passed, 3 skipped in 0.21s, all skips labelled [ispc-unavailable] — matches the claimed 41+3 and proves no fake-pass fallback."
+   ]
+  }
+ ],
+ "notes": [
+  {
+   "id": "N1",
+   "severity": "note",
+   "where": "experiments/optimization_v8/packaging/BUILD_DESIGN.md section 9; stage/dylib_comparison.json",
+   "finding": "The 'B7 kernel compiled 3 times total, one over the stated budget of 2' disclosure exists only in the review-request handoff, not in any deliverable artifact. The accounting is corroborated (reviewer's full-suite run performs exactly 2 in-suite compiles + 1 stage build), so nothing is hidden, but the disclosure is not durable.",
+   "repair_if_touched": "Add one sentence to BUILD_DESIGN.md section 9 (or an evidence note) recording the 3-compile total and the budget overrun."
+  },
+  {
+   "id": "N2",
+   "severity": "note",
+   "where": "build_native.py:689-697 (asm emit is a second ISPC invocation); build_native.py:624-642 (audit binding)",
+   "finding": "The FMA gate audits deterministic re-emitted assembly rather than a disassembly of the final linked image. Reviewer disassembly of the shipped dylib found zero FMA mnemonics, so the shipped artifact is clean today; the theoretical gap is a non-deterministic divergence between compile #1 (.o -> link) and compile #2 (.s -> audit).",
+   "repair_if_touched": "Have verify_generation (or N8-21's loader check, or N8-41) additionally scan 'otool -tV' output of the final artifact, closing the loop without relying on compiler determinism."
+  },
+  {
+   "id": "N3",
+   "severity": "note",
+   "where": "tests/optimization_v8/packaging/test_fma_gate.py",
+   "finding": "The exit-5 FmaAuditFailure path is tested at the audit-function level only; no end-to-end driver run publishes-then-refuses a contracting kernel. Acceptable scope (a deterministically contracting ISPC fixture is not constructible under --opt=disable-fma), but the driver-level wiring of audit_or_fail is untested by execution.",
+   "repair_if_touched": "If a contracting fixture ever becomes constructible, add an end-to-end exit-5 test; otherwise leave as is."
+  },
+  {
+   "id": "N4",
+   "severity": "note",
+   "where": "experiments/optimization_v8/packaging/stage/lw-g8-42aeba6a50dc5937/liblw_native_g8.dylib (git exclusion)",
+   "finding": "The staged dylib is kept out of git only by the user-global ~/.config/git/ignore (*.dylib, line 50). On any machine without that user-global rule the 34KB binary becomes committable, which the dossier forbids ('Do not bundle random prebuilt files from an unverified worktree' / no committed platform bundles).",
+   "repair_if_touched": "At N8-41 (or sooner) add a repo-level .gitignore rule for the stage dylib / native_generated artifacts so the exclusion is not host-dependent."
+  }
+ ],
+ "required_repairs": [],
+ "test_commands_run": [
+  ".venv/bin/python -m pytest tests/optimization_v8/packaging -p no:cacheprovider -q  ->  44 passed in 4.25s",
+  "env -i HOME=$HOME PATH=/usr/bin:/bin .venv/bin/python -m pytest tests/optimization_v8/packaging -p no:cacheprovider -q -rs  ->  41 passed, 3 skipped ([ispc-unavailable] x3) in 0.21s",
+  "shasum -a 256 on staged dylib/asm/header/kernel and B7 cache counterparts; independent canonical-JSON generation-name rederivation; validate_manifest/verify_generation/macho_structure_error via driver import; otool -L/-l/-tV fact extraction and FMA scan of both dylibs; git check-ignore -v"
+ ]
+}

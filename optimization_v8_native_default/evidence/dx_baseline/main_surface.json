@@ -1,0 +1,1036 @@
+{
+  "capture_method": "python-ast-source-inspection (no execution)",
+  "companion_distribution": {
+    "console_scripts": {
+      "thermal_comfort": "solweig_gpu.cli:main"
+    },
+    "dependencies": [
+      "solweig-light==0.1.0.dev0"
+    ],
+    "name": "solweig-light-compat",
+    "version": "0.1.0.dev0"
+  },
+  "distribution": {
+    "console_scripts": {
+      "solweig-light": "solweig_light.cli:main"
+    },
+    "dependencies": [
+      "numpy>=2.4,<2.5",
+      "scipy>=1.17,<1.18",
+      "numba>=0.67,<0.68",
+      "GDAL>=3.13,<3.14",
+      "pytz>=2026.3",
+      "timezonefinder>=9,<10"
+    ],
+    "name": "solweig-light",
+    "optional_dependencies": {
+      "forcing": [
+        "xarray>=2026.7,<2027",
+        "pandas>=3,<4",
+        "netCDF4>=1.7,<2",
+        "matplotlib>=3.11,<4",
+        "shapely>=2.1,<3"
+      ],
+      "inputs": [
+        "pandas>=3,<4",
+        "rasterio>=1.4,<2",
+        "geopandas>=1.1,<2",
+        "fiona>=1.10,<2",
+        "pyproj>=3.7,<4",
+        "shapely>=2.1,<3",
+        "geopy>=2.5,<3",
+        "requests>=2.34,<3",
+        "osmnx",
+        "earthengine-api",
+        "geemap",
+        "xarray>=2026.7,<2027",
+        "netCDF4>=1.7,<2",
+        "cftime>=1.6,<2"
+      ],
+      "test": [
+        "pytest>=9,<10",
+        "build>=1.6"
+      ],
+      "wind": [
+        "rasterio>=1.4,<2",
+        "xarray>=2026.7,<2027",
+        "netCDF4>=1.7,<2"
+      ]
+    },
+    "package_data": [
+      "data/*.txt",
+      "comfort/*.json",
+      "radiation/SLEEF_LICENSE.txt"
+    ],
+    "requires_python": ">=3.11",
+    "version": "0.1.0.dev0"
+  },
+  "env_vars_read": {
+    "inputs/construction.py": [
+      "EE_PROJECT"
+    ]
+  },
+  "evidence_class": "source_observation",
+  "git_commit": "14e888760727583ef782a4dc0e7a5c7c6e6ff9d1",
+  "package": {
+    "all": [
+      "thermal_comfort",
+      "preprocess",
+      "run_walls_aspect",
+      "calculate_svf",
+      "run_utci_tiles",
+      "build_inputs",
+      "build_wind_ext_coeff"
+    ],
+    "cli": {
+      "description": "Run SOLWEIG on CPU.",
+      "entry": "solweig_light.cli:main",
+      "options": {
+        "--base_path": {
+          "action": null,
+          "choices": null,
+          "default": null,
+          "help": "Base directory containing input data",
+          "required": true,
+          "type": null
+        },
+        "--building_dsm": {
+          "action": null,
+          "choices": null,
+          "default": "Building_DSM.tif",
+          "help": "Building DSM raster filename",
+          "required": false,
+          "type": null
+        },
+        "--data_folder": {
+          "action": null,
+          "choices": null,
+          "default": null,
+          "help": "Directory containing ERA5/WRF data files",
+          "required": false,
+          "type": null
+        },
+        "--data_source_type": {
+          "action": null,
+          "choices": null,
+          "default": null,
+          "help": "Meteorological source (ERA5 or wrfout)",
+          "required": false,
+          "type": null
+        },
+        "--date": {
+          "action": null,
+          "choices": null,
+          "default": null,
+          "help": "Date for which thermal comfort is computed (e.g., 2021-07-01)",
+          "required": true,
+          "type": null
+        },
+        "--dem": {
+          "action": null,
+          "choices": null,
+          "default": "DEM.tif",
+          "help": "DEM raster filename",
+          "required": false,
+          "type": null
+        },
+        "--end": {
+          "action": null,
+          "choices": null,
+          "default": null,
+          "help": "End time in UTC (e.g., '2020-08-12 23:00:00')",
+          "required": false,
+          "type": null
+        },
+        "--era5_z0_find": {
+          "action": null,
+          "choices": null,
+          "default": null,
+          "help": "Compute directional wind-extension coefficients from ERA5 forecast surface roughness; requires data_stream-oper_stepType-instant.nc in --data_folder. Defaults to True when --data_folder is provided, False otherwise (True/False)",
+          "required": false,
+          "type": "str2bool"
+        },
+        "--landcover": {
+          "action": null,
+          "choices": null,
+          "default": null,
+          "help": "Landcover raster filename (optional)",
+          "required": false,
+          "type": null
+        },
+        "--overlap": {
+          "action": null,
+          "choices": null,
+          "default": 20,
+          "help": "Tile overlap in pixels (less than tile_size)",
+          "required": false,
+          "type": "int"
+        },
+        "--own_metfile": {
+          "action": null,
+          "choices": null,
+          "default": null,
+          "help": "Path to your own meteorological file (UMEP-format text file)",
+          "required": false,
+          "type": null
+        },
+        "--save_kdown": {
+          "action": null,
+          "choices": null,
+          "default": false,
+          "help": "Save downward shortwave radiation output",
+          "required": false,
+          "type": "str2bool"
+        },
+        "--save_kup": {
+          "action": null,
+          "choices": null,
+          "default": false,
+          "help": "Save upward shortwave radiation output",
+          "required": false,
+          "type": "str2bool"
+        },
+        "--save_ldown": {
+          "action": null,
+          "choices": null,
+          "default": false,
+          "help": "Save downward longwave radiation output",
+          "required": false,
+          "type": "str2bool"
+        },
+        "--save_lup": {
+          "action": null,
+          "choices": null,
+          "default": false,
+          "help": "Save upward longwave radiation output",
+          "required": false,
+          "type": "str2bool"
+        },
+        "--save_shadow": {
+          "action": null,
+          "choices": null,
+          "default": false,
+          "help": "Save shadow map output",
+          "required": false,
+          "type": "str2bool"
+        },
+        "--save_svf": {
+          "action": null,
+          "choices": null,
+          "default": false,
+          "help": "Save sky view factor output",
+          "required": false,
+          "type": "str2bool"
+        },
+        "--save_ta": {
+          "action": null,
+          "choices": null,
+          "default": false,
+          "help": "Save diagnostic air temperature output",
+          "required": false,
+          "type": "str2bool"
+        },
+        "--save_tmrt": {
+          "action": null,
+          "choices": null,
+          "default": true,
+          "help": "Save mean radiant temperature output",
+          "required": false,
+          "type": "str2bool"
+        },
+        "--save_wbgt": {
+          "action": null,
+          "choices": null,
+          "default": false,
+          "help": "Save wet bulb globe temperature output",
+          "required": false,
+          "type": "str2bool"
+        },
+        "--save_wind": {
+          "action": null,
+          "choices": null,
+          "default": false,
+          "help": "Save diagnostic wind speed output",
+          "required": false,
+          "type": "str2bool"
+        },
+        "--start": {
+          "action": null,
+          "choices": null,
+          "default": null,
+          "help": "Start time in UTC (e.g., '2020-08-12 00:00:00')",
+          "required": false,
+          "type": null
+        },
+        "--tile_size": {
+          "action": null,
+          "choices": null,
+          "default": 3600,
+          "help": "Tile size in pixels (e.g., 100\u20134000)",
+          "required": false,
+          "type": "int"
+        },
+        "--trees": {
+          "action": null,
+          "choices": null,
+          "default": "Trees.tif",
+          "help": "Trees raster filename",
+          "required": false,
+          "type": null
+        },
+        "--use_own_met": {
+          "action": null,
+          "choices": null,
+          "default": true,
+          "help": "Use your own meteorological file (True/False)",
+          "required": false,
+          "type": "str2bool"
+        },
+        "--use_uhi": {
+          "action": null,
+          "choices": null,
+          "default": true,
+          "help": "Compute diagnostic urban heat island intensity (ERA5 forcing only; set False for WRF or own met file) (True/False)",
+          "required": false,
+          "type": "str2bool"
+        },
+        "--version": {
+          "action": "version",
+          "choices": null,
+          "default": null,
+          "help": null,
+          "required": false,
+          "type": null
+        }
+      },
+      "required": [
+        "--base_path",
+        "--date"
+      ],
+      "version_string": "solweig_light 0.1.0.dev0"
+    },
+    "dataclass_records": {
+      "AdmissionPlan": {
+        "fields": {
+          "active_workers": null,
+          "estimates": null,
+          "native_threads": null
+        }
+      },
+      "MemoryEstimate": {
+        "fields": {
+          "decoded_block_bytes": null,
+          "dtype64_reserved_planes": 32,
+          "full_plane_equivalents": 192,
+          "live_array_bytes": null,
+          "native_overhead_bytes": null,
+          "patches": null,
+          "pixels": null,
+          "raw_visibility_bytes": null,
+          "total_bytes": null,
+          "windchannels": 12
+        }
+      },
+      "TileResult": {
+        "fields": {
+          "index": null,
+          "returncode": null,
+          "tile": null
+        }
+      }
+    },
+    "dunder_version": "0.1.0.dev0",
+    "module": "solweig_light",
+    "runtime_all": [
+      "AdmissionPlan",
+      "MemoryEstimate",
+      "ResourceAdmissionError",
+      "RuntimeOptions",
+      "TileExecutionError",
+      "TileResult",
+      "conservative_memory_estimate",
+      "default_memory_budget_bytes",
+      "estimate_live_memory",
+      "estimate_memory",
+      "estimate_tile_memory",
+      "execute_tiles",
+      "get_runtime_options",
+      "plan_admission",
+      "runtime_options",
+      "resolved_memory_budget_bytes"
+    ],
+    "runtime_functions": {
+      "conservative_memory_estimate": {
+        "params": [
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "rows"
+          },
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "cols"
+          },
+          {
+            "default": 153,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "patches"
+          },
+          {
+            "default": 12,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "windchannels"
+          },
+          {
+            "default": 128,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "block_pixels"
+          }
+        ]
+      },
+      "default_memory_budget_bytes": {
+        "params": []
+      },
+      "estimate_live_memory": {
+        "params": [
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "rows"
+          },
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "cols"
+          },
+          {
+            "default": 153,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "patches"
+          },
+          {
+            "default": 12,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "windchannels"
+          },
+          {
+            "default": 128,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "block_pixels"
+          }
+        ]
+      },
+      "estimate_memory": {
+        "params": [
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "rows"
+          },
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "cols"
+          },
+          {
+            "default": 153,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "patches"
+          },
+          {
+            "default": 12,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "windchannels"
+          },
+          {
+            "default": 128,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "block_pixels"
+          }
+        ]
+      },
+      "estimate_tile_memory": {
+        "params": [
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "rows"
+          },
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "cols"
+          },
+          {
+            "default": 153,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "patches"
+          },
+          {
+            "default": 12,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "windchannels"
+          },
+          {
+            "default": 128,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "block_pixels"
+          }
+        ]
+      },
+      "execute_tiles": {
+        "params": [
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "jobs"
+          },
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "options"
+          },
+          {
+            "default": null,
+            "kind": "KEYWORD_ONLY",
+            "name": "python_executable"
+          },
+          {
+            "default": "solweig_light.runtime_worker",
+            "kind": "KEYWORD_ONLY",
+            "name": "worker_module"
+          }
+        ]
+      },
+      "get_runtime_options": {
+        "params": []
+      },
+      "plan_admission": {
+        "params": [
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "jobs"
+          },
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "options"
+          }
+        ]
+      },
+      "resolved_memory_budget_bytes": {
+        "params": [
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "options"
+          }
+        ]
+      },
+      "runtime_options": {
+        "params": [
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "options"
+          },
+          {
+            "default": null,
+            "kind": "VAR_KEYWORD",
+            "name": "overrides"
+          }
+        ]
+      }
+    },
+    "runtime_options": {
+      "fields": {
+        "block_pixels": 128,
+        "cache_dir": null,
+        "cache_enabled": true,
+        "checkpoint_interval": 1,
+        "cpu_budget": 1,
+        "legacy_cache_policy": "recompute",
+        "memory_budget_bytes": null,
+        "resume": false,
+        "threads_per_worker": 1,
+        "workers": 1
+      }
+    },
+    "workflows": {
+      "build_inputs": {
+        "params": [
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "lat"
+          },
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "lon"
+          },
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "city"
+          },
+          {
+            "default": 8.0,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "km_buffer"
+          },
+          {
+            "default": 3.0,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "km_reduced_lat"
+          },
+          {
+            "default": 1.0,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "km_reduced_lon"
+          },
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "base_folder"
+          },
+          {
+            "default": 2.0,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "resolution"
+          }
+        ]
+      },
+      "build_wind_ext_coeff": {
+        "params": [
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "input_dir"
+          },
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "era5_dir"
+          },
+          {
+            "default": [
+              0,
+              30,
+              60,
+              90,
+              120,
+              150,
+              180,
+              210,
+              240,
+              270,
+              300,
+              330
+            ],
+            "kind": "KEYWORD_ONLY",
+            "name": "directions"
+          },
+          {
+            "default": 0.03,
+            "kind": "KEYWORD_ONLY",
+            "name": "z0_ref"
+          },
+          {
+            "default": 1.0,
+            "kind": "KEYWORD_ONLY",
+            "name": "hmin_b"
+          },
+          {
+            "default": 1.0,
+            "kind": "KEYWORD_ONLY",
+            "name": "hmin_t"
+          },
+          {
+            "default": 10.0,
+            "kind": "KEYWORD_ONLY",
+            "name": "z_eval"
+          },
+          {
+            "default": 10.0,
+            "kind": "KEYWORD_ONLY",
+            "name": "zref"
+          },
+          {
+            "default": 2.0,
+            "kind": "KEYWORD_ONLY",
+            "name": "LAI_t"
+          },
+          {
+            "default": 0.5,
+            "kind": "KEYWORD_ONLY",
+            "name": "a0_t"
+          },
+          {
+            "default": 0.4,
+            "kind": "KEYWORD_ONLY",
+            "name": "a1_t"
+          },
+          {
+            "default": 0.2,
+            "kind": "KEYWORD_ONLY",
+            "name": "alpha_min_t"
+          },
+          {
+            "default": 2.5,
+            "kind": "KEYWORD_ONLY",
+            "name": "alpha_max_t"
+          },
+          {
+            "default": 0.1,
+            "kind": "KEYWORD_ONLY",
+            "name": "coeff_min"
+          },
+          {
+            "default": 1.0,
+            "kind": "KEYWORD_ONLY",
+            "name": "coeff_max"
+          },
+          {
+            "default": 0.02,
+            "kind": "KEYWORD_ONLY",
+            "name": "lp_min_open"
+          },
+          {
+            "default": null,
+            "kind": "KEYWORD_ONLY",
+            "name": "max_workers"
+          }
+        ]
+      },
+      "calculate_svf": {
+        "params": [
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "base_path"
+          },
+          {
+            "default": 2,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "patch_option"
+          },
+          {
+            "default": false,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "overwrite"
+          }
+        ]
+      },
+      "preprocess": {
+        "params": [
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "base_path"
+          },
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "selected_date_str"
+          },
+          {
+            "default": "Building_DSM.tif",
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "building_dsm_filename"
+          },
+          {
+            "default": "DEM.tif",
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "dem_filename"
+          },
+          {
+            "default": "Trees.tif",
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "trees_filename"
+          },
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "landcover_filename"
+          },
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "windcoeff_folder"
+          },
+          {
+            "default": 3600,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "tile_size"
+          },
+          {
+            "default": 20,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "overlap"
+          },
+          {
+            "default": true,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "use_own_met"
+          },
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "start_time"
+          },
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "end_time"
+          },
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "data_source_type"
+          },
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "data_folder"
+          },
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "own_met_file"
+          },
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "preprocess_dir"
+          },
+          {
+            "default": true,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "use_uhi"
+          }
+        ]
+      },
+      "run_utci_tiles": {
+        "params": [
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "base_path"
+          },
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "preprocess_dir"
+          },
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "selected_date_str"
+          },
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "tile_keys"
+          },
+          {
+            "default": true,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "save_tmrt"
+          },
+          {
+            "default": false,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "save_svf"
+          },
+          {
+            "default": false,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "save_kup"
+          },
+          {
+            "default": false,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "save_kdown"
+          },
+          {
+            "default": false,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "save_lup"
+          },
+          {
+            "default": false,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "save_ldown"
+          },
+          {
+            "default": false,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "save_shadow"
+          },
+          {
+            "default": false,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "save_wbgt"
+          },
+          {
+            "default": false,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "save_ta"
+          },
+          {
+            "default": false,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "save_wind"
+          }
+        ]
+      },
+      "run_walls_aspect": {
+        "params": [
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "preprocess_dir"
+          }
+        ]
+      },
+      "thermal_comfort": {
+        "params": [
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "base_path"
+          },
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "selected_date_str"
+          },
+          {
+            "default": "Building_DSM.tif",
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "building_dsm_filename"
+          },
+          {
+            "default": "DEM.tif",
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "dem_filename"
+          },
+          {
+            "default": "Trees.tif",
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "trees_filename"
+          },
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "landcover_filename"
+          },
+          {
+            "default": true,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "ERA_5_z0_find"
+          },
+          {
+            "default": 3600,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "tile_size"
+          },
+          {
+            "default": 20,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "overlap"
+          },
+          {
+            "default": true,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "use_own_met"
+          },
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "start_time"
+          },
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "end_time"
+          },
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "data_source_type"
+          },
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "data_folder"
+          },
+          {
+            "default": null,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "own_met_file"
+          },
+          {
+            "default": true,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "use_uhi"
+          },
+          {
+            "default": true,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "save_tmrt"
+          },
+          {
+            "default": false,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "save_svf"
+          },
+          {
+            "default": false,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "save_kup"
+          },
+          {
+            "default": false,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "save_kdown"
+          },
+          {
+            "default": false,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "save_lup"
+          },
+          {
+            "default": false,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "save_ldown"
+          },
+          {
+            "default": false,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "save_shadow"
+          },
+          {
+            "default": false,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "save_wbgt"
+          },
+          {
+            "default": false,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "save_ta"
+          },
+          {
+            "default": false,
+            "kind": "POSITIONAL_OR_KEYWORD",
+            "name": "save_wind"
+          }
+        ]
+      }
+    }
+  },
+  "tree_path": "/Users/alansynn/Workspace/solweig-v8-mainref"
+}
