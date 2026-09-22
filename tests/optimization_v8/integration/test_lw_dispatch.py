@@ -383,8 +383,8 @@ def test_region_pool_reuse_and_shutdown(args, monkeypatch, tmp_path):
         'module_sha256': hashlib.sha256(real.read_bytes()).hexdigest()})
     _inject_registry(monkeypatch, tmp_path, [record])
     def _live_pools():
-        # LIVE only: _LIVE_POOLS tracking is append-mostly (a closed pool
-        # can stay listed -- n8-14 repair pending), so the reuse/growth
+        # LIVE filter: post n8-14 repair, close() always untracks, so this
+        # is a pure safety net (delta review R-D1/N-D1); the reuse/growth
         # invariant is asserted over the pool TABLE's live entries.
         return {id(p) for p in rp._LIVE_POOLS
                 if not p.closed and not p.poisoned}

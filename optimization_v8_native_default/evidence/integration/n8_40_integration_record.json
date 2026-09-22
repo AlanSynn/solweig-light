@@ -37,7 +37,10 @@
     {
       "id": "decline semantics",
       "decision": "producer/admission decline BEFORE launch (dense channel, lane-misaligned block_pixels, classify fallback route) returns None -> trusted legacy loop (fallback outside the admitted domain, the shipped B7-32 semantic). Post-selection machinery failure and post-launch native errors propagate loudly. Tests: test_dense_channel_declines_before_launch, test_lane_misaligned_block_pixels_decline.",
-      "tests": ["test_dense_channel_declines_before_launch", "test_lane_misaligned_block_pixels_decline"]
+      "tests": [
+        "test_dense_channel_declines_before_launch",
+        "test_lane_misaligned_block_pixels_decline"
+      ]
     },
     {
       "id": "serial and degenerate calls never dispatch",
@@ -57,7 +60,7 @@
   "found_defect": {
     "id": "n8-14 _LIVE_POOLS double-append + no untrack on close",
     "detail": "RegionPool.__init__ registers itself in _LIVE_POOLS with a dedup guard (region_pool.py:803-809) and shared_pool appended again unguarded (region_pool.py:836): one live pool was listed twice. shutdown_all_pools closed pools but nothing untracked them (close()'s _forget_pool used single-occurrence remove), so duplicates survived every close and accumulated across shutdown cycles. _POOLS keying/reuse, budget bound, and execution semantics were correct throughout; impact was phantom entries in the tracking list.",
-    "disposition": "REPAIRED by n8-14 (integrator-verified): shared_pool append removed (_track_pool is the single registration point), _forget_pool removes all occurrences by identity, shutdown_all_pools prunes closed/poisoned; a pool whose close is refused by an active session correctly stays listed. Probe green (1 after create, 0 after shutdown, 0 after 5 cycles); region suite 153 passed standalone incl. 2 new regression tests; full tree 1965 passed / 6 skipped. Delta review n8-rev-n8-14 pending. The integration test's `not p.closed and not p.poisoned` filter is retained as a documented safety net."
+    "disposition": "REPAIRED by n8-14 (integrator-verified); delta review n8-rev-n8-14 VERDICT: APPROVE-WITH-NOTES (evidence/reviews/n8_30_review_n8_14_delta.{json,md}) -- both repairs close their defects, regression tests proven non-vacuous by bug re-introduction in a scratch copy, previously-failing CLI order 257 passed. R-D1 (stale comment refresh in integration test) APPLIED by integrator; N-D1 keep-as-safety-net; N-D2 (bare-conftest class in tests/optimization_v8/native/{test_aosoa_native_admission,test_aosoa_native_parity}.py) deferred to n8-13 bundled after the timed comparison; N-D3 optional cosmetic assert left as-is. The integration test's `not p.closed and not p.poisoned` filter is retained as a documented safety net."
   },
   "verification": {
     "integration_suite": "tests/optimization_v8/integration/test_lw_dispatch.py: 9 passed (bitwise uint32-view parity of routed vs legacy over IDENTICAL adversarial packed inputs, 37x53 tail-block/tail-gang shape; shipped-state test uses the REAL shipped registry file)",
@@ -82,8 +85,7 @@
     "note": "N1/N4 are deferred doc fixes at next touch (no post-review edits now); N2/N3 die with n841-7 vendoring; reviewer N6 position adopted -> the scene-size envelope (~2.25 GB @1024^2, ~9 GB @2048^2, P=153) is a BINDING statement in the first qualified record; N7 -> N8-31 fairness flag (one resolve_lw_backend per driver call in end-to-end accounting)."
   },
   "next": [
-    "n8-rev-n8-14 delta review of the two n8-14 repairs (in flight)",
-    "n8-13 timed A/B/C comparison (cron-gated quiet window; ambient gate aborted the first GO)",
-    "N8-31 comparisons, N8-32 selection, then N8-41 (vendor machinery, flip expert route, wheels)"
+    "n8-13 timed A/B/C comparison -- TIER A (B=128 cells) GO under recorded ambient per trials addendum amendment; TIER B (B=1024) stays on the strict quiet-window cron",
+    "N8-31 comparisons, N8-32 selection, then N8-40 formal (yaml gate needs N8-32), then N8-41 (vendor machinery, flip expert route, wheels)"
   ]
 }
