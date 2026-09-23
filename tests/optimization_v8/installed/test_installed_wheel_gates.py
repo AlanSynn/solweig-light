@@ -15,7 +15,9 @@ can rerun them unchanged against a native wheel's venv.
 
 from __future__ import annotations
 
+import ast
 import json
+from pathlib import Path
 import zipfile
 
 import pytest
@@ -212,3 +214,104 @@ def test_installed_product_has_no_selector_module(wheel_venv):
     assert probe.returncode == 0, probe.stderr
     assert probe.stdout.strip().startswith("ABSENT:"), probe.stdout
     assert "lw_default_policy" in probe.stdout, probe.stdout
+
+
+def _is_environ(node: ast.AST) -> bool:
+    """``os.environ`` (Attribute) or a bare ``environ`` (Name) consumer."""
+    if isinstance(node, ast.Name):
+        return node.id == "environ"
+    return isinstance(node, ast.Attribute) and node.attr == "environ"
+
+
+def _installed_env_reads(site_packages: Path, relpaths) -> dict:
+    """Map ``relpath -> {lineno: env var}`` for every ``os.environ`` read in
+    the installed files, resolving module-constant indirection (the seam
+    reads ``os.environ.get(_LW_BACKEND_ENV, ...)`` with a module-level
+    string constant, which the dx_snapshot literal-arg capture cannot see).
+    Unresolvable reads are recorded as ``<unresolved>`` so they fail the
+    comparison instead of escaping it; ``os.environ["X"]`` subscripts are
+    recorded as ``<subscript>``."""
+    found: dict[str, dict[int, str]] = {}
+    root = Path(site_packages) / "solweig_light"
+    for rel in relpaths:
+        tree = ast.parse((root / rel).read_text(encoding="utf-8"))
+        constants = {}
+        for node in tree.body:
+            if (isinstance(node, ast.Assign) and len(node.targets) == 1
+                    and isinstance(node.targets[0], ast.Name)
+                    and isinstance(node.value, ast.Constant)
+                    and isinstance(node.value.value, str)):
+                constants[node.targets[0].id] = node.value.value
+        reads: dict[int, str] = {}
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute) \
+                    and node.func.attr == "get" and node.args \
+                    and _is_environ(node.func.value):
+                arg = node.args[0]
+                if isinstance(arg, ast.Constant) and isinstance(arg.value, str):
+                    var = arg.value
+                elif isinstance(arg, ast.Name) and arg.id in constants:
+                    var = constants[arg.id]
+                else:
+                    var = "<unresolved>"
+                reads[node.lineno] = var
+            elif isinstance(node, ast.Subscript) and _is_environ(node.value):
+                slice_ = node.slice
+                value = getattr(slice_, "value", slice_)
+                reads[node.lineno] = value.value \
+                    if isinstance(value, ast.Constant) and isinstance(value.value, str) \
+                    else "<subscript>"
+        if reads:
+            found[rel] = reads
+    return found
+
+
+def test_installed_lw_dispatch_env_surface_is_the_frozen_stand_down(wheel_venv):
+    """Release-owner gate (F5): inside the shipped longwave dispatch region
+    the ONLY environment read is the B7-32 expert stand-down
+    ``SOLWEIG_LIGHT_LW_BACKEND`` at ``radiation/cylinder_longwave.py``:196
+    and :216 (the two ``_lw_region_route``/``_lw_kernel`` seam reads).  The
+    structural default route itself -- ``radiation/_lw_dispatch.py`` and
+    everything under ``_native_dispatch/`` -- reads NO environment.  The
+    line numbers are pinned deliberately: moving the seam must fail this
+    gate and force a conscious re-freeze of the env-read contract."""
+    site = Path(wheel_venv["site_packages"])
+    native = site / "solweig_light" / "_native_dispatch"
+    region = ["radiation/_lw_dispatch.py", "radiation/cylinder_longwave.py"] + [
+        str(path.relative_to(site / "solweig_light"))
+        for path in sorted(native.rglob("*.py"))
+    ]
+    reads = _installed_env_reads(site, region)
+    expected = {"radiation/cylinder_longwave.py": {
+        196: "SOLWEIG_LIGHT_LW_BACKEND", 216: "SOLWEIG_LIGHT_LW_BACKEND"}}
+    assert reads == expected, (
+        "frozen LW-dispatch env-read surface drifted: the B7-32 stand-down "
+        "must remain the ONLY env read in the dispatch region, at "
+        f"cylinder_longwave.py:196/:216; found {reads}")
+
+
+def test_installed_wheel_ships_and_wires_aplus_decode(built_wheel, wheel_venv):
+    """Release-owner gate (F5): ``aplus_decode`` is NOT archived machinery --
+    it is the shipped, wired N9 A-plus decode (N9 A2), deliberately absent
+    from the banned-substring list.  The wheel must carry the module, and
+    the installed product must bind its ``_decode_at_plus`` into BOTH
+    consumer seams, so a future archive pass cannot silently drop or orphan
+    it (an unwired module would rot without any gate noticing)."""
+    with zipfile.ZipFile(built_wheel["path"]) as zf:
+        names = zf.namelist()
+    assert "solweig_light/_native_dispatch/aplus_decode.py" in names
+    probe = _run([wheel_venv["python"], "-c", (
+        "import json\n"
+        "import solweig_light._native_dispatch.aplus_decode as ad\n"
+        "import solweig_light.radiation.cylinder_longwave as cl\n"
+        "import solweig_light.radiation.patch_radiation as pr\n"
+        "print(json.dumps({\n"
+        "  'decode_present': hasattr(ad, '_decode_at_plus'),\n"
+        "  'cyl_wired': getattr(cl, '_decode_at', None) is ad._decode_at_plus,\n"
+        "  'patch_wired': getattr(pr, '_decode_at', None) is ad._decode_at_plus,\n"
+        "}))\n"
+    )], cwd=wheel_venv["path"])
+    assert probe.returncode == 0, probe.stderr
+    payload = json.loads(probe.stdout.strip().splitlines()[-1])
+    assert payload == {"decode_present": True, "cyl_wired": True,
+                       "patch_wired": True}, payload

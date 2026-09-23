@@ -1,0 +1,21 @@
+{
+  "wheel": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-942/n8_23_installed0/work/dist/solweig_light-0.1.0.dev0-py3-none-any.whl",
+  "sha256": "c40ef6f504d3dc8fa3f49e5cbd9278b3a4c0a76d3ebf21a2cceb7da6a3e29d4a",
+  "total_members": 85,
+  "banned_substrings": [
+    "qualification_registry.json",
+    "lw_default_policy",
+    "lw_native_aosoa",
+    "installed_loader",
+    "native_handle",
+    "build_native"
+  ],
+  "offending_members": [
+    "solweig_light/_native_dispatch/build_native.py",
+    "solweig_light/_native_dispatch/installed_loader.py",
+    "solweig_light/_native_dispatch/lw_default_policy.py",
+    "solweig_light/_native_dispatch/lw_native_aosoa.py",
+    "solweig_light/_native_dispatch/native_handle.py",
+    "solweig_light/_native_dispatch/qualification_registry.json"
+  ]
+}

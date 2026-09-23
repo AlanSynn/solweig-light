@@ -47,11 +47,13 @@ FORBIDDEN_STDOUT_TOKENS = (
 EXPECTED_DEFAULT_OUTPUTS = ("TMRT_0_0.tif", "UTCI_0_0.tif")
 
 GATE_RECORD: dict = {
-    "task": "N8-23",
-    "mode_label": "SOURCE/NO-NATIVE fallback (no packaged native artifact exists "
-                  "before N8-41); necessary but NOT native qualification "
-                  "(DX_CONTRACT.md: 'Passing fallback installation is necessary "
-                  "but insufficient for the native-default goal')",
+    "task": "N8-23; disposition N9 F4 closed_cpu_only",
+    "mode_label": "SOURCE/NO-NATIVE fallback wheel (the N8 native row and "
+                  "qualification machinery are archived repo-only as of N9 F4 "
+                  "closed_cpu_only; n8_32 selection closed N9 F3 NATIVE_LOSS). "
+                  "Necessary but NOT native qualification (DX_CONTRACT.md: "
+                  "'Passing fallback installation is necessary but insufficient "
+                  "for the native-default goal')",
     "wheel": None,
     "wheelhouse": None,
     "wheel_venv": None,

@@ -90,7 +90,7 @@
     ]
   },
   "evidence_class": "source_observation",
-  "git_commit": "16cdc56cbc8755675487b9c9c1f5a7e987e2c9e4",
+  "git_commit": "22876fb6",
   "package": {
     "all": [
       "thermal_comfort",

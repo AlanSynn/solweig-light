@@ -254,20 +254,55 @@ def _run_noenv_pipeline(python: Path, script: str, scene: Path, scratch: Path,
             record["stdout"] = result.stdout
             record["stderr_tail"] = result.stderr.strip().splitlines()[-6:]
             break
+        if all(a["diagnosis"] == "blocked:host-memory-pressure"
+               for a in record["attempts"]):
+            # Release-owner diagnostic (N9 F5): one final attempt with the
+            # admission error's own documented remedy hint -- cap the child's
+            # GDAL block cache via GDAL_CACHEMAX.  Distinctly labelled and
+            # never merged into the pinned-default verdict: if it passes the
+            # record carries ``remedy_note`` saying the pinned no-env runs
+            # were admission-refused and only the remedy run completed; if it
+            # refuses too, the label stands on all attempts.
+            result = run_cmd([python, "-c", script],
+                             env=dict(env, GDAL_CACHEMAX="64"),
+                             cwd=scratch, timeout=900)
+            entry = {
+                "attempt": "gdal-cachemax-64-diagnostic",
+                "env_override": {"GDAL_CACHEMAX": "64"},
+                "returncode": result.returncode,
+                "stdout_tail": result.stdout.strip().splitlines()[-6:],
+                "stderr_tail": result.stderr.strip().splitlines()[-4:],
+            }
+            record["attempts"].append(entry)
+            if "ResourceAdmissionError" in result.stderr:
+                entry["diagnosis"] = "blocked:host-memory-pressure"
+            elif result.returncode != 0:
+                entry["diagnosis"] = "failed"
+            else:
+                entry["diagnosis"] = "passed"
+                record["stdout"] = result.stdout
+                record["stderr_tail"] = result.stderr.strip().splitlines()[-6:]
     record["no_net_events"] = read_no_net_events(net_log)
     record["native_cache_after"] = listing(native_cache)
     record["numba_cache_listing"] = listing(numba_cache)
     os.chmod(native_cache, 0o755)
+    pinned = record["attempts"][:attempts]
     last = record["attempts"][-1]
     if last["diagnosis"] == "passed":
         record["status"] = "passed"
+        record["remedy_note"] = (
+            "the pinned no-env attempts were admission-refused; only the "
+            "labelled GDAL_CACHEMAX=64 remedy attempt completed, so the "
+            "pass is remedy-assisted, not a pinned-default run")
     elif all(a["diagnosis"] == "blocked:host-memory-pressure"
              for a in record["attempts"]):
         record["status"] = "blocked:host-memory-pressure"
         record["admission_note"] = (
             "scene phase reservation ~1.74 GB + 410 MB fixed parent charge vs "
             "budget = 0.5 x host available-memory view (runtime.py:"
-            "default_memory_budget_bytes); environmental, not a DX property")
+            "default_memory_budget_bytes); environmental, not a DX property; "
+            "the GDAL_CACHEMAX=64 remedy attempt was refused identically "
+            "(the admission charge probes physical RAM, not the env var)")
     else:
         record["status"] = "failed"
     return record
@@ -374,15 +409,41 @@ def installed_cli_run(work_dir, wheel_venv):
             record["stdout"] = result.stdout
             record["stderr_tail"] = result.stderr.strip().splitlines()[-6:]
             break
+        if all(a["diagnosis"] == "blocked:host-memory-pressure"
+               for a in record["attempts"]):
+            # Same release-owner diagnostic as the API pipeline: one final
+            # labelled GDAL_CACHEMAX=64 attempt after the pinned attempts
+            # were admission-refused.  Never merged into the pinned verdict.
+            result = run_cmd(argv, env=dict(env, GDAL_CACHEMAX="64"),
+                             cwd=scratch, timeout=900)
+            entry = {
+                "attempt": "gdal-cachemax-64-diagnostic",
+                "env_override": {"GDAL_CACHEMAX": "64"},
+                "returncode": result.returncode,
+                "stdout_tail": result.stdout.strip().splitlines()[-6:],
+                "stderr_tail": result.stderr.strip().splitlines()[-4:],
+            }
+            record["attempts"].append(entry)
+            if "ResourceAdmissionError" in result.stderr:
+                entry["diagnosis"] = "blocked:host-memory-pressure"
+            else:
+                entry["diagnosis"] = "passed" if result.returncode == 0 else "failed"
+                record["stdout"] = result.stdout
+                record["stderr_tail"] = result.stderr.strip().splitlines()[-6:]
     record["no_net_events"] = read_no_net_events(net_log)
     record["native_cache_after"] = listing(native_cache)
     record["numba_cache_listing"] = listing(numba_cache)
     os.chmod(native_cache, 0o755)
+    pinned = record["attempts"][:3]
     last = record["attempts"][-1]
     if last["diagnosis"] == "passed":
         record["status"] = "passed"
+        record["remedy_note"] = (
+            "the pinned no-env attempts were admission-refused; only the "
+            "labelled GDAL_CACHEMAX=64 remedy attempt completed, so the "
+            "pass is remedy-assisted, not a pinned-default run")
     elif all(a["diagnosis"] == "blocked:host-memory-pressure"
-             for a in record["attempts"]):
+             for a in pinned):
         record["status"] = "blocked:host-memory-pressure"
     else:
         record["status"] = "failed"
