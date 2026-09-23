@@ -61,9 +61,13 @@ the plan, before any launch, and the pinned kernels have no decline
 return -- a reserved code is an error, never a silent fallback.
 
 Slot-reuse contract: the producer overwrites every valid lane of the
-payload slots, and this module clears both mask slots (full capacity)
-before ``classify_block_aosoa`` writes the active columns -- inactive
-valid lanes are False, padding lanes stay untouched and are never read.
+payload slots, and the mask views passed to ``classify_block_aosoa`` are
+sliced to the block's EXACT gang count (the F1M scratch contract sizes
+supplied scratch for the same (start, stop, patches, width) it is
+given; F1M then clears that valid extent itself) -- inactive valid
+lanes are False, padding lanes stay untouched and are never read. A
+full-capacity clear before the call additionally keeps a reused slot's
+poison lanes from drifting across blocks.
 """
 from __future__ import annotations
 
@@ -364,9 +368,17 @@ class _StreamBase:
         slot = self._slot(ctx)
         gangs = -(-rows // plan.width)
 
-        # Classification BEFORE decode (frozen per-block order). Full-
-        # capacity clear first: inactive valid columns must read False
-        # and reused slots must never leak a previous block's masks.
+        # Classification BEFORE decode (frozen per-block order). The mask
+        # views are sliced to THIS block's exact gang count: the F1M
+        # scratch-reuse contract validates supplied scratch for the exact
+        # (start, stop, patches, width) shape, and a caller reusing scratch
+        # must size the buffers for what it passes -- the final partial
+        # block would otherwise fail validation. Leading-dim slices stay
+        # C-contiguous and zero-copy; padding lanes of the tail gang are
+        # never validated, never written, never read. The full-capacity
+        # clear below is belt-and-braces only (F1M clears the valid extent
+        # itself); it guarantees a reused slot's POISON lanes cannot drift
+        # across blocks.
         sun, shade = slot.sun, slot.shade
         sun[...] = False
         shade[...] = False
@@ -374,7 +386,7 @@ class _StreamBase:
         sun, shade = classify_block_aosoa(
             plan.altitude, plan.azimuth, plan.geometry, plan.asvf,
             start, stop, active=plan.solar_gate, prepared=plan.prepared,
-            width=plan.width, sun_out=sun, shade_out=shade)
+            width=plan.width, sun_out=sun[:gangs], shade_out=shade[:gangs])
         # The prepared coefficients were minted non-None; a None here
         # would be a mid-stream decline the plan forbids.
         assert sun is not None
