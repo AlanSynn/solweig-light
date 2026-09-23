@@ -1,0 +1,111 @@
+# F1D codegen census — target host
+# platform      : macOS-26.6.2-arm64-arm-64bit
+# machine       : arm64  (arm)
+# python        : 3.12.13
+# numba         : 0.67.0
+# numpy         : 2.4.6
+# threading cfg : NUMBA_NUM_THREADS='2'
+--- original_generic_body (pre-F1D replica) ---
+LLVM div/rem instruction occurrences : 5
+AArch64 udiv/sdiv instruction count  : 5
+LLVM shift counts (lshr/ashr/shl)    : {'lshr ': 2, 'ashr ': 2, 'shl ': 14}
+NEON vector-register token count     : 4
+  llvm[71] [other]: %.1471 = sdiv i64 %pixel.5.2807, %.1545672.zext
+  llvm[147] [gang-count prologue (rows // width)]: %.82 = sdiv i64 %.58.frozen, %arg.width.frozen
+  llvm[272] [other]: %.850664665.us = udiv i32 8, %20
+  llvm[289] [other]: %.776.us = sdiv i64 %pixel.4.2702.us763, %.850664.zext.us
+  llvm[401] [other]: %.1545672673 = udiv i32 8, %20
+--- specialized _produce_patchmajor sig=(ListType(Array(uint8, 1, 'C', True, aligned=True)), Array(uint8, 1, 'C', False, aligned=True), int64, int64, int64, Array(uint32, 3, 'C', False, aligned=True), int64) ---
+LLVM div/rem instruction occurrences : 5
+AArch64 udiv/sdiv instruction count  : 5
+LLVM shift counts (lshr/ashr/shl)    : {'lshr ': 4, 'ashr ': 6, 'shl ': 19}
+NEON vector-register token count     : 4
+  llvm[159] [other]: %.2436 = sdiv i64 %pixel.16.31616, %.2393.zext
+  llvm[216] [other]: %.3131 = sdiv i64 %pixel.17.21688, %.3088.zext
+  llvm[293] [gang-count prologue (rows // width)]: %.82 = sdiv i64 %.58.frozen, %arg.width.frozen
+  llvm[548] [other]: %.239370 = udiv i32 8, %33
+  llvm[623] [other]: %.30882264 = udiv i32 8, %33
+--- specialized _produce_blocked sig=(ListType(Array(uint8, 1, 'C', True, aligned=True)), Array(uint8, 1, 'C', False, aligned=True), int64, int64, int64, Array(uint32, 3, 'C', False, aligned=True), int64) ---
+LLVM div/rem instruction occurrences : 5
+AArch64 udiv/sdiv instruction count  : 5
+LLVM shift counts (lshr/ashr/shl)    : {'lshr ': 4, 'ashr ': 6, 'shl ': 25}
+NEON vector-register token count     : 5
+  llvm[155] [other]: %.3095 = sdiv i64 %pixel.17.22087, %.3052.zext
+  llvm[237] [gang-count prologue (rows // width)]: %.84 = sdiv i64 %.60.frozen, %arg.width.frozen
+  llvm[384] [other]: %.1492.us = sdiv i64 %pixel.14.31781.us, %.1449.us.zext
+  llvm[483] [other]: %.1449.us2355 = udiv i32 8, %20
+  llvm[632] [other]: %.30522354 = udiv i32 8, %41
+--- specialized _preflight_packed ---
+LLVM div/rem instruction occurrences : 2
+AArch64 udiv/sdiv instruction count  : 2
+LLVM shift counts (lshr/ashr/shl)    : {'lshr ': 2, 'ashr ': 2, 'shl ': 2}
+NEON vector-register token count     : 2
+  llvm[112] [other]: %.789 = udiv i64 8, %promoted
+  llvm[114] [generic-fallback expression (pixel // (8 // mode))]: %.831 = sdiv i64 %.766.frozen, %.789
+--- _n9_arm_binary_standalone (literal arm) ---
+LLVM div/rem instruction occurrences : 1
+AArch64 udiv/sdiv instruction count  : 1
+LLVM shift counts (lshr/ashr/shl)    : {'lshr ': 0, 'ashr ': 2, 'shl ': 3}
+NEON vector-register token count     : 2
+  llvm[72] [gang-count prologue (rows // width)]: %.115 = sdiv i64 %.91.frozen, %arg.width.frozen
+--- _n9_arm_ternary_standalone (literal arm) ---
+LLVM div/rem instruction occurrences : 1
+AArch64 udiv/sdiv instruction count  : 1
+LLVM shift counts (lshr/ashr/shl)    : {'lshr ': 2, 'ashr ': 2, 'shl ': 4}
+NEON vector-register token count     : 2
+  llvm[108] [gang-count prologue (rows // width)]: %.115 = sdiv i64 %.91.frozen, %arg.width.frozen
+
+=== VERDICT SUMMARY ===
+original_generic_body (pre-F1D replica): llvm_div=5 asm_div=5 neon_tokens=4
+specialized _produce_patchmajor (ListType(Array(uint8, 1, 'C', True, aligned=True)), Array(uint8, 1, 'C', False, aligned=True), int64, int64, int64, Array(uint32, 3, 'C', False, aligned=True), int64): llvm_div=5 asm_div=5 neon_tokens=4
+specialized _produce_blocked (ListType(Array(uint8, 1, 'C', True, aligned=True)), Array(uint8, 1, 'C', False, aligned=True), int64, int64, int64, Array(uint32, 3, 'C', False, aligned=True), int64): llvm_div=5 asm_div=5 neon_tokens=5
+specialized _preflight_packed: llvm_div=2 asm_div=2 neon_tokens=2
+_n9_arm_binary_standalone (literal arm): llvm_div=1 asm_div=1 neon_tokens=2
+_n9_arm_ternary_standalone (literal arm): llvm_div=1 asm_div=1 neon_tokens=2
+
+==============================================================================
+F1D VERDICT (producer_owner interpretation of the census above)
+==============================================================================
+Host: Apple M1 (arm64), macOS 26.6.2, python 3.12.13, numba 0.67.0,
+numpy 2.4.6, NUMBA_NUM_THREADS=2. Probe run with a FRESH NUMBA_CACHE_DIR
+(numba disables inspect_llvm/inspect_asm for cache=True kernels loaded from
+the on-disk cache and returns invalid stubs -- the probe now guards against
+that; an earlier run against a warm cache produced bogus all-zero counts and
+was discarded).
+
+1. DIVISION REMOVAL -- CONFIRMED for the mode-1/2 hot path, with exact
+   accounting of what survives:
+   - The generic pre-F1D body replica executes 5 div/rem per kernel: the
+     per-pixel `sdiv pixel, (8 // mode).zext`, two `udiv i32 8, mode`
+     (`8 // mode`), and the once-per-call prologue `rows // width`.
+   - The specialized kernels also report 5 div/rem, but every one of them is
+     attributable:
+       * 1x prologue `rows // width` (labeled in the census; once per CALL,
+         identical to pre-F1D, not per pixel);
+       * 4x inside the mode fallback arm ONLY: two `udiv i32 8, %reg`
+         computing `8 // mode` and two `sdiv` whose divisor operand is the
+         zext of exactly those udiv results (patchmajor: `%.239370` ->
+         divisor `%.2393.zext`; `%.30882264` -> `%.3088.zext`). That
+         operand chain is the generic expression's fingerprint, i.e. the
+         divisions LIVE IN THE FALLBACK ARM, which no canonical mode
+         (1/2/4 from _descriptor) can reach.
+     `_preflight_packed`'s single sdiv is directly labeled
+     [generic-fallback expression] by its divisor being the udiv result.
+   - The standalone literal-arm micro-kernels (EXACT new binary/ternary arm
+     bodies) contain exactly ONE sdiv each: the `rows // width` prologue.
+     The pixel loops are division-free: `lshr/ashr/and` only. The dead
+     `if code == 3` check in the binary arm costs nothing (code <= 1).
+2. VECTORIZATION -- NOT CLAIMED. NEON register tokens: 4/5/2 across the
+   specialized producer kernels (roughly the pre-F1D level). The lane loop
+   trip count is the runtime `width` argument, and no dependable
+   autovectorization of the decode arms materialized on this host/toolchain.
+   The F1D codegen win is: mode branch hoisted out of the pixel loops +
+   literal shift/mask decode (no udiv/sdiv in the packed hot path). Raw
+   counts are recorded above for the F3 comparison to weigh.
+3. The specialization also flows to the B control (lw_b_control consumes
+   produce_blocks_aosoa output; see tests/optimization_v8/n9_producer/
+   test_n9_f1d_literal_decode.py::test_n9_b_control_inherits_specialized_producer
+   plus the pre-existing tests/optimization_v8/numba/test_b_control_producer.py,
+   1034+ tests green post-change), and the same constant-mode transformation
+   is available to the A8 comparator as A-plus
+   (src/solweig_light/_native_dispatch/aplus_decode.py, NOT dispatched).

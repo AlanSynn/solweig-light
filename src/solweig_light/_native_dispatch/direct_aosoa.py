@@ -95,6 +95,17 @@ def _produce_patchmajor(payloads, modes, start, stop, patches, out, width):
     hoisted out of the inner loop, keeping the store index affine so the
     raw-mode stream stays vectorizable like _decode's. Padding lanes are
     never visited because the tail gang's lane loop is bounded.
+
+    N9 F1D mode specialization: the mode branch is hoisted out of the pixel
+    loops to once per patch iteration, and the packed arms use literal
+    shifts/masks -- binary ``(data[pixel >> 3] >> (pixel & 7)) & 1`` and
+    ternary ``(data[pixel >> 2] >> ((pixel & 3) << 1)) & 3`` -- which are
+    exactly ``pixel//8, pixel%8`` and ``pixel//4, pixel%4`` for the
+    non-negative pixels the range contract guarantees. Codebook constants,
+    the reserved-code check at the identical position, tails, padding-lane
+    non-writes and the raw/fallback arm (the original generic body,
+    verbatim) are all unchanged, so every observable -- bits, first-error
+    (patch, pixel), error kind -- is identical for every mode value.
     """
     rows = stop - start
     full = rows // width
@@ -102,34 +113,73 @@ def _produce_patchmajor(payloads, modes, start, stop, patches, out, width):
     for patch in range(patches):
         data = payloads[patch]
         mode = modes[patch]
-        for gang in range(full):
-            pixel = start + gang * width
-            for lane in range(width):
-                if mode == 4:
-                    offset = pixel * 4
-                    value = (np.uint32(data[offset]) | (np.uint32(data[offset+1]) << 8)
-                             | (np.uint32(data[offset+2]) << 16) | (np.uint32(data[offset+3]) << 24))
-                else:
-                    code = (data[pixel // (8 // mode)] >> ((pixel % (8 // mode))*mode)) & ((1 << mode)-1)
+        if mode == 1:
+            for gang in range(full):
+                pixel = start + gang * width
+                for lane in range(width):
+                    code = (data[pixel >> 3] >> (pixel & 7)) & 1
                     if code == 3:
                         raise IndexError('Reserved visibility code')
                     value = np.uint32(0) if code == 0 else np.uint32(0x3f800000) if code == 1 else np.uint32(0x40000000)
-                out[gang, patch, lane] = value
-                pixel += 1
-        if tail:
-            pixel = start + full * width
-            for lane in range(tail):
-                if mode == 4:
-                    offset = pixel * 4
-                    value = (np.uint32(data[offset]) | (np.uint32(data[offset+1]) << 8)
-                             | (np.uint32(data[offset+2]) << 16) | (np.uint32(data[offset+3]) << 24))
-                else:
-                    code = (data[pixel // (8 // mode)] >> ((pixel % (8 // mode))*mode)) & ((1 << mode)-1)
+                    out[gang, patch, lane] = value
+                    pixel += 1
+            if tail:
+                pixel = start + full * width
+                for lane in range(tail):
+                    code = (data[pixel >> 3] >> (pixel & 7)) & 1
                     if code == 3:
                         raise IndexError('Reserved visibility code')
                     value = np.uint32(0) if code == 0 else np.uint32(0x3f800000) if code == 1 else np.uint32(0x40000000)
-                out[full, patch, lane] = value
-                pixel += 1
+                    out[full, patch, lane] = value
+                    pixel += 1
+        elif mode == 2:
+            for gang in range(full):
+                pixel = start + gang * width
+                for lane in range(width):
+                    code = (data[pixel >> 2] >> ((pixel & 3) << 1)) & 3
+                    if code == 3:
+                        raise IndexError('Reserved visibility code')
+                    value = np.uint32(0) if code == 0 else np.uint32(0x3f800000) if code == 1 else np.uint32(0x40000000)
+                    out[gang, patch, lane] = value
+                    pixel += 1
+            if tail:
+                pixel = start + full * width
+                for lane in range(tail):
+                    code = (data[pixel >> 2] >> ((pixel & 3) << 1)) & 3
+                    if code == 3:
+                        raise IndexError('Reserved visibility code')
+                    value = np.uint32(0) if code == 0 else np.uint32(0x3f800000) if code == 1 else np.uint32(0x40000000)
+                    out[full, patch, lane] = value
+                    pixel += 1
+        else:
+            for gang in range(full):
+                pixel = start + gang * width
+                for lane in range(width):
+                    if mode == 4:
+                        offset = pixel * 4
+                        value = (np.uint32(data[offset]) | (np.uint32(data[offset+1]) << 8)
+                                 | (np.uint32(data[offset+2]) << 16) | (np.uint32(data[offset+3]) << 24))
+                    else:
+                        code = (data[pixel // (8 // mode)] >> ((pixel % (8 // mode))*mode)) & ((1 << mode)-1)
+                        if code == 3:
+                            raise IndexError('Reserved visibility code')
+                        value = np.uint32(0) if code == 0 else np.uint32(0x3f800000) if code == 1 else np.uint32(0x40000000)
+                    out[gang, patch, lane] = value
+                    pixel += 1
+            if tail:
+                pixel = start + full * width
+                for lane in range(tail):
+                    if mode == 4:
+                        offset = pixel * 4
+                        value = (np.uint32(data[offset]) | (np.uint32(data[offset+1]) << 8)
+                                 | (np.uint32(data[offset+2]) << 16) | (np.uint32(data[offset+3]) << 24))
+                    else:
+                        code = (data[pixel // (8 // mode)] >> ((pixel % (8 // mode))*mode)) & ((1 << mode)-1)
+                        if code == 3:
+                            raise IndexError('Reserved visibility code')
+                        value = np.uint32(0) if code == 0 else np.uint32(0x3f800000) if code == 1 else np.uint32(0x40000000)
+                    out[full, patch, lane] = value
+                    pixel += 1
 
 
 @njit(cache=True, fastmath=False)
@@ -138,18 +188,35 @@ def _preflight_packed(payloads, modes, start, stop, patches):
 
     _preflight_flat's order and arithmetic over the zero-copy per-patch views
     (no _fused_descriptor flat copy); required before the blocked producer
-    because its discovery order differs.
+    because its discovery order differs. N9 F1D: the mode branch is hoisted
+    to once per patch and the packed arms use the same literal shifts/masks
+    as the producer (the reserved check stays live in the ternary arm and
+    provably dead in the binary arm); the original generic body is kept
+    verbatim as the fallback arm.
     """
     for patch in range(patches):
         mode = modes[patch]
         if mode == 4:
             continue
         data = payloads[patch]
-        for row in range(stop-start):
-            pixel = start + row
-            code = (data[pixel // (8 // mode)] >> ((pixel % (8 // mode))*mode)) & ((1 << mode)-1)
-            if code == 3:
-                raise IndexError('Reserved visibility code')
+        if mode == 1:
+            for row in range(stop-start):
+                pixel = start + row
+                code = (data[pixel >> 3] >> (pixel & 7)) & 1
+                if code == 3:
+                    raise IndexError('Reserved visibility code')
+        elif mode == 2:
+            for row in range(stop-start):
+                pixel = start + row
+                code = (data[pixel >> 2] >> ((pixel & 3) << 1)) & 3
+                if code == 3:
+                    raise IndexError('Reserved visibility code')
+        else:
+            for row in range(stop-start):
+                pixel = start + row
+                code = (data[pixel // (8 // mode)] >> ((pixel % (8 // mode))*mode)) & ((1 << mode)-1)
+                if code == 3:
+                    raise IndexError('Reserved visibility code')
 
 
 @njit(cache=True, fastmath=False)
@@ -160,7 +227,10 @@ def _produce_blocked(payloads, modes, start, stop, patches, out, width):
     the original order; the in-kernel raise is retained as a backstop (a code
     3 reaching this kernel is a caller contract violation, never a silent
     0x40000000 write). The tail gang's lane loop is bounded, so padding lanes
-    are neither written nor read.
+    are neither written nor read. N9 F1D: the mode branch sits once per
+    patch iteration (this order's inner loop) and the packed arms use the
+    same literal shifts/masks as the patchmajor producer; the raw/fallback
+    arm keeps the original generic body verbatim.
     """
     rows = stop - start
     full = rows // width
@@ -170,37 +240,75 @@ def _produce_blocked(payloads, modes, start, stop, patches, out, width):
         for patch in range(patches):
             data = payloads[patch]
             mode = modes[patch]
-            pixel = base
-            for lane in range(width):
-                if mode == 4:
-                    offset = pixel * 4
-                    value = (np.uint32(data[offset]) | (np.uint32(data[offset+1]) << 8)
-                             | (np.uint32(data[offset+2]) << 16) | (np.uint32(data[offset+3]) << 24))
-                else:
-                    code = (data[pixel // (8 // mode)] >> ((pixel % (8 // mode))*mode)) & ((1 << mode)-1)
+            if mode == 1:
+                pixel = base
+                for lane in range(width):
+                    code = (data[pixel >> 3] >> (pixel & 7)) & 1
                     if code == 3:
                         raise IndexError('Reserved visibility code')
                     value = np.uint32(0) if code == 0 else np.uint32(0x3f800000) if code == 1 else np.uint32(0x40000000)
-                out[gang, patch, lane] = value
-                pixel += 1
+                    out[gang, patch, lane] = value
+                    pixel += 1
+            elif mode == 2:
+                pixel = base
+                for lane in range(width):
+                    code = (data[pixel >> 2] >> ((pixel & 3) << 1)) & 3
+                    if code == 3:
+                        raise IndexError('Reserved visibility code')
+                    value = np.uint32(0) if code == 0 else np.uint32(0x3f800000) if code == 1 else np.uint32(0x40000000)
+                    out[gang, patch, lane] = value
+                    pixel += 1
+            else:
+                pixel = base
+                for lane in range(width):
+                    if mode == 4:
+                        offset = pixel * 4
+                        value = (np.uint32(data[offset]) | (np.uint32(data[offset+1]) << 8)
+                                 | (np.uint32(data[offset+2]) << 16) | (np.uint32(data[offset+3]) << 24))
+                    else:
+                        code = (data[pixel // (8 // mode)] >> ((pixel % (8 // mode))*mode)) & ((1 << mode)-1)
+                        if code == 3:
+                            raise IndexError('Reserved visibility code')
+                        value = np.uint32(0) if code == 0 else np.uint32(0x3f800000) if code == 1 else np.uint32(0x40000000)
+                    out[gang, patch, lane] = value
+                    pixel += 1
     if tail:
         base = start + full * width
         for patch in range(patches):
             data = payloads[patch]
             mode = modes[patch]
-            pixel = base
-            for lane in range(tail):
-                if mode == 4:
-                    offset = pixel * 4
-                    value = (np.uint32(data[offset]) | (np.uint32(data[offset+1]) << 8)
-                             | (np.uint32(data[offset+2]) << 16) | (np.uint32(data[offset+3]) << 24))
-                else:
-                    code = (data[pixel // (8 // mode)] >> ((pixel % (8 // mode))*mode)) & ((1 << mode)-1)
+            if mode == 1:
+                pixel = base
+                for lane in range(tail):
+                    code = (data[pixel >> 3] >> (pixel & 7)) & 1
                     if code == 3:
                         raise IndexError('Reserved visibility code')
                     value = np.uint32(0) if code == 0 else np.uint32(0x3f800000) if code == 1 else np.uint32(0x40000000)
-                out[full, patch, lane] = value
-                pixel += 1
+                    out[full, patch, lane] = value
+                    pixel += 1
+            elif mode == 2:
+                pixel = base
+                for lane in range(tail):
+                    code = (data[pixel >> 2] >> ((pixel & 3) << 1)) & 3
+                    if code == 3:
+                        raise IndexError('Reserved visibility code')
+                    value = np.uint32(0) if code == 0 else np.uint32(0x3f800000) if code == 1 else np.uint32(0x40000000)
+                    out[full, patch, lane] = value
+                    pixel += 1
+            else:
+                pixel = base
+                for lane in range(tail):
+                    if mode == 4:
+                        offset = pixel * 4
+                        value = (np.uint32(data[offset]) | (np.uint32(data[offset+1]) << 8)
+                                 | (np.uint32(data[offset+2]) << 16) | (np.uint32(data[offset+3]) << 24))
+                    else:
+                        code = (data[pixel // (8 // mode)] >> ((pixel % (8 // mode))*mode)) & ((1 << mode)-1)
+                        if code == 3:
+                            raise IndexError('Reserved visibility code')
+                        value = np.uint32(0) if code == 0 else np.uint32(0x3f800000) if code == 1 else np.uint32(0x40000000)
+                    out[full, patch, lane] = value
+                    pixel += 1
 
 
 def _leased(leaves, start, stop, patches):
@@ -312,6 +420,31 @@ def _classes_table_masked_aosoa(heights, coefficients, radians_to_degrees, altit
                 shade[gang, target, lane] = degrees > altitude
 
 
+def _extent(arr):
+    """Exact byte extent of THIS view (the B-control adapter's formula), so
+    genuinely disjoint regions of a shared arena are not false positives."""
+    addr = arr.ctypes.data
+    span = sum((d - 1) * s for d, s in zip(arr.shape, arr.strides)) + arr.itemsize
+    return addr, addr + span
+
+
+def _spans_overlap(a, b):
+    return a[0] < b[1] and b[0] < a[1]
+
+
+def _validated_out(mask, name, shape):
+    """Supplied scratch must be a writeable C-contiguous bool [G,P,W]."""
+    if not isinstance(mask, np.ndarray):
+        raise ValueError(f'{name} must be a bool ndarray, got {type(mask)!r}')
+    if (mask.dtype != np.bool_ or mask.shape != shape
+            or not mask.flags.c_contiguous or not mask.flags.writeable):
+        raise ValueError(
+            f'{name} must be a writeable C-contiguous bool array of shape '
+            f'{shape}, got dtype={mask.dtype} shape={mask.shape} '
+            f'c_contiguous={mask.flags.c_contiguous} '
+            f'writeable={mask.flags.writeable}')
+
+
 def classify_block_aosoa(altitude, azimuth, geometry, asvf, start, stop, active=None,
                          prepared=None, *, width=8, sun_out=None, shade_out=None):
     """Sun/shade Boolean masks produced directly in the AoSoA lane layout.
@@ -322,6 +455,17 @@ def classify_block_aosoa(altitude, azimuth, geometry, asvf, start, stop, active=
     Returns (sun, shade) as bool [G,P,W], or None when the retained route
     would fall back to the per-patch python loop (caller uses _classes).
     ``prepared`` accepts the same precomputed tuple _classes takes.
+
+    N9 F1M scratch-reuse contract: supplied ``sun_out``/``shade_out`` are
+    validated (writeable C-contiguous bool of the exact shape) and checked
+    for overlap against each other and against the classification's input
+    storage BEFORE any write; then the valid extent of both masks (every
+    lane with row < rows, all columns) is cleared, so the masked kernel's
+    inactive columns carry False instead of stale scratch data. Padding
+    lanes (row >= rows in the tail gang) stay untouched. The full-write
+    invariant therefore holds for every valid lane regardless of the active
+    set, and ``shade != not sun`` at equality/NaN is preserved (the
+    arithmetic is unchanged).
     """
     field = np.asarray(asvf).reshape(-1)[start:stop].reshape(-1, 1)
     rows = stop - start
@@ -332,14 +476,39 @@ def classify_block_aosoa(altitude, azimuth, geometry, asvf, start, stop, active=
         return None
     indices, coefficients, rad2deg = prepared
     patches = geometry.altitude.size
+    shape = (gangs, patches, width)
     if sun_out is None:
-        sun = np.zeros((gangs, patches, width), dtype=np.bool_)
+        sun = np.zeros(shape, dtype=np.bool_)
     else:
+        _validated_out(sun_out, 'sun_out', shape)
         sun = sun_out
     if shade_out is None:
-        shade = np.zeros((gangs, patches, width), dtype=np.bool_)
+        shade = np.zeros(shape, dtype=np.bool_)
     else:
+        _validated_out(shade_out, 'shade_out', shape)
         shade = shade_out
+    if sun_out is not None or shade_out is not None:
+        # np.asarray(asvf), not the possibly reshape-copied field view, so the
+        # caller's own storage is what the span check sees.
+        inputs = (np.asarray(asvf), geometry.altitude, geometry.azimuth,
+                  indices, coefficients)
+        spans = [(name, _extent(arr)) for name, arr in
+                 (('sun_out', sun), ('shade_out', shade), *_reusable_inputs(inputs))
+                 if arr.size]
+        for i, (name_a, span_a) in enumerate(spans):
+            for name_b, span_b in spans[i + 1:]:
+                if _spans_overlap(span_a, span_b):
+                    raise ValueError(
+                        f'{name_a} overlaps {name_b}; rejecting before any write')
+        # Clear the valid extent (all columns, lanes with row < rows); padding
+        # lanes of the tail gang keep their poison. Allocated masks are
+        # already zero, so only supplied scratch pays the memset.
+        full = rows // width
+        tail = rows - full * width
+        for mask in (sun, shade):
+            mask[:full] = False
+            if tail:
+                mask[full, :, :tail] = False
     if indices.size:
         heights = np.ascontiguousarray(tan32(field)).reshape(-1)
         factor = np.asarray(rad2deg, dtype=field.dtype)[()]
@@ -350,6 +519,15 @@ def classify_block_aosoa(altitude, azimuth, geometry, asvf, start, stop, active=
             _classes_table_masked_aosoa(heights, coefficients, factor, altitudes,
                                         indices, sun, shade, rows)
     return sun, shade
+
+
+def _reusable_inputs(inputs):
+    """(name, array) pairs for the overlap check; non-arrays skipped."""
+    names = ('asvf field', 'geometry.altitude', 'geometry.azimuth',
+             'prepared indices', 'prepared coefficients')
+    for name, arr in zip(names, inputs):
+        if isinstance(arr, np.ndarray) and arr.size:
+            yield name, arr
 
 
 def pack_masks_aosoa(sun, shade, *, width=8):
