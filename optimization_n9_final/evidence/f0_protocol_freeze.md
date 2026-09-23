@@ -113,6 +113,12 @@ remain the verdict basis, absolute times are annotated with their load,
 and a marginal result (within 2x the observed spread of the gate margin)
 must be labeled marginal in the verdict record rather than claimed as a
 clear pass.
+
+Supplement (same hour, same authority): the host owner added that the
+load hovers around 10 irregularly ("좀 불규칙하므로 진행하라고") — the
+final opportunity must launch at the FIRST reading under 10.0 without
+waiting for a stable plateau; the marginal-result labeling above covers
+the resulting noise exposure.
 - Exclusive host lease while timing: no builds, tests, or JIT compilation
   on the measured host; remote inference may continue.
 
