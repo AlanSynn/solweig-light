@@ -1,0 +1,74 @@
+{
+  "record": "N8-32 selection: backend portfolio disposition on the completed tier-A + tier-B A/B/C record",
+  "recorded_utc": "2026-09-23T08:45Z",
+  "pre_registration": "Decision rules and outcome branches were frozen in selection/n8_32_selection_skeleton.json BEFORE tier-B results existed (skeleton recorded 2026-09-22; dossier PROMOTION_POLICY.md frozen before any candidate results). This record applies those branches verbatim to the reviewed measurements; nothing here reinterprets a branch post hoc.",
+  "decision_inputs": {
+    "tier_A_B128": {
+      "status": "FINAL (ambient tier, informational; cannot_alone_support selection -- now satisfied by tier B's completion)",
+      "record": "trials/n8_31_tierA_record.json",
+      "verdict": "C beats A0-parallel AND B1 in all 3 mixes end-to-end; sole loss vs A0-serial at all-raw (+13.1%, harness-charged pack_masks the integrated path does not pay); native leaf 2.56-2.92x B1k"
+    },
+    "tier_B_B1024": {
+      "status": "FINAL (amended quiet-window tier; first QUALIFIED record; delta review APPROVE-WITH-NOTES)",
+      "record": "trials/n8_31_tierB_record.json",
+      "verdict": "C loses 3/3 end-to-end vs A0-parallel under the protocol accounting (+3.1% / +7.9% / +33.8%); vs B1: wins all-binary (-2.3%) and mix (-1.7%), LOSES all-raw (+5.7%); B1 itself loses to A0p 3/3 (+5.5% / +9.8% / +26.6%); native kernel leaf wins every mix (C1k vs A0p -0.076..-0.208 ms); producer loses to decode x3 at 1024 in all mixes (+1.5..5.4%); counter-accounting excluding pack_masks (INFORMATIONAL): C wins binary (-2.8%) and raw (-2.2%), tie mix (+0.8%)"
+    },
+    "driver_level_accounting": "N7 cited to the qualification campaign per skeleton (zero driver calls in the tier cells; the per-call resolve_lw_backend() read is an identical additive term on both arms and cannot flip any ordering recorded here)"
+  },
+  "branch_application": {
+    "branch_tested": "tier_B native beats A0 AND B1 at 1024, tier-A confirms 128",
+    "evaluation": "FALSE on both conjuncts: C loses A0p in 3/3 mixes at 1024 AND loses B1 at all-raw; tier-A confirmation cannot cure a tier-B failure (the beats-both condition is conjunctive at the production block)",
+    "alternate_branch_tested": "tier_B native loses or ties B1",
+    "evaluation": "TRUE: the all-raw loss to B1 (+5.7%) means C does not beat B1 across the required cells; a fortiori with the 3/3 A0p losses",
+    "window_branch": "not applicable -- the window opened under amendment 0817Z and the campaign ran to completion",
+    "applied_branch": "numba_improvement_only_native_goal_open",
+    "no_gate_loosening_binding_check": "amendment 0817Z loosened the MEASUREMENT window (loadavg floor < 2.0 -> < 5.0), not any promotion gate, and reviewer-verified PRE-RESULTS (R-B4: addendum mtime 08:18Z precedes the 08:21:19Z tier-B archive; zero tag=timed B=1024 records at amendment time). All promotion gates untouched. The 'no gate loosening after candidate failures' binding is honored: no candidate had failed when the amendment landed."
+  },
+  "outcome_label": "numba_improvement_only_native_goal_open",
+  "consequences": {
+    "native_promotion": "INCOMPLETE per goal: retain improvements, leave native promotion incomplete. The qualification registry stays EMPTY; the shipped selector stays records-blind and inert (row A shipped state unchanged); no default-enablement anywhere is authorized by this record.",
+    "numba_B_integration": "Branch sub-clause 'integrate B transparently if it beats A0' evaluates FALSE: at the production block B1 loses A0p in 3/3 mixes (+5.5% / +9.8% / +26.6%), far outside any matched-budget worth-using standard; a default-wide B row would regress 1024 cells up to ~27%. B is NOT default-integrated; it is retained in-tree (vendored, parity-proven, drift-zero) as a qualified-candidate component for any future campaign.",
+    "producer_AoSoA_only": "N1's direction did not hold at 1024 (direct producer loses decode x3 by +1.5..5.4% in all three mixes); not integrated standalone. Retained with parity for the native path it feeds.",
+    "native_C_row": "no row advances to qualification; tier-A favorability alone cannot support qualification (tier-A cannot_alone_support binding), and tier-B is adverse under the protocol accounting.",
+    "retained_improvements": "vendored AoSoA producers/consumers with proven parity, region dispatch + policy selector (wired, inert), staged-generation packaging machinery, installed-origin DX gates, and the quiet-window harness -- all retained in-tree. Source installs and unsupported platforms work through Numba exactly as before (unchanged DX verified by the N8-22/N8-23 gates)."
+  },
+  "qualification_campaign_disposition": {
+    "N8_42_43_44": "NOT STARTED -- no candidate row advanced to qualification, and the DAG's selection-before-qualification binding means the frozen N8-42/43 cells exist for a candidate that never advanced. Starting a default-qualification campaign without a selected candidate would manufacture promotion evidence the selection does not authorize.",
+    "deferred_labels": "[native-wheel-deferred-N8-41], [companion-collision-deferred-N8-41], [upstream-collision-deferred-N8-42], and the native-coverage gates remain deferred WITH this record as their disposition: they gate a native default that this selection does not authorize. The N8-41 candidate wheel stays as approved: staged generation ships, registry empty, no qualification claim.",
+    "native_must_really_execute": "the only counted native execution evidence remains the tier A/B harness cells (parity-proven, INFORMATIONAL/NON-PROMOTION); no qualification-grade native execution record exists and none is claimed."
+  },
+  "flip_conditions_recorded": {
+    "source": "tier-B record counter_accounting + guard_layer note + producer_accounting; n8-13 archive attribution",
+    "conditions": [
+      "mask packing moved into classification (N8-11 classify_block_aosoa emits AoSoA masks at the source) removes the 0.197 ms pack_masks charge: the counter-accounting then shows C winning binary (-2.8%) and raw (-2.2%) with mix a tie at 1024",
+      "C-side guard-layer thinning (~0.059 -> ~0.012 ms, B-equivalent) removes the one outright B1>C1 cell (all-raw end-to-end)",
+      "the 1024 producer penalty (+0.004..+0.126 ms vs decode x3, all mixes) needs a genuinely changed design -- N1's direction did not hold at these shapes",
+      "any reopened promotion requires NEW evidence through the same pre-registered gates; failures do not loosen gates"
+    ]
+  },
+  "dispositions": {
+    "R-TB2": "N6 whole-process-peak clause scope move (frozen 'N8-31 end-to-end cells' -> N8-50/51 driver campaign) is recorded as an AUTHORIZED scope move: substantively justified by the 1955Z block-cell reconciliation (block cells ~10 MB vs the ~2.25 GB whole-scene envelope), disclosed inline in the tier-B record, reviewer-confirmed (R-B5), and hereby dispositioned as required. The envelope statement itself is BINDING in n8_31_tierB_record.json and governs any future whole-scene campaign.",
+    "R13-D2": "applied in n8_31_tierA_record.json and verified by its delta review -- closed.",
+    "R-SEL-1": "REQUIRED carried correction of the tier-A R13-D1 closure, applied at commit time (outcome-invariant per reviewer): the timed B call receives PRE-PACKED sun_a/shade_a, so the R13-D1 rule undercharged tier-A B1 by the pack_masks cost. Canonical rule ADOPTED: B1 = produce + pack_masks + B1_adapter; C1 = produce + views + pack_masks + C1_adapter. Tier-A B1 row corrected to 0.5035/0.4688/0.2024 (from 0.4757/0.4396/0.175); the transcription tool corrected likewise. NON-FLIPPING: C < B1 at 128 under every composition, error direction unfavorable-to-C (conservative), all branch tests 1024-internal. Tier-B retains its reviewed composition (views-in-B1 overcharges B by ~0.0007 ms -- negligible, no flip). The selection skeleton's tier-A B1 row and its malformed recorded_utc ('2026-09-22T24:05Z'; actual pre-registration commit 290da338 landed 23:55:56Z) are stale -- the skeleton's numbers must never be cited over the corrected records.",
+    "R-TB1": "applied in n8_31_tierB_record.json (relative fractions explicitly named; absolute ms deltas added) -- closed.",
+    "recommended_nits": "stale harness docstring corrected; censor-ratio 1.6x corrected -- both in commit 8878fc14."
+  },
+  "next": [
+    "N8-40 formal completion: integration record closure of the retained state",
+    "N8-50 final source/wheel freeze of the retained state (registry empty; dx branch_surface.json re-freeze; N2 stale-docstring reword in test_deferred_gates.py)",
+    "N8-51 -> N8-60 closure at retained-state scope",
+    "native goal REMAINS OPEN -- reopen only through new pre-registered evidence per flip_conditions_recorded"
+  ],
+  "review": {
+    "reviewer": "n8-rev-n8-13",
+    "verdict": "APPROVE-WITH-NOTES",
+    "records": [
+      "optimization_v8_native_default/evidence/reviews/n8_30_review_n8_32_selection.json",
+      ".md"
+    ],
+    "required_corrections_applied": {
+      "R-SEL-1": "tier-A B1 undercharge corrected at commit time: canonical B1 rule adopted (produce + pack_masks + adapter), tier-A row + transcription tool corrected, disposition recorded under dispositions.R-SEL-1; outcome-invariant (see there)"
+    },
+    "reviewer_confirmations": "R-S1 branch fidelity PASS (pre-registration genuine: skeleton commit 290da338 at 2026-09-22T23:55:56Z, ~8.5h before the tier-B archive; conjunctive reading CONFIRMED -- even under the strictest alternative reading branch 2 still fails, same non-promotion); R-S2 across-required-cells reading CONFIRMED (a 128-only reading would mandate default-integrating a row that loses A0p 3/3 at 1024 and could never clear the <=3% protected-cell gate); R-S3 R-TB2 disposition CLOSED; R-S4 campaign disposition PASS (starting N8-42/43/44 would manufacture unauthorized evidence); R-S5 outcome integrity PASS (registry empty fail-closed to row A verified in-tree; selector records-blind/inert)"
+  }
+}

@@ -36,25 +36,26 @@
     "note": "min-of-9 under stable recorded ambient; arms interleaved in one process per the frozen harness"
   },
   "end_to_end_min_ms": {
-    "composition_rule": "UNIFORM all-min: sum of component min_ms from the archive -- A0x = A_decode_block_x3 + A0_{parallel,serial}_dense; B1 = BC_produce + B1_numba_adapter (adapter included in kernel timing); C1 = BC_produce + BC_float32_views + BC_pack_masks + C1_native_aosoa_adapter. Single rule for every cell (R13-D1 repair).",
+    "composition_rule": "UNIFORM all-min: sum of component min_ms from the archive -- A0x = A_decode_block_x3 + A0_{parallel,serial}_dense; B1 = BC_produce + BC_pack_masks + B1_numba_adapter (CANONICAL per review R-SEL-1: the timed B call receives PRE-PACKED sun_a/shade_a, call signature verified, so pack_masks sits OUTSIDE B1's timed kernel and is charged to B1 per the frozen harness comment); C1 = BC_produce + BC_float32_views + BC_pack_masks + C1_native_aosoa_adapter. Single rule for every cell.",
     "all-binary": {
       "A0p": 0.6207,
       "A0s": 0.5767,
-      "B1": 0.4757,
+      "B1": 0.5035,
       "C1": 0.4719
     },
     "mix": {
       "A0p": 0.5262,
       "A0s": 0.4514,
-      "B1": 0.4396,
+      "B1": 0.4688,
       "C1": 0.427
     },
     "all-raw": {
       "A0p": 0.2421,
       "A0s": 0.1494,
-      "B1": 0.175,
+      "B1": 0.2024,
       "C1": 0.169
-    }
+    },
+    "r_sel_1_correction": "B1 row corrected per n8-rev-n8-13 R-SEL-1 (selection review, outcome-invariant): prior values 0.4757/0.4396/0.175 undercharged B1 by the pack_masks cost because the R13-D1 rule wrongly stated the adapter covered it. Verdict unchanged: C < B1 in every mix under EVERY composition (0.4719<0.5035, 0.427<0.4688, 0.169<0.2024); the correction's error direction is unfavorable-to-C (conservative). The selection skeleton's tier-A B1 row retains the stale values and must never be cited."
   },
   "verdict_end_to_end": "Uniform recompute: C wins all-binary (-18.2% vs A0s) and mix (-5.4%) vs ALL arms; C < B1 in every mix; sole loss all-raw vs A0-serial (+13.1%)",
   "kernel_leaf_min_ms": {
@@ -119,7 +120,7 @@
       ".md"
     ],
     "required_corrections_applied": {
-      "R13-D1": "end_to_end table re-transcribed under the single stated all-min composition rule; recomputed values differ from the prior mixed-rule table by <=0.028 ms (largest: B1 all-binary 0.503->0.476, the reported value had counted the views adapter outside the kernel that includes it); NO verdict flips (reviewer-predicted, independently recomputed here)",
+      "R13-D1": "end_to_end table re-transcribed under the single stated all-min composition rule; recomputed values differ from the prior mixed-rule table by <=0.028 ms (largest: B1 all-binary 0.503->0.476, the reported value had counted the views adapter outside the kernel that includes it); NO verdict flips (reviewer-predicted, independently recomputed here). SUPERSEDED IN DETAIL by R-SEL-1 (N8-32 selection review): the '(adapter includes masks)' premise was FALSE for masks -- the timed B call receives pre-packed sun_a/shade_a -- so B1 was undercharged; the canonical rule B1 = produce + pack_masks + B1_adapter is now applied in the table above (B1 0.5035/0.4688/0.2024) and in the transcription tool.",
       "R13-D2": "memory view restated as operator context with explicit non-archived provenance"
     },
     "recommended_applied": [

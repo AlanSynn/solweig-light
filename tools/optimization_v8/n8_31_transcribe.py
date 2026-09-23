@@ -8,9 +8,14 @@ archive under ONE stated rule, so a transcription is mechanically checkable:
     e2e(arm) = sum of component min_ms
       A0p = A_decode_block_x3 + A0_parallel_dense
       A0s = A_decode_block_x3 + A0_serial_dense
-      B1  = BC_produce_blocks_aosoa + B1_numba_adapter   (adapter inside kernel)
+      B1  = BC_produce_blocks_aosoa + BC_pack_masks_x2 + B1_numba_adapter
       C1  = BC_produce_blocks_aosoa + BC_float32_views_x3
             + BC_pack_masks_x2 + C1_native_aosoa_adapter
+
+    R-SEL-1: the timed B call receives PRE-PACKED sun_a/shade_a (call
+    signature verified), so pack_masks sits OUTSIDE B1's timed kernel; the
+    frozen harness comment charges adapters to B1/C1. The earlier
+    "adapter inside kernel" B1 rule undercharged B1 by the pack cost.
 
 Usage:
     python tools/optimization_v8/n8_31_transcribe.py <timed_archive.json>
@@ -36,7 +41,8 @@ def transcribe(archive):
         row = {
             'A0p': _min(p['A_decode_block_x3']) + _min(k['A0_parallel_dense']),
             'A0s': _min(p['A_decode_block_x3']) + _min(k['A0_serial_dense']),
-            'B1': _min(p['BC_produce_blocks_aosoa']) + _min(k['B1_numba_adapter']),
+            'B1': (_min(p['BC_produce_blocks_aosoa']) + _min(a['BC_pack_masks_x2'])
+                   + _min(k['B1_numba_adapter'])),
             'C1': (_min(p['BC_produce_blocks_aosoa']) + _min(a['BC_float32_views_x3'])
                    + _min(a['BC_pack_masks_x2']) + _min(k['C1_native_aosoa_adapter'])),
         }
@@ -80,7 +86,9 @@ def transcribe(archive):
         'composition_rule': (
             'UNIFORM all-min: e2e = sum of component min_ms. '
             'A0x = A_decode_block_x3 + A0_{parallel,serial}_dense; '
-            'B1 = BC_produce + B1_numba_adapter (adapter included in kernel); '
+            'B1 = BC_produce + pack_masks + B1_numba_adapter (canonical per '
+            'review R-SEL-1: the timed B call receives pre-packed masks, so '
+            'pack_masks is charged to B1); '
             'C1 = BC_produce + views + pack_masks + C1_native_aosoa_adapter.'),
         'end_to_end_min_ms': e2e,
         'verdict_checks': checks,
