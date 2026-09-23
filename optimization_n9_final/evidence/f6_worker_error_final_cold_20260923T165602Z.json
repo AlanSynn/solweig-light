@@ -1,0 +1,28 @@
+{
+ "tree": "final",
+ "mode": "cold",
+ "cmd": [
+  "/Users/alansynn/Workspace/solweig-v8-native/.venv/bin/python",
+  "/Users/alansynn/Workspace/solweig-v8-native/optimization_n9_final/tools/f6_worker.py",
+  "--tree",
+  "final",
+  "--root",
+  "/Users/alansynn/Workspace/solweig-v8-native/src",
+  "--cache-dir",
+  "/Users/alansynn/Workspace/solweig-v8-native/.numba_cache/f6_20260923T165602Z/final",
+  "--mode",
+  "cold",
+  "--out",
+  "/Users/alansynn/Workspace/solweig-v8-native/optimization_n9_final/evidence/_f6_final_cold_20260923T165602Z.json.tmp",
+  "--threads",
+  "4",
+  "--sha",
+  "22876fb6853e6cd10237214bd514b777fe717594",
+  "--fixture-data",
+  "/Users/alansynn/Workspace/solweig-v8-native/optimization_n9_final/evidence/f6_fixture_data.npz"
+ ],
+ "returncode": 1,
+ "stderr": "/Users/alansynn/Workspace/solweig-v8-native/.venv/lib/python3.12/site-packages/osgeo/gdal.py:606: FutureWarning: Neither gdal.UseExceptions() nor gdal.DontUseExceptions() has been explicitly called. In GDAL 4.0, exceptions will be enabled by default.\n  warnings.warn(\nTraceback (most recent call last):\n  File \"/Users/alansynn/Workspace/solweig-v8-native/optimization_n9_final/tools/f6_worker.py\", line 351, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File \"/Users/alansynn/Workspace/solweig-v8-native/optimization_n9_final/tools/f6_worker.py\", line 320, in main\n    assert not any(Path(args.cache_dir).iterdir()), \\\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: cold mode requires a FRESH cache dir\n",
+ "stdout": "",
+ "utc": "2026-09-23T16:56:02Z"
+}

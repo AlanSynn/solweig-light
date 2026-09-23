@@ -1,0 +1,42 @@
+{
+  "record": "N9-F6 discrepancy notice: f6_cold_gate_ruling.json premise vs authoritative verdict",
+  "notice_by": "n9-performance-owner (performance_owner)",
+  "notice_utc": "2026-09-23T17:55:00Z",
+  "status": "DISCREPANCY_RECORDED_AWAITING_REISSUE",
+  "non_binding": "This is a discrepancy notice by the measurement owner, NOT a re-ruling. The cold-gate disposition remains n9-release-owner's to re-issue.",
+  "conflict": {
+    "ruling": "evidence/f6_cold_gate_ruling.json (mtime 17:17:31Z, stated ruling_utc 17:40:00Z) dispositions gates.cold_within_3pct=false at 1.0843 and binds 'terminal_label GATE_FAILURE retained verbatim'",
+    "authoritative": "evidence/f6_verdict.json (recorded_utc 17:26:30Z) has gates.cold_within_3pct=true, cold_marginal=true, terminal_label SHIPPED_ROUTE_CONFIRMED",
+    "incompatibility": "The file the ruling binds ('f6_verdict.json') no longer contains the label the ruling demands be retained; its manifest gate-table entry (cold FAIL 1.0843) contradicts the verdict it names."
+  },
+  "root_cause": {
+    "ruling_input": "The RUN-1 record: every ruling number matches evidence/f6_verdict_run1_invalid_mainwarm.json verbatim (1.0843 = 2695.349/2485.7261; final cold/warm 760.2598; main cold/warm 384.7754). Run 1 was invalidated at 17:14:15Z (MAIN worker skipped its untimed warm pass; first timed MAIN cell paid JIT disk-cache load inside the clock) and preserved under the invalidation name. The ruling's carried figures 124.1x and geomean 5.14x include that known-invalid cell.",
+    "timeline_utc": {
+      "17:01:56": "run-1 raw archive f6_final_vs_main_timed_20260923T170156Z.json",
+      "17:14:15": "run-1 verdict preserved as f6_verdict_run1_invalid_mainwarm.json (invalidation)",
+      "17:16:23": "run-2 raw archive f6_final_vs_main_timed_20260923T171623Z.json (authoritative)",
+      "17:17:31": "f6_cold_gate_ruling.json written (premised on run-1)",
+      "17:26:30": "authoritative f6_verdict.json (gate math replayed from run-2 raw without re-measurement)"
+    }
+  },
+  "why_run1_cold_pair_misled": {
+    "run1": "n=1 cold pair at loadavg_1m 7.61-7.75; final_cold 2695.349 ms is the slowest final-cold observation across both runs",
+    "run2": "3 paired cold samples at loadavg_1m 4.67-5.39; per-pair ratios [1.0153, 0.9226, 0.9069], median 0.9226 vs bound 1.03; run-1's main_cold 2485.7 sits inside run-2's main range [2425.0, 2467.9, 2507.0]",
+    "reading": "window noise on the final side, not a stable compile-cost delta; cold is JIT-compile-dominated with +/-15% between-process spread at this sample size",
+    "censor_proximity": "run-1's n=1 cold pair sat at loadavg_1m 7.61-7.75, within ~0.5 of the session's 8.225 censor bound (in the censorable-noise regime, though not itself censored); run-2's cold samples ran at 4.67-5.39"
+  },
+  "corroboration": {
+    "by": "n9-team-lead (independent check, completed before this notice was drafted)",
+    "scope": "run-2 raw internal consistency: samples_ms 9 reps x 2 trees per cell; cold_phase 3 paired alternating samples with ratios matching the verdict ([1.0153, 0.9226, 0.9069]); per-rep parity digests bitwise-equal; censor records clean; invalidation note embedded in the raw archive"
+  },
+  "installed_cold_coverage": {
+    "claim_confirmed_for_manifest": "run-2's cold arm (fresh writable NUMBA_CACHE_DIR per sample per tree) forces full per-process JIT compilation -- the dominant term of the read-only-installed cold cost. Both trees ship cache=True njit kernels, so the on-disk cache is real and its defeat in a read-only site-packages makes compile a genuine per-process user cost; a read-only cache additionally skips only the small cache-write I/O my fresh writable dir performs, so the model is conservative.",
+    "what_it_is_not": "It is a MODEL on source trees, not a direct installed-tree measurement; F5's installed gates remain the separate direct installed record. And if a persistent writable NUMBA_CACHE_DIR is ever introduced (the recorded future work), 'cold' changes meaning entirely (observed in-process disk-cache load ~320 ms, run-1 analysis, vs compile ~2.4-2.7 s) and the gate would need its own record -- consistent with the original ruling's ground that the mitigation is new behavior invalidating evidence reuse."
+  },
+  "for_f7_integrator": {
+    "use_for_cold_gate_line": "f6_verdict.json gates.cold_within_3pct=true (0.9226, MARGINAL, raw archive f6_final_vs_main_timed_20260923T171623Z.json cold_phase)",
+    "do_not_ingest": "the ruling's merge_manifest_gate_table_entry (cold FAIL 1.0843) and its final_selection limitations entry cold_jit_regression_one_time, pending a re-issued ruling",
+    "unaffected_by_this_notice": "parity (bitwise, all 6 cells), carried-cell warm results and geomean 1.60x, declined cells within 3%, pre-committed threads_per_worker=1 rule NOT triggered, terminal SHIPPED_ROUTE_CONFIRMED"
+  },
+  "raw_records_touched": "none; the ruling file is unmodified; this notice is additive"
+}

@@ -1,0 +1,49 @@
+{
+  "record": "N9-F6 release-owner binding ruling: cold-gate disposition for the default promotion",
+  "ruling_utc": "2026-09-23T17:40:00Z",
+  "ruler": "n9-release-owner",
+  "input_record": "optimization_n9_final/evidence/f6_verdict.json (recorded 17:01:56Z, final=22876fb6853e6cd10237214bd514b777fe717594 vs main=14e888760727583ef782a4dc0e7a5c7c6e6ff9d1)",
+  "ruling": "RECORDED_AS_MEASURED_LIMITATION",
+  "decides": {
+    "revert_default_to_main_route": "REJECTED",
+    "mitigation_pass_now_user_cache_numba_dir": "REJECTED_FOR_THIS_CAMPAIGN",
+    "record_as_measured_release_limitation": "ADOPTED, under the binding conditions below"
+  },
+  "grounds": [
+    "The <=3% cold bound is an element of the INHERITED N8 DEFAULT-NATIVE criteria (MEASUREMENT.md 'Positive performance gate': 'geometric mean A/auto >=1.10 ... protected/default/cold regressions <=3%'). Its textual scope is the NATIVE default promotion. Native was terminated NATIVE_LOSS in F3; no native gate is being rewritten, relaxed or re-measured here, and the native closure stands on its own record.",
+    "The decision the cold miss now touches is the M-vs-final merge comparison (MERGE_SCOPE 'Merge safety and comparison'), whose fail condition is 'final loses or breaks main behavior'. The measured record: parity bitwise (uint32 sha256) FINAL == MAIN on ALL 6 cells; carried cells 1024-binary 124.1x, 1024-mix 2.17x, 128-binary 1.69x, 128-mix 1.54x (MARGINAL); declined all-raw cells FASTER than main (0.667 ratio; per-pair median 1.48-1.52x); geomean 5.14x median-of-times. Final does not lose the comparison; the single miss is a one-time cold metric.",
+    "Mechanism is bounded and one-time: +209.6 ms per cold process (2695.349 vs 2485.726 ms, cell B=1024 mix), the marginal njit compile cost of the added default route. main is likewise JIT-dominated at cold (main cold/warm = 384.78x; final cold/warm = 760.26x) - the delta is 'more functionality compiles once', not a pathological steady-state regression.",
+    "Payback is quantifiable where it matters: at the 1024-mix cell the steady-state saving is ~2.9 ms per invocation (main warm ~6.46 ms vs final warm ~3.55 ms, derived from the recorded cold/warm ratios), so the one-time +209 ms is repaid within the first ~72 longwave invocations of a 1024-class run - inside the first seconds of any real 24-48-step multi-tile workload, and far faster at 1024-binary (123x). HONESTY LABEL: for small single-tile 128-class runs the one-time cost is proportionally larger and may not repay within a short run; that residual is accepted and disclosed, not argued away.",
+    "A mitigation pass now (bounded default NUMBA_CACHE_DIR under the user cache dir) is a NEW behavior change: a new writable location with new failure modes (read-only HOME, concurrent processes, cache corruption handling) and its own DX surface. Landing it now changes the dependency closure AFTER F5/F6, invalidating evidence reuse (MEASUREMENT.md: 'Reuse evidence only when the relevant dependency closure is unchanged'), and the campaign's experiment limit is consumed. It is recorded as a named post-release follow-up, NOT a merge condition, NOT shipped in this campaign.",
+    "Reverting the default would discard a bitwise-parity, all-cells-winning route over a disclosed one-time cost while the raw guard already protects the only measured steady-state loss class - it would contradict the campaign's own measured record without satisfying any documented rule."
+  ],
+  "binding_conditions": [
+    "f6_verdict.json stands AS RECORDED: terminal_label GATE_FAILURE is retained verbatim; gates.cold_within_3pct=false is not relabeled, re-measured, or re-derived.",
+    "No document in this packet may state or imply a cold-gate pass; the manifest gate table shows FAIL with the disposition pointer to this ruling.",
+    "No gate bound is edited anywhere (this ruling changes no threshold; it dispositions a recorded failure).",
+    "The limitation joins the accepted-residuals list beside the existing honesty labels (128-mix MARGINAL; single-channel-raw compositions unmeasured and streaming by design).",
+    "The NUMBA_CACHE_DIR follow-up is recorded as future work with its review requirements named; it must not land as part of this merge."
+  ],
+  "final_selection_json_limitations_entry": {
+    "id": "cold_jit_regression_one_time",
+    "gate": "protected/default/cold regression <= 3% (inherited N8 default-native criteria)",
+    "status": "FAIL_AS_MEASURED_ACCEPTED_LIMITATION",
+    "measured": "final_cold_over_main_cold = 1.0843 (2695.349 ms vs 2485.726 ms; cell B=1024 mix) against bound 1.03; f6_verdict.json terminal_label GATE_FAILURE retained as recorded",
+    "mechanism": "one-time per-process njit compilation of the added default stream kernels; installed read-only site-packages defeats the numba on-disk cache. main is likewise JIT-dominated at cold (cold/warm 384.8x vs final 760.3x); the delta is the marginal compile cost of the added route, not a steady-state regression.",
+    "why_accepted": "bitwise-identical outputs on all 6 cells; geomean 5.14x median-of-times on carried cells (1024 binary 123.4x, 1024 mix 2.19x, 128 binary 1.68x, 128 mix 1.54x MARGINAL); declined all-raw cells faster than main (0.667); the one-time cost (~+210 ms) is repaid within the first ~72 longwave invocations of a 1024-class run.",
+    "residual_disclosure": "for small single-tile 128-class runs the one-time cost is proportionally larger and may not repay within a short run",
+    "not_a_claim": "this is not a cold-gate pass and no threshold was changed; the recorded gate result remains FAIL",
+    "follow_up_not_in_scope": "a bounded default NUMBA_CACHE_DIR under the user cache directory would persist installed JIT caches across processes; it is a new write-location behavior requiring its own review and would invalidate F5/F6 evidence reuse if landed now. Recorded as post-release future work; not a merge condition; not shipped."
+  },
+  "merge_manifest_gate_table_entry": {
+    "gate": "cold regression vs pinned main (compact same-budget cold/warm cell)",
+    "source": "f6_verdict.json /cold",
+    "bound": "<= 1.03",
+    "measured": 1.0843,
+    "cell": "B=1024 mix",
+    "verdict": "FAIL",
+    "terminal_label_retained": "GATE_FAILURE (f6_verdict.json, verbatim)",
+    "disposition": "accepted_limitation -> FINAL_SELECTION.limitations[cold_jit_regression_one_time]; release-owner ruling f6_cold_gate_ruling.json 2026-09-23",
+    "notes": "gate result unchanged and un-relaxed; the ruling dispositions the release consequence of a recorded failure, per MERGE_SCOPE 'Record unresolved regressions honestly'"
+  }
+}

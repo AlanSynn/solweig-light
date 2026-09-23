@@ -1,0 +1,26 @@
+{
+ "tree": "main",
+ "mode": "check",
+ "cmd": [
+  "/Users/alansynn/Workspace/solweig-v8-native/.venv/bin/python",
+  "/Users/alansynn/Workspace/solweig-v8-native/optimization_n9_final/tools/f6_worker.py",
+  "--tree",
+  "main",
+  "--root",
+  "/Users/alansynn/Workspace/n9-main-ref/src",
+  "--cache-dir",
+  "/Users/alansynn/Workspace/solweig-v8-native/.numba_cache/f6check/main",
+  "--mode",
+  "check",
+  "--out",
+  "/Users/alansynn/Workspace/solweig-v8-native/optimization_n9_final/evidence/_f6_main_check_20260923T165326Z.json.tmp",
+  "--threads",
+  "4",
+  "--sha",
+  "14e888760727583ef782a4dc0e7a5c7c6e6ff9d1"
+ ],
+ "returncode": 1,
+ "stderr": "Traceback (most recent call last):\n  File \"/Users/alansynn/Workspace/solweig-v8-native/optimization_n9_final/tools/f6_worker.py\", line 328, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File \"/Users/alansynn/Workspace/solweig-v8-native/optimization_n9_final/tools/f6_worker.py\", line 121, in main\n    spec.loader.exec_module(module)\n  File \"<frozen importlib._bootstrap_external>\", line 999, in exec_module\n  File \"<frozen importlib._bootstrap>\", line 488, in _call_with_frames_removed\n  File \"/Users/alansynn/Workspace/solweig-v8-native/tests/optimization_v8/reference/test_typed_graph_identity.py\", line 28, in <module>\n    PARALLEL, SERIAL = kernel_pair()\n                       ^^^^^^^^^^^^^\n  File \"/Users/alansynn/Workspace/solweig-v8-native/tests/optimization_v8/reference/lw_reference_oracle.py\", line 183, in kernel_pair\n    from solweig_light.radiation import cylinder_longwave as cyl\nImportError: cannot import name 'cylinder_longwave' from 'solweig_light.radiation' (/Users/alansynn/Workspace/n9-main-ref/src/solweig_light/radiation/__init__.py)\n",
+ "stdout": "",
+ "utc": "2026-09-23T16:53:27Z"
+}

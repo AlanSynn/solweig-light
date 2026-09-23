@@ -1,0 +1,122 @@
+{
+ "cells": {
+  "B=1024 all-binary": {
+   "final_median_ms": 2.7029,
+   "main_median_ms": 7.4566,
+   "max_pair": 2.9812,
+   "min_pair": 2.4969,
+   "per_pair_ratio_median": 2.7586,
+   "per_pair_spread": 0.4843,
+   "speedup_main_over_final_median_of_times": 2.7587,
+   "stream_carried": true
+  },
+  "B=1024 all-raw": {
+   "declined_regression_margin_vs_2x_spread": 0.3404,
+   "declined_regression_ratio_per_pair_median": 0.8222,
+   "final_median_ms": 2.963,
+   "main_median_ms": 3.5435,
+   "max_pair": 1.3581,
+   "min_pair": 1.099,
+   "per_pair_ratio_median": 1.2162,
+   "per_pair_spread": 0.2591,
+   "speedup_main_over_final_median_of_times": 1.1959,
+   "stream_carried": false
+  },
+  "B=1024 mix": {
+   "final_median_ms": 3.6392,
+   "main_median_ms": 6.6996,
+   "max_pair": 2.0639,
+   "min_pair": 1.7002,
+   "per_pair_ratio_median": 1.879,
+   "per_pair_spread": 0.3637,
+   "speedup_main_over_final_median_of_times": 1.841,
+   "stream_carried": true
+  },
+  "B=128 all-binary": {
+   "final_median_ms": 1.6258,
+   "main_median_ms": 2.0228,
+   "max_pair": 1.4003,
+   "min_pair": 1.164,
+   "per_pair_ratio_median": 1.268,
+   "per_pair_spread": 0.2363,
+   "speedup_main_over_final_median_of_times": 1.2442,
+   "stream_carried": true
+  },
+  "B=128 all-raw": {
+   "declined_regression_margin_vs_2x_spread": 0.6691,
+   "declined_regression_ratio_per_pair_median": 1.026,
+   "final_median_ms": 1.5375,
+   "main_median_ms": 1.4415,
+   "max_pair": 1.1986,
+   "min_pair": 0.8511,
+   "per_pair_ratio_median": 0.9747,
+   "per_pair_spread": 0.3475,
+   "speedup_main_over_final_median_of_times": 0.9376,
+   "stream_carried": false
+  },
+  "B=128 mix": {
+   "final_median_ms": 1.782,
+   "main_median_ms": 1.8395,
+   "max_pair": 1.2239,
+   "min_pair": 0.9439,
+   "per_pair_ratio_median": 1.0491,
+   "per_pair_spread": 0.2799,
+   "speedup_main_over_final_median_of_times": 1.0323,
+   "stream_carried": true
+  }
+ },
+ "cold": {
+  "bound": 1.03,
+  "cell": "B=1024 mix",
+  "final_cold_median_ms": 2238.2288,
+  "final_cold_over_final_warm": 629.2462,
+  "final_over_main_median": 0.9226,
+  "label": "MARGINAL",
+  "main_cold_median_ms": 2467.872,
+  "main_cold_over_main_warm": 404.8014,
+  "metric": "cold full-entry (fresh JIT cache per sample), paired",
+  "per_sample_ratios": [
+   1.0153,
+   0.9226,
+   0.9069
+  ],
+  "per_sample_spread": 0.1084,
+  "samples_final_ms": [
+   2545.395,
+   2237.2804,
+   2238.2288
+  ],
+  "samples_main_ms": [
+   2506.9922,
+   2425.0325,
+   2467.872
+  ]
+ },
+ "declined_cells_max_regression_ratio": 1.026,
+ "derivation": "gate math replayed from raw archive optimization_n9_final/evidence/f6_final_vs_main_timed_20260923T171623Z.json without re-measurement; declined-cell gate aligned to the declared per-pair verdict basis",
+ "gates": {
+  "cold_marginal": true,
+  "cold_within_3pct": true,
+  "declined_within_3pct": true,
+  "parity_bitwise_all_cells": true,
+  "pre_committed_rule_triggered": false
+ },
+ "geomean_speedup_carried_median_of_times": 1.5981,
+ "marginal_labels": [
+  "B=128 all-binary: winning margin within 2x per-pair spread -> MARGINAL, not a clear pass",
+  "B=128 mix: winning margin within 2x per-pair spread -> MARGINAL, not a clear pass"
+ ],
+ "measurement_notes": [
+  "run 1 (f6_final_vs_main_timed_20260923T170156Z.json) is INVALID for the MAIN warm cells: its worker performed no untimed warm pass before the clock, so MAIN's first timed cell paid JIT disk-cache load inside the measurement. FINAL warm cells were unaffected (route audit doubled as warm-up). Run 1 raw retained; this record is authoritative."
+ ],
+ "parity": "Ldown+Lside bitwise (uint32 sha256) FINAL == MAIN on all 6 cells",
+ "plain_boolean_restoration": "NOT_TRIGGERED (stream wins its carried cells at budget 1)",
+ "record": "N9-F6 verdict: shipped FINAL default vs pinned main at shipped defaults (tw=1)",
+ "recorded_utc": "2026-09-23T17:26:30Z",
+ "shas": {
+  "final": "22876fb6853e6cd10237214bd514b777fe717594",
+  "main": "14e888760727583ef782a4dc0e7a5c7c6e6ff9d1"
+ },
+ "terminal_label": "SHIPPED_ROUTE_CONFIRMED",
+ "verdict_basis": "per-pair ratios (median of paired per-rep MAIN/FINAL ratios), median-of-times ratios reported alongside"
+}
