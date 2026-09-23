@@ -171,6 +171,9 @@ def _kernel_leaf_native(views, sun_a, shade_a, base, B, entry):
 
 def run(check_only: bool, block_sizes='128,1024', max_loadavg=None) -> int:
     sizes = tuple(int(s) for s in str(block_sizes).split(','))
+    if not sizes or any(s < 1 for s in sizes):
+        raise SystemExit(f'--block-sizes must be positive integers, got {block_sizes!r}'
+                         ' (N13-7: 0/negative parsed as a vacuous pass before N9 F0)')
     parallel, serial = kernel_pair()
     b_name, b_fn, b_kernel = _find_b_consumer()
     load_start = os.getloadavg()

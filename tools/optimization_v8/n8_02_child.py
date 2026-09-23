@@ -94,6 +94,9 @@ def output_digest(root: Path) -> dict:
 
 
 def main() -> int:
+    if ARGS.block_pixels < 1:
+        raise SystemExit(f'--block-pixels must be >= 1, got {ARGS.block_pixels}'
+                         ' (N13-7: non-positive values parsed as vacuous passes)')
     run_dir = Path(ARGS.run_root) / 'run'
     if run_dir.exists():
         shutil.rmtree(run_dir)
