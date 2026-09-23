@@ -1177,3 +1177,14 @@ The measured scope and remaining gates are summarized in
 P7 remains in progress and P8 remains pending; this local optimization does
 not establish the full upstream matrix, larger/default-3600 feasibility,
 multi-day coverage, final-source Linux qualification or release completion.
+
+## Post-log optimization campaigns (2026-09)
+
+The optimization work continued past this log in packetized campaigns
+(v4/v5/v6/v7/v8/n9); [`optimization_campaigns.md`](optimization_campaigns.md)
+is the map and terminal-state record. Final state: selection
+`closed_cpu_only` (`optimization_n9_final/FINAL_SELECTION.json`) — bounded
+Numba stream row B default at `thread_budget` 1 with the all-raw structural
+guard, the N8 native row archived repo-only, bitwise parity and the F6 run-2
+terminal comparison against main; merged into local main by fast-forward at
+handover (no push / PR / release without separate authorization).

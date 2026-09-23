@@ -108,3 +108,16 @@ The code tree merged is byte-identical to the tree every gate ran
 against (22876fb6, tree cf94ff98...): the record commits add evidence,
 tests, and manifests only. F7 complete; no further commits planned on
 this branch.
+
+## Post-closure handover record commits
+
+After the closing record, one further record-only commit landed as part of
+the handover wrap-up: `docs/optimization_campaigns.md` (campaign map and
+terminal states), a `docs/progress.md` post-log pointer, and the local-only
+v4 packet + loose v5 evidence records landed into the repo so the record set
+is complete. `src/` is untouched — verify with
+`git rev-parse <any-earlier-tip>:src` equality (2b5b554f...) and
+`git log --oneline -- src/` (last src commit remains the F4 line). The
+ff-only property is structural (branch 0 behind main); the operator
+checklist in MERGE_MANIFEST.json re-verifies tree identity at whatever tip
+it merges.

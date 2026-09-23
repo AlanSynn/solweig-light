@@ -1,0 +1,14 @@
+{
+  "classification": "source_strategy_artifacts_not_production_verification",
+  "source_zip": "solweig-optimization-v4-lean-handoff.zip",
+  "source_zip_sha256": "25d8eb725c4f9b4f312a7210dd71aeacbfac05adaf76139564fa4a8ab499a648",
+  "historical_inspected_commit": "14e888760727583ef782a4dc0e7a5c7c6e6ff9d1",
+  "model_ancestry": "0d7fe742abeeddd890dd58fc76ed7f78bd47faec",
+  "repository_ref_rechecked_in_v5": false,
+  "solweig_executed_in_v5": false,
+  "claude_code_or_provider_calls_executed_in_v5": false,
+  "technical_inventory_copied": [
+    "STRATEGIES.json",
+    "MATH_AND_PROOFS.md"
+  ]
+}

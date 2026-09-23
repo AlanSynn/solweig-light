@@ -1,0 +1,13 @@
+{
+  "main_ref_rechecked": "14e888760727583ef782a4dc0e7a5c7c6e6ff9d1",
+  "model_ancestry": "0d7fe742abeeddd890dd58fc76ed7f78bd47faec",
+  "source_reads": "GitHub connector, current and prior conversation; targeted review, not a fresh full-tree audit",
+  "direct_download_attempt": "failed: DNS name resolution",
+  "local_upstream_snapshot_available": false,
+  "production_repository_modified": false,
+  "solweig_kernel_executed": false,
+  "original_oracle_executed": false,
+  "target_cpu_benchmark_executed": false,
+  "subagents_spawned_in_preparing_packet": false,
+  "documents_and_analytical_tools_created": true
+}
