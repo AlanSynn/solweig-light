@@ -81,20 +81,26 @@ final manifests - NO src/ changes:
 ## Final rehearsal (re-run at the closing tip; appended below by the
 closing record commit)
 
-Appended by the closing record-only commit, whose only change is this
-file - verifiable with `git log --oneline 18780156..HEAD` (exactly one
-commit) and `git diff 18780156 HEAD --stat` (this file only).
+Exactly TWO commits follow 18780156 - enumerate with
+`git log --oneline 18780156..HEAD` and verify with
+`git diff 18780156 HEAD --stat`:
 
-- Code immutability across the record commits:
-  `git rev-parse 22876fb6:src` == `git rev-parse 18780156:src`
+1. cb2e59774146f4427c689bf74b6c114ff804656e - F7 evidence amendment
+   (run-7 gates record on rebuilt wheel aa184a71bc16d015, conftest
+   pinned-attempts status fix, discrepancy note RESOLVED_BY_AMENDMENT_1,
+   manifests rebind the wheel hash, f5_review integrator addendum).
+2. the closing record-only commit whose only change is this file.
+
+- Code immutability across ALL record commits:
+  `git rev-parse 22876fb6:src` == `git rev-parse 18780156:src` ==
+  `git rev-parse cb2e5977:src`
   = 2b5b554f9809847fc615ce1f886b12267f0df4ef (IDENTICAL).
-- Closing tip rehearsed: 187801565e4602f0a113ead0fee9d7486b21bd73
-  (the FINAL_SELECTION.json + MERGE_MANIFEST.json commit).
+- Closing tip rehearsed: cb2e59774146f4427c689bf74b6c114ff804656e.
 - Disposable detached worktree /tmp/n9_merge_rehearsal at main
-  (14e88876); `git merge --ff-only 18780156` -> OK.
-- merged HEAD = 187801565e4602f0a113ead0fee9d7486b21bd73
-- merged tree  = 17d8c68dee2f6d3efe4877d7b8b3f8b84555cf9e
-- branch-tip tree = 17d8c68dee2f6d3efe4877d7b8b3f8b84555cf9e
+  (14e88876); `git merge --ff-only cb2e5977` -> OK (branch 0 behind).
+- merged HEAD = cb2e59774146f4427c689bf74b6c114ff804656e
+- merged tree  = 2fc70b137d612c0ff801ddd01fb412e6d68d1310
+- branch-tip tree = 2fc70b137d612c0ff801ddd01fb412e6d68d1310
   (IDENTICAL - the merge is bit-for-bit the tested tree)
 - post-merge `git status` clean.
 
