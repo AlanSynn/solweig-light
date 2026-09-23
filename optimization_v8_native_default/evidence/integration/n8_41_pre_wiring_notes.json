@@ -47,5 +47,20 @@
   "_review_refs": [
     "optimization_v8_native_default/evidence/reviews/n8_30_review_n8_40_integration.json",
     "optimization_v8_native_default/evidence/integration/n8_40_review_notes_disposition.json"
-  ]
+  ],
+  "n841-8": {
+    "title": "vendoring executed EARLY (integrator decision, 2026-09-22 evening, during tier-B quiet-window wait)",
+    "rationale": [
+      "the machinery move is row-selection-independent: all rows relocate; wheel CONTENT remains selection-gated; the expert-env route flip remains wheels-time",
+      "schedule compression: vendoring + test rewiring is the largest remaining implementation block; the measurement gate blocks tier B, not this",
+      "precedent: N8-40 wiring was likewise executed ahead of its yaml gate (needs N8-32) as selection-independent work, reviewed on its own diff"
+    ],
+    "guardrails": [
+      "shipped-state behavior byte-identical: rows still records-gated, decline taxonomy unchanged",
+      "single env-read site preserved (cylinder_longwave seam); dispatch module still reads no env",
+      "expert env route continues serving the legacy B7-32 path until the wheels-time flip",
+      "experiments/ tree KEPT intact this commit (evidence durability: tier archives + stage provenance live there); code becomes unused duplicate, deletion is a later explicit step",
+      "N8-32 selection still gates wheel building; N8-40 formal record still lands post-selection"
+    ]
+  }
 }
