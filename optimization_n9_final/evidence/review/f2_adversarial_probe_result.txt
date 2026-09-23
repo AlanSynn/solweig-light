@@ -1,0 +1,11 @@
+PASS bitwise grid old==new==ref==legacy -- 400 cases
+PASS adversarial raw bits w=8
+PASS adversarial raw bits w=4
+PASS reserved code 3: old/new identical error identity + write prefix (all injection positions) -- 0 mismatches
+PASS degenerate modes [0, 0, 0]: old/new identical surface -- exc=ZeroDivisionError:('integer division by zero',)
+PASS degenerate modes [3, 3, 3]: old/new identical surface -- exc=IndexError:('Reserved visibility code',)
+PASS degenerate modes [5, 1, 0]: old/new identical surface -- exc=IndexError:('Reserved visibility code',)
+PASS degenerate modes [2, 0, 4]: old/new identical surface -- exc=IndexError:('Reserved visibility code',)
+PASS aplus _decode_at_plus == _decode_at on adversarial mixes -- 0 mismatches
+
+RESULT: ALL PASS

@@ -76,3 +76,15 @@ NOT modified by F1; the artifact/ABI identity enters the InvocationPlan.
 
 Any interface change beyond this table requires integrator sign-off and a
 freeze amendment recorded BEFORE the affected result exists.
+
+## Amendment 1 (F2 close, integrator sign-off; recorded before any F3 result)
+
+F2 review (evidence/review/f2_review.md) flagged a fidelity nit: this table
+showed `produce_blocks_aosoa(..., out=None)` but the shipped plural
+signature has NO `out=` keyword (only the singular `produce_block_aosoa`
+does). The composed stream does not need it (BlockSlot buffers are passed
+to the pinned-descriptor kernel directly, and mask scratch is sliced to
+exact block gangs per the 07114fdc repair). Resolution: the plural
+producer keeps its shipped signature; the table's `out=` line reads as
+belonging to the singular form. Zero behavioral change; no result existed
+between the freeze and this amendment that relied on the plural `out=`.
