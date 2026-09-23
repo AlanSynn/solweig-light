@@ -1,231 +1,235 @@
 {
   "api_gate": {
-    "admission_note": "scene phase reservation ~1.74 GB + 410 MB fixed parent charge vs budget = 0.5 x host available-memory view (runtime.py:default_memory_budget_bytes); environmental, not a DX property",
     "attempts": [
       {
         "attempt": 1,
-        "diagnosis": "blocked:host-memory-pressure",
-        "returncode": 1,
-        "stderr_tail": [
-          "    plan_phase_admission(",
-          "  File \"/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-863/n8_23_installed0/work/wheelenv/lib/python3.12/site-packages/solweig_light/runtime_memory.py\", line 919, in plan_phase_admission",
-          "    raise ResourceAdmissionError(",
-          "solweig_light.runtime.ResourceAdmissionError: simulation job 0_0 (32x35, patches=153) needs about 1,736,017,587 B but only 1,025,934,950 B of the 1,455,431,680 B budget remains after parent (429,496,730 B) and writer queue (0 B); queueing cannot make this phase fit. Reduce the tile shape, cap GDAL_CACHEMAX, or use supported disk-backed execution with an explicit live-array inventory"
-        ],
+        "diagnosis": "passed",
+        "returncode": 0,
+        "stderr_tail": [],
         "stdout_tail": [
-          "Wind coefficient not used; skipping WindCoeff tiles.",
-          "Copied to /private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-863/n8_23_installed0/work/api_scene/processed_inputs/metfiles/metfile_0_0.txt",
+          "Copied to /private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-892/n8_23_installed0/work/api_scene/processed_inputs/metfiles/metfile_0_0.txt",
           "[INFO] Found 1 matching SVF tiles.",
-          "[INFO] Writing outputs to: /private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-863/n8_23_installed0/work/api_scene/processed_inputs/SVF",
+          "[INFO] Writing outputs to: /private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-892/n8_23_installed0/work/api_scene/processed_inputs/SVF",
           "[INFO] Standalone SVF calculation complete.",
-          "Running Solweig ..."
-        ]
-      },
-      {
-        "attempt": 2,
-        "diagnosis": "blocked:host-memory-pressure",
-        "returncode": 1,
-        "stderr_tail": [
-          "    plan_phase_admission(",
-          "  File \"/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-863/n8_23_installed0/work/wheelenv/lib/python3.12/site-packages/solweig_light/runtime_memory.py\", line 919, in plan_phase_admission",
-          "    raise ResourceAdmissionError(",
-          "solweig_light.runtime.ResourceAdmissionError: simulation job 0_0 (32x35, patches=153) needs about 1,736,017,587 B but only 1,105,167,974 B of the 1,534,664,704 B budget remains after parent (429,496,730 B) and writer queue (0 B); queueing cannot make this phase fit. Reduce the tile shape, cap GDAL_CACHEMAX, or use supported disk-backed execution with an explicit live-array inventory"
-        ],
-        "stdout_tail": [
-          "Wind coefficient not used; skipping WindCoeff tiles.",
-          "Copied to /private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-863/n8_23_installed0/work/api_scene/processed_inputs/metfiles/metfile_0_0.txt",
-          "[INFO] Found 1 matching SVF tiles.",
-          "[INFO] Writing outputs to: /private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-863/n8_23_installed0/work/api_scene/processed_inputs/SVF",
-          "[INFO] Standalone SVF calculation complete.",
-          "Running Solweig ..."
-        ]
-      },
-      {
-        "attempt": 3,
-        "diagnosis": "blocked:host-memory-pressure",
-        "returncode": 1,
-        "stderr_tail": [
-          "    plan_phase_admission(",
-          "  File \"/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-863/n8_23_installed0/work/wheelenv/lib/python3.12/site-packages/solweig_light/runtime_memory.py\", line 919, in plan_phase_admission",
-          "    raise ResourceAdmissionError(",
-          "solweig_light.runtime.ResourceAdmissionError: simulation job 0_0 (32x35, patches=153) needs about 1,736,017,587 B but only 1,093,953,126 B of the 1,523,449,856 B budget remains after parent (429,496,730 B) and writer queue (0 B); queueing cannot make this phase fit. Reduce the tile shape, cap GDAL_CACHEMAX, or use supported disk-backed execution with an explicit live-array inventory"
-        ],
-        "stdout_tail": [
-          "Wind coefficient not used; skipping WindCoeff tiles.",
-          "Copied to /private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-863/n8_23_installed0/work/api_scene/processed_inputs/metfiles/metfile_0_0.txt",
-          "[INFO] Found 1 matching SVF tiles.",
-          "[INFO] Writing outputs to: /private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-863/n8_23_installed0/work/api_scene/processed_inputs/SVF",
-          "[INFO] Standalone SVF calculation complete.",
-          "Running Solweig ..."
+          "Running Solweig ...",
+          "{\"exit_ok\": true, \"modules\": 38, \"bad_origins\": []}"
         ]
       }
     ],
     "call": "thermal_comfort(base_path=<scene copy>, selected_date_str='2020-07-18', own_met_file=<scene>/met.txt, ERA_5_z0_find=False); all other arguments at pinned defaults",
-    "native_cache": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-863/n8_23_installed0/work/api_scratch/native_cache_ro",
+    "module_origins": {
+      "bad_origins": [],
+      "exit_ok": true,
+      "modules": 38
+    },
+    "native_cache": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-892/n8_23_installed0/work/api_scratch/native_cache_ro",
     "native_cache_after": [],
     "native_cache_before": [],
     "no_net_events": [
       {
         "detail": {
-          "pid": 65942
+          "pid": 71572
         },
         "kind": "guard_installed",
-        "t": 1790128680.337193
+        "t": 1790154444.121957
       },
       {
         "detail": {
-          "pid": 66790
+          "pid": 72289
         },
         "kind": "guard_installed",
-        "t": 1790128716.018743
-      },
-      {
-        "detail": {
-          "pid": 67035
-        },
-        "kind": "guard_installed",
-        "t": 1790128737.7122822
+        "t": 1790154462.404777
       }
     ],
-    "no_net_log": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-863/n8_23_installed0/work/api_scratch/no_net_events.jsonl",
+    "no_net_log": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-892/n8_23_installed0/work/api_scratch/no_net_events.jsonl",
     "numba_cache_listing": [
-      "comfort_a3da56c842fb73758b4120b88d30678dd2efab29",
-      "geometry_2fe2c7893aabc92a3205ebfc27160bcdaabc9e1e",
-      "radiation_2717aa83d2caff324efbba86af469b3b612f740f",
-      "timezonefinder_081df49526029b1155b72ec552cbfb15d49a4304"
+      "comfort_1f5a958a8a94a9a23bf45c59bd315da761986e07",
+      "geometry_becb24a254836a3caa83e73c74ea017b9402cb6d",
+      "radiation_bb2b24c30b6a150f261244254cfe52e2c0b7e961",
+      "timezonefinder_71e67ed86135f0c14d2de663a61c09d02e413b11"
     ],
-    "output_files": [],
-    "scene": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-863/n8_23_installed0/work/api_scene",
+    "output_files": [
+      "TMRT_0_0.tif",
+      "UTCI_0_0.tif"
+    ],
+    "scene": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-892/n8_23_installed0/work/api_scene",
     "site_packages_readonly": {
       "enforced": true,
-      "path": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-863/n8_23_installed0/work/wheelenv/lib/python3.12/site-packages",
+      "path": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-892/n8_23_installed0/work/wheelenv/lib/python3.12/site-packages",
       "policy": "dirs 0o555 / files 0o444 for the child run, restored after; symlinks untouched"
     },
-    "status": "blocked:host-memory-pressure"
+    "status": "passed",
+    "stderr_tail": [],
+    "stdout": "Creating tiles for Building_DSM...\nCreated single tile: /private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-892/n8_23_installed0/work/api_scene/processed_inputs/Building_DSM/Building_DSM_0_0.tif\nCreating tiles for DEM...\nCreated single tile: /private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-892/n8_23_installed0/work/api_scene/processed_inputs/DEM/DEM_0_0.tif\nCreating tiles for Trees...\nCreated single tile: /private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-892/n8_23_installed0/work/api_scene/processed_inputs/Trees/Trees_0_0.tif\nWind coefficient not used; skipping WindCoeff tiles.\nCopied to /private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-892/n8_23_installed0/work/api_scene/processed_inputs/metfiles/metfile_0_0.txt\n[INFO] Found 1 matching SVF tiles.\n[INFO] Writing outputs to: /private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-892/n8_23_installed0/work/api_scene/processed_inputs/SVF\n[INFO] Standalone SVF calculation complete.\nRunning Solweig ...\n{\"exit_ok\": true, \"modules\": 38, \"bad_origins\": []}\n"
   },
   "cli_gate": {
     "argv": [
       "--base_path",
-      "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-863/n8_23_installed0/work/cli_scene",
+      "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-892/n8_23_installed0/work/cli_scene",
       "--date",
       "2020-07-18",
       "--use_own_met",
       "True",
       "--own_metfile",
-      "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-863/n8_23_installed0/work/cli_scene/met.txt",
+      "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-892/n8_23_installed0/work/cli_scene/met.txt",
       "--era5_z0_find",
       "False"
     ],
     "attempts": [
       {
         "attempt": 1,
-        "diagnosis": "blocked:host-memory-pressure",
-        "returncode": 1,
-        "stderr_tail": [
-          "    plan_phase_admission(",
-          "  File \"/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-863/n8_23_installed0/work/wheelenv/lib/python3.12/site-packages/solweig_light/runtime_memory.py\", line 919, in plan_phase_admission",
-          "    raise ResourceAdmissionError(",
-          "solweig_light.runtime.ResourceAdmissionError: simulation job 0_0 (32x35, patches=153) needs about 1,736,017,587 B but only 1,077,659,238 B of the 1,507,155,968 B budget remains after parent (429,496,730 B) and writer queue (0 B); queueing cannot make this phase fit. Reduce the tile shape, cap GDAL_CACHEMAX, or use supported disk-backed execution with an explicit live-array inventory"
-        ],
+        "diagnosis": "passed",
+        "returncode": 0,
+        "stderr_tail": [],
         "stdout_tail": [
           "Wind coefficient not used; skipping WindCoeff tiles.",
-          "Copied to /private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-863/n8_23_installed0/work/cli_scene/processed_inputs/metfiles/metfile_0_0.txt",
+          "Copied to /private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-892/n8_23_installed0/work/cli_scene/processed_inputs/metfiles/metfile_0_0.txt",
           "[INFO] Found 1 matching SVF tiles.",
-          "[INFO] Writing outputs to: /private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-863/n8_23_installed0/work/cli_scene/processed_inputs/SVF",
-          "[INFO] Standalone SVF calculation complete.",
-          "Running Solweig ..."
-        ]
-      },
-      {
-        "attempt": 2,
-        "diagnosis": "blocked:host-memory-pressure",
-        "returncode": 1,
-        "stderr_tail": [
-          "    plan_phase_admission(",
-          "  File \"/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-863/n8_23_installed0/work/wheelenv/lib/python3.12/site-packages/solweig_light/runtime_memory.py\", line 919, in plan_phase_admission",
-          "    raise ResourceAdmissionError(",
-          "solweig_light.runtime.ResourceAdmissionError: simulation job 0_0 (32x35, patches=153) needs about 1,736,017,587 B but only 1,048,528,486 B of the 1,478,025,216 B budget remains after parent (429,496,730 B) and writer queue (0 B); queueing cannot make this phase fit. Reduce the tile shape, cap GDAL_CACHEMAX, or use supported disk-backed execution with an explicit live-array inventory"
-        ],
-        "stdout_tail": [
-          "Wind coefficient not used; skipping WindCoeff tiles.",
-          "Copied to /private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-863/n8_23_installed0/work/cli_scene/processed_inputs/metfiles/metfile_0_0.txt",
-          "[INFO] Found 1 matching SVF tiles.",
-          "[INFO] Writing outputs to: /private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-863/n8_23_installed0/work/cli_scene/processed_inputs/SVF",
-          "[INFO] Standalone SVF calculation complete.",
-          "Running Solweig ..."
-        ]
-      },
-      {
-        "attempt": 3,
-        "diagnosis": "blocked:host-memory-pressure",
-        "returncode": 1,
-        "stderr_tail": [
-          "    plan_phase_admission(",
-          "  File \"/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-863/n8_23_installed0/work/wheelenv/lib/python3.12/site-packages/solweig_light/runtime_memory.py\", line 919, in plan_phase_admission",
-          "    raise ResourceAdmissionError(",
-          "solweig_light.runtime.ResourceAdmissionError: simulation job 0_0 (32x35, patches=153) needs about 1,736,017,587 B but only 1,112,581,734 B of the 1,542,078,464 B budget remains after parent (429,496,730 B) and writer queue (0 B); queueing cannot make this phase fit. Reduce the tile shape, cap GDAL_CACHEMAX, or use supported disk-backed execution with an explicit live-array inventory"
-        ],
-        "stdout_tail": [
-          "Wind coefficient not used; skipping WindCoeff tiles.",
-          "Copied to /private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-863/n8_23_installed0/work/cli_scene/processed_inputs/metfiles/metfile_0_0.txt",
-          "[INFO] Found 1 matching SVF tiles.",
-          "[INFO] Writing outputs to: /private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-863/n8_23_installed0/work/cli_scene/processed_inputs/SVF",
+          "[INFO] Writing outputs to: /private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-892/n8_23_installed0/work/cli_scene/processed_inputs/SVF",
           "[INFO] Standalone SVF calculation complete.",
           "Running Solweig ..."
         ]
       }
     ],
-    "native_cache": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-863/n8_23_installed0/work/cli_scratch/native_cache_ro",
+    "native_cache": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-892/n8_23_installed0/work/cli_scratch/native_cache_ro",
     "native_cache_after": [],
     "native_cache_before": [],
     "no_net_events": [
       {
         "detail": {
-          "pid": 67276
+          "pid": 72662
         },
         "kind": "guard_installed",
-        "t": 1790128741.100856
+        "t": 1790154472.7437792
       },
       {
         "detail": {
-          "pid": 67981
+          "pid": 72738
         },
         "kind": "guard_installed",
-        "t": 1790128765.6292522
-      },
-      {
-        "detail": {
-          "pid": 68146
-        },
-        "kind": "guard_installed",
-        "t": 1790128787.5911832
+        "t": 1790154476.805745
       }
     ],
-    "no_net_log": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-863/n8_23_installed0/work/cli_scratch/no_net_events.jsonl",
+    "no_net_log": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-892/n8_23_installed0/work/cli_scratch/no_net_events.jsonl",
     "numba_cache_listing": [
-      "comfort_a3da56c842fb73758b4120b88d30678dd2efab29",
-      "geometry_2fe2c7893aabc92a3205ebfc27160bcdaabc9e1e",
-      "radiation_2717aa83d2caff324efbba86af469b3b612f740f",
-      "timezonefinder_081df49526029b1155b72ec552cbfb15d49a4304"
+      "comfort_1f5a958a8a94a9a23bf45c59bd315da761986e07",
+      "geometry_becb24a254836a3caa83e73c74ea017b9402cb6d",
+      "radiation_bb2b24c30b6a150f261244254cfe52e2c0b7e961",
+      "timezonefinder_71e67ed86135f0c14d2de663a61c09d02e413b11"
     ],
-    "output_files": [],
+    "output_files": [
+      "TMRT_0_0.tif",
+      "UTCI_0_0.tif"
+    ],
+    "scene": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-892/n8_23_installed0/work/cli_scene",
     "site_packages_readonly": {
       "enforced": true,
-      "path": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-863/n8_23_installed0/work/wheelenv/lib/python3.12/site-packages",
+      "path": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-892/n8_23_installed0/work/wheelenv/lib/python3.12/site-packages",
       "policy": "dirs 0o555 / files 0o444 for the child run, restored after; symlinks untouched"
     },
-    "status": "blocked:host-memory-pressure"
+    "status": "passed",
+    "stderr_tail": [],
+    "stdout": "Creating tiles for Building_DSM...\nCreated single tile: /private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-892/n8_23_installed0/work/cli_scene/processed_inputs/Building_DSM/Building_DSM_0_0.tif\nCreating tiles for DEM...\nCreated single tile: /private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-892/n8_23_installed0/work/cli_scene/processed_inputs/DEM/DEM_0_0.tif\nCreating tiles for Trees...\nCreated single tile: /private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-892/n8_23_installed0/work/cli_scene/processed_inputs/Trees/Trees_0_0.tif\nWind coefficient not used; skipping WindCoeff tiles.\nCopied to /private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-892/n8_23_installed0/work/cli_scene/processed_inputs/metfiles/metfile_0_0.txt\n[INFO] Found 1 matching SVF tiles.\n[INFO] Writing outputs to: /private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-892/n8_23_installed0/work/cli_scene/processed_inputs/SVF\n[INFO] Standalone SVF calculation complete.\nRunning Solweig ...\n"
   },
   "deferred": [
-    "native wheel install/run channel -> N8-41 (no packaged native artifact exists on this branch yet)",
+    "selection-pinned native artifact re-freeze -> N8-50 and counted native execution evidence -> N8-42 (the N8-41 candidate wheel mechanism ships the staged generation; qualification does not exist yet and the shipped registry stays empty)",
     "companion (solweig-light-compat) install and legacy thermal_comfort executable channel -> N8-41",
     "upstream solweig_gpu import-collision against an installed main -> N8-42",
     "native coverage / qualification evidence -> N8-42"
   ],
   "mode_label": "SOURCE/NO-NATIVE fallback (no packaged native artifact exists before N8-41); necessary but NOT native qualification (DX_CONTRACT.md: 'Passing fallback installation is necessary but insufficient for the native-default goal')",
+  "native_installed_origins": {
+    "handle_stamp": {
+      "build_mode": "native-release",
+      "dylib_sha256": "7e48f05ade11eef6959bcc33769fb2fc8fcb91b7882c2c3471db78b310b8e9a6",
+      "generation": "lw-g8-390acd5f57df1fe7",
+      "kernel_sha256": "b3fffd1d7439ad27ddde6f4355faa433bcdff436ac328983f02a6694d545f00c",
+      "source": "installed-native_generated-v1"
+    },
+    "installed_driver": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-892/n8_23_installed0/work/nativewheelenv/lib/python3.12/site-packages/solweig_light/_native_dispatch/build_native.py",
+    "installed_generation_dir": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-892/n8_23_installed0/work/nativewheelenv/lib/python3.12/site-packages/solweig_light/backends/native_generated/lw-g8-390acd5f57df1fe7",
+    "method": "attempt_load() probe in the native-wheel venv, minimal no-backend env, cwd outside the repo",
+    "repo_sys_path_entries": [],
+    "status": "passed",
+    "wheel_sha256_run_scoped": "9b1901a877f4a86c721492fceb88490cf3bd6913a92b404f658ec8e34a75dcac"
+  },
+  "native_wheel": {
+    "build_method": "pip wheel <worktree> --no-deps --no-build-isolation with SOLWEIG_LIGHT_PACKAGE_NATIVE=<staged generation dir>; the setup.py shim verifies + stages byte-identically and post-verifies the wheel (wheel_tags)",
+    "name": "solweig_light-0.1.0.dev0-cp312-cp312-macosx_26_0_arm64.whl",
+    "path": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-892/n8_23_installed0/work/native_dist/solweig_light-0.1.0.dev0-cp312-cp312-macosx_26_0_arm64.whl",
+    "request_env": "SOLWEIG_LIGHT_PACKAGE_NATIVE",
+    "sha256": "9b1901a877f4a86c721492fceb88490cf3bd6913a92b404f658ec8e34a75dcac",
+    "staged_generation": "lw-g8-390acd5f57df1fe7"
+  },
+  "native_wheel_candidate_identity": {
+    "artifact_tag": "g8",
+    "build_mode": "native-release",
+    "dylib": {
+      "bytes": 50792,
+      "path": "liblw_native_g8.dylib",
+      "sha256": "7e48f05ade11eef6959bcc33769fb2fc8fcb91b7882c2c3471db78b310b8e9a6"
+    },
+    "generation": "lw-g8-390acd5f57df1fe7",
+    "generation_dir": "/Users/alansynn/Workspace/solweig-v8-native/experiments/optimization_v8/native/stage/lw-g8-390acd5f57df1fe7",
+    "install_name": {
+      "form": "bare-basename",
+      "install_name": "liblw_native_g8.dylib",
+      "link_deps": [
+        "/usr/lib/libSystem.B.dylib"
+      ]
+    },
+    "kernel": {
+      "name": "lw_primary_aosoa.ispc",
+      "sha256": "b3fffd1d7439ad27ddde6f4355faa433bcdff436ac328983f02a6694d545f00c",
+      "source_ref": "src/solweig_light/backends/native/lw_primary_aosoa.ispc"
+    },
+    "linked_image_scan": {
+      "fma_hits": 0,
+      "instruction_lines": 8032,
+      "passed": true,
+      "positive_control": {
+        "match_count": 1,
+        "mnemonic": "fmadd",
+        "passed": true
+      }
+    },
+    "manifest_sha256": "80ff5339971b86d0717804781deeac22f7c9b320a402094599ebdafeb29bd249"
+  },
+  "native_wheel_gate": {
+    "dylib_sha256": "7e48f05ade11eef6959bcc33769fb2fc8fcb91b7882c2c3471db78b310b8e9a6",
+    "generation": "lw-g8-390acd5f57df1fe7",
+    "install_name": {
+      "form": "bare-basename",
+      "install_name": "liblw_native_g8.dylib",
+      "link_deps": [
+        "/usr/lib/libSystem.B.dylib"
+      ]
+    },
+    "kernel_sha256": "b3fffd1d7439ad27ddde6f4355faa433bcdff436ac328983f02a6694d545f00c",
+    "linked_image_scan": {
+      "fma_hits": 0,
+      "instruction_lines": 8032,
+      "passed": true,
+      "positive_control": {
+        "match_count": 1,
+        "mnemonic": "fmadd",
+        "passed": true
+      }
+    },
+    "manifest_sha256": "80ff5339971b86d0717804781deeac22f7c9b320a402094599ebdafeb29bd249",
+    "status": "passed",
+    "wheel": "solweig_light-0.1.0.dev0-cp312-cp312-macosx_26_0_arm64.whl",
+    "wheel_sha256_run_scoped": "9b1901a877f4a86c721492fceb88490cf3bd6913a92b404f658ec8e34a75dcac"
+  },
+  "native_wheel_venv": {
+    "path": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-892/n8_23_installed0/work/nativewheelenv",
+    "pip_check": "No broken requirements found.",
+    "python": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-892/n8_23_installed0/work/nativewheelenv/bin/python",
+    "site_packages": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-892/n8_23_installed0/work/nativewheelenv/lib/python3.12/site-packages"
+  },
   "registry_gate": {
     "byte_identical_to": "/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/_native_dispatch/qualification_registry.json",
-    "installed_registry_path": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-863/n8_23_installed0/work/wheelenv/lib/python3.12/site-packages/solweig_light/_native_dispatch/qualification_registry.json",
+    "installed_registry_path": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-892/n8_23_installed0/work/wheelenv/lib/python3.12/site-packages/solweig_light/_native_dispatch/qualification_registry.json",
     "resolution": {
       "mode": "auto-legacy",
       "reason": "[absent] no qualification records in the registry (shipped state: every non-legacy row disabled; auto resolves to legacy A)",
@@ -233,7 +237,7 @@
     },
     "status": "passed",
     "wheel_member": "solweig_light/_native_dispatch/qualification_registry.json",
-    "wheel_sha256_run_scoped": "2976f2ca8bc376d3add6e0b2fb69405785812c6ab7fa8c265aa682e343efdf5e"
+    "wheel_sha256_run_scoped": "aeb8ae51808e61d7d6e589249978e3b8d1f63412981ccd4130ed1be74d1c0f78"
   },
   "source_venv": {
     "install_log_compiler_activity": {
@@ -241,14 +245,14 @@
       "mentions_ispc": false
     },
     "install_method": "pip install <worktree> --no-index --no-cache-dir --no-build-isolation --find-links <wheelhouse>; PATH stripped of ISPC/Homebrew tools",
-    "path": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-863/n8_23_installed0/work/sourceenv",
+    "path": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-892/n8_23_installed0/work/sourceenv",
     "pip_check": "No broken requirements found.",
-    "python": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-863/n8_23_installed0/work/sourceenv/bin/python",
-    "site_packages": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-863/n8_23_installed0/work/sourceenv/lib/python3.12/site-packages"
+    "python": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-892/n8_23_installed0/work/sourceenv/bin/python",
+    "site_packages": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-892/n8_23_installed0/work/sourceenv/lib/python3.12/site-packages"
   },
   "surface_gate": {
     "candidate_evidence_class": "runtime_introspection",
-    "candidate_package_path": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-863/n8_23_installed0/work/wheelenv/lib/python3.12/site-packages/solweig_light/__init__.py",
+    "candidate_package_path": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-892/n8_23_installed0/work/wheelenv/lib/python3.12/site-packages/solweig_light/__init__.py",
     "failures": [],
     "method": "dx_snapshot.capture_runtime_surface_subprocess (SOLWEIG_DX_PACKAGE_ORIGIN=subprocess:<python>)",
     "skip_paths": [
@@ -256,26 +260,26 @@
     ],
     "status": "passed",
     "unexpected_divergences": {},
-    "wheel_sha256_run_scoped": "2976f2ca8bc376d3add6e0b2fb69405785812c6ab7fa8c265aa682e343efdf5e"
+    "wheel_sha256_run_scoped": "aeb8ae51808e61d7d6e589249978e3b8d1f63412981ccd4130ed1be74d1c0f78"
   },
   "task": "N8-23",
   "wheel": {
     "build_method": "pip wheel <worktree> --no-deps --no-build-isolation in a fresh uv venv seeded with setuptools setuptools-82.0.1-py3-none-any.whl; no network, no ISPC, pyproject.toml untouched",
     "built_from": "/Users/alansynn/Workspace/solweig-v8-native",
     "name": "solweig_light-0.1.0.dev0-py3-none-any.whl",
-    "path": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-863/n8_23_installed0/work/dist/solweig_light-0.1.0.dev0-py3-none-any.whl",
-    "sha256": "2976f2ca8bc376d3add6e0b2fb69405785812c6ab7fa8c265aa682e343efdf5e",
+    "path": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-892/n8_23_installed0/work/dist/solweig_light-0.1.0.dev0-py3-none-any.whl",
+    "sha256": "aeb8ae51808e61d7d6e589249978e3b8d1f63412981ccd4130ed1be74d1c0f78",
     "sha256_note": "per-build value: zip member timestamps are not normalized by pip; content is reproducible from the recorded tree, the digest is run-scoped"
   },
   "wheel_venv": {
-    "console_script": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-863/n8_23_installed0/work/wheelenv/bin/solweig-light",
-    "path": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-863/n8_23_installed0/work/wheelenv",
+    "console_script": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-892/n8_23_installed0/work/wheelenv/bin/solweig-light",
+    "path": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-892/n8_23_installed0/work/wheelenv",
     "pip_check": "No broken requirements found.",
-    "python": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-863/n8_23_installed0/work/wheelenv/bin/python",
-    "site_packages": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-863/n8_23_installed0/work/wheelenv/lib/python3.12/site-packages"
+    "python": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-892/n8_23_installed0/work/wheelenv/bin/python",
+    "site_packages": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-892/n8_23_installed0/work/wheelenv/lib/python3.12/site-packages"
   },
   "wheelhouse": {
-    "dir": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-863/n8_23_installed1/wheelhouse",
+    "dir": "/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-892/n8_23_installed1/wheelhouse",
     "method": "unpacked uv-cache archives (~/.cache/uv/archive-v0) re-zipped under the original wheel filename; RECORD contents identical",
     "setuptools_seed": "setuptools-82.0.1-py3-none-any.whl",
     "sha256": {

@@ -388,6 +388,7 @@ def installed_cli_run(work_dir, wheel_venv):
         record["status"] = "failed"
     record["output_files"] = sorted(p.name for p in (scene / "output_folder" / "0_0").glob("*")) \
         if (scene / "output_folder" / "0_0").is_dir() else []
+    record["scene"] = str(scene)
     GATE_RECORD["cli_gate"] = record
     return record
 
