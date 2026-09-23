@@ -1,0 +1,145 @@
+{
+  "schema": "sw8-n841-install-assets-draft-v1",
+  "task": "N8-41 (n841-3 install_assets)",
+  "title": "Wheels carry the qualification registry; promotion_gate wheel story resolved as maintainer-tree-only",
+  "created_utc": "2026-09-22T21:50:00Z",
+  "author": "n8-41-assets (implementation worker; NO commits made -- integrator reviews and commits)",
+  "worktree": "/Users/alansynn/Workspace/solweig-v8-native",
+  "branch": "perf/native-optimization",
+  "base_head": "194cb973 (N8-41 vendoring)",
+  "closes": [
+    "n8_41_pre_wiring_notes.json item n841-3 (wheel package-data side; the native-generation/@rpath globs stay with the later native-wheel step, see 'out_of_scope_here')",
+    "vendoring draft D4 note: in-wheel policy failed closed to row A ACCIDENTALLY (missing registry file); now DESIGNED (shipped-empty registry packaged)",
+    "vendoring draft 'not_vendored'/promotion_gate 'proper_fix' pointer (disposition recorded below; no code moved)"
+  ],
+  "behavior_contract": {
+    "repo_state": "UNCHANGED: DEFAULT_REGISTRY_PATH already resolves the vendored sibling copy; auto resolves row A '[absent] no qualification records' exactly as at 194cb973 (policy suite green, no src selection code touched)",
+    "installed_state": "CHANGED BY DESIGN, same outcome: before, the wheel had NO registry -> load_registry raised OSError -> '[malformed] ... unreadable/invalid JSON (FileNotFoundError...)' -> row A (accidental fail-closed). After: the wheel ships the byte-identical EMPTY registry -> '[absent] no qualification records in the registry (shipped state: ...)' -> row A (designed fail-closed, empty records not missing file)",
+    "row_outcome": "row A / 'auto-legacy' / expert=False / record=None in BOTH states, before and after -- no selection flip anywhere",
+    "byte_identity_rule": "src/solweig_light/_native_dispatch/qualification_registry.json remains the single source; pyproject only teaches setuptools to SHIP it; no content duplicated"
+  },
+  "module_map": {
+    "pyproject.toml": "[tool.setuptools.package-data] solweig_light list: added one glob '_native_dispatch/*.json' (one-line, reversible; ships the registry JSON and nothing else -- the glob can only ever match the registry file in the package dir; will also cover future same-dir JSON if any is ever added)",
+    "src/solweig_light/_native_dispatch/__init__.py": "DOCSTRING-ONLY addition (new 'Wheel content (n841-3 install_assets)' paragraph after 'Repo anchors'): records that the shipped EMPTY registry travels as package data (designed '[absent]' fail-closed, not the missing-file '[malformed]' accident) and that promotion_gate is deliberately maintainer-tree-only. No code, no semantics, no exports touched.",
+    "tests/optimization_v8/installed/test_installed_wheel_gates.py": "+2 tests (+72 lines) after test_surface_gate_recorded, under an n841-3 banner comment: test_wheel_ships_the_empty_qualification_registry (wheel member present + byte-identical to the package source copy + records==[]) and test_installed_selector_resolves_row_a_from_shipped_empty_registry (executed probe in the wheel venv; asserts row A / auto-legacy / non-expert / record None, installed DEFAULT_REGISTRY_PATH under site-packages, reason '[absent] no qualification records...', and the '[malformed]'/'unreadable/invalid' accident path BANNED; records additive GATE_RECORD['registry_gate']). Reuses the file's existing imports (zipfile/json/GATE_RECORD/REPO_ROOT/_run); no conftest imports, no new helpers module."
+  },
+  "promotion_gate_disposition": {
+    "decision": "The wheel needs NO promotion_gate content. Nothing vendored, nothing copied, no code added.",
+    "why": "Promotion gating is a qualification-time activity that runs in a maintainer/repo checkout (transcription N8-31/N8-32/44 -> review -> record), never at user runtime. The in-wheel resolve-time re-verification is unreachable in every shipped-state resolve: with the shipped-empty registry the auto path returns at the '[absent]' branch BEFORE any record validation, and the expert path never consults records.",
+    "precise_installed_mechanics": "CORRECTION to the vendoring draft's 'fail loud (FileNotFoundError on import)' wording: _assess_promotion inserts REPO_ROOT/'optimization_v8_native_default'/'tools' on sys.path (inserting a nonexistent dir does not raise) and 'import promotion_gate' sits OUTSIDE the defensive try/except (only promotion_gate.assess is inside), so in an installed tree the missing tool surfaces as ModuleNotFoundError propagating out of resolve_lw_backend -- loud, never a mis-qualification (B/C can never activate through it). Reachability requires a registry record that already passed shape/host/artifact-identity AND a repo-contained promotion_record file with matching sha -- i.e. a maintainer-crafted record in a non-repo tree; not reachable in shipped state.",
+    "guard_property_for_future_work": "If the wheel story is ever revisited (e.g. vendoring the pure tool), the invariant to keep is: a missing tool must never let a record qualify, and the shipped-empty registry must keep the whole path out of shipped-state resolves.",
+    "docstring_record": "The disposition is written into the package __init__.py docstring (see module_map), the designated lightweight vehicle; PROMOTION_POLICY.md and all promotion tooling untouched."
+  },
+  "out_of_scope_here": [
+    "n841-3's native-generation package-data globs + @rpath install-name handling + wheel_tags reuse: selection-independent but only exercisable once a native artifact is actually packaged (needs the N8-32 selection outcome / native wheel step). The one glob added here covers the registry only.",
+    "n841-1 (build-driver packaged resolution) and n841-4 (installed tests vs a REAL native wheel): untouched; the shipped wheel remains the declared SOURCE/NO-NATIVE fallback pure wheel (Root-Is-Purelib: true asserted green in this run).",
+    "no expert-route flip anywhere: env=native|ispc still serves the legacy B7-32 dev-build route; tests/optimization_v8/integration/test_lw_dispatch.py::test_explicit_expert_env_stays_with_legacy_route passed untouched in this run's integration segment."
+  ],
+  "probe_transcript": {
+    "method": "executed twice: (a) in-suite by test_installed_selector_resolves_row_a_from_shipped_empty_registry against the session's wheel venv (recorded as GATE_RECORD['registry_gate'] in evidence/installed/installed_gates.json), (b) standalone below against the same clean wheel venv (fresh uv venv OUTSIDE the repo, wheel + pinned closure installed by the suite)",
+    "standalone_probe_stdout": {
+      "row": "A",
+      "mode": "auto-legacy",
+      "expert": false,
+      "record": null,
+      "registry": "<wheelenv>/lib/python3.12/site-packages/solweig_light/_native_dispatch/qualification_registry.json",
+      "exists": true,
+      "reason": "[absent] no qualification records in the registry (shipped state: every non-legacy row disabled; auto resolves to legacy A)"
+    },
+    "byte_identity_sha256": "3d3911daa17813477e2f39aa495db937858234de6921a285a47cf1343504ffab -- IDENTICAL for the installed wheel copy and src/solweig_light/_native_dispatch/qualification_registry.json (also matches the sha the vendoring integrator recorded for the vendored copy: one and the same content end to end)",
+    "verdict": "acceptance criterion met: installed selector resolves row A with the reason naming the registry's EMPTY RECORDS, and the missing-file '[malformed] unreadable/invalid' path is asserted BANNED"
+  },
+  "suites": {
+    "order_respected": true,
+    "a_policy": {
+      "path": "tests/optimization_v8/policy/",
+      "result": "88 passed (1.64s)"
+    },
+    "b_artifacts_packaging": {
+      "path": "tests/optimization_v8/artifacts/ tests/optimization_v8/packaging/",
+      "result": "92 passed (5.76s)"
+    },
+    "c_installed_incl_wheel_gate": {
+      "path": "tests/optimization_v8/installed/",
+      "result": "13 passed / 6 skipped (154.52s) -- baseline 11 passed + the 2 new tests; skip decomposition IDENTICAL to baseline: 4 x unconditional deferred gates (test_deferred_gates.py) + 2 x [host-memory-pressure] (test_installed_noenv_gates.py:77,133); the wheel-gate file went 7 -> 9 tests, incl. the acceptance probe (ladder items 3 and 6 in one run)"
+    },
+    "d_integration_dx": {
+      "path": "tests/optimization_v8/integration/ tests/optimization_v8/dx/",
+      "result": "16 passed (2.74s)"
+    },
+    "e_full_tree": {
+      "path": "tests/optimization_v8/",
+      "result": "1967 passed / 6 skipped / 0 failed in 200.94s, ONE invocation = baseline 1965 + exactly the 2 new tests; same 6-skip decomposition (4 deferred + 2 memory-gated)"
+    },
+    "f_machinery_warning_attribution": {
+      "path": "tests/optimization_v8/{layout,loader,native,numba,region,reference}/",
+      "result": "1758 passed / 4 warnings (39.87s) -- the 4 warnings are PRE-EXISTING and unrelated to this diff: RuntimeWarning 'invalid value encountered in cast' (native/test_aosoa_native_admission.py:72, test_sh_bad_dtype) and DeprecationWarning 'use of fork() may lead to deadlocks' (region/test_region_fork_policy.py:53, test_fork_poisons_and_child_reprepares); none of the touched-file segments (policy/artifacts/packaging/installed/integration/dx) emitted any warning standalone"
+    },
+    "reconciliation": "88 + 92 + 13 + 16 + 1758 = 1967 passed; all 6 skips live in installed/ -- full tree fully accounted for"
+  },
+  "evidence_side_effects": {
+    "installed_gates_json": "REWRITTEN BY THE SUITE, not hand-edited: tests/optimization_v8/installed/conftest.py pytest_sessionfinish writes GATE_RECORD to evidence/installed/installed_gates.json at every installed-suite session end (documented in its docstring; same thing happened during the vendoring run, accepted as 'honest re-record'). Verified against HEAD: gate outcomes UNCHANGED (api_gate and cli_gate both still blocked:host-memory-pressure with identical admission character, surface_gate passed, deferred list byte-identical), new run-scoped wheel sha256 (documented non-normalized zip timestamps) and tmp paths, plus ONE ADDITIVE section: registry_gate. No gate redefinition, no threshold change; the historical record's story is intact.",
+    "dx_baseline": "NOT touched. dx_snapshot records pyproject package-data into source-surface captures (distribution.package_data), but _asserted_leaves() never asserts it, so both dx gates are insensitive to the glob (verified green in this run). Known cosmetic staleness: evidence/dx_baseline/branch_surface.json (milestone-frozen at 16cdc56c, already one milestone behind HEAD anyway) now lists the pre-n841-3 package_data; it should pick the new glob up at the next milestone re-freeze, like the vendoring's own src-side changes did not."
+  },
+  "guardrail_audit": {
+    "shipped_state_row_a": "HELD both states (see behavior_contract; probe + test_auto_resolves_to_legacy_a_today + shipped-registry integration test green)",
+    "no_expert_route_flip": "HELD (env=native|ispc legacy route untouched; parity test green, untouched file)",
+    "untouched_files": "src/solweig_light/pipeline.py, src/solweig_light/radiation/cylinder_longwave.py, all vendored machinery semantics (only a docstring paragraph added to the package __init__), PROMOTION_POLICY.md, evidence/trials, evidence/selection: NONE modified (git status: 3 intended files + the suite-written installed_gates.json only)",
+    "pyproject_minimal_reversible": "one glob appended to one list",
+    "conftest_hygiene": "no new imports of conftest anywhere; the new tests reuse the uniquely-named installed_test_helpers already imported by the file",
+    "load_discipline": "loadavg checked before every test run; never below 3.46 (see load_discipline_events); nothing timed run"
+  },
+  "load_discipline_events": [
+    {
+      "utc_local": "21:27",
+      "loadavg_1m": 3.46,
+      "action": "start; read-only phase"
+    },
+    {
+      "utc_local": "21:36",
+      "loadavg_1m": 4.92,
+      "action": "policy suite: 88 passed"
+    },
+    {
+      "utc_local": "21:36",
+      "loadavg_1m": 4.94,
+      "action": "artifacts+packaging: 92 passed"
+    },
+    {
+      "utc_local": "21:36",
+      "loadavg_1m": 5.59,
+      "action": "installed suite: 13 passed / 6 skipped (154.52s)"
+    },
+    {
+      "utc_local": "21:40",
+      "loadavg_1m": 15.7,
+      "action": "integration+dx: 16 passed"
+    },
+    {
+      "utc_local": "21:40",
+      "loadavg_1m": 14.36,
+      "action": "full tree: 1967/6/0 (200.94s)"
+    },
+    {
+      "utc_local": "21:45",
+      "loadavg_1m": 5.39,
+      "action": "machinery dirs (warning attribution): 1758 passed / 4 pre-existing warnings"
+    }
+  ],
+  "deviations": [],
+  "integrator_notes": "Author, not reviewer. Nothing committed. Review focus suggestions: (1) the docstring paragraph's claim that '[absent]' is now the installed path (probe-proven); (2) installed_gates.json diff is honest re-record + additive registry_gate only (diff-verified against HEAD in evidence_side_effects); (3) the promotion_gate ModuleNotFoundError-outside-try mechanics correction vs the vendoring draft's 'FileNotFoundError' wording -- behavior unchanged, wording corrected only in this draft; (4) branch_surface.json cosmetic package_data staleness accepted per dx_baseline milestone convention.",
+  "review": {
+    "reviewer": "n8-rev-n8-41 (independent of n8-41-assets; continuity from the vendoring review)",
+    "verdict": "APPROVE-WITH-NOTES",
+    "records": [
+      "optimization_v8_native_default/evidence/reviews/n8_30_review_n8_41_install_assets.json",
+      "optimization_v8_native_default/evidence/reviews/n8_30_review_n8_41_install_assets.md"
+    ],
+    "claims": "8/8 PASS with executed evidence; full tree independently reproduced 1967 passed / 6 skipped / 0 failed (200.87s); integration+dx 16 passed; promotion disposition verified at code level (single _assess_promotion call site, auto returns at '[absent]' before record validation, ModuleNotFoundError propagates outside the defensive try)",
+    "notes_disposition": {
+      "N1": "glob non-recursive noted -- future subpackage JSON needs its own entry; acceptable for the registry-only scope",
+      "N4": "committed gates file reflects the COORDINATOR's rerun (not the author's pytest-858); commit message attributes accordingly",
+      "N5": "membership-test non-vacuity is structural (no MANIFEST.in / include-package-data / SCM plugin) plus the D4-era accident record, not a re-executed pre-diff build -- accepted"
+    }
+  }
+}

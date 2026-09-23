@@ -37,6 +37,21 @@ the vendored modules until the wheel-assembly work (n841-1/n841-3,
 ``installed_loader`` and ``lw_native_aosoa``) and the N8-13 staged
 generation directory (``lw_native_aosoa._DEFAULT_STAGE``). See
 ``experiments_dir`` below.
+
+Wheel content (n841-3 install_assets): the shipped EMPTY qualification
+registry (``qualification_registry.json`` next to ``lw_default_policy``)
+ships as package data, so an installed selector resolves row A from empty
+records BY DESIGN (the ``[absent]`` fail-closed path, never the
+missing-file ``[malformed]`` accident of an unpackaged registry). The
+promotion gate tool (``optimization_v8_native_default/tools/
+promotion_gate.py``) deliberately stays maintainer-tree and ships in no
+wheel: promotion gating is a qualification-time activity in a repo
+checkout, never a user-runtime one. With the shipped-empty registry the
+auto path returns before any record validation, so the resolve-time
+promotion-gate re-verification (``lw_default_policy._assess_promotion``,
+which resolves the tool repo-relatively and fails loudly -- never
+mis-qualifying -- where the maintainer tree is absent) is unreachable in
+every shipped-state resolve.
 """
 from pathlib import Path
 
