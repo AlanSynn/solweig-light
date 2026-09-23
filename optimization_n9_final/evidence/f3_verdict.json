@@ -1,4 +1,56 @@
 {
+ "amendment_2": {
+  "authority": "host owner, recorded PRE-RESULT in f0_protocol_freeze.md Amendment 2 + supplement (~13:2xZ 2026-09-23, before any F3 timing existed); the final opportunity was launched under it",
+  "censor": {
+   "amendment2_reading_1p6x_start": 5.459,
+   "applied_abs": 8.0,
+   "censored_under_either_bound": 0,
+   "max_observed_per_rep_1m": 2.7
+  },
+  "launch": {
+   "actual_start_loadavg_1m": 3.4116,
+   "actual_start_loadavg_5m": 7.3794,
+   "compliant": true,
+   "note": "launched at the first window meeting the STRICTER frozen 1-min < 5.0 bound (harness gate), therefore also compliant with Amendment 2 < 10.0; no settle time was hunted beyond the frozen post-JIT 65 s quiesce. 5-min sanity VIEW recorded at all three checkpoints (7.38 start / 6.40 pre-timing / end snapshot); the frozen numeric gate is defined on the 1-min value only.",
+   "pages_available": 411375,
+   "required": "1-min loadavg < 10.0 AND available >= 92,000 pages (5-min view annotated, memory and censor rules unchanged)"
+  },
+  "marginality": {
+   "binding_failures": {
+    "mixed_B4_over_C4": {
+     "median_of_times_ratio": 0.9591,
+     "pairs_below_1p0": 5,
+     "per_pair_median_ratio": 0.9696
+    },
+    "note": "these are the cells that decide gate 2; raw is direction-consistent 9/9 for BOTH controls, so no reading of the spread makes C qualify",
+    "raw": {
+     "A8_over_C4_all_9_pairs_below_1p0": true,
+     "B4_over_C4_all_9_pairs_below_1p0": true,
+     "max_pair_B4_over_C4": 0.9741
+    }
+   },
+   "effect_on_terminal_label": "none: MARGINAL attaches only to the two PASS claims (guarding the binary-cell headline); gate 2 fails on mixed and raw regardless, so NATIVE_LOSS stands",
+   "gate1_geomean_pass": {
+    "label": "MARGINAL",
+    "margin_vs_1p10": 0.2163,
+    "per_rep_geomean_min": 1.0945,
+    "per_rep_geomean_spread": 0.4879,
+    "value": 1.3163,
+    "within_2x_spread": true
+   },
+   "gate2_binary_cell_pass": {
+    "label": "MARGINAL",
+    "margin_vs_1p05_median_of_times": 0.0019,
+    "median_of_times_ratio": 1.0519,
+    "pairs_where_C4_won": 1,
+    "per_pair_median_ratio": 1.1298,
+    "per_pair_spread": 0.5436,
+    "within_2x_spread": true
+   },
+   "rule": "gate margin within 2x the observed spread -> label MARGINAL, not a clear pass"
+  },
+  "verdict_basis": "per-pair RATIOS (confirmed): medians of paired ratios reported here alongside the median-of-times ratios used in the frozen gate math"
+ },
  "cells": {
   "B=1024 all-binary": {
    "median_ms": {
@@ -85,7 +137,8 @@
   "C ~ B everywhere (geomean B4/C4 0.999): the native leaf adds no measurable advantage over the Numba AoSoA consumer at matched budget - the shared stream preparation dominates the composed time.",
   "Even on the winning binary cell, B4 (2.451 ms) is within noise of C4 (2.330 ms) and B1 (2.323 ms): any stream win is a NUMBA-stream win, not a native win.",
   "H=4 vs H=1 deltas are small and cannot help: one block per frozen cell means max_in_flight=1 by construction (structural, recorded in region reports).",
-  "Candidate-source default-path overhead (selector consult per routed call) measured at +2.05% on the protected check - within the frozen 3% bound."
+  "Candidate-source default-path overhead (selector consult per routed call) measured at +2.05% on the protected check - within the frozen 3% bound.",
+  "Amendment 2 marginality labels: the only PASS claims in this verdict (gate-1 geomean 1.316; gate-2 binary cell 1.052) are both MARGINAL by the frozen within-2x-spread rule; the verdict rests on the gate-2 failures (mixed 5/9 pairs below 1.0; raw 9/9 pairs below 1.0 for both controls), which are unaffected."
  ],
  "gates": {
   "gate1_ge_1_10": true,

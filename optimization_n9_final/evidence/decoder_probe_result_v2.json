@@ -1,0 +1,332 @@
+{
+  "scope": "isolated single-thread decoder microexperiment, NOT SOLWEIG/native/default promotion evidence",
+  "source_basis": "7abe526aae2f97e689b1a1e4ae183e5370f29aa1 direct_aosoa.py computation; manually transcribed core; no package import",
+  "environment": {
+    "python": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+    "machine": "x86_64",
+    "platform": "Linux-6.18.44-x86_64-with-glibc2.41",
+    "numpy": "2.3.5",
+    "numba": "0.65.1"
+  },
+  "limitations": [
+    "not target M1",
+    "synthetic small buffers",
+    "single local process",
+    "wrapper, mmap, integration, multi-thread and IO excluded",
+    "source excerpt not full package"
+  ],
+  "exactness": {
+    "shape_start_width_cases": 64,
+    "independently_expected_uint32_values": 57984,
+    "reserved_error_checks": 15
+  },
+  "timings": [
+    {
+      "mode_mix": "binary",
+      "pixels": 128,
+      "patches": 153,
+      "width": 8,
+      "generic_median_ms": 0.20094,
+      "literal_median_ms": 0.10108639999999999,
+      "ratio_generic_over_literal": 1.987804491998924,
+      "literal_raw_preserved_median_ms": 0.115087,
+      "ratio_generic_over_raw_preserved": 1.7459834733723185,
+      "raw_ms": {
+        "generic": [
+          0.20094,
+          0.19616160000000002,
+          0.1938756,
+          0.2557178,
+          0.19042379999999998,
+          0.2552976,
+          0.2068192,
+          0.2011268,
+          0.1922034
+        ],
+        "literal_modes": [
+          0.097749,
+          0.10108639999999999,
+          0.092906,
+          0.0981374,
+          0.1330448,
+          0.10839560000000001,
+          0.1195768,
+          0.09045339999999999,
+          0.1021324
+        ],
+        "literal_raw_preserved": [
+          0.1151744,
+          0.11589,
+          0.115087,
+          0.120077,
+          0.1408,
+          0.1016434,
+          0.1127142,
+          0.109233,
+          0.1113614
+        ]
+      }
+    },
+    {
+      "mode_mix": "binary",
+      "pixels": 1024,
+      "patches": 153,
+      "width": 8,
+      "generic_median_ms": 1.6781073999999998,
+      "literal_median_ms": 1.00082,
+      "ratio_generic_over_literal": 1.676732479366919,
+      "literal_raw_preserved_median_ms": 1.0271506,
+      "ratio_generic_over_raw_preserved": 1.6337501044150682,
+      "raw_ms": {
+        "generic": [
+          1.746606,
+          1.6757358,
+          1.585599,
+          1.5863281999999999,
+          1.5720592,
+          1.682553,
+          1.7237392,
+          1.6781073999999998,
+          2.0689928
+        ],
+        "literal_modes": [
+          1.1270642,
+          0.981648,
+          1.007678,
+          0.9525296,
+          0.9620955999999999,
+          1.1818554,
+          0.939646,
+          1.1421108,
+          1.00082
+        ],
+        "literal_raw_preserved": [
+          1.1162902,
+          0.980711,
+          1.0158356,
+          0.9643341999999999,
+          1.1244098,
+          1.0731098000000001,
+          0.987941,
+          1.5356914,
+          1.0271506
+        ]
+      }
+    },
+    {
+      "mode_mix": "mixed",
+      "pixels": 128,
+      "patches": 153,
+      "width": 8,
+      "generic_median_ms": 0.217553,
+      "literal_median_ms": 0.1200148,
+      "ratio_generic_over_literal": 1.812718098101234,
+      "literal_raw_preserved_median_ms": 0.134857,
+      "ratio_generic_over_raw_preserved": 1.6132125139963072,
+      "raw_ms": {
+        "generic": [
+          0.2444182,
+          0.2333886,
+          0.19792420000000002,
+          0.1787896,
+          0.1779818,
+          0.21001620000000001,
+          0.2235726,
+          0.274534,
+          0.217553
+        ],
+        "literal_modes": [
+          0.11823260000000001,
+          0.1199924,
+          0.1200148,
+          0.1240362,
+          0.15983,
+          0.1328596,
+          0.1876006,
+          0.11086960000000001,
+          0.09995739999999999
+        ],
+        "literal_raw_preserved": [
+          0.1626932,
+          0.1092476,
+          0.1728966,
+          0.1562746,
+          0.15891539999999998,
+          0.1198438,
+          0.1238598,
+          0.134857,
+          0.1254178
+        ]
+      }
+    },
+    {
+      "mode_mix": "mixed",
+      "pixels": 1024,
+      "patches": 153,
+      "width": 8,
+      "generic_median_ms": 1.4947101999999999,
+      "literal_median_ms": 1.050589,
+      "ratio_generic_over_literal": 1.422735436978685,
+      "literal_raw_preserved_median_ms": 1.0962486,
+      "ratio_generic_over_raw_preserved": 1.3634774083177847,
+      "raw_ms": {
+        "generic": [
+          1.488528,
+          1.5696991999999999,
+          1.4947101999999999,
+          1.5124004,
+          1.4617906,
+          1.6671972,
+          1.6922773999999998,
+          1.4873966,
+          1.4769828
+        ],
+        "literal_modes": [
+          1.2424828,
+          1.050589,
+          1.5535231999999999,
+          1.1596238,
+          1.0148244,
+          1.0408054,
+          1.4284462,
+          1.0072752,
+          1.0304632
+        ],
+        "literal_raw_preserved": [
+          1.1776898,
+          1.0892328,
+          1.41941,
+          1.0492628,
+          1.225426,
+          1.0193918,
+          1.3251566000000001,
+          1.0962486,
+          1.0276064
+        ]
+      }
+    },
+    {
+      "mode_mix": "raw",
+      "pixels": 128,
+      "patches": 153,
+      "width": 8,
+      "generic_median_ms": 0.066095,
+      "literal_median_ms": 0.06668160000000001,
+      "ratio_generic_over_literal": 0.9912029705346002,
+      "literal_raw_preserved_median_ms": 0.0696492,
+      "ratio_generic_over_raw_preserved": 0.9489699809904494,
+      "raw_ms": {
+        "generic": [
+          0.066095,
+          0.0671204,
+          0.06589460000000001,
+          0.066026,
+          0.0710042,
+          0.0658478,
+          0.0692714,
+          0.06569280000000001,
+          0.0693328
+        ],
+        "literal_modes": [
+          0.0706622,
+          0.0725334,
+          0.070415,
+          0.078808,
+          0.06667139999999999,
+          0.06664980000000001,
+          0.06668160000000001,
+          0.06664,
+          0.06661460000000001
+        ],
+        "literal_raw_preserved": [
+          0.0661892,
+          0.0918642,
+          0.0661422,
+          0.07458719999999999,
+          0.0662728,
+          0.070342,
+          0.0696492,
+          0.0700312,
+          0.0661346
+        ]
+      }
+    },
+    {
+      "mode_mix": "raw",
+      "pixels": 1024,
+      "patches": 153,
+      "width": 8,
+      "generic_median_ms": 0.5683428,
+      "literal_median_ms": 0.5761336,
+      "ratio_generic_over_literal": 0.9864774420377496,
+      "literal_raw_preserved_median_ms": 0.552299,
+      "ratio_generic_over_raw_preserved": 1.0290491201323921,
+      "raw_ms": {
+        "generic": [
+          0.5738574000000001,
+          0.629,
+          0.5367712,
+          0.5683428,
+          0.5521121999999999,
+          0.5964316,
+          0.5305278,
+          0.5817018,
+          0.5642081999999999
+        ],
+        "literal_modes": [
+          0.6405428000000001,
+          0.5401762,
+          0.6014181999999999,
+          0.5954976,
+          0.5441738,
+          0.5761336,
+          0.5685988000000001,
+          0.6220008,
+          0.535539
+        ],
+        "literal_raw_preserved": [
+          0.552299,
+          0.5975461999999999,
+          0.5501794,
+          0.556464,
+          0.5459004000000001,
+          0.6119168,
+          0.5818462,
+          0.5355451999999999,
+          0.5471625999999999
+        ]
+      }
+    }
+  ],
+  "assembly": {
+    "generic": {
+      "integer_divide_instruction_lines": [
+        "idivq\t%r13",
+        "divl\t%r13d",
+        "divb\t%r8b",
+        "idivq\t%r9",
+        "divl\t%r9d",
+        "divb\t%r8b",
+        "idivq\t%r10",
+        "divl\t%r10d"
+      ],
+      "signature": "(ListType(Array(uint8, 1, 'C', False, aligned=True)), Array(uint8, 1, 'C', False, aligned=True), int64, int64, int64, Array(uint32, 3, 'C', False, aligned=True), int64)"
+    },
+    "literal_modes": {
+      "integer_divide_instruction_lines": [
+        "idivq\t%r14",
+        "divl\t%ebp",
+        "divl\t%r14d"
+      ],
+      "signature": "(ListType(Array(uint8, 1, 'C', False, aligned=True)), Array(uint8, 1, 'C', False, aligned=True), int64, int64, int64, Array(uint32, 3, 'C', False, aligned=True), int64)"
+    },
+    "literal_raw_preserved": {
+      "integer_divide_instruction_lines": [
+        "idivq\t%r13",
+        "divl\t%ebp",
+        "divl\t%r13d"
+      ],
+      "signature": "(ListType(Array(uint8, 1, 'C', False, aligned=True)), Array(uint8, 1, 'C', False, aligned=True), int64, int64, int64, Array(uint32, 3, 'C', False, aligned=True), int64)"
+    }
+  }
+}
