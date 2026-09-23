@@ -64,6 +64,25 @@ against the working directory, as upstream. ERA5-based roughness/wind
 generation (`ERA_5_z0_find=True`, the default) additionally requires the ERA5
 forcing data described in [optional environment](docs/optional_environment.md).
 
+## Upstream usage guides apply
+
+The workflow, scene layout, meteorological file format and parameter
+semantics mirror upstream SOLWEIG-GPU, so its documentation and tutorials
+apply directly to `solweig_light`:
+
+- SOLWEIG-GPU documentation: <https://solweig-gpu.readthedocs.io>
+- SOLWEIG-GPU repository: <https://github.com/nvnsudharsan/solweig-gpu>
+- UMEP (met-file format and SOLWEIG model background):
+  <https://github.com/UMEP-dev/UMEP>
+- Papers: [SOLWEIG-GPU (JOSS 2026)](https://doi.org/10.21105/joss.09535) ·
+  [GLIDE-SOL (GMD 2026)](https://doi.org/10.5194/gmd-19-7389-2026) ·
+  [original SOLWEIG (Lindberg et al. 2008)](https://doi.org/10.1007/s00484-008-0162-7)
+
+Where this implementation behaves differently from upstream, the difference
+is recorded, not silent: see [model deviations](docs/model_deviations.md).
+For running under the legacy `solweig_gpu` import names, see
+[compatibility](docs/compatibility.md).
+
 ## Options
 
 `thermal_comfort` mirrors the upstream public interface. The commonly used
