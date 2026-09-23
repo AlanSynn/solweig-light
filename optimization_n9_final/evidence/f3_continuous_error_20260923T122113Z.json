@@ -1,0 +1,55 @@
+{
+ "arms": [
+  "A8",
+  "B4",
+  "B1",
+  "C4",
+  "C1"
+ ],
+ "cells": [
+  {
+   "B": 1024,
+   "mix": "all-binary"
+  },
+  {
+   "B": 1024,
+   "mix": "mix"
+  },
+  {
+   "B": 1024,
+   "mix": "all-raw"
+  },
+  {
+   "B": 128,
+   "mix": "all-binary"
+  },
+  {
+   "B": 128,
+   "mix": "mix"
+  },
+  {
+   "B": 128,
+   "mix": "all-raw"
+  }
+ ],
+ "env": {
+  "SOLWEIG_LIGHT_FUSED_RAD": null,
+  "SOLWEIG_LIGHT_LW_BACKEND": null,
+  "SOLWEIG_LIGHT_PATCH_CLASS_TABLES": null,
+  "native_cache": "/Users/alansynn/Workspace/solweig-v8-native/experiments/optimization_v8/native/stage",
+  "numba_cache_dir": "/Users/alansynn/Workspace/solweig-v8-native/.numba_cache/f3"
+ },
+ "fixture_error": "ImportError: cannot import name 'engine' from 'solweig_light' (/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/__init__.py)",
+ "host": {
+  "machine": "arm64",
+  "ncpu": 10,
+  "numba": "0.67.0",
+  "numba_threads": 4,
+  "tier_budget_N": 4,
+  "tier_note": "N8-02 tier-B configuration: threads=4, cpu_budget=4, workers=1"
+ },
+ "mode": "check-only (no timing)",
+ "protocol": "N9-CONT-v1",
+ "recorded_utc": "2026-09-23T12:21:12Z",
+ "reps": 9
+}
