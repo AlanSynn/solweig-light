@@ -355,7 +355,16 @@ def _longwave_fused_primary_block(shadow,vegetation,vegetation_building,start,st
 
 def define_patch_characteristics_primary(*args,block_pixels=128,parallel=True,**kwargs):
     """Primary-output driver: identical to the public driver minus the four
-    cardinal projection loops and the four cardinal output columns."""
+    cardinal projection loops and the four cardinal output columns.
+
+    ``parallel`` tri-state (N8-40b public seam): ``True`` is an explicit
+    parallel demand; ``False`` is an explicit serial demand -- the region
+    route gate stays shut and the serial kernels run, never dispatching;
+    ``None`` is no explicit demand (the public wrapper's H=1 value) --
+    serial kernels exactly as ``False``, but the single
+    ``_lw_region_route`` consult fires so a policy-qualified row can
+    dispatch (the region owner carries its own bounded threading).
+    """
     from . import engine as e
     from .patch_radiation import _reference, _block, _class_coefficients, _classes, _supported, patch_geometry
     reference=_reference('define_patch_characteristics')
@@ -384,7 +393,7 @@ def define_patch_characteristics_primary(*args,block_pixels=128,parallel=True,**
     factor=e._operate(np.subtract,1,ewall)[()]
     if block_pixels<1:raise ValueError('block_pixels must be positive')
     prepared=_class_coefficients(values['solar_altitude'],values['solar_azimuth'],geometry,values['asvf'],solar_gate) if rows*cols else None
-    if parallel and rows*cols:
+    if parallel is not False and rows*cols:
         routed=_lw_region_route(values,geometry,solar_gate,prepared,rows*cols,block_pixels,factor,sun_surface,shade_surface)
         if routed is not None:
             return tuple(field.reshape(rows,cols) for field in routed)
@@ -409,7 +418,8 @@ def Lcyl_v2022a_primary(*args,block_pixels=128,parallel=True,**kwargs):
     Returns ``(Ldown, Lside, NOT_REQUESTED, NOT_REQUESTED, NOT_REQUESTED,
     NOT_REQUESTED)``; the four cardinal diagnostic fields are omitted by
     contract. Guard failures fall back to the untouched serial reference in
-    the original order.
+    the original order. ``parallel`` follows the N8-40b tri-state contract
+    documented on ``define_patch_characteristics_primary``.
     """
     from . import engine as e
     from .patch_radiation import _reference, _model2, _supported, patch_geometry
@@ -450,11 +460,17 @@ def Lcyl_v2022a_by_demand(*args,block_pixels=128,parallel=True,**kwargs):
     ``FULL_DIAGNOSTICS`` (default) runs the untouched public full path.
     ``PIPELINE_CYLINDERS_ANISOTROPIC`` runs the primary-output reduction and
     reports the four cardinal fields as ``NOT_REQUESTED``.
+
+    ``parallel`` follows the N8-40b tri-state contract documented on
+    ``define_patch_characteristics_primary`` (``True``/``False`` explicit
+    demands, ``None`` the route-eligible no-demand); the full path is
+    entered with ``bool(parallel)`` so patch_radiation keeps its boolean
+    domain (``None`` and ``False`` both select its serial kernels).
     """
     from .patch_radiation import Lcyl_v2022a as full
     demand=current_demand()
     if demand is CylinderLongwaveDemand.FULL_DIAGNOSTICS:
-        return full(*args,block_pixels=block_pixels,parallel=parallel,**kwargs)
+        return full(*args,block_pixels=block_pixels,parallel=bool(parallel),**kwargs)
     if demand is CylinderLongwaveDemand.PIPELINE_CYLINDERS_ANISOTROPIC:
         return Lcyl_v2022a_primary(*args,block_pixels=block_pixels,parallel=parallel,**kwargs)
     raise ValueError(f'unsupported cylinder longwave demand: {demand!r}')
