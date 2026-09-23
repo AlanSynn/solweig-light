@@ -1,0 +1,159 @@
+{
+  "schema": "sw8-n841-candidate-wheel-draft-v1",
+  "task": "N8-41 (n8-41-wheel): installed binary wheel carries the STAGED native generation; installed-origin actuality proven",
+  "title": "Candidate native wheel: staged generation packaged byte-identically, both loud-gate directions encoded, installed loader loads the PACKAGED artifact with zero repo reach; shipped-state selection invariance held",
+  "created_utc": "2026-09-23T01:20:00Z",
+  "author": "n8-41-wheel (implementation worker; NO commits made -- integrator reviews and commits)",
+  "worktree": "/Users/alansynn/Workspace/solweig-v8-native",
+  "branch": "perf/native-optimization",
+  "base_head": "a19e22db",
+  "closes": [
+    "n841-3 (native half): package-data globs for packaged native generations + install-name/@rpath handling at the assembly gate + wheel_tags.py reuse (the registry glob from 3079d69a stays untouched)",
+    "n841-1 (adapted, see deviations D2): linked-image FMA scan of the FINAL linked artifact through the reviewed build_native.fma_audit regex, with a compiled on-host positive control, runs in the wheel-ASSEMBLY gate before anything is staged or shipped",
+    "n841-4 (adapted): the native-wheel installed gates are new origin-parametrized tests executed against a REAL native wheel venv (the n8-23-dx installed tests themselves untouched; the native-wheel deferral label in test_deferred_gates.py stays skipped -- it requires automatic SELECTION + counted native execution, i.e. N8-32/N8-50, not packaging)"
+  ],
+  "candidate_identity": {
+    "status": "SUBJECT TO N8-50 RE-FREEZE (recorded, not speculated; the LATEST staged generation at run time was used, resolved dynamically by the tests)",
+    "generation": "lw-g8-390acd5f57df1fe7",
+    "source": "experiments/optimization_v8/native/stage/lw-g8-390acd5f57df1fe7 (N8-13 lock output)",
+    "kernel": {"name": "lw_primary_aosoa.ispc", "sha256": "b3fffd1d7439ad27ddde6f4355faa433bcdff436ac328983f02a6694d545f00c"},
+    "dylib": {"path": "liblw_native_g8.dylib", "sha256": "7e48f05ade11eef6959bcc33769fb2fc8fcb91b7882c2c3471db78b310b8e9a6", "bytes": 50792},
+    "manifest_sha256": "80ff5339971b86d0717804781deeac22f7c9b320a402094599ebdafeb29bd249",
+    "build_mode": "native-release",
+    "install_name": {"value": "liblw_native_g8.dylib", "form": "bare-basename", "link_deps": ["/usr/lib/libSystem.B.dylib"]},
+    "linked_image_scan": {"instruction_lines": 8032, "fma_hits": 0, "positive_control": {"mnemonic": "fmadd", "match_count": 1}}
+  },
+  "packaging_mechanism_map": {
+    "summary": "Ordinary pip wheel stays EXACTLY the pure fallback. Setting SOLWEIG_LIGHT_PACKAGE_NATIVE=<staged generation dir> (build-time only; the runtime loader reads no env) turns setup.py into the native assembly: verify gate -> byte-identical staging -> build -> post-build wheel verification -> wheel deletion + loud failure on ANY violation.",
+    "setup.py (NEW, thin shim)": "Wires cmdclass + distclass only; all logic in the tool home. _NativeAwareDistribution.has_ext_modules() flips pure->platlib for native requests (Root-Is-Purelib: false, platform tag). _GuardedBuildPy stages before data collection and unstages in finally; pure builds run the purity guard instead. _GuardedBdistWheel post-verifies every wheel produced by this build and DELETES + fails on violation. Deleting this file returns the pre-N8-41 pure build.",
+    "experiments/optimization_v8/packaging/assemble_native_wheel.py (NEW)": "The assembly gate: (1) request resolution -- locked build output only, set-but-invalid fails loud; (2) build_native.verify_generation in full (schema, content-derived generation name, per-file sha256, sizes, Mach-O structural walk, .s FMA re-audit); (3) linked-image scan: otool -tV through build_native.fma_audit, >=1000 instruction lines non-vacuity pin, compiled positive control (cc -ffp-contract=fast a*b+c must yield >=1 fmadd hit or the host cannot package); (4) install-name gate: @rpath/<name> or bare basename admissible, absolute/foreign install names rejected; only /usr/lib/, /System/ or @ deps (no Homebrew/dev-tree paths); (5) byte-identical staging with member-hash proof; (6) post-build wheel verification (members byte-identical, RECORD digests present, wheel_tags.check_wheel_tags has_native_lib=True). CLI form for operator use and gate tests.",
+    "pyproject.toml": "package-data += \"backends/native_generated/**\" + \"backends/native_generated/*/*\" (two-line addition; one glob per setuptools-version safety, same mechanism as the n841-3 registry glob)",
+    "src/solweig_light/_native_dispatch/build_native.py (NEW, VENDORED)": "BYTE-IDENTICAL copy of experiments/optimization_v8/packaging/build_native.py (sha256 dd2467b3dcf8c46cfef69591339334d5a42d62ab788fa7fdf768757a15604d50 both sides). Gives the installed loader verify_generation + the versioned constants without any repo/experiments anchor. The experiments copy is KEPT (n841-8 precedent: unused duplicate, deletion is a later explicit step); drift alarm = test_vendored_build_driver_matches_the_reviewed_experiments_source.",
+    "src/solweig_light/_native_dispatch/installed_loader.py": "_build_native() resolution: repo tool home first (unchanged in-repo behavior, sys.modules['build_native'] stays ONE shared module), else the packaged vendored copy, else loud ImportError naming BOTH paths. Docstring/comment updated; no gate logic touched.",
+    "src/solweig_light/_native_dispatch/__init__.py": "DOCSTRING-ONLY paragraph 'Wheel content (N8-41 native wheel, SUBJECT TO N8-50 RE-FREEZE)' after the n841-3 paragraph.",
+    "install_name_@rpath_disposition": "The staged candidate carries the B7 dev-parity bare-basename install name; the loader dlopens the packaged artifact by ABSOLUTE PATH inside package resources (native_handle._load_entries), and the only dependency is the system libSystem, so it resolves from site-packages as-shipped. The canonical @rpath/<name> wheel form is a ONE-FLAG rebuild at the driver (build_native.py --install-name @rpath/liblw_native_g8.dylib, mechanism already present) and is expected with the N8-50 re-freeze; the assembly gate accepts BOTH forms and rejects absolute/foreign ones. NO post-hoc install_name_tool mutation was performed: mutating the shipped bytes would break the manifest sha256 and the content-derived generation identity."
+  },
+  "gate_directions": {
+    "native_request_unusable_output_fails_loud": {
+      "direction": "requested native + bad locked output => build FAILS LOUDLY, no wheel",
+      "evidence": "test_native_request_with_unusable_output_fails_the_build (full pip level): SOLWEIG_LIGHT_PACKAGE_NATIVE=/tmp/n841-nonexistent-generation => pip wheel nonzero, stderr names 'not a directory' + the LOCKED-build-output contract, zero wheels produced",
+      "also_rejected": "byte-flipped dylib (hash mismatch) and renamed generation dir (content-derived name mismatch) via test_assembly_gate_rejects_corrupt_and_renamed_generations; CLI exits 1 on both (manual execution, exit code observed)"
+    },
+    "pure_build_never_looks_native": {
+      "direction": "compiler-free build => pure wheel WITHOUT pretending",
+      "evidence": "test_pure_wheel_ships_no_native_content: the session's ordinary build is py3-none-any and carries ZERO native_generated/dylib/so members; plus assert_pure_package_tree in the build shim refuses a PURE build when native generation content sits in the package tree (e.g. a crashed earlier native build must never leak into a fallback wheel)",
+      "manual_execution": "back-to-back builds observed: native request => solweig_light-0.1.0.dev0-cp312-cp312-macosx_26_0_arm64.whl; no request => solweig_light-0.1.0.dev0-py3-none-any.whl; src tree clean after both (no leftover native_generated)"
+    },
+    "candidate_wheel_carries_the_generation": {
+      "direction": "native wheel provably carries the staged generation",
+      "evidence": "test_native_wheel_carries_the_staged_generation: all 4 members under solweig_light/backends/native_generated/<gen>/; dylib + manifest sha256 byte-identical to staged identity; RECORD pins every member with a digest; WHEEL Root-Is-Purelib: false; wheel_tags.check_wheel_tags(has_native_lib=True) passes (platform tag macosx_26_0_arm64, python/abi cp312-cp312 -- not any/purelib/abi3)"
+    }
+  },
+  "installed_origin_probe": {
+    "method": "executed in-suite by test_installed_native_loader_loads_the_packaged_generation against a fresh uv venv OUTSIDE the repo (candidate wheel + pinned offline closure installed by pip --no-index), child env minimal (HOME/PATH=/usr/bin:/bin/LANG only -- ZERO backend variables), cwd outside the repo",
+    "transcript_summary": {
+      "status": "loaded",
+      "generation": "lw-g8-390acd5f57df1fe7",
+      "generation_dir": "<wheelenv>/lib/python3.12/site-packages/solweig_light/backends/native_generated/lw-g8-390acd5f57df1fe7",
+      "resolved_driver": "<wheelenv>/lib/python3.12/site-packages/solweig_light/_native_dispatch/build_native.py (vendored packaged copy)",
+      "repo_sys_path_entries": [],
+      "handle_stamp": {"source": "installed-native_generated-v1", "build_mode": "native-release", "kernel_sha256": "b3fffd1d7439ad27ddde6f4355faa433bcdff436ac328983f02a6694d545f00c", "dylib_sha256": "7e48f05ade11eef6959bcc33769fb2fc8fcb91b7882c2c3471db78b310b8e9a6"},
+      "loader_abi": 1,
+      "wrapper_abi": "lw-region-abi-1",
+      "expected_package": "solweig-light",
+      "declines": "none (single qualified generation; no sibling declines recorded)"
+    },
+    "verdict": "the wheel-installed package loads the PACKAGED artifact; every origin (package, generation dir, resolved N8-20 driver) is inside site-packages; ABI/ISA/source identity passes against the packaged manifest; zero repo/experiments sys.path or anchor reach. dlopen + symbol binding of the packaged dylib is performed by the loader (ctypes entries bound for both scalar profiles); COUNTED native EXECUTION remains the N8-42 qualification scope (deferred gate, still honestly skipped)."
+  },
+  "selection_invariance": {
+    "claim": "the candidate wheel ships the EMPTY registry (byte-identical, from 3079d69a) + the native artifacts; auto resolves row A from the wheel with the artifact PRESENT AND LOADED",
+    "evidence": "test_installed_native_selection_stays_row_a (executed in the NATIVE wheel venv): row=A / mode=auto-legacy / expert=False / record=None, registry under site-packages, reason '[absent] no qualification records...'; the two registry_gate tests of 3079d69a UNTOUCHED and green (pure wheel); '[malformed]' path asserted banned in both",
+    "note": "qualification records remain a maintainer-tree activity; nothing in packaging can flip selection"
+  },
+  "compiler_free_variant_documentation": {
+    "how_a_user_tells": "existing surface only, no new API: (1) wheel/install shape -- a native install has solweig_light/backends/native_generated/<generation>/manifest.json under site-packages and a platform-tagged wheel (Root-Is-Purelib: false); the source/no-native install has none and is py3-none-any/purelib; (2) runtime -- installed_loader.attempt_load().status is 'loaded' (native) vs 'declined-absent' (source/no-native, reason naming the source-no-native manifest or absent native_generated resources); decline_reasons() records why. Both existing, exercised by the existing test_source_fallback_gates.py (green, untouched).",
+    "no_new_user_requirement": "source builds never invoke ISPC/compiler (conftest source_venv path unchanged); the native wheel is a maintainer pre-built artifact"
+  },
+  "module_map_changed_or_new": {
+    "NEW": [
+      "setup.py",
+      "experiments/optimization_v8/packaging/assemble_native_wheel.py",
+      "src/solweig_light/_native_dispatch/build_native.py (vendored byte-identical)",
+      "tests/optimization_v8/installed/test_native_wheel_gates.py (9 tests)"
+    ],
+    "MODIFIED": [
+      "pyproject.toml (package-data globs, 1 line)",
+      "src/solweig_light/_native_dispatch/installed_loader.py (_build_native packaged fallback)",
+      "src/solweig_light/_native_dispatch/__init__.py (docstring paragraph)",
+      "tests/optimization_v8/policy/test_legacy_env_parity.py (SEE deviations D1 -- flagged PROMINENTLY)",
+      "optimization_v8_native_default/evidence/installed/installed_gates.json (suite-written, verified ADDITIVE: api/cli/surface/registry statuses unchanged; +5 native_wheel* keys)"
+    ]
+  },
+  "suites": {
+    "order_respected": true,
+    "a_artifacts_packaging": {"path": "tests/optimization_v8/artifacts/ tests/optimization_v8/packaging/", "result": "92 passed (5.96s) -- baseline preserved"},
+    "b_installed": {"path": "tests/optimization_v8/installed/", "result": "22 passed / 6 skipped (164.96s) = baseline 13 + 9 new; skip decomposition IDENTICAL: 4 x deferred (test_deferred_gates.py) + 2 x [host-memory-pressure] (test_installed_noenv_gates.py); no new skips"},
+    "c_policy_dx_integration": {"path": "tests/optimization_v8/policy/ tests/optimization_v8/dx/ tests/optimization_v8/integration/", "result": "109 passed (4.07s)"},
+    "d_full_tree": {"path": "tests/optimization_v8/", "result": "1981 passed / 6 skipped / 0 failed (214.74s), ONE invocation = expected 1972 baseline + exactly the 9 new tests; 4 warnings are the PRE-EXISTING pair documented in the n8-41-assets record (fork deprecation in region, cast RuntimeWarning in native admission)"}
+  },
+  "load_discipline_events": [
+    {"local": "23:57", "loadavg_1m": 5.66, "action": "start; read-only phase"},
+    {"local": "00:0x", "loadavg_1m": 3.84, "action": "assembly gate manual verify (otool+clang control)"},
+    {"local": "00:08", "loadavg_1m": 4.21, "action": "manual native + pure wheel builds"},
+    {"local": "00:1x", "loadavg_1m": 10.62, "action": "manual installed-origin probe (transient; nothing timed run)"},
+    {"local": "00:2x-01:0x", "loadavg_1m": "4.7-6.3", "action": "suite ladder; never below 3.84; no timed/benchmark work"}
+  ],
+  "deviations": [
+    {
+      "id": "D1",
+      "severity": "REVIEW REQUIRED -- flag prominently",
+      "item": "tests/optimization_v8/policy/test_legacy_env_parity.py::test_src_env_var_surface_equals_frozen_dx_baseline gained ONE self-validating exclusion: the vendored N8-20 build driver's build-time env reads (_native_dispatch/build_native.py == ['PATH', 'SOLWEIG_LIGHT_ISPC']) are popped before the frozen-baseline equality; the exclusion ASSERTS the entry exists with exactly those reads, so a second entry, a changed one, or a silently removed file all fail the gate.",
+      "why": "shipping the byte-identical N8-20 driver (required for the installed loader's reuse-not-reimplement verification) introduces two build-time-only env reads the milestone-frozen branch_surface.json cannot list; re-freezing dx evidence is NOT this task's call and the n841-3 draft deferred the freeze to the next milestone. The runtime contract is preserved: the loader path never invokes the compile/discovery code (BUILD_DESIGN 8.2).",
+      "ask": "dx/policy owners (n8-01-dx/n8-04-contract) adjudicate at delta review: accept the exclusion, or re-freeze branch_surface.json at the next milestone and drop the exclusion"
+    },
+    {
+      "id": "D2",
+      "severity": "NOTE",
+      "item": "n841-1's linked-image scan is implemented in the ASSEMBLY gate (assemble_native_wheel.linked_image_fma_scan), not inside the reviewed experiments/optimization_v8/packaging/build_native.py verify path.",
+      "why": "verify_generation is REUSED by the runtime loader, where BUILD_DESIGN 8.2 forbids subprocess tools (the same reasoning recorded in experiments/optimization_v8/artifacts/linked_image_fma_scan.json); integrating there would also invalidate part of N8-20's review as the pre-wiring note itself anticipates. The scan runs on every native wheel assembly BEFORE staging, with a compiled positive control, and keeps build_native.py byte-identical (making the vendoring drift alarm exact).",
+      "ask": "if the reviewer insists on the literal build_native.py placement, it is a follow-up delta review; the coverage (final linked image + positive control, pre-wheel) is already executed and recorded"
+    },
+    {
+      "id": "D3",
+      "severity": "NOTE",
+      "item": "the candidate ships with the bare-basename install name (B7 dev-parity form) rather than @rpath/<name>.",
+      "why": "mutating the staged bytes post-hoc would break the manifest sha256/content-derived generation identity; rebuilding with --install-name @rpath/... would change the candidate identity away from the staged generation this task was told to carry (SUBJECT TO N8-50 RE-FREEZE). The loader resolves by absolute path inside package resources and the only dep is system libSystem, so the artifact provably resolves from site-packages (executed probe)."
+    },
+    {
+      "id": "D4",
+      "severity": "NOTE",
+      "item": "the conftest.py sessionfinish deferred list and the first test_deferred_gates.py skip reason still say 'no packaged native artifact exists on this branch yet'.",
+      "why": "left untouched deliberately (collision avoidance + the deferral is still TRUE for what that gate actually requires: automatic selection + counted native execution, N8-32/N8-50). The stale phrasing should be reworded by the integrator when landing (e.g. 'candidate wheel packaged by N8-41; selection/counted-execution still deferred')."
+    }
+  ],
+  "not_done_here": {
+    "n841-2": "repo-level .gitignore rule for staged native dylibs -- separate pre-wiring item, left to its owner (untracked *.dylib exposure is unchanged by this diff: the shim stages and unstages within one build, and the purity guard fails loud on leftovers)",
+    "n841-5/n841-6": "build-side isinstance hardening / manifest stamp explicitness -- remain with the N8-20/N8-21 delta-review cycle",
+    "expert route flip": "NOT done (explicitly out of scope): env=native|ispc keeps the legacy dev-build route everywhere; test_explicit_expert_env_stays_with_legacy_route green, untouched"
+  },
+  "integrator_adjudication": {
+    "by": "coordinator/integrator (GLM-5.3), 2026-09-23, pre-review",
+    "D1_verdict": "ACCEPT the self-validating exclusion (dx/policy owners were unavailable as separate sessions; the coordinator adjudicates and flags it for the independent reviewer to check, not re-adjudicate).",
+    "D1_rationale": [
+      "the RUNTIME freeze stays byte-exact: the only gate delta is the popped '_native_dispatch/build_native.py' entry, and the exclusion is self-validating -- entry must exist and read EXACTLY ['PATH', 'SOLWEIG_LIGHT_ISPC']; any second entry, changed read, or missing file fails the gate",
+      "both excluded reads are BUILD-TIME-ONLY: SOLWEIG_LIGHT_ISPC at build_native.py:169 (ISPC tool discovery) and PATH at :128 (child-env allowlist in the compile driver); the runtime loader path never invokes them (BUILD_DESIGN 8.2: no compile, no subprocess at load) -- coordinator verified the call graph, reviewer to re-verify independently",
+      "the alternative -- re-freezing evidence/dx_baseline/branch_surface.json -- would permanently bake build-tool discovery reads into the RUNTIME DX snapshot, which is strictly worse than a narrow self-validating exclusion of a vendored build tool",
+      "the n841-3 precedent already deferred the DX re-freeze to the next milestone; this exclusion is the minimal bridge to that point"
+    ],
+    "D4_disposition": "APPLIED by integrator (doc-only): tests/optimization_v8/installed/conftest.py sessionfinish deferred[0] reworded to state the N8-41 candidate wheel mechanism ships the staged generation while selection/counted native execution evidence remains deferred to N8-50/N8-42; skip-label semantics unchanged (the deferral is still true for what that gate requires). The test_deferred_gates.py skip-reason phrasing was left as-is (collides with the conftest reword scope; still factually true for the gate's requirement).",
+    "integrator_independent_verification": {
+      "combined_policy_dx_integration_rerun": "109 passed (matches author)",
+      "installed_suite_rerun": "22 passed / 6 skipped (163.99s, separate coordinator-invoked run; matches author's 22/6 and identical skip decomposition)",
+      "diff_enumeration": "5 modified + 5 new paths, exactly the module_map above; installed_gates.json regenerated by reruns and RESTORED TO HEAD before commit",
+      "D1_mechanics_read": "confirmed: the pop+exact-equality form makes the exclusion self-validating as claimed",
+      "setup_py_and_pyproject_read": "confirmed: thin shim, pure-build guard, native request -> assembly; pyproject adds exactly the two native_generated globs"
+    },
+    "next": "independent review by n8-rev-n8-41 (reviewer != author); commit only on verdict"
+  },
+  "integrator_notes": "Author, not reviewer. Nothing committed. Guardrail audit: pipeline.py, cylinder_longwave.py, quiet_window_abc.py harness, PROMOTION_POLICY/BENCHMARK_PROTOCOL/VALIDATION_POLICY, existing evidence records, and the two registry_gate tests: NONE modified (git status shows exactly the module_map files). Conftest hygiene: no conftest imports anywhere; installed_test_helpers + wheelhouse imported under their unique names. Review focus suggestions: (1) D1 exclusion narrowness + adjudication; (2) setup.py inertness for pure builds (built_wheel gates green unchanged, py3-none-any asserted); (3) the finally-unstage + purity guard interaction (crashed-build leftover scenario is the guarded case, unit-testable via assert_pure_package_tree); (4) bdist_wheel post-verify deletes then raises -- confirm nothing can be uploaded between (single-process pip, deletion before pip copies)."
+}

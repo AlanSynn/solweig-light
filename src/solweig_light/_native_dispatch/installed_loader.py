@@ -85,17 +85,17 @@ from pathlib import Path, PurePosixPath
 # name through the sibling sys.path bootstrap).
 from solweig_light._native_dispatch import native_handle  # noqa: E402
 
-# The N8-20 build driver stays maintainer-tree infrastructure (its own
-# review/delta cycle, n841-1) and is NOT vendored. Resolution is DEFERRED
-# to first use: the wheel-only installed gates import every module of the
-# package, and an installed wheel must import THIS module cleanly (it has
-# no maintainer tree to anchor to until the packaged resolution lands with
-# install_assets, n841-3). The first real use of the gates resolves the
-# driver through the repo anchor -- the sys.path insertion keeps
-# ``sys.modules['build_native']`` ONE module object shared with the
-# packaging/artifact test suites that import it by bare name -- and a
-# wheel that somehow reaches the gates fails LOUDLY here with the anchor
-# path named, never with a silent behavioral drift.
+# The N8-20 build driver resolves ONCE, on first use, from two homes:
+# the repo-checkout tool home (maintainer tree; the sys.path insertion
+# keeps ``sys.modules['build_native']`` ONE module object shared with the
+# packaging/artifact test suites that import it by bare name) or -- when
+# that tree is absent, i.e. inside an installed wheel -- the vendored
+# byte-identical copy packaged as ``solweig_light._native_dispatch
+# .build_native`` (N8-41 native wheel; provenance and drift alarm:
+# tests/optimization_v8/installed/test_native_wheel_gates.py asserts the
+# vendored copy stays byte-identical to the experiments source, so the
+# two homes can never diverge silently).  A tree with NEITHER home fails
+# LOUDLY with both paths named, never with a silent behavioral drift.
 _BUILD_NATIVE: list = []
 
 
@@ -105,15 +105,22 @@ def _build_native():
     if not _BUILD_NATIVE:
         packaging = Path(__file__).resolve().parents[3] \
             / 'experiments' / 'optimization_v8' / 'packaging'
-        if not packaging.is_dir():
-            raise ImportError(
-                f'solweig_light._native_dispatch.installed_loader requires '
-                f'the N8-20 build driver under {packaging} (repo-checkout '
-                f'anchor; the packaged resolution lands with the N8-41 '
-                f'install_assets work)')
-        if str(packaging) not in sys.path:
-            sys.path.insert(0, str(packaging))
-        import build_native
+        if packaging.is_dir():
+            if str(packaging) not in sys.path:
+                sys.path.insert(0, str(packaging))
+            import build_native
+        else:
+            try:
+                from solweig_light._native_dispatch import \
+                    build_native as build_native
+            except ImportError as exc:
+                raise ImportError(
+                    f'solweig_light._native_dispatch.installed_loader '
+                    f'requires the N8-20 build driver, resolved either from '
+                    f'the repo-checkout anchor {packaging} or from the '
+                    f'vendored packaged copy '
+                    f'solweig_light._native_dispatch.build_native; neither '
+                    f'is reachable from this installation') from exc
         _BUILD_NATIVE.append(build_native)
     return _BUILD_NATIVE[0]
 

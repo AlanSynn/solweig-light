@@ -52,6 +52,24 @@ promotion-gate re-verification (``lw_default_policy._assess_promotion``,
 which resolves the tool repo-relatively and fails loudly -- never
 mis-qualifying -- where the maintainer tree is absent) is unreachable in
 every shipped-state resolve.
+
+Wheel content (N8-41 native wheel, SUBJECT TO N8-50 RE-FREEZE): a native
+wheel additionally ships one verified staged generation under
+``backends/native_generated/<generation>/`` (dylib + manifest.json +
+generated sources, byte-identical to the locked build output; staged by
+the build shim ``setup.py`` from ``SOLWEIG_LIGHT_PACKAGE_NATIVE`` after
+the N8-20 driver's full verification plus the linked-image FMA scan and
+the install-name gate in
+``experiments/optimization_v8/packaging/assemble_native_wheel.py``).  The
+N8-20 build driver itself ships vendored as
+``solweig_light._native_dispatch.build_native`` (byte-identical to the
+experiments source; drift-alarmed by the native-wheel gate tests) so the
+installed loader re-verifies content/ABI/profile WITHOUT any repo or
+experiments anchor.  A build without the native request stays the pure
+no-native fallback wheel and refuses to carry native content silently;
+selection is UNCHANGED in both variants: the shipped registry stays
+EMPTY, so auto resolves row A whether or not a generation is present
+(qualifying records are a maintainer-tree activity).
 """
 from pathlib import Path
 

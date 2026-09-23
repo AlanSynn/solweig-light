@@ -158,12 +158,29 @@ def test_policy_module_has_no_io_process_or_network_imports():
 
 def test_src_env_var_surface_equals_frozen_dx_baseline():
     """Re-derive the dx-baseline env-var scan for src/ and compare with the
-    frozen branch_surface.json: this packet adds no environment variable
-    to the package DX surface."""
+    frozen branch_surface.json: this packet adds no RUNTIME environment
+    variable to the package DX surface.
+
+    N8-41 native wheel delta (flagged for the dx/policy owners): the one
+    exclusion is the vendored N8-20 BUILD driver shipped as package
+    tooling (``_native_dispatch/build_native.py``, byte-identical to
+    ``experiments/optimization_v8/packaging/build_native.py`` and
+    drift-alarmed in
+    ``tests/optimization_v8/installed/test_native_wheel_gates.py``).  Its
+    env reads are build-time-only tool discovery; the runtime loader path
+    never invokes them (BUILD_DESIGN 8.2: no compile, no subprocess at
+    load).  The exclusion is SELF-VALIDATING: the entry must be present
+    and read EXACTLY the pinned build-time variables -- a second entry or
+    a changed one fails this gate."""
     import dx_snapshot
     frozen = json.loads(dx_snapshot.BRANCH_SURFACE_PATH.read_text())
     current = dx_snapshot._env_vars_read_from_tree(
         REPO / 'src' / 'solweig_light')
+    vendored_build_tool = current.pop(
+        '_native_dispatch/build_native.py', None)
+    assert vendored_build_tool == ['PATH', 'SOLWEIG_LIGHT_ISPC'], \
+        f'vendored N8-20 build driver env surface drifted: ' \
+        f'{vendored_build_tool!r}'
     assert current == frozen['env_vars_read']
 
 

@@ -32,7 +32,8 @@ where = ["src"]
 [tool.setuptools.package-data]
 solweig_light = ["data/*.txt", "comfort/*.json", "radiation/SLEEF_LICENSE.txt",
                  "backends/native/*.ispc", "backends/native/*.sh",
-                 "backends/native/*.py", "_native_dispatch/*.json"]
+                 "backends/native/*.py", "_native_dispatch/*.json",
+                 "backends/native_generated/**", "backends/native_generated/*/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests/differential", "tests/integration", "tests/unit"]

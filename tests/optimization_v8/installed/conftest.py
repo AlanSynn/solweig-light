@@ -441,8 +441,10 @@ def source_venv(work_dir, wheel_dir, wheelhouse) -> dict:
 
 def pytest_sessionfinish(session, exitstatus):
     GATE_RECORD["deferred"] = [
-        "native wheel install/run channel -> N8-41 (no packaged native "
-        "artifact exists on this branch yet)",
+        "selection-pinned native artifact re-freeze -> N8-50 and counted "
+        "native execution evidence -> N8-42 (the N8-41 candidate wheel "
+        "mechanism ships the staged generation; qualification does not "
+        "exist yet and the shipped registry stays empty)",
         "companion (solweig-light-compat) install and legacy thermal_comfort "
         "executable channel -> N8-41",
         "upstream solweig_gpu import-collision against an installed main "
