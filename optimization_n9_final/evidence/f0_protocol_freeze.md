@@ -93,6 +93,26 @@ default from one ISA/mix/serial setting.
   conditions stay invalid: retain censored records, close native
   UNQUALIFIED for this release. No busy polling, no indefinite waits, no
   numeric gate relaxation.
+
+### Amendment 2 (F3 final-opportunity launch threshold; recorded BEFORE any timing existed)
+
+State at amendment time: ZERO timed sessions completed in F3; opportunity
+#1 was consumed by a gate refusal only (archived
+f3_continuous_gaterefused_20260923T131342Z.json, 1-min loadavg 7.21). The
+host owner (user) directed at 2026-09-23 ~13:2xZ: "진행 그냥 부하10 이하면
+그냥 해" — launch the final opportunity if 1-min loadavg < 10.0. This is
+the second pre-result environment amendment by the same authority as the
+N8 2.0->5.0 amendment (amendment_2026-09-23T0817Z lineage); it changes
+ONLY the launch threshold of the FINAL F3 opportunity. Unchanged: the
+5-min loadavg sanity check, memory view >= 92,000 pages, per-cell loadavg
+annotation, censor bound (> 1.6x the session's actual start load), the
+two-opportunity total, and every promotion gate. Risk recorded: launches
+under load 5-10 are noisier and CPU contention can bias arms differently
+(single-threaded native leaves vs prange Numba); therefore per-pair ratios
+remain the verdict basis, absolute times are annotated with their load,
+and a marginal result (within 2x the observed spread of the gate margin)
+must be labeled marginal in the verdict record rather than claimed as a
+clear pass.
 - Exclusive host lease while timing: no builds, tests, or JIT compilation
   on the measured host; remote inference may continue.
 
