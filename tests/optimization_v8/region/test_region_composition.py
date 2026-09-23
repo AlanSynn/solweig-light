@@ -94,7 +94,7 @@ def test_b_self_parallel_composition(n, region_blocks, seed):
 
 
 _ARCHIVED_NATIVE = (
-    'archived with the N8 native row (N9 F4): '
+    'archived with the N8 native row (selector closed N9 F3 NATIVE_LOSS; archived N9 F4): '
     'experiments/optimization_v8/native_dispatch/region_native_reduce.py')
 
 

@@ -1,7 +1,7 @@
 import pytest
 pytest.skip(
     'archived with the N8 native row and qualification machinery '
-    '(N9 F4 closed_cpu_only): research copies preserved under '
+    '(n8_32 selection closed N9 F3 NATIVE_LOSS; archived at N9 F4 closed_cpu_only): research copies preserved under '
     'experiments/optimization_v8/native_dispatch/',
     allow_module_level=True)
 """FMA-audit gate (N8-20): refuses synthetic bad-asm fixtures, accepts

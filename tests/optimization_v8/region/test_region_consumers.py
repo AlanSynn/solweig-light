@@ -28,7 +28,7 @@ from region_case import (aosoa_case, b_consumer, fresh_output,
 #: The N8-10 native-handle arm was archived with the N8 native row (N9
 #: F4 closed_cpu_only): the research copy lives in the repo-only archive.
 _ARCHIVED_NATIVE = (
-    'archived with the N8 native row (N9 F4): '
+    'archived with the N8 native row (selector closed N9 F3 NATIVE_LOSS; archived N9 F4): '
     'experiments/optimization_v8/native_dispatch/region_native_reduce.py')
 
 

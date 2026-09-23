@@ -105,7 +105,7 @@ def test_unsupported_input_passes_through_unchanged():
         pool.close()
 
 
-@pytest.mark.skip(reason='archived with the N8 native row (N9 F4): '
+@pytest.mark.skip(reason='archived with the N8 native row (selector closed N9 F3 NATIVE_LOSS; archived N9 F4): '
                          'experiments/optimization_v8/native_dispatch/')
 def test_native_loud_error_never_becomes_fallback():
     from solweig_light._native_dispatch.native_handle import NativeExecutionError

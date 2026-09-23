@@ -23,7 +23,7 @@ The historical law this suite pinned is preserved here, uncollected.
 import pytest
 
 pytest.skip(
-    'archived with the N8 native row (N9 F4): the qualification selector '
+    'archived with the N8 native row (selector closed N9 F3 NATIVE_LOSS; archived N9 F4): the qualification selector '
     'is no longer part of the runtime; research copy at '
     'experiments/optimization_v8/native_dispatch/lw_default_policy.py',
     allow_module_level=True)
