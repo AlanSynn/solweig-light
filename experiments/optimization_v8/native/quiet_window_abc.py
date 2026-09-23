@@ -73,15 +73,29 @@ REPS = 9
 
 
 def _find_b_consumer():
-    """N8-12's landed control: experiments/optimization_v8/numba/..."""
+    """N8-12's B control, wherever integration has it.
+
+    N8-40/N8-41 vendored it into the package
+    (solweig_light._native_dispatch.lw_b_control), which is where it
+    lives in this tree. The pre-integration
+    experiments/optimization_v8/numba/ fallback below is VESTIGIAL (the
+    experiments copy no longer exists; retained only so checkouts from
+    before the vendoring still run). Never guessed: absent both, the
+    arm is recorded unavailable.
+    """
+    try:
+        from solweig_light._native_dispatch.lw_b_control import (
+            lw_primary_b, lw_primary_b_parallel)
+        return 'solweig_light._native_dispatch.lw_b_control:lw_primary_b', \
+            lw_primary_b, lw_primary_b_parallel
+    except Exception:
+        pass
     directory = _MODULE_DIR.parent / 'numba'
-    if not directory.is_dir():
-        return None, None, None
-    if str(directory) not in sys.path:
-        sys.path.insert(0, str(directory))
     py = directory / 'lw_b_control.py'
     if not py.is_file():
         return None, None, None
+    if str(directory) not in sys.path:
+        sys.path.insert(0, str(directory))
     # Load under the real module stem: numba's cache unpickles the kernel
     # environment by module name, so an alias breaks cache reuse.
     spec = importlib.util.spec_from_file_location(py.stem, py)

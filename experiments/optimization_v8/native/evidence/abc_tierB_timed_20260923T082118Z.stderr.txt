@@ -1,0 +1,3 @@
+  timed cell done: B=1024 mix=all-binary (loadavg 2.5)
+  timed cell done: B=1024 mix=mix (loadavg 2.5)
+  timed cell done: B=1024 mix=all-raw (loadavg 2.5)

@@ -1,0 +1,167 @@
+{
+  "record": "N8-31 tier-B comparison transcription: B=1024 A/B/C cells under the amended quiet-window gate (production-block cell; first QUALIFIED record -- BINDING N6 envelope stated herein)",
+  "recorded_utc": "2026-09-23T08:27Z",
+  "tier": {
+    "label": "strict quiet-window tier (amended); supports N8-32 selection JOINTLY with tier A; INFORMATIONAL / NON-PROMOTION (no default-enablement from this record alone)",
+    "cannot_alone_support": [
+      "any default-enablement"
+    ],
+    "authority": "trials/n8_31_frozen_cells_addendum.json amendment_2026-09-22T1955Z_tierB_memory_correction (memory floor 1.5 GB) + amendment_2026-09-23T0817Z_tierB_loadavg_floor (loadavg < 2.0 -> < 5.0)"
+  },
+  "gate_amendment_provenance": "loadavg floor relaxed < 2.0 -> < 5.0 by amendment_2026-09-23T0817Z, recorded BEFORE any tier-B result existed (pre_results_declaration therein; zero tag=timed B=1024 records at amendment time). Evidence base: ~50 coordinator checks 2026-09-22 -> 09-23, 1-min loadavg 3.56-32.27 never < 2.0, memory half always passing. Host owner authorized < 5.0 over {< 10 immediate, keep < 2.0}. Memo: the 5-min and 15-min columns of the amended-window host (4.42 / 6.59 at run time) show the residual desktop load the relaxation accepts; selection use of this record must weigh it (noise provisions below).",
+  "gate_self_check_pre_run": {
+    "provenance": "benchmark owner's reported self-check; NOT harness-archived (the harness archives loadavg only)",
+    "loadavg_1min": 3.83,
+    "memory_view_pages": 336787,
+    "memory_view_note": "~5.5 GB >= 92000 pages (~1.5 GB) floor (16 KB pages, arm64)"
+  },
+  "archives": [
+    "experiments/optimization_v8/native/evidence/abc_quiet_window_timed_20260923T082119Z.json",
+    "experiments/optimization_v8/native/evidence/abc_tierB_timed_20260923T082118Z.stderr.txt (per-cell loadavg prints)"
+  ],
+  "cells": "B=1024 x mixes {all-binary, mix, all-raw} x REPS=9, min_ms; parity A0==C1==C1k==B1==B1k PASS in all three cells (harness parity check); patches P=153",
+  "ambient_envelope": {
+    "archived_start_equals_end": [
+      2.48,
+      4.42,
+      6.59
+    ],
+    "interpretation": "os.getloadavg() (1min, 5min, 15min) triple; start and end arrays identical as archived",
+    "per_cell_stderr_1min": [
+      2.5,
+      2.5,
+      2.5
+    ],
+    "censored_cells": 0,
+    "censor_bound": "in-window loadavg > 8.0 censors (amendment 0817Z, mirroring tier A's 12-over-8.0 ratio); max 1-min observed 2.5 -- far under",
+    "note": "min-of-9 under stable recorded ambient; arms interleaved in one process per the frozen harness"
+  },
+  "end_to_end_min_ms": {
+    "composition_rule": "UNIFORM all-min (tier-A R13-D1 rule carried): A0x = A_decode_block_x3 + A0_{parallel,serial}_dense; B1 = BC_produce_blocks_aosoa + BC_pack_masks_x2 + BC_float32_views_x3 + B1_numba_adapter; C1 = same as B1 with C1_native_aosoa_adapter. Integrator independently recomputed every value from the archive; owner-reported values match (owner's A0s all-binary 4.503 verified correct).",
+    "all-binary": {
+      "A0p": 3.3627,
+      "A0s": 4.503,
+      "B1": 3.5468,
+      "C1": 3.4655
+    },
+    "mix": {
+      "A0p": 2.7487,
+      "A0s": 3.6432,
+      "B1": 3.0173,
+      "C1": 2.9668
+    },
+    "all-raw": {
+      "A0p": 0.5485,
+      "A0s": 1.0613,
+      "B1": 0.6943,
+      "C1": 0.7338
+    }
+  },
+  "verdict_end_to_end": "TIER REVERSAL vs tier A: under the protocol accounting (pack_masks charged) C loses to A0-parallel in ALL THREE mixes: +0.1028 ms (+3.1%) all-binary, +0.2181 ms (+7.9%) mix, +0.1853 ms (+33.8%) all-raw. Against B1, C wins all-binary (-2.3%) and mix (-1.7%) and loses all-raw (+5.7%). Tier A (B=128) had C winning end-to-end; at the production block the producer penalty plus the charged adapter overturn the kernel advantage.",
+  "counter_accounting_excluding_pack_masks": {
+    "status": "INFORMATIONAL attribution ONLY -- the protocol verdict above remains the charged one; both accountings archived",
+    "basis": "BC_pack_masks_x2 is the harness's dense->AoSoA mask transpose; a pipeline whose classification emits AoSoA masks at the source (N8-11 classify_block_aosoa, integrated row C) does not pay it",
+    "C1_prime_min_ms": {
+      "all-binary": 3.2683,
+      "mix": 2.7693,
+      "all-raw": 0.5365
+    },
+    "vs_A0p": "C WINS all-binary (-2.8%) and all-raw (-2.2%); statistical tie at mix (+0.8%)",
+    "caveat": "a favorable attribution must not be used for selection without the integrated pipeline demonstrating the mask-charge actually disappears end-to-end (N8-50/51 whole-process accounting)"
+  },
+  "kernel_leaf_comparison": {
+    "R-TB1": "prior draft stored relative fractions under a *_min_ms key; corrected per n8-rev-n8-13 REQUIRED R-TB1 -- units explicit, absolute ms deltas alongside (reviewer-verified values)",
+    "relative_fraction_native_faster_negative": {
+      "C1k_vs_A0p": [
+        -0.459,
+        -0.395,
+        -0.232
+      ],
+      "C1k_vs_B1k": [
+        -0.311,
+        -0.303,
+        -0.027
+      ],
+      "C1_adapter_vs_A0p": [
+        -0.307,
+        -0.254,
+        -0.052
+      ]
+    },
+    "absolute_ms_delta_native_minus_reference": {
+      "C1k_vs_A0p": [
+        -0.2084,
+        -0.1656,
+        -0.0761
+      ],
+      "C1k_vs_B1k": [
+        -0.1107,
+        -0.1103,
+        -0.0071
+      ],
+      "C1_adapter_vs_A0p": [
+        -0.1393,
+        -0.1063,
+        -0.0173
+      ]
+    },
+    "order": "[all-binary, mix, all-raw]; negative = native faster in BOTH tables",
+    "statement": "native wins the 1024 kernel leaf in EVERY mix, including raw where the end-to-end loss is largest; the leaf advantage over B1k narrows to ~0.007 ms (~3%) at raw (tie)"
+  },
+  "producer_accounting": {
+    "all-binary": {
+      "A_decode_x3": 2.9092,
+      "BC_produce": 2.9534,
+      "delta": 0.0442
+    },
+    "mix": {
+      "A_decode_x3": 2.3297,
+      "BC_produce": 2.4561,
+      "delta": 0.1264
+    },
+    "all-raw": {
+      "A_decode_x3": 0.2197,
+      "BC_produce": 0.2243,
+      "delta": 0.0046
+    },
+    "note": "direct producer LOSES to decode x3 in all three 1024 cells (+1.5..5.4%), consistent in sign with tier A's mix reversal; small but consistent -- it does not flip any verdict alone, but it compounds with the adapter charge"
+  },
+  "adapter_scaling": {
+    "pack_masks_128_to_1024": "0.0274 -> 0.1972 min_ms (~7.2x for 8x block; charged to B1/C1 per protocol)",
+    "float32_views": "~0.0007 min_ms at 1024 (negligible)",
+    "guard_layer": "C adapter-minus-leaf at raw: 0.0589 ms vs B 0.0122 ms -- the C-side Python guard layer is a real, reducible cost; the one cell where B1 beats C1 outright (all-raw, +5.7%) is guard cost, not kernel"
+  },
+  "honest_losses": [
+    "C loses 3/3 end-to-end vs A0-parallel at the production block under the protocol accounting -- recorded unedited; this is the headline result for N8-32",
+    "the all-raw loss (+33.8%) is dominated by the pack_masks charge (kernel-only C wins that cell); both accountings archived to prevent label shopping in either direction",
+    "5/15-min ambient columns (4.42/6.59) confirm a non-idle host; absolute numbers carry that uncertainty and only intra-run relative ordering is used (same rule as tier A)"
+  ],
+  "n6_envelope_BINDING": "This is the first QUALIFIED record; the scene-size envelope is stated as an obligation (n831-cell-scene-envelope, addendum): approximately 2.25 GB routed-call overhead at 1024^2 and approximately 9 GB at 2048^2, P=153 (whole-scene uint32 AoSoA x3 + bool sun/shade x2, per n8_40_integration_record memory note). Reconciliation per amendment 1955Z: the harness block cells allocate order ~10 MB independent of scene size; the whole-scene envelope governs the DRIVER/pipeline campaign (N8-50/51), whose end-to-end cells MUST carry whole-process-peak accounting covering the whole-scene producer allocations (produce_blocks_aosoa + classify_block_aosoa outputs plus the legacy-loop inputs they duplicate).",
+  "n7_fairness": "Per n831-cell-registry-fairness: one resolve_lw_backend() call (one small JSON stat+read) per DRIVER call in the routed arm's cost, with the shipped-state row A baseline paying the identical read. Block-level harness cells pay zero resolve calls; at driver granularity the resolve is an IDENTICAL additive term on both arms and cannot flip any comparison recorded here. Binding quantification lands in the N8-50/51 whole-process accounting. Recorded per the frozen clause: the read disappears only at N8-41 vendoring IF a caching variant is ever proposed (none is; no such variant is authorized by this record).",
+  "harness_delta_disclosure": "Owner-disclosed: the B consumer now imports the N8-40/41 VENDORED copy solweig_light._native_dispatch.lw_b_control:lw_primary_b (fallback to the pre-freeze experiments path retained); b_consumer recorded in the archive is the package path. DELTA-REVIEW FOCUS: verify the vendored lw_primary_b is the same implementation timed when the B-arm protocol was frozen (the vendoring postdates the original B freeze).",
+  "next": [
+    "n8-rev-n8-13 delta review on this transcription + the archive + the harness delta + amendment 0817Z timing",
+    "N8-32 selection strictly per n8_32_selection_skeleton.json branches once the review lands; neither tier record substitutes for the selection"
+  ],
+  "delta_review": {
+    "reviewer": "n8-rev-n8-13",
+    "verdict": "APPROVE-WITH-NOTES",
+    "records": [
+      "optimization_v8_native_default/evidence/reviews/n8_30_review_n8_13_tierB.json",
+      ".md"
+    ],
+    "required_corrections_applied": {
+      "R-TB1": "kernel_leaf section relabeled: relative fractions explicitly named, absolute ms deltas added (reviewer-verified; the '-0.459 ms' overstatement risk removed)",
+      "R-TB2": "N6 whole-process-peak scope move (frozen 'N8-31 end-to-end cells' -> N8-50/51) carried as an EXPLICIT DISPOSITION ITEM for the N8-32 selection record, which must cite the authorized scope move"
+    },
+    "required_carried_to_n8_32": [
+      "R-TB2: N6 scope-move disposition",
+      "tier-A R13-D1/R13-D2 carry (applied in n8_31_tierA_record.json; the selection documents both tiers' required notes as resolved)"
+    ],
+    "recommended_applied": [
+      "stale harness docstring fallback note corrected (experiments copy gone; fallback vestigial)",
+      "amendment censor-ratio nit corrected 1.5x -> 1.6x (8.0 over 5.0)"
+    ],
+    "reviewer_confirmations": "R-B1 all 12 end-to-end values reproduce exactly at 4dp; R-B3 vendored lw_b_control.py BYTE-IDENTICAL to 194cb973^ (drift zero), B-unavailable degradation exercised once without timing; R-B4 amendment pre-results verified from the evidence tree (addendum mtime 08:18Z precedes the 08:21:19Z tier-B archive)"
+  }
+}
