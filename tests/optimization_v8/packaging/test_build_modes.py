@@ -1,3 +1,9 @@
+import pytest
+pytest.skip(
+    'archived with the N8 native row and qualification machinery '
+    '(N9 F4 closed_cpu_only): research copies preserved under '
+    'experiments/optimization_v8/native_dispatch/',
+    allow_module_level=True)
 """Declared build modes (N8-20):
 
 * source / no-native fallback build works with NO compiler and NO ISPC on

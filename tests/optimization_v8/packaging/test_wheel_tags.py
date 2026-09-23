@@ -1,3 +1,9 @@
+import pytest
+pytest.skip(
+    'archived with the N8 native row and qualification machinery '
+    '(N9 F4 closed_cpu_only): research copies preserved under '
+    'experiments/optimization_v8/native_dispatch/',
+    allow_module_level=True)
 """Wheel tagging rules (N8-20): checked on synthetic filenames and WHEEL
 metadata text -- no real wheels, no network."""
 

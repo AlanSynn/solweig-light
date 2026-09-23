@@ -154,7 +154,7 @@ def load_generation(generation_dir=None):
     # maintainer-tree expression resolved this dir only via the test
     # harness bootstrap; the vendored module anchors it explicitly so
     # sys.modules['build_native'] stays one shared object.
-    from solweig_light._native_dispatch import experiments_dir
+    from . import experiments_dir
     packaging = str(experiments_dir('packaging'))
     if packaging not in sys.path:
         sys.path.insert(0, packaging)

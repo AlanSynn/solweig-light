@@ -366,7 +366,7 @@ def _default_attempt_load():
     never touches the filesystem beyond reading the registry itself.
     N8-41 vendoring: the loader ships in this package (the maintainer-tree
     copy was resolved through a repo-relative sys.path bootstrap)."""
-    from solweig_light._native_dispatch import installed_loader  # noqa: E402  (lazy; N8-21)
+    from . import installed_loader  # noqa: E402  (lazy; N8-21)
     return installed_loader.attempt_load()
 
 

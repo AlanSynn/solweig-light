@@ -1,3 +1,9 @@
+import pytest
+pytest.skip(
+    'archived with the N8 native row and qualification machinery '
+    '(N9 F4 closed_cpu_only): research copies preserved under '
+    'experiments/optimization_v8/native_dispatch/',
+    allow_module_level=True)
 """Manifest schema validation (N8-20): every required field present,
 hashes verify, generation name is content-derived, validator rejects
 mutations."""

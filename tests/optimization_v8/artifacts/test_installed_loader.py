@@ -1,5 +1,11 @@
 #SOLWEIG-GPU: GPU-accelerated SOLWEIG model for urban thermal comfort simulation
 #Copyright (C) 2022–2025 Harsh Kamath and Naveen Sudharsan
+import pytest
+pytest.skip(
+    'archived with the N8 native row and qualification machinery '
+    '(N9 F4 closed_cpu_only): research copies preserved under '
+    'experiments/optimization_v8/native_dispatch/',
+    allow_module_level=True)
 
 #This program is free software: you can redistribute it and/or modify
 #it under the terms of the GNU General Public License as published by

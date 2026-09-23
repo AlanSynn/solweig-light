@@ -83,7 +83,7 @@ from pathlib import Path, PurePosixPath
 # N8-41 vendoring: the N8-10 execution/lifetime module ships in this
 # package (the maintainer-tree copy resolved the bare ``native_handle``
 # name through the sibling sys.path bootstrap).
-from solweig_light._native_dispatch import native_handle  # noqa: E402
+from . import native_handle  # noqa: E402
 
 # The N8-20 build driver resolves ONCE, on first use, from two homes:
 # the repo-checkout tool home (maintainer tree; the sys.path insertion
@@ -111,7 +111,7 @@ def _build_native():
             import build_native
         else:
             try:
-                from solweig_light._native_dispatch import \
+                from . import \
                     build_native as build_native
             except ImportError as exc:
                 raise ImportError(

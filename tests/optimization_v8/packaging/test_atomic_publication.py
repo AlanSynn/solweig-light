@@ -1,3 +1,9 @@
+import pytest
+pytest.skip(
+    'archived with the N8 native row and qualification machinery '
+    '(N9 F4 closed_cpu_only): research copies preserved under '
+    'experiments/optimization_v8/native_dispatch/',
+    allow_module_level=True)
 """Atomic publication (N8-20): no half-published directory on induced
 failure; generations are immutable; corrupted artifacts are detected."""
 

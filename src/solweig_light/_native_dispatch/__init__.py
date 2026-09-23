@@ -10,92 +10,36 @@
 #but WITHOUT ANY WARRANTY; without even the implied warranty of
 #MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 #GNU General Public License for more details.
-"""Private N8-41 vendoring home for the longwave dispatch machinery.
+"""Private home of the shipped bounded Numba stream machinery (N9).
 
-This subpackage is the N8-22 qualification selector (``lw_default_policy``),
-the N8-11 producer (``direct_aosoa``), the N8-12 Numba B consumer
-(``lw_b_control``), the N8-13 native consumer (``lw_native_aosoa``), the
-N8-14 region owner (``region``), the N8-10 native handle (``native_handle``)
-and the N8-21 installed-artifact loader (``installed_loader``) -- relocated
-from the maintainer tree (``experiments/optimization_v8/...``) by the N8-41
-early vendoring (n841-7/n841-8). It is PRIVATE: nothing here is re-exported
-from :mod:`solweig_light`, nothing here is a public or DX-contract surface,
-and ``import solweig_light`` never imports any of it (pinned by
-``tests/optimization_v8/policy/test_legacy_env_parity.py``).
+* ``direct_aosoa`` -- the mode-specialized packed-visibility producer and
+  the exact AoSoA classifier (N8-11 producer lineage, N9 F1D/F1M).
+* ``lw_b_control`` -- the Numba AoSoA primary leaf ``lw_primary_b``
+  (N8-12 lineage; the equally optimized Numba control's kernel).
+* ``lw_stream`` -- the bounded InvocationPlan/BorrowedVisibility/BlockSlot
+  stream and its SELF_PARALLEL consumer (N9 F1S): the shipped default
+  route for admitted non-all-raw invocations.
+* ``region`` -- the region owner (plan/pool/consumers) executing the
+  stream's blocks with canonical first-error cancellation.
 
-Wheel gating is unchanged (n841-8): rows stay records-gated, the shipped
-empty registry resolves row A, and the expert ``SOLWEIG_LIGHT_LW_BACKEND``
-route keeps serving the legacy B7-32 dev-build path until the wheels-time
-flip. The maintainer-tree copies of the relocated files remain in place
-this commit as unused duplicates (evidence durability); deletion is a
-later explicit step.
+* ``aplus_decode`` -- the N9 A-plus mode-specialized packed decode
+  (``_decode_at_plus``, exact bits, generic fallback arm) wired as the
+  fused route's decode in ``radiation.patch_radiation`` and
+  ``radiation.cylinder_longwave``; the transcribed parity kernels stay
+  pinned by the n9_producer suite.
 
-Repo anchors: two maintainer-tree locations stay resolution targets of
-the vendored modules until the wheel-assembly work (n841-1/n841-3,
-``install_assets``) gives them installed homes -- the N8-20 build driver
-``build_native.py`` (reused READ-ONLY for artifact content verification by
-``installed_loader`` and ``lw_native_aosoa``) and the N8-13 staged
-generation directory (``lw_native_aosoa._DEFAULT_STAGE``). See
-``experiments_dir`` below.
+The N8 native row and qualification machinery (``lw_default_policy``,
+``qualification_registry.json``, ``lw_native_aosoa``, ``installed_loader``,
+``native_handle``, ``build_native``) is NOT part of the installed runtime:
+it lives in the repo-only archive
+``experiments/optimization_v8/native_dispatch/``
+(N9 F4 closed_cpu_only disposition; N9-F3 terminal NATIVE_LOSS record).
+Nothing here is re-exported from :mod:`solweig_light`, nothing here is a
+public or DX-contract surface, and ``import solweig_light`` never imports
+any of it (pinned by ``tests/optimization_v8/policy/test_legacy_env_parity.py``).
 
-Wheel content (n841-3 install_assets): the shipped EMPTY qualification
-registry (``qualification_registry.json`` next to ``lw_default_policy``)
-ships as package data, so an installed selector resolves row A from empty
-records BY DESIGN (the ``[absent]`` fail-closed path, never the
-missing-file ``[malformed]`` accident of an unpackaged registry). The
-promotion gate tool (``optimization_v8_native_default/tools/
-promotion_gate.py``) deliberately stays maintainer-tree and ships in no
-wheel: promotion gating is a qualification-time activity in a repo
-checkout, never a user-runtime one. With the shipped-empty registry the
-auto path returns before any record validation, so the resolve-time
-promotion-gate re-verification (``lw_default_policy._assess_promotion``,
-which resolves the tool repo-relatively and fails loudly -- never
-mis-qualifying -- where the maintainer tree is absent) is unreachable in
-every shipped-state resolve.
-
-Wheel content (N8-41 native wheel, SUBJECT TO N8-50 RE-FREEZE): a native
-wheel additionally ships one verified staged generation under
-``backends/native_generated/<generation>/`` (dylib + manifest.json +
-generated sources, byte-identical to the locked build output; staged by
-the build shim ``setup.py`` from ``SOLWEIG_LIGHT_PACKAGE_NATIVE`` after
-the N8-20 driver's full verification plus the linked-image FMA scan and
-the install-name gate in
-``experiments/optimization_v8/packaging/assemble_native_wheel.py``).  The
-N8-20 build driver itself ships vendored as
-``solweig_light._native_dispatch.build_native`` (byte-identical to the
-experiments source; drift-alarmed by the native-wheel gate tests) so the
-installed loader re-verifies content/ABI/profile WITHOUT any repo or
-experiments anchor.  A build without the native request stays the pure
-no-native fallback wheel and refuses to carry native content silently;
-selection is UNCHANGED in both variants: the shipped registry stays
-EMPTY, so auto resolves row A whether or not a generation is present
-(qualifying records are a maintainer-tree activity).
+An explicit expert request (``SOLWEIG_LIGHT_LW_BACKEND=native|ispc``) is
+served by the legacy B7-32 dev-build route in
+``solweig_light.backends.native_lw`` -- established explicit expert
+compatibility, independent of this package.
 """
-from pathlib import Path
-
-#: The maintainer-tree root of the relocated machinery, resolved from this
-#: package (``src/solweig_light/_native_dispatch`` -> repo root). Present
-#: only in a repo checkout.
-_EXPERIMENTS_ROOT = Path(__file__).resolve().parents[3] \
-    / 'experiments' / 'optimization_v8'
-
-
-def experiments_dir(*parts: str) -> Path:
-    """Anchor a vendored module's repo-checkout dependency.
-
-    Returns the maintainer-tree path (never imports from it -- callers
-    that need a module from there insert it on ``sys.path`` explicitly so
-    ``sys.modules`` identity stays shared with the packaging/loader test
-    suites). Raises ``FileNotFoundError`` when the maintainer tree is
-    absent (installed wheel): the loud-and-clear failure beats silently
-    pointing at a nonexistent location; the installed homes land with the
-    N8-41 wheel assembly (n841-1/n841-3).
-    """
-    path = _EXPERIMENTS_ROOT.joinpath(*parts)
-    if not path.is_dir():
-        raise FileNotFoundError(
-            f'solweig_light._native_dispatch repo anchor {path} is absent: '
-            f'this module currently resolves maintainer-tree dependencies '
-            f'(N8-20 build driver, N8-13 staging) from a repo checkout; '
-            f'the packaged resolution lands with the N8-41 wheel work')
-    return path

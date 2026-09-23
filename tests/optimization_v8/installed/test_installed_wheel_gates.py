@@ -173,72 +173,42 @@ def test_surface_gate_recorded(wheel_venv):
 
 
 # ---------------------------------------------------------------------------
-# n841-3 install_assets: the qualification registry ships in the wheel.
-#
-# The vendoring (D4 note) left pyproject untouched, so the in-wheel policy
-# saw a MISSING registry and failed closed to row A through the
-# '[malformed] unreadable/invalid JSON' accident path. These gates move
-# that to DESIGNED: the byte-identical shipped EMPTY registry travels as
-# package data and the installed selector resolves row A from empty
-# records ('[absent]'), never from a missing file.
+# N9 F4 (closed_cpu_only): the qualification registry and the whole N8
+# native row LEFT the installed runtime. The archived machinery lives in
+# the repo-only research archive
+# experiments/optimization_v8/native_dispatch/ and ships in no wheel.
+# These gates invert the n841-3 install_assets contract accordingly.
 # ---------------------------------------------------------------------------
 
-QUALIFICATION_REGISTRY_MEMBER = (
-    "solweig_light/_native_dispatch/qualification_registry.json")
-SHIPPED_REGISTRY = (REPO_ROOT / "src" / "solweig_light" / "_native_dispatch"
-                    / "qualification_registry.json")
-
-
-def test_wheel_ships_the_empty_qualification_registry(built_wheel):
-    """The wheel carries the shipped registry as package data,
-    byte-identical to the package source copy (the single source of the
-    content), and it ships EMPTY (packet gate: no example rows)."""
+def test_wheel_ships_no_qualification_machinery(built_wheel):
+    """The wheel carries NO qualification registry, no selector module and
+    no native-row machinery: the shipped route decides structurally, and
+    the archived N8 row must not resurrect through installed files."""
+    banned = ("qualification_registry.json", "lw_default_policy",
+              "lw_native_aosoa", "installed_loader", "native_handle",
+              "build_native")  # aplus_decode is WIRED (shipped) again: N9 A2
     with zipfile.ZipFile(built_wheel["path"]) as zf:
         names = zf.namelist()
-        assert QUALIFICATION_REGISTRY_MEMBER in names, (
-            "qualification registry missing from the wheel; "
-            f"_native_dispatch members: "
-            f"{[n for n in names if '_native_dispatch' in n]}")
-        wheel_bytes = zf.read(QUALIFICATION_REGISTRY_MEMBER)
-    assert wheel_bytes == SHIPPED_REGISTRY.read_bytes(), (
-        "wheel registry copy is not byte-identical to the shipped package "
-        "source file")
-    assert json.loads(wheel_bytes)["records"] == [], \
-        "the shipped registry must be empty"
+    offenders = [n for n in names if any(b in n for b in banned)]
+    assert not offenders, (
+        "archived N8/N9-comparator machinery present in the wheel: "
+        f"{offenders}")
 
 
-def test_installed_selector_resolves_row_a_from_shipped_empty_registry(
-        wheel_venv):
-    """Acceptance probe (executed in the installed venv): the shipped
-    selector resolves auto -> row A from the SHIPPED-EMPTY registry -- the
-    designed '[absent] (no records)' decision reason naming the registry's
-    emptiness, never the missing-file '[malformed]' path."""
+def test_installed_product_has_no_selector_module(wheel_venv):
+    """Acceptance probe (executed in the installed venv): the archived
+    selector is absent from the installed distribution -- importing it
+    fails, and the import never resolves back to the repository tree."""
     probe = _run([wheel_venv["python"], "-c", (
-        "import importlib, json\n"
-        "mod = importlib.import_module("
+        "import importlib\n"
+        "try:\n"
+        "    importlib.import_module("
         "'solweig_light._native_dispatch.lw_default_policy')\n"
-        "sel = mod.resolve_lw_backend()\n"
-        "print(json.dumps({'row': sel.row, 'mode': sel.mode,\n"
-        "                  'expert': sel.expert, 'record': sel.record,\n"
-        "                  'registry': str(mod.DEFAULT_REGISTRY_PATH),\n"
-        "                  'reason': sel.reason}))\n"
+        "except ImportError as exc:\n"
+        "    print('ABSENT:', exc)\n"
+        "else:\n"
+        "    print('PRESENT')\n"
     )], cwd=wheel_venv["path"])
     assert probe.returncode == 0, probe.stderr
-    payload = json.loads(probe.stdout.strip().splitlines()[-1])
-    assert (payload["row"], payload["mode"]) == ("A", "auto-legacy"), payload
-    assert payload["expert"] is False and payload["record"] is None, payload
-    # the selector read the INSTALLED copy, not the repository tree
-    assert wheel_venv["site_packages"] in payload["registry"], payload
-    assert payload["reason"].startswith("[absent]"), payload["reason"]
-    assert "no qualification records" in payload["reason"], payload["reason"]
-    assert "[malformed]" not in payload["reason"], payload["reason"]
-    assert "unreadable/invalid" not in payload["reason"], payload["reason"]
-    GATE_RECORD["registry_gate"] = {
-        "status": "passed",
-        "wheel_member": QUALIFICATION_REGISTRY_MEMBER,
-        "byte_identical_to": str(SHIPPED_REGISTRY),
-        "installed_registry_path": payload["registry"],
-        "resolution": {"row": payload["row"], "mode": payload["mode"],
-                       "reason": payload["reason"]},
-        "wheel_sha256_run_scoped": GATE_RECORD["wheel"]["sha256"],
-    }
+    assert probe.stdout.strip().startswith("ABSENT:"), probe.stdout
+    assert "lw_default_policy" in probe.stdout, probe.stdout
