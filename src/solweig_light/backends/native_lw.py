@@ -49,11 +49,11 @@ _ISPC_FALLBACK = '/opt/homebrew/bin/ispc'
 def _native_cache_env():
     """The legacy native-cache override, read HERE only.
 
-    N8-41 vendoring: this module is the package's single env-read site for
-    the variable (the DX env-read surface is frozen module-by-module), so
-    the vendored dispatch machinery (solweig_light._native_dispatch
-    .native_handle) resolves the same override through this reader instead
-    of reading the environment itself.
+    N8-41 vendoring made this module the package's single env-read site
+    for the variable (the DX env-read surface is frozen
+    module-by-module). N9 F4 archived the N8 dispatch machinery that
+    used to resolve the same override through this reader (research
+    copy: experiments/optimization_v8/native_dispatch/native_handle.py).
     """
     return os.environ.get('SOLWEIG_LIGHT_NATIVE_CACHE')
 

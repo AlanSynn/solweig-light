@@ -1652,14 +1652,17 @@ def Solweig_2022a_calc(i, dsm, scale, rows, cols, svf, svfN, svfW, svfE, svfS, s
             esky = esky_c
         from .cylinder_longwave import Lcyl_v2022a_by_demand, NOT_REQUESTED
         from ..runtime import get_runtime_options
-        # N8-40b public seam: H>1 stays an explicit parallel demand; H<=1 is
-        # no demand (None), not a serial demand, so the single
-        # cylinder_longwave._lw_region_route consult is reachable at the
-        # shipped default. Driver-level parallel=False remains the only
-        # serial demand and never dispatches; with the shipped empty
-        # registry the consult fails closed to the identical legacy serial
-        # loop (one resolve_lw_backend read per call -- the deliberate
-        # shipped-state delta).
+        # N9 default route (F4): the tri-state stays LOADED-BEARING. H>1 is
+        # an explicit parallel demand; H<=1 is no demand (None), so the
+        # single _lw_region_route consult fires at the shipped default and
+        # an admitted invocation takes the bounded stream at its pinned
+        # budget 1 (zero background pool threads; the leaf's prange owns
+        # numba's threads). Driver-level parallel=False remains the only
+        # serial demand and never dispatches; there is no registry consult
+        # anywhere in the path (F4 removed the selector). F6 pre-committed
+        # rule: if the compact threads_per_worker=1 cell measures the
+        # stream LOSING the legacy serial kernels, engine restores the
+        # plain boolean (parallel=threads>1) and the manifest records it.
         Ldown, Lside, Least_, Lwest_, Lnorth_, Lsouth_ = Lcyl_v2022a_by_demand(esky, L_patches, Ta, Tgwall, ewall, Lup, shmat, vegshmat, vbshvegshmat, altitude, azimuth, rows, cols, asvf, block_pixels=get_runtime_options().block_pixels, parallel=True if get_runtime_options().threads_per_worker > 1 else None)
     else:
         Ldown = _operate(np.add, _operate(np.add, _operate(np.add, _operate(np.multiply, _operate(np.multiply, _operate(np.multiply, _operate(np.subtract, _operate(np.add, svf, svfveg), 1), esky), SBC), _operate(np.power, _operate(np.add, Ta, 273.15), 4)), _operate(np.multiply, _operate(np.multiply, _operate(np.multiply, _operate(np.subtract, _operate(np.subtract, 2, svfveg), svfaveg), ewall), SBC), _operate(np.power, _operate(np.add, Ta, 273.15), 4))), _operate(np.multiply, _operate(np.multiply, _operate(np.multiply, _operate(np.subtract, svfaveg, svf), ewall), SBC), _operate(np.power, _operate(np.add, _operate(np.add, Ta, 273.15), Tgwall), 4))), _operate(np.multiply, _operate(np.multiply, _operate(np.multiply, _operate(np.multiply, _operate(np.subtract, _operate(np.subtract, 2, svf), svfveg), _operate(np.subtract, 1, ewall)), esky), SBC), _operate(np.power, _operate(np.add, Ta, 273.15), 4)))

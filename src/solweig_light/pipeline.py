@@ -305,10 +305,11 @@ def _run_tile(base_path, preprocess_dir, selected_date_str, tile, paths, flags, 
         finally:
             _cyl_sw.set_demand_profile(_previous_sw_profile)
             _cyl_lw.set_demand(_previous_lw_demand)
-            # N8-40: release the bounded region owner's threads between
-            # tiles. No-op unless this process dispatched a region route
-            # (the machinery is vendored under the package and lazily
-            # imported; N8-41 moved it in from the repo-only bootstrap).
+            # N9 default route: the bounded region owner executes the
+            # stream whenever a tile took it (threads>1). Release its
+            # threads between tiles; a no-op for tiles that never
+            # dispatched (the machinery is vendored under the package and
+            # lazily imported).
             try:
                 from solweig_light._native_dispatch.region import \
                     shutdown_all_pools as _shutdown_pools

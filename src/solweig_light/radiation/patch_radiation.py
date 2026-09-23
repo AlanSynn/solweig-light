@@ -28,7 +28,7 @@ from numba import njit, prange
 
 # Private compiled decode helpers; importing this module is cycle-free
 # (geometry/__init__ is docstring-only) and the kernels need them as globals.
-from ..geometry.visibility_compiled import _decode_at
+from .._native_dispatch.aplus_decode import _decode_at_plus as _decode_at
 # The exact-table classification kernel evaluates the same SLEEF scalar core
 # that atan_array loops over; numba needs it as a module-level global.
 from ._sleef_classifier import atan_fma

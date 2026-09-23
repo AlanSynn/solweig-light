@@ -10,27 +10,29 @@
 #but WITHOUT ANY WARRANTY; without even the implied warranty of
 #MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 #GNU General Public License for more details.
-"""N8-40b integration: the PUBLIC wrapper seam reaches the LW route at H=1.
+"""N9 integration: the PUBLIC wrapper seam and the structural LW route.
 
 The public pipeline call site (engine.Solweig_2022a_calc, the cylinder-
 longwave call the pipeline drives under PIPELINE_CYLINDERS_ANISOTROPIC
-demand) passes ``parallel=None`` at threads_per_worker<=1 -- no explicit
-demand, not a serial demand -- so the single
-``cylinder_longwave._lw_region_route`` consult is reachable at the shipped
-default. Driver-level ``parallel=False`` remains the only serial demand.
+demand) keeps the N8-40b TRI-STATE load-bearing (N9 F4): H>1 is an
+explicit parallel demand (``parallel=True``); H<=1 is no explicit
+demand (``parallel=None``), so the single
+``cylinder_longwave._lw_region_route`` consult fires at the shipped
+default and an admitted invocation takes the bounded Numba stream at
+its pinned budget 1 (zero background pool threads; the leaf's prange
+owns numba's threads). Driver-level ``parallel=False`` remains the only
+serial demand and never dispatches. There is no registry consult
+anywhere in the path (F4 removed the selector).
 
 Every routed result is compared BITWISE (uint32 views -- NaN/signed-zero
 exact) against the same public call with ``_lw_region_route`` forced to
-None (= today's shipped behavior) over IDENTICAL inputs loaded fresh from
-the small reference scene (day event: solar altitude > 0).
+None over IDENTICAL inputs loaded fresh from the small reference scene
+(day event: solar altitude > 0).
 
-Skip labels (never fake-pass): none -- row B is a python-module row and
-needs no staged native artifact.
+Skip labels (never fake-pass): none -- the stream is a python module.
 """
-import hashlib
 import importlib.util
 import json
-import shutil
 import sys
 from pathlib import Path
 
@@ -55,17 +57,6 @@ _spec.loader.exec_module(_v6)
 lcyl_arguments = _v6.lcyl_arguments
 packed = _v6.packed
 
-# N8-41 vendoring: policy module ships in the package; the fabricated
-# evidence builders are imported under their UNIQUE module name (never as
-# ``conftest``).
-_HELPERS = Path(__file__).resolve().parent.parent / 'policy'
-if str(_HELPERS) not in sys.path:
-    sys.path.insert(0, str(_HELPERS))
-from solweig_light._native_dispatch import lw_default_policy as policy  # noqa: E402
-from policy_test_helpers import COMMIT, make_promotion_record, write_json  # noqa: E402
-
-_REPO = Path(__file__).resolve().parents[3]
-
 # The first DAY input event of the small reference scene: the cylinder
 # longwave site only runs on the day branch (solar altitude > 0).
 _BOUNDARIES = (Path(__file__).resolve().parents[2]
@@ -81,14 +72,12 @@ class _SeamStop(Exception):
 
 @pytest.fixture(autouse=True)
 def _seam_shipped_env(monkeypatch):
-    """Every test starts from the shipped no-env state; policy state and
-    any pools a previous test created are torn down."""
+    """Every test starts from the shipped no-env state; any pools a
+    previous test created are torn down."""
     monkeypatch.delenv('SOLWEIG_LIGHT_LW_BACKEND', raising=False)
-    policy.reset_for_tests()
     yield
     import solweig_light._native_dispatch.region.region_pool as rp
     rp.reset_pools_for_tests()
-    policy.reset_for_tests()
 
 
 @pytest.fixture()
@@ -181,17 +170,17 @@ def _seam_count_kernels(monkeypatch):
     return counts
 
 
-def _seam_count_consults(monkeypatch):
-    """Wrap the policy selector with a recording delegator (real decision
-    preserved); returns the call list."""
+def _seam_count_route_consults(monkeypatch):
+    """Wrap ``_lw_region_route`` with a recording delegator (real
+    decision preserved); returns the call list."""
     consults = []
-    real = policy.resolve_lw_backend
+    real = cyl._lw_region_route
 
     def counting(*args, **kwargs):
-        consults.append(1)
-        return real(*args, **kwargs)
+        consults.append(real(*args, **kwargs))
+        return consults[-1]
 
-    monkeypatch.setattr(policy, 'resolve_lw_backend', counting)
+    monkeypatch.setattr(cyl, '_lw_region_route', counting)
     return consults
 
 
@@ -199,80 +188,14 @@ def _seam_force_route_none(monkeypatch):
     monkeypatch.setattr(cyl, '_lw_region_route', lambda *a, **k: None)
 
 
-def _seam_write_evidence(tmp_path):
-    """Fabricated promotion + review tree; returns a row_record builder."""
-    promotion_path, promotion_sha = write_json(
-        tmp_path / 'evidence' / 'promotion.json', make_promotion_record())
-    review_path, review_sha = write_json(
-        tmp_path / 'evidence' / 'review.json',
-        {'schema': 'sw8-lw-review-v1', 'task': 'N8-40b-public-seam',
-         'verdict': 'APPROVE-WITH-NOTES'})
-
-    def row_record(**overrides):
-        record = {
-            'schema': policy.ROW_RECORD_SCHEMA,
-            'status': 'qualified',
-            'row': 'C',
-            'host_class': policy.current_host_class(),
-            'created_utc': '2026-09-22T00:00:00Z',
-            'source_commit': COMMIT,
-            'artifact_identity': {
-                'kind': 'installed-native-generation',
-                'generation': 'gen-fabricated',
-                'kernel_sha256': '2' * 64,
-                'dylib_sha256': '3' * 64,
-            },
-            'promotion_record': {
-                'path': 'evidence/promotion.json',
-                'sha256': promotion_sha,
-                'schema': policy.PROMOTION_RECORD_SCHEMA,
-            },
-            'cells': ['primary-0', 'primary-2'],
-            'independent_review': {
-                'path': 'evidence/review.json',
-                'sha256': review_sha,
-            },
-        }
-        record.update(overrides)
-        return record
-
-    return row_record
-
-
-def _seam_inject_registry(monkeypatch, tmp_path, records):
-    """Point the policy module's call-time globals at the tmp evidence
-    (packet ``tools/`` mirrored for ``_assess_promotion``)."""
-    path = tmp_path / 'registry.json'
-    path.write_text(json.dumps(
-        {'schema': policy.REGISTRY_SCHEMA, 'records': list(records)}))
-    tools = _REPO / 'optimization_v8_native_default' / 'tools'
-    mirrored = tmp_path / 'optimization_v8_native_default' / 'tools'
-    if tools.is_dir() and not mirrored.is_dir():
-        shutil.copytree(tools, mirrored)
-    monkeypatch.setattr(policy, 'DEFAULT_REGISTRY_PATH', path)
-    monkeypatch.setattr(policy, 'REPO_ROOT', tmp_path)
-
-
-def _seam_row_b_record(tmp_path):
-    """A qualified row B backed by the real lw_b_control module hash."""
-    row_record = _seam_write_evidence(tmp_path)
-    module_rel = 'src/solweig_light/_native_dispatch/lw_b_control.py'
-    real = _REPO / module_rel
-    module_copy = tmp_path / module_rel
-    module_copy.parent.mkdir(parents=True)
-    module_copy.write_bytes(real.read_bytes())
-    return row_record(row='B', artifact_identity={
-        'kind': 'python-module', 'module_path': module_rel,
-        'module_sha256': hashlib.sha256(real.read_bytes()).hexdigest()})
-
-
 # ---------------------------------------------------------------------------
-# (a) shipped state, public H=1 call
+# (a) the engine call site keeps the tri-state load-bearing
 # ---------------------------------------------------------------------------
 
-def test_public_wrapper_h_value_is_no_serial_demand_at_h1(monkeypatch):
-    """The seam: the public wrapper passes parallel=None at H=1 (no
-    explicit demand) and parallel=True at H=2 -- captured at the exact
+def test_public_wrapper_h_value_follows_the_tri_state(monkeypatch):
+    """The seam: the public wrapper passes ``parallel=True`` at H>1 and
+    ``parallel=None`` at H<=1 (no explicit demand -- the route consult
+    stays reachable at the shipped default) -- captured at the exact
     call site, the calc aborted there."""
     captured = []
 
@@ -290,86 +213,75 @@ def test_public_wrapper_h_value_is_no_serial_demand_at_h1(monkeypatch):
         assert captured == [expected], threads
 
 
-def test_shipped_h1_public_call_consults_once_and_stays_serial(monkeypatch,
-                                                               region_spy):
-    """Shipped empty registry, public H=1 call under the pipeline demand:
-    exactly ONE selector consult, the region machinery untouched, only the
-    serial legacy kernels run, and Ldown/Lside are bitwise-identical to
-    the same call with the route forced to None (= today)."""
-    consults = _seam_count_consults(monkeypatch)
+# ---------------------------------------------------------------------------
+# (b) shipped state, public H=1 call: no explicit demand, stream runs
+# ---------------------------------------------------------------------------
+
+def test_h1_public_call_routes_the_stream_at_pinned_budget_1(monkeypatch,
+                                                             region_spy):
+    """H=1 sends parallel=None (no explicit demand): exactly one route
+    consult, the admitted scene takes the bounded stream at budget 1
+    (zero background pool threads), no njit kernel family of the legacy
+    loop is ever entered, and Ldown/Lside are bitwise-identical to the
+    same call with the route forced to None (= the serial legacy
+    kernels)."""
+    consults = _seam_count_route_consults(monkeypatch)
     counts = _seam_count_kernels(monkeypatch)
     with runtime_options(threads_per_worker=1):
         routed = _seam_public_calc()
-    assert len(consults) == 1, 'exactly one selector read per public LW call'
-    assert policy.policy_reasons(), 'selector must have run'
-    assert any('[absent]' in reason for reason in policy.policy_reasons())
+    assert len(consults) == 1, 'exactly one route consult per public LW call'
+    assert len(region_spy) == 1
+    plan, consumer, output, report = region_spy[0]
+    assert consumer.mode.value == 'self_parallel'
+    assert report.pool_workers == 0
+    assert report.blocks == plan.total_blocks
+    assert all(count == 0 for count in counts.values())
 
     _seam_force_route_none(monkeypatch)
     with runtime_options(threads_per_worker=1):
         legacy = _seam_public_calc()
 
     assert _seam_bitwise(routed[0], legacy[0]) and _seam_bitwise(routed[1], legacy[1])
-    assert region_spy == []
-    assert counts['_longwave_primary'] == 0
-    assert counts['_longwave_fused_primary'] == 0
     assert (counts['_longwave_primary_serial']
             + counts['_longwave_fused_primary_serial']) >= 1
 
 
 # ---------------------------------------------------------------------------
-# (b) shipped state, public H=2 call: identical to today
+# (c) shipped state, public H=2 call: explicit parallel demand, stream too
 # ---------------------------------------------------------------------------
 
-def test_shipped_h2_public_call_identical_to_today(monkeypatch, region_spy):
-    """H=2 keeps the explicit parallel demand: one consult (as N8-40
-    shipped), parallel legacy kernels, region machinery untouched,
-    Ldown/Lside bitwise vs the route-forced-None run."""
-    consults = _seam_count_consults(monkeypatch)
+def test_h2_public_call_routes_the_stream_bitwise(monkeypatch, region_spy):
+    """H=2 keeps the explicit parallel demand: the route consult fires,
+    the real scene's channels are admitted (mixed binary storage), the
+    bounded Numba stream executes, and Ldown/Lside are bitwise-identical
+    to the same call with the route forced to None (= the parallel
+    legacy kernels)."""
+    consults = _seam_count_route_consults(monkeypatch)
     counts = _seam_count_kernels(monkeypatch)
     with runtime_options(cpu_budget=2, threads_per_worker=2):
         routed = _seam_public_calc()
 
-    _seam_force_route_none(monkeypatch)
-    with runtime_options(cpu_budget=2, threads_per_worker=2):
-        legacy = _seam_public_calc()
-
-    assert _seam_bitwise(routed[0], legacy[0]) and _seam_bitwise(routed[1], legacy[1])
-    assert len(consults) == 1  # only the routed (first) run consults
-    assert region_spy == []
-    assert counts['_longwave_primary_serial'] == 0
-    assert counts['_longwave_fused_primary_serial'] == 0
-    assert (counts['_longwave_primary']
-            + counts['_longwave_fused_primary']) >= 1
-
-
-# ---------------------------------------------------------------------------
-# (c) injected qualified row, public H=1 call: region dispatch fires
-# ---------------------------------------------------------------------------
-
-def test_qualified_row_h1_public_call_dispatches_region(monkeypatch, tmp_path,
-                                                        region_spy):
-    """A qualified row at H=1 through the PUBLIC wrapper dispatches the
-    region path (its own bounded threading) and stays bitwise-faithful to
-    the legacy run; the numba kernel families are never entered."""
-    _seam_inject_registry(monkeypatch, tmp_path, [_seam_row_b_record(tmp_path)])
-    counts = _seam_count_kernels(monkeypatch)
-    with runtime_options(threads_per_worker=1):
-        routed = _seam_public_calc()
+    assert len(consults) == 1, 'exactly one route consult per public LW call'
     assert len(region_spy) == 1
     plan, consumer, output, report = region_spy[0]
     assert consumer.mode.value == 'self_parallel'
     assert report.blocks == plan.total_blocks
     assert all(count == 0 for count in counts.values())
-    assert policy.resolve_lw_backend().row == 'B'
 
     _seam_force_route_none(monkeypatch)
-    with runtime_options(threads_per_worker=1):
+    with runtime_options(cpu_budget=2, threads_per_worker=2):
         legacy = _seam_public_calc()
+
     assert _seam_bitwise(routed[0], legacy[0]) and _seam_bitwise(routed[1], legacy[1])
+    assert (counts['_longwave_primary']
+            + counts['_longwave_fused_primary']) >= 1
+    assert counts['_longwave_primary_serial'] == 0
+    assert counts['_longwave_fused_primary_serial'] == 0
 
 
 # ---------------------------------------------------------------------------
-# (d) driver-level explicit serial demand: still never dispatches
+# (d) driver-level tri-state: serial demand never dispatches; the
+#     no-demand value consults and dispatches
 # ---------------------------------------------------------------------------
 
 @pytest.fixture()
@@ -391,20 +303,20 @@ def rng():
     return np.random.default_rng(20260922)
 
 
-def test_driver_explicit_serial_demand_never_dispatches_qualified(
-        monkeypatch, tmp_path, region_spy, driver_args):
-    """Under an INJECTED qualified row the driver-level tri-state holds:
+def test_driver_serial_demand_never_consults_and_none_dispatches(
+        monkeypatch, region_spy, driver_args):
+    """The driver-level tri-state holds with NO registry behind it:
     parallel=False consults nothing and never dispatches, while
-    parallel=None (the wrapper's H=1 value) dispatches. False alone is
-    the serial demand."""
-    _seam_inject_registry(monkeypatch, tmp_path, [_seam_row_b_record(tmp_path)])
-    consults = _seam_count_consults(monkeypatch)
+    parallel=None (the no-explicit-demand value) consults once and takes
+    the stream. False alone is the serial demand."""
+    consults = _seam_count_route_consults(monkeypatch)
 
     serial = cyl.Lcyl_v2022a_primary(**driver_args, parallel=False)
     assert consults == []
     assert region_spy == []
 
     routed = cyl.Lcyl_v2022a_primary(**driver_args, parallel=None)
+    assert len(consults) == 1
     assert len(region_spy) == 1
     assert all(np.array_equal(a.view(np.uint32), b.view(np.uint32))
                for a, b in zip(serial[:2], routed[:2]))

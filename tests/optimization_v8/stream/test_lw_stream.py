@@ -10,20 +10,16 @@
 #but WITHOUT ANY WARRANTY; without even the implied warranty of
 #MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 #GNU General Public License for more details.
-"""N9-F1S bounded stream tests.
+"""N9 bounded stream tests (the shipped default route, row B only).
 
-The stream must be BITWISE-identical to the measured whole-scene
-consumers it replaces (uint32 views -- NaN/signed-zero exact), preserve
-the frozen per-block order and canonical first-error contract, reuse its
-bounded slots poison-safe, and never allocate a whole-scene ``14*N*P``
-decoded cube.
-
-Skip labels (never fake-pass):
-  [no-staged-artifact] -- row C needs the genuine N8-13 generation under
-                          experiments/optimization_v8/native/stage.
+The stream must be BITWISE-identical to the whole-scene consumer it
+replaces (uint32 views -- NaN/signed-zero exact), preserve the frozen
+per-block order and canonical first-error contract, reuse its bounded
+slots poison-safe, never allocate a whole-scene ``14*N*P`` decoded cube,
+and decline structurally exactly where the measured stream-loss class
+(all-raw payloads, N9-F3) or the producer's own admission declines.
 """
-import json
-import shutil
+import importlib.util
 import sys
 import tracemalloc
 from pathlib import Path
@@ -32,8 +28,7 @@ import numpy as np
 import pytest
 
 import stream_test_helpers as h
-from stream_test_helpers import (NAMES, REPO, build_channel, make_case,
-                                 outputs_bitwise, staged_generation,
+from stream_test_helpers import (build_channel, make_case, outputs_bitwise,
                                  stream_plan, whole_scene_args)
 
 from solweig_light._native_dispatch import direct_aosoa as da
@@ -44,7 +39,6 @@ from solweig_light._native_dispatch.region import (ExecutionMode,
                                                    execute_serial,
                                                    plan_regions)
 from solweig_light._native_dispatch.region.consumers import AosoaBConsumer
-from solweig_light.radiation import _lw_dispatch as dispatch
 
 
 #: rows x patches grid: lane multiples, non-multiples (tail gang), both
@@ -56,17 +50,14 @@ BITWISE_GRID = [
 ]
 
 
-def _run_stream(case, rows, row, block_pixels, pool_budget=None, width=8):
+def _run_stream(case, rows, block_pixels, pool_budget=None, width=8):
     """One routed stream call; returns (output, consumer, report)."""
-    stream = stream_plan(case, rows, row=row, block_pixels=block_pixels,
+    stream = stream_plan(case, rows, row='B', block_pixels=block_pixels,
                          width=width)
     assert stream is not None
     try:
         output = np.empty((7, rows), dtype=np.float32)
-        if row == 'B':
-            consumer = lw_stream.AosoaBStreamConsumer(stream)
-        else:
-            consumer = lw_stream.AosoaCStreamConsumer(stream)
+        consumer = lw_stream.AosoaBStreamConsumer(stream)
         plan = plan_regions(rows, block_pixels=block_pixels)
         if pool_budget is None:
             report = execute_serial(plan, consumer, output)
@@ -81,55 +72,35 @@ def _run_stream(case, rows, row, block_pixels, pool_budget=None, width=8):
         stream.close()
 
 
-def _run_whole_scene(case, rows, row, block_pixels, width=8):
-    """The OLD whole-scene consumer over identical inputs (serial)."""
+def _run_whole_scene(case, rows, block_pixels, width=8):
+    """The whole-scene consumer over identical inputs (serial)."""
     args = whole_scene_args(case, rows, width=width)
     output = np.empty((7, rows), dtype=np.float32)
     plan = plan_regions(rows, block_pixels=block_pixels)
-    if row == 'B':
-        consumer = AosoaBConsumer(args, width=width)
-    else:
-        consumer = dispatch.AosoaNativeCConsumer(args, width=width)
-    execute_serial(plan, consumer, output)
+    execute_serial(plan, AosoaBConsumer(args, width=width), output)
     return output
 
 
 # ---------------------------------------------------------------------------
-# Bitwise parity with the measured whole-scene consumers
+# Bitwise parity with the whole-scene consumer
 # ---------------------------------------------------------------------------
 
 @pytest.mark.parametrize('rows, patches, block_pixels', BITWISE_GRID)
 def test_stream_b_bitwise_matches_whole_scene_consumer(rows, patches,
                                                        block_pixels):
-    """B stream == old whole-scene B consumer, bits exact, serial."""
+    """B stream == whole-scene B consumer, bits exact, serial."""
     case = make_case(rows, patches, seed=rows * 31 + patches)
-    stream_out, _, _ = _run_stream(case, rows, 'B', block_pixels)
-    whole_out = _run_whole_scene(case, rows, 'B', block_pixels)
+    stream_out, _, _ = _run_stream(case, rows, block_pixels)
+    whole_out = _run_whole_scene(case, rows, block_pixels)
     assert outputs_bitwise(stream_out, whole_out)
-
-
-@pytest.mark.skipif(staged_generation() is None,
-                    reason='[no-staged-artifact] run build_aosoa.py to '
-                           f'produce {h.STAGE}/<gen>')
-@pytest.mark.parametrize('rows, patches, block_pixels', BITWISE_GRID)
-def test_stream_c_bitwise_matches_whole_scene_consumer(rows, patches,
-                                                       block_pixels):
-    """C stream == old whole-scene C consumer, with the REAL artifact."""
-    case = make_case(rows, patches, seed=rows * 17 + patches)
-    stream_out, consumer, report = _run_stream(case, rows, 'C',
-                                               block_pixels, pool_budget=2)
-    whole_out = _run_whole_scene(case, rows, 'C', block_pixels)
-    assert outputs_bitwise(stream_out, whole_out)
-    assert report.mode == 'block_fanout'
-    assert isinstance(consumer, dispatch.AosoaNativeCConsumer)
 
 
 def test_stream_b_parallel_matches_serial_composition():
     """BLOCK composition equality for B under a real multiworker pool."""
     rows, patches, block_pixels = 300, 9, 16
     case = make_case(rows, patches, seed=5)
-    serial, _, _ = _run_stream(case, rows, 'B', block_pixels)
-    parallel, _, report = _run_stream(case, rows, 'B', block_pixels,
+    serial, _, _ = _run_stream(case, rows, block_pixels)
+    parallel, _, report = _run_stream(case, rows, block_pixels,
                                       pool_budget=4)
     assert outputs_bitwise(serial, parallel)
     assert report.max_in_flight <= 4
@@ -179,8 +150,8 @@ def test_mask_clearing_alternating_gate_regimes(gate):
     whole-scene masks for EVERY gate regime, including all-inactive."""
     rows, patches, block_pixels = 70, 6, 16
     case = make_case(rows, patches, seed=13, gate=gate)
-    stream_out, _, _ = _run_stream(case, rows, 'B', block_pixels)
-    whole_out = _run_whole_scene(case, rows, 'B', block_pixels)
+    stream_out, _, _ = _run_stream(case, rows, block_pixels)
+    whole_out = _run_whole_scene(case, rows, block_pixels)
     assert outputs_bitwise(stream_out, whole_out)
 
 
@@ -241,9 +212,9 @@ def test_reserved_code_canonical_first_error(channel, pixel, failing_block):
     _inject_reserved(case['values'], channel, pixel)
 
     with pytest.raises(IndexError) as serial:
-        _run_stream(case, rows, 'B', block_pixels)
+        _run_stream(case, rows, block_pixels)
     with pytest.raises(IndexError) as parallel:
-        _run_stream(case, rows, 'B', block_pixels, pool_budget=3)
+        _run_stream(case, rows, block_pixels, pool_budget=3)
     assert serial.value.args == parallel.value.args == (
         'Reserved visibility code',)
     assert type(serial.value) is type(parallel.value) is IndexError
@@ -255,7 +226,7 @@ def test_reserved_code_canonical_first_error(channel, pixel, failing_block):
 
 
 # ---------------------------------------------------------------------------
-# Admission: pre-launch decline parity with the plural producer
+# Admission: pre-launch decline parity + the all-raw stream-loss class
 # ---------------------------------------------------------------------------
 
 def _decline_spy(monkeypatch):
@@ -270,7 +241,8 @@ def test_plan_admission_mirrors_producer_exactly(monkeypatch, tmp_path):
     """plan_invocation declines EXACTLY when produce_blocks_aosoa
     declines (same predicate, same channels) -- and a decline happens
     before any region machinery runs, so a mid-stream producer decline
-    cannot exist."""
+    cannot exist. (Channels here are mixed-mode, so the separate all-raw
+    guard never fires and the pure producer parity is what is measured.)"""
     from solweig_light.geometry.visibility import LazyDiffVisibility
     calls = _decline_spy(monkeypatch)
     rows, patches = 32, 3
@@ -302,6 +274,105 @@ def test_plan_admission_mirrors_producer_exactly(monkeypatch, tmp_path):
     assert calls == []          # no decline ever touched the machinery
 
 
+def test_all_raw_declines_pre_launch_and_releases_the_lease(tmp_path):
+    """The one measured stream-loss class (N9-F3): when EVERY patch of
+    ALL THREE channels is raw (mode 4), the plan declines PRE-LAUNCH and
+    the top-level leaf lease is RELEASED -- no lock survives the decline.
+    MappedVisibility leaves are the genuine raw-storage leaves; their
+    RLocks are reentrant per-thread, so the release proof acquires each
+    lock NON-BLOCKING from a fresh thread (a same-thread check could
+    never see a leak)."""
+    import threading
+    rows, patches = 32, 3
+
+    # (a) packed leaves whose patches are all raw mode.
+    case = make_case(rows, patches, seed=29, modes_cycle=('raw',))
+    assert stream_plan(case, rows, row='B', block_pixels=128) is None
+
+    # (b) mapped (mmap) leaves over all-raw payloads.
+    from solweig_light.geometry.visibility_native import (
+        open_native_visibility, save_native_visibility)
+    channels = []
+    for index in range(3):
+        manifest = tmp_path / f'mapped_raw_{index}' / 'manifest.json'
+        manifest.parent.mkdir(parents=True)
+        save_native_visibility(
+            manifest, build_channel(rows, ('raw',) * patches,
+                                    seed=40 + index))
+        channels.append(open_native_visibility(manifest))
+    case = make_case(rows, patches, seed=43)
+    (case['values']['shmat'], case['values']['vegshmat'],
+     case['values']['vbshvegshmat']) = tuple(channels)
+    # Sanity: the pinned mode bytes really are all raw.
+    from solweig_light.geometry.visibility_compiled import _descriptor
+    assert all(bool((_descriptor(ch)[1] == 4).all()) for ch in channels)
+    assert stream_plan(case, rows, row='B', block_pixels=128) is None
+
+    # The lease is gone: every leaf lock is freely acquirable elsewhere.
+    for channel in channels:
+        outcome = []
+
+        def _grab(lock=channel._lock):
+            acquired = lock.acquire(blocking=False)
+            if acquired:
+                lock.release()
+            outcome.append(acquired)
+
+        worker = threading.Thread(target=_grab)
+        worker.start()
+        worker.join(10)
+        assert outcome == [True], 'a leaf lock survived the decline'
+
+
+@pytest.mark.parametrize('modes_cycle', [
+    ('binary', 'ternary', 'raw'),   # the classic mix
+    ('binary',),                    # all-binary
+    ('raw', 'binary', 'raw'),       # one non-raw patch keeps the stream
+])
+def test_non_all_raw_payloads_admit(modes_cycle):
+    """Any binary/ternary patch in ANY channel keeps the stream: only the
+    ALL-raw class declines."""
+    rows, patches = 32, 3
+    case = make_case(rows, patches, seed=31, modes_cycle=modes_cycle)
+    plan = stream_plan(case, rows, row='B', block_pixels=128)
+    assert plan is not None
+    plan.close()
+
+
+@pytest.mark.parametrize('row', ['A', 'C', 'D'])
+def test_unknown_row_raises_value_error(row):
+    """The shipped stream is row B only: any other row is a loud error at
+    the very first check -- never a silent decline, never a mint."""
+    case = make_case(32, 3, seed=33)
+    with pytest.raises(ValueError, match='unknown stream row'):
+        stream_plan(case, 32, row=row, block_pixels=128)
+
+
+def test_single_slot_prealloc_self_parallel():
+    """The shipped consumer is SELF_PARALLEL with ONE preallocated slot
+    (slot id 0 -- the only id a serial owner ever leases): the table has
+    exactly that key at construction and slot_bytes() is one BlockSlot's
+    payload. The lazy growth path stays as the correctness valve for a
+    future fanout owner, never as extra preallocation."""
+    rows, patches, block_pixels = 64, 5, 16
+    case = make_case(rows, patches, seed=35)
+    stream = stream_plan(case, rows, row='B', block_pixels=block_pixels)
+    try:
+        consumer = lw_stream.AosoaBStreamConsumer(stream)
+        assert list(consumer._slots) == [0]
+        one = lw_stream.BlockSlot(stream.slot_gangs, stream.patches,
+                                  stream.width, stream.block_capacity)
+        assert consumer.slot_bytes() == one.payload_bytes
+        assert consumer.mode is ExecutionMode.SELF_PARALLEL
+        # And one slot suffices for a full execution in the calling thread.
+        output = np.empty((7, rows), dtype=np.float32)
+        execute_serial(plan_regions(rows, block_pixels=block_pixels),
+                       consumer, output)
+        assert list(consumer._slots) == [0]   # no growth, no aliasing
+    finally:
+        stream.close()
+
+
 def test_plan_is_frozen_and_private():
     """The frozen records are immutable after mint and never exposed
     through any public namespace (forgeable by no public call)."""
@@ -324,65 +395,36 @@ def test_plan_is_frozen_and_private():
 
 
 # ---------------------------------------------------------------------------
-# Thread budgets: H=1 with zero background threads, H=4 disjoint slots
+# Thread budget: the leaf's prange owns it; budget 1 = zero background
 # ---------------------------------------------------------------------------
-
-class _SlowC(lw_stream.AosoaCStreamConsumer):
-    """Adds a real sleep per block so BLOCK_FANOUT genuinely overlaps
-    (liveness forcing only, never timing)."""
-
-    def consume(self, payload, ctx):
-        import time
-        time.sleep(0.02)
-        super().consume(payload, ctx)
-
-
-@pytest.mark.skipif(staged_generation() is None,
-                    reason='[no-staged-artifact] run build_aosoa.py to '
-                           f'produce {h.STAGE}/<gen>')
-@pytest.mark.parametrize('budget', [1, 4])
-def test_stream_c_h1_and_h4_budgets(budget):
-    """H slots follow the granted budget: budget=1 runs with ZERO
-    background threads (no background-thread assumption), budget=4 fans
-    out over four DISJOINT slots (>= 2 blocks genuinely in flight) and
-    matches the serial stream bitwise. The passing fanout is also the
-    no-deadlock proof: workers run produce on pinned descriptors while
-    the submitting thread holds the leaf lease."""
-    rows, patches, block_pixels = 256, 9, 16
-    case = make_case(rows, patches, seed=7)
-    serial, _, _ = _run_stream(case, rows, 'C', block_pixels)
-    stream = stream_plan(case, rows, row='C', block_pixels=block_pixels)
-    try:
-        output = np.empty((7, rows), dtype=np.float32)
-        consumer = _SlowC(stream)
-        plan = plan_regions(rows, block_pixels=block_pixels)
-        pool = RegionPool(budget)
-        try:
-            report = execute_regions(plan, consumer, output, pool=pool)
-        finally:
-            pool.close()
-        assert outputs_bitwise(serial, output)
-        assert report.max_in_flight <= budget
-        assert len(consumer._slots) <= budget
-        if budget == 1:
-            assert report.pool_workers == 0
-        else:
-            assert report.max_in_flight >= 2
-    finally:
-        stream.close()
-
 
 def test_stream_b_budget_1_zero_background_threads():
     """B (SELF_PARALLEL) at budget 1: the owner spawns no worker and the
     granted budget executes the block in the calling thread."""
     rows, patches, block_pixels = 64, 5, 16
     case = make_case(rows, patches, seed=9)
-    stream_out, _, report = _run_stream(case, rows, 'B', block_pixels,
+    stream_out, _, report = _run_stream(case, rows, block_pixels,
                                         pool_budget=1)
-    whole_out = _run_whole_scene(case, rows, 'B', block_pixels)
+    whole_out = _run_whole_scene(case, rows, block_pixels)
     assert outputs_bitwise(stream_out, whole_out)
     assert report.pool_workers == 0
     assert report.mode == 'self_parallel'
+
+
+def test_plan_thread_budget_pinned_to_one_regardless_of_runtime_threads():
+    """N9 F4 REQUIRED: the shipped route is the measured B1 arm -- the
+    plan's budget is PINNED to 1 whatever the runtime thread width says,
+    so H>1 runtimes can never resurrect the B4 arm that lost every cell."""
+    from solweig_light.runtime import runtime_options
+    rows = 64
+    case = make_case(rows, 153, seed=9)
+    for threads in (1, 4):
+        with runtime_options(cpu_budget=threads, threads_per_worker=threads):
+            stream = stream_plan(case, rows, row='B', block_pixels=128)
+            try:
+                assert stream.thread_budget == 1, threads
+            finally:
+                stream.close()
 
 
 # ---------------------------------------------------------------------------
@@ -411,7 +453,7 @@ def test_readonly_input_leaves_and_no_mutation():
                        lw_stream.AosoaBStreamConsumer(stream), output)
     finally:
         stream.close()
-    whole_out = _run_whole_scene(case, rows, 'B', block_pixels)
+    whole_out = _run_whole_scene(case, rows, block_pixels)
     assert outputs_bitwise(output, whole_out)
     for name in ('shmat', 'vegshmat', 'vbshvegshmat'):
         assert h.payload_digest(values[name]) == digests[name]
@@ -432,8 +474,8 @@ def test_total_zero_declines_and_total_one_is_exact():
                         case['solar_gate'], case['prepared'], 0,
                         block_pixels, case['factor'], case['sun_surface'],
                         case['shade_surface']) is None
-    stream_out, _, _ = _run_stream(case, rows, 'B', block_pixels)
-    whole_out = _run_whole_scene(case, rows, 'B', block_pixels)
+    stream_out, _, _ = _run_stream(case, rows, block_pixels)
+    whole_out = _run_whole_scene(case, rows, block_pixels)
     assert stream_out.shape == whole_out.shape == (7, 1)
     assert outputs_bitwise(stream_out, whole_out)
 
@@ -478,9 +520,9 @@ def test_slot_payload_is_block_bounded_not_scene_bounded():
 
 
 def test_routed_peak_memory_independent_of_scene_extent():
-    """Warm routed-call peak (tracemalloc, H-slot allocation included)
+    """Warm routed-call peak (tracemalloc, slot allocation included)
     stays flat as the scene grows: 4x the extent must NOT grow the peak,
-    and the peak is the slots, a small fraction of the whole-scene cube
+    and the peak is the slot, a small fraction of the whole-scene cube
     the old path materialized."""
     block_pixels, patches = 1024, 153
     peaks = {}
@@ -491,11 +533,11 @@ def test_routed_peak_memory_independent_of_scene_extent():
         try:
             plan = plan_regions(rows, block_pixels=block_pixels)
             warm = np.empty((7, rows), dtype=np.float32)
-            # Warm the process: JIT, caches, the first consumer's slots.
+            # Warm the process: JIT, caches, the first consumer's slot.
             execute_serial(plan, lw_stream.AosoaBStreamConsumer(stream),
                            warm)
             tracemalloc.start()
-            consumer = lw_stream.AosoaBStreamConsumer(stream)  # H slots
+            consumer = lw_stream.AosoaBStreamConsumer(stream)  # the slot
             measured = np.empty((7, rows), dtype=np.float32)
             execute_serial(plan, consumer, measured)
             current, peak = tracemalloc.get_traced_memory()
@@ -516,14 +558,12 @@ def test_routed_peak_memory_independent_of_scene_extent():
 # The public seam still routes through the stream (driver-level, row B)
 # ---------------------------------------------------------------------------
 
-def test_driver_seam_routes_stream_row_b(monkeypatch, tmp_path):
-    """A qualified B record drives the FULL driver through the rewired
+def test_driver_seam_routes_stream_row_b(monkeypatch):
+    """The structural default drives the FULL driver through the rewired
     _execute_row: one region submission, the stream B consumer, bitwise
-    equal to the legacy loop over identical inputs."""
-    import hashlib
-    from policy_test_helpers import COMMIT, make_promotion_record, write_json
-    from solweig_light._native_dispatch import lw_default_policy as policy
-
+    equal to the legacy loop over identical inputs -- and no selection
+    policy exists anywhere in the path (the module is gone from the
+    package and never imported by a routed call)."""
     import importlib.util
     _V6_CONFTEST = (Path(__file__).resolve().parents[2] / 'optimization_v6'
                     / 'cylinder_lw' / 'conftest.py')
@@ -542,43 +582,11 @@ def test_driver_seam_routes_stream_row_b(monkeypatch, tmp_path):
     args = v6.lcyl_arguments(rng, rows=rows, cols=cols, shmat=channels[0],
                              vegshmat=channels[1],
                              vbshvegshmat=channels[2])
-
-    promotion_path, promotion_sha = write_json(
-        tmp_path / 'evidence' / 'promotion.json', make_promotion_record())
-    review_path, review_sha = write_json(
-        tmp_path / 'evidence' / 'review.json',
-        {'schema': 'sw8-lw-review-v1', 'task': 'N9-F1S-stream',
-         'verdict': 'APPROVE-WITH-NOTES'})
-    module_rel = 'src/solweig_light/_native_dispatch/lw_b_control.py'
-    real = REPO / module_rel
-    # The certified module resolves under the fake REPO_ROOT: mirror it.
-    module_copy = tmp_path / module_rel
-    module_copy.parent.mkdir(parents=True)
-    module_copy.write_bytes(real.read_bytes())
-    record = {
-        'schema': policy.ROW_RECORD_SCHEMA, 'status': 'qualified',
-        'row': 'B', 'host_class': policy.current_host_class(),
-        'created_utc': '2026-09-23T00:00:00Z', 'source_commit': COMMIT,
-        'artifact_identity': {
-            'kind': 'python-module', 'module_path': module_rel,
-            'module_sha256': hashlib.sha256(real.read_bytes()).hexdigest()},
-        'promotion_record': {'path': 'evidence/promotion.json',
-                             'sha256': promotion_sha,
-                             'schema': policy.PROMOTION_RECORD_SCHEMA},
-        'cells': ['primary-0', 'primary-2'],
-        'independent_review': {'path': 'evidence/review.json',
-                               'sha256': review_sha},
-    }
-    registry = tmp_path / 'registry.json'
-    registry.write_text(json.dumps(
-        {'schema': policy.REGISTRY_SCHEMA, 'records': [record]}))
-    tools = REPO / 'optimization_v8_native_default' / 'tools'
-    mirrored = tmp_path / 'optimization_v8_native_default' / 'tools'
-    if tools.is_dir() and not mirrored.is_dir():
-        shutil.copytree(tools, mirrored)
-    monkeypatch.setattr(policy, 'DEFAULT_REGISTRY_PATH', registry)
-    monkeypatch.setattr(policy, 'REPO_ROOT', tmp_path)
     monkeypatch.delenv('SOLWEIG_LIGHT_LW_BACKEND', raising=False)
+    # Defensive: drop any copy an earlier test session may have leaked so
+    # the post-run absence below can only be explained by THIS path.
+    sys.modules.pop('solweig_light._native_dispatch.lw_default_policy',
+                    None)
 
     import solweig_light._native_dispatch.region.region_pool as rp
     import solweig_light.radiation.cylinder_longwave as cyl
@@ -608,3 +616,10 @@ def test_driver_seam_routes_stream_row_b(monkeypatch, tmp_path):
     assert len(calls) == 1
     assert isinstance(calls[0], lw_stream.AosoaBStreamConsumer)
     assert calls[0].mode is ExecutionMode.SELF_PARALLEL
+    # No selection policy anywhere in the path: the module is gone from
+    # the package and a routed call never imported it.
+    import importlib
+    assert importlib.util.find_spec(
+        'solweig_light._native_dispatch.lw_default_policy') is None
+    assert 'solweig_light._native_dispatch.lw_default_policy' \
+        not in sys.modules

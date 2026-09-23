@@ -12,9 +12,10 @@
 #GNU General Public License for more details.
 """N8-14 composition exactness: parallel region execution == serial
 composition, bitwise, across region shapes (single-block, tail,
-multi-region), budgets and all three consumer arms (A oracle, B Numba,
-C native handle). Comparisons are uint32 views (frozen-suite
-convention). No timing is taken here.
+multi-region), budgets and the live consumer arms (A oracle, B Numba;
+the former C native-handle arm is archived with the N8 native row, N9
+F4). Comparisons are uint32 views (frozen-suite convention). No timing
+is taken here.
 """
 import numpy as np
 import pytest
@@ -92,23 +93,16 @@ def test_b_self_parallel_composition(n, region_blocks, seed):
         pool.close()
 
 
-def native_available():
-    from solweig_light._native_dispatch.native_handle import prepare_native_handle, \
-        NativeHandleError
-    try:
-        prepare_native_handle()
-        return True
-    except NativeHandleError:
-        return False
+_ARCHIVED_NATIVE = (
+    'archived with the N8 native row (N9 F4): '
+    'experiments/optimization_v8/native_dispatch/region_native_reduce.py')
 
 
+@pytest.mark.skip(reason=_ARCHIVED_NATIVE)
 @pytest.mark.parametrize('n,region_blocks', [(300, 1), (300, 2), (257, 3)])
 def test_c_native_fanout_composition(n, region_blocks):
     """C-arm gate: BLOCK_FANOUT over the N8-10 native handle == serial
     composition == one whole handle call, bitwise."""
-    if not native_available():
-        pytest.skip('native artifact unavailable in this environment '
-                    '(auto-decline is the sanctioned planner behavior)')
     from solweig_light._native_dispatch.region.consumers import native_handle_reduce, DenseKernelConsumer
     from test_typed_graph_identity import adversarial_inputs
     reduce_block = native_handle_reduce()
@@ -138,9 +132,10 @@ def test_c_native_fanout_composition(n, region_blocks):
 
 
 @pytest.mark.parametrize('seed', [0])
-def test_all_three_arms_agree_bitwise(seed):
-    """Cross-arm: A (oracle) == B (Numba) == C (native) through the same
-    region boundary on the same adversarial case."""
+def test_remaining_arms_agree_bitwise(seed):
+    """Cross-arm: A (oracle) == B (Numba) through the same region
+    boundary on the same adversarial case. (The former C native arm is
+    archived with the N8 native row, N9 F4.)"""
     n = 256
     dense, aosoa = aosoa_case(n, 61, seed)
     plan = plan_regions(n, block_pixels=B, region_blocks=2)
@@ -150,14 +145,6 @@ def test_all_three_arms_agree_bitwise(seed):
     outs['B'] = fresh_output(n)
     execute_serial(plan, b_consumer(aosoa), outs['B'])
     assert outputs_bitwise_equal(outs['A'], outs['B'])
-    if native_available():
-        from solweig_light._native_dispatch.region.consumers import native_handle_reduce, \
-            DenseKernelConsumer
-        reduce_block = native_handle_reduce()
-        outs['C'] = fresh_output(n)
-        execute_serial(plan, DenseKernelConsumer(reduce_block, dense),
-                       outs['C'])
-        assert outputs_bitwise_equal(outs['A'], outs['C'])
 
 
 def test_repeated_executions_on_one_pool_are_stable():

@@ -15,23 +15,31 @@
 The A-plus variant of the shipped row-A decode (``_decode_at_plus`` and the
 transcribed fused kernels) must be BITWISE identical to the A8 control on
 small inputs: per-element decode equality over all modes, fused serial and
-parallel output equality, and unchanged preflight error observability. The
-A-plus module is never dispatched; these tests are its only consumer.
+parallel output equality, and unchanged preflight error observability.
+
+N9 A2: the module is SHIPPED at
+``solweig_light._native_dispatch.aplus_decode`` and WIRED -- the shipped
+fused kernels import ``_decode_at_plus as _decode_at`` (radiation/
+cylinder_longwave.py and radiation/patch_radiation.py). This file keeps the
+original pinned parity against that shipped module; the THROUGH-THE-KERNEL
+wiring parity lives in test_n9_aplus_wiring_parity.py.
 """
 import numpy as np
 import pytest
 
-from solweig_light._native_dispatch.aplus_decode import (
-    _decode_at_plus, _longwave_fused_primary_aplus,
-    _longwave_fused_primary_aplus_serial)
-from solweig_light.geometry.visibility_compiled import (_decode_at,
+from solweig_light._native_dispatch.aplus_decode import (  # noqa: F401
+    _decode_at_plus,
+    _longwave_fused_primary_aplus,
+    _longwave_fused_primary_aplus_serial,
+)
+from solweig_light.geometry.visibility_compiled import (_decode_at,  # noqa: E402
                                                         _fused_descriptor,
                                                         _preflight_flat)
-from solweig_light.radiation.cylinder_longwave import (_longwave_fused_primary,
+from solweig_light.radiation.cylinder_longwave import (_longwave_fused_primary,  # noqa: E402
                                                        _longwave_fused_primary_serial)
-from solweig_light.radiation.patch_radiation import _classes, patch_geometry
+from solweig_light.radiation.patch_radiation import _classes, patch_geometry  # noqa: E402
 
-from n9_producer_ref import n9_build_channel, n9_tensor32, n9_vault
+from n9_producer_ref import n9_build_channel, n9_tensor32, n9_vault  # noqa: E402
 
 
 def _patch_args(rng, pixels, patches):

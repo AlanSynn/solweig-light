@@ -13,21 +13,28 @@
 """N8-22 policy-selector tests: fail-closed law, activation mechanics,
 expert loudness, quiet-ness.
 
-The fail-closed law under test: every way a qualification record can be
-absent, stale, malformed, not-qualified or host-mismatched must resolve
-the AUTO path to legacy row A -- never to B/C -- while recording the
-reason privately.  Fabricated evidence (conftest) exercises the mechanics
-exactly as PROMOTION_POLICY.md sanctions for packet unit tests; the
-shipped registry stays empty and a separate gate test enforces that.
+ARCHIVED with the N8 native row (N9 F4 closed_cpu_only): the selection
+policy is no longer part of the installed runtime -- the N9 default
+route is structural (the bounded Numba stream) and the qualification
+machinery lives on only as a research copy in the repo-only archive
+(``experiments/optimization_v8/native_dispatch/lw_default_policy.py``).
+The historical law this suite pinned is preserved here, uncollected.
 """
-import json
-
 import pytest
 
-from policy_test_helpers import (make_declined_outcome, make_loaded_outcome,
+pytest.skip(
+    'archived with the N8 native row (N9 F4): the qualification selector '
+    'is no longer part of the runtime; research copy at '
+    'experiments/optimization_v8/native_dispatch/lw_default_policy.py',
+    allow_module_level=True)
+
+import json  # noqa: E402
+
+from policy_test_helpers import (make_declined_outcome,  # noqa: E402
+                                 make_loaded_outcome,
                                  make_promotion_record, write_json)
 
-from solweig_light._native_dispatch import lw_default_policy as policy
+from solweig_light._native_dispatch import lw_default_policy as policy  # noqa: E402
 
 
 # ---------------------------------------------------------------------------

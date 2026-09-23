@@ -10,47 +10,61 @@
 #WITHOUT ANY WARRANTY; without even the implied warranty of
 #MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 #General Public License for more details.
-"""N8-22 legacy-DX parity pins: today's observable behavior is unchanged.
+"""N9 legacy-DX parity pins: today's observable behavior is unchanged.
 
-The selector lives in the vendored ``solweig_light._native_dispatch``
-package (N8-41); these tests pin that its existence changes nothing a
-user can observe:
+N9 F4 removed the selection policy from the runtime (the bounded Numba
+stream IS the structural default); these tests pin that the removal
+changes nothing a legacy user can observe:
 
-* every legacy ``SOLWEIG_LIGHT_LW_BACKEND`` value keeps its CURRENT
+* the legacy ``SOLWEIG_LIGHT_LW_BACKEND`` values keep their CURRENT
   ``cylinder_longwave._lw_kernel`` resolution behavior (identity for
   non-expert values, the native dispatch wrapper for native/ispc),
   including the exact loud missing-build error wording;
-* the auto path provably resolves to legacy A in the live dispatcher;
-* no new environment variable exists (the selector reads exactly the one
-  legacy name, and the src/ env-var surface still equals the frozen
-  ``evidence/dx_baseline/branch_surface.json`` snapshot);
-* importing ``solweig_light`` never pulls the policy module in;
-* the policy module does no IO at import and no IO on a pure resolve
-  (subprocess audit-hook proof), and never spawns or opens sockets;
-* the shipped state has no activatable rows anywhere under the policy
-  directory (registry empty; template pending).
+* with the env UNSET, the driver route is STRUCTURAL: admitted packed
+  invocations take the bounded stream, everything else declines
+  structurally to the trusted legacy loop -- and NO registry is read
+  anywhere in the path (the qualification selector module is gone from
+  the package and never imported by a routed call);
+* ``SOLWEIG_LIGHT_LW_BACKEND=native`` still stands the stream route
+  down and reaches the B7-32 loud-error route (never a silent
+  fallback);
+* ``cylinder_longwave`` remains the ONLY env-read site of the LW seam
+  and the dispatch module reads no environment at all;
+* importing ``solweig_light`` never pulls any of ``_native_dispatch``
+  in.
 """
 import ast
+import importlib.util
 import json
-import os
 import subprocess
 import sys
 import textwrap
 from pathlib import Path
 
+import numpy as np
 import pytest
 
 REPO = Path(__file__).resolve().parents[3]
-# N8-41 vendoring: the policy module under test is the packaged one;
-# only the dx helper module stays on sys.path (read in place).
-sys.path.insert(0, str(REPO / 'tests' / 'optimization_v8' / 'dx'))
-
-from solweig_light._native_dispatch import lw_default_policy as policy  # noqa: E402
 
 import solweig_light.radiation.cylinder_longwave as cyl  # noqa: E402
 from solweig_light.backends import native_lw  # noqa: E402
 
-ENV = policy.LW_BACKEND_ENV
+ENV = 'SOLWEIG_LIGHT_LW_BACKEND'
+
+# The v6 cylinder family's conftest, loaded by file path under a UNIQUE
+# module name: a bare `import conftest` is shadowed by sibling suites in
+# one pytest session.
+_V6_CONFTEST = (Path(__file__).resolve().parents[2] / 'optimization_v6'
+                / 'cylinder_lw' / 'conftest.py')
+_spec = importlib.util.spec_from_file_location('_n9dx_v6_conftest',
+                                               str(_V6_CONFTEST))
+_v6 = importlib.util.module_from_spec(_spec)
+sys.modules['_n9dx_v6_conftest'] = _v6
+_spec.loader.exec_module(_v6)
+lcyl_arguments = _v6.lcyl_arguments
+packed = _v6.packed
+
+_ROWS, _COLS, _PATCHES = 37, 53, 153
 
 NON_EXPERT_VALUES = [None, '', 'numba', 'NUMBA', ' numba ', 'bogus', 'auto',
                      'ispo', '0', 'native-ish']
@@ -64,6 +78,60 @@ def _set_env(monkeypatch, value):
         monkeypatch.setenv(ENV, value)
 
 
+@pytest.fixture(autouse=True)
+def _parity_env(monkeypatch):
+    """Start every test from the shipped no-env state; never leak
+    region-owner threads."""
+    monkeypatch.delenv(ENV, raising=False)
+    yield
+    import solweig_light._native_dispatch.region.region_pool as rp
+    rp.reset_pools_for_tests()
+
+
+@pytest.fixture()
+def rng():
+    return np.random.default_rng(20260922)
+
+
+@pytest.fixture()
+def packed_args(rng):
+    """Driver arguments over adversarial PACKED channels (admitted by
+    the structural route: mixed binary/ternary/raw storage)."""
+    gen = np.random.default_rng(20260922)
+    return lcyl_arguments(rng, rows=_ROWS, cols=_COLS,
+                          shmat=packed(gen, _ROWS, _COLS, _PATCHES,
+                                       ('binary', 'ternary', 'raw')),
+                          vegshmat=packed(gen, _ROWS, _COLS, _PATCHES,
+                                          ('ternary', 'raw', 'binary')),
+                          vbshvegshmat=packed(gen, _ROWS, _COLS, _PATCHES,
+                                              ('raw', 'binary', 'ternary')))
+
+
+@pytest.fixture()
+def region_spy(monkeypatch):
+    """Record every execute_regions call, then run the real executor."""
+    import solweig_light._native_dispatch.region.region_pool as rp
+    calls = []
+    real = rp.execute_regions
+
+    def spy(plan, consumer, output, **kwargs):
+        report = real(plan, consumer, output, **kwargs)
+        calls.append((plan, consumer, output, report))
+        return report
+
+    monkeypatch.setattr(rp, 'execute_regions', spy)
+    return calls
+
+
+def _assert_no_policy_in_path():
+    """The qualification selector is gone from the package (N9 F4) and
+    the call just made imported no stale copy."""
+    assert importlib.util.find_spec(
+        'solweig_light._native_dispatch.lw_default_policy') is None
+    assert 'solweig_light._native_dispatch.lw_default_policy' \
+        not in sys.modules
+
+
 # ---------------------------------------------------------------------------
 # Live dispatcher parity per env value (byte-compat with current src)
 # ---------------------------------------------------------------------------
@@ -71,8 +139,9 @@ def _set_env(monkeypatch, value):
 
 @pytest.mark.parametrize('value', NON_EXPERT_VALUES)
 def test_non_expert_values_return_the_plain_numba_kernel(monkeypatch, value):
-    """Auto -> A provable at the src level: with any non-expert value the
-    live dispatcher returns the legacy kernel objects themselves."""
+    """With any non-expert value the live dispatcher returns the legacy
+    kernel objects themselves -- the exported kernel surface is
+    unchanged, whatever the structural route does at the driver seam."""
     _set_env(monkeypatch, value)
     assert cyl._lw_kernel(parallel=True) is cyl._longwave_primary
     assert cyl._lw_kernel(parallel=False) is cyl._longwave_primary_serial
@@ -95,26 +164,86 @@ def test_expert_values_wrap_the_native_backend(monkeypatch, value):
         assert native_lw.UnsupportedInput in contents
 
 
-def test_policy_env_name_matches_src_constant():
-    assert policy.LW_BACKEND_ENV == cyl._LW_BACKEND_ENV \
-        == 'SOLWEIG_LIGHT_LW_BACKEND'
-
-
-def test_policy_classification_matches_src_behavior(monkeypatch):
-    """For every value class, the selector's classification agrees with
-    what the live dispatcher actually did (expert iff a wrapper)."""
-    for value in NON_EXPERT_VALUES[1:] + EXPERT_VALUES:
-        _set_env(monkeypatch, value)
-        resolved = cyl._lw_kernel(parallel=True)
-        src_expert = resolved is not cyl._longwave_primary
-        selection_expert = policy._explicit_value(os.environ) \
-            in policy.EXPERT_VALUES
-        assert src_expert == selection_expert, value
+def test_env_name_is_the_legacy_constant():
+    assert cyl._LW_BACKEND_ENV == ENV
 
 
 # ---------------------------------------------------------------------------
-# Loud legacy error wording, byte-pinned
+# (a) env unset: the route is structural, no registry read anywhere
 # ---------------------------------------------------------------------------
+
+def test_default_admitted_call_routes_the_stream_and_reads_no_registry(
+        packed_args, region_spy):
+    """No env, admitted packed channels: the bounded stream executes --
+    and the qualification selector module (deleted in N9 F4) is neither
+    present in the package nor imported anywhere along the way."""
+    sys.modules.pop('solweig_light._native_dispatch.lw_default_policy',
+                    None)   # defensive against any stale importer
+    result = cyl.Lcyl_v2022a_primary(**packed_args)
+    assert len(region_spy) == 1
+    plan, consumer, output, report = region_spy[0]
+    assert consumer.mode.value == 'self_parallel'
+    assert report.blocks == plan.total_blocks
+    assert result[0].shape == (_ROWS, _COLS)
+    _assert_no_policy_in_path()
+
+
+def test_default_declines_are_structural_and_never_read_a_registry(
+        rng, region_spy):
+    """No env, dense channels (a non-admitted payload): a STRUCTURAL
+    pre-launch decline -- the trusted legacy loop serves the call, the
+    region machinery is untouched, and no registry/policy module exists
+    anywhere in the path."""
+    sys.modules.pop('solweig_light._native_dispatch.lw_default_policy',
+                    None)
+    args = lcyl_arguments(rng, rows=_ROWS, cols=_COLS)  # dense mats
+    result = cyl.Lcyl_v2022a_primary(**args)
+    assert region_spy == []
+    assert result[0].shape == (_ROWS, _COLS)
+    _assert_no_policy_in_path()
+
+
+def test_dispatch_module_reads_no_environment():
+    """The N9 dispatch seam reads NO environment variables: the expert
+    intercept stays in ``cylinder_longwave`` (the one legacy env-read
+    site), so the package's env surface is exactly as frozen. Scanned at
+    the AST level so prose in docstrings cannot fake either direction."""
+    source = Path(cyl.__file__).read_text()
+    cyl_envs = {node.value for node in ast.walk(ast.parse(source))
+                if isinstance(node, ast.Constant)
+                and isinstance(node.value, str)
+                and node.value.startswith('SOLWEIG_LIGHT_')}
+    assert cyl_envs == {ENV}, cyl_envs
+
+    dispatch_source = importlib.util.find_spec(
+        'solweig_light.radiation._lw_dispatch')
+    assert dispatch_source is not None
+    tree = ast.parse(Path(dispatch_source.origin).read_text())
+    env_reads = [node for node in ast.walk(tree)
+                 if isinstance(node, ast.Attribute)
+                 and node.attr in ('environ', 'getenv')]
+    assert env_reads == [], env_reads
+    env_names = {node.value for node in ast.walk(tree)
+                 if isinstance(node, ast.Constant)
+                 and isinstance(node.value, str)
+                 and node.value.startswith('SOLWEIG_LIGHT_')}
+    assert env_names == set(), env_names
+
+
+# ---------------------------------------------------------------------------
+# (b) env=native: the B7-32 loud-error route, unchanged
+# ---------------------------------------------------------------------------
+
+def test_expert_env_stands_the_stream_route_down(packed_args, region_spy,
+                                                 monkeypatch):
+    """env=native/ispc: the stream route returns None at the seam (the
+    region machinery is never touched) and the legacy B7-32 kernel
+    resolver serves the call."""
+    for value in ('native', 'ispc'):
+        monkeypatch.setenv(ENV, value)
+        result = cyl.Lcyl_v2022a_primary(**packed_args)
+        assert result[0].shape == (_ROWS, _COLS)
+    assert region_spy == []
 
 
 def test_missing_ispc_error_wording_is_byte_identical(monkeypatch, tmp_path):
@@ -135,61 +264,15 @@ def test_missing_ispc_error_wording_is_byte_identical(monkeypatch, tmp_path):
 
 
 # ---------------------------------------------------------------------------
-# No new DX: env vars, package import surface, dx baseline
+# (c) package import surface: none of _native_dispatch
 # ---------------------------------------------------------------------------
 
-
-def test_policy_module_reads_only_the_legacy_env_name():
-    source = policy.__file__
-    tree = ast.parse(Path(source).read_text())
-    env_names = {node.value for node in ast.walk(tree)
-                 if isinstance(node, ast.Constant)
-                 and isinstance(node.value, str)
-                 and node.value.startswith('SOLWEIG_LIGHT_')}
-    assert env_names == {'SOLWEIG_LIGHT_LW_BACKEND'}, env_names
-
-
-def test_policy_module_has_no_io_process_or_network_imports():
-    source = Path(policy.__file__).read_text()
-    for banned in ('import subprocess', 'import socket', 'import requests',
-                   'import urllib', 'os.system', 'popen'):
-        assert banned not in source, banned
-
-
-def test_src_env_var_surface_equals_frozen_dx_baseline():
-    """Re-derive the dx-baseline env-var scan for src/ and compare with the
-    frozen branch_surface.json: this packet adds no RUNTIME environment
-    variable to the package DX surface.
-
-    N8-41 native wheel delta (flagged for the dx/policy owners): the one
-    exclusion is the vendored N8-20 BUILD driver shipped as package
-    tooling (``_native_dispatch/build_native.py``, byte-identical to
-    ``experiments/optimization_v8/packaging/build_native.py`` and
-    drift-alarmed in
-    ``tests/optimization_v8/installed/test_native_wheel_gates.py``).  Its
-    env reads are build-time-only tool discovery; the runtime loader path
-    never invokes them (BUILD_DESIGN 8.2: no compile, no subprocess at
-    load).  The exclusion is SELF-VALIDATING: the entry must be present
-    and read EXACTLY the pinned build-time variables -- a second entry or
-    a changed one fails this gate."""
-    import dx_snapshot
-    frozen = json.loads(dx_snapshot.BRANCH_SURFACE_PATH.read_text())
-    current = dx_snapshot._env_vars_read_from_tree(
-        REPO / 'src' / 'solweig_light')
-    vendored_build_tool = current.pop(
-        '_native_dispatch/build_native.py', None)
-    assert vendored_build_tool == ['PATH', 'SOLWEIG_LIGHT_ISPC'], \
-        f'vendored N8-20 build driver env surface drifted: ' \
-        f'{vendored_build_tool!r}'
-    assert current == frozen['env_vars_read']
-
-
-def test_importing_solweig_light_never_pulls_the_policy_module():
+def test_importing_solweig_light_never_pulls_the_dispatch_package():
     code = textwrap.dedent('''
         import sys
         import solweig_light
         leaked = [name for name in sys.modules
-                  if 'lw_default_policy' in name
+                  if '_native_dispatch' in name
                   or 'optimization_v8' in name]
         print(json.dumps(leaked))
     ''')
@@ -197,88 +280,3 @@ def test_importing_solweig_light_never_pulls_the_policy_module():
                           capture_output=True, text=True, cwd=str(REPO))
     assert proc.returncode == 0, proc.stderr
     assert json.loads(proc.stdout) == []
-
-
-# ---------------------------------------------------------------------------
-# No IO at import / pure resolve (audit hook in a fresh interpreter)
-# ---------------------------------------------------------------------------
-
-
-NO_IO_PROBE = textwrap.dedent('''
-    import json, sys
-
-    # Preload every stdlib module the policy module touches, plus the
-    # package parents, so the audit window below sees only the module
-    # under test (N8-41 vendoring: it imports from the package).
-    import __future__, hashlib, os, platform, threading, dataclasses
-    import pathlib
-    import solweig_light._native_dispatch
-
-    EVENTS = []
-    def hook(event, args):
-        EVENTS.append((event, args))
-
-    sys.addaudithook(hook)
-    from solweig_light._native_dispatch import lw_default_policy as policy
-
-    # Pure resolve: injected env + injected empty registry -> no file, no
-    # process, no network may be touched (today's auto path is A).
-    selection = policy.resolve_lw_backend(env={}, registry={
-        'schema': policy.REGISTRY_SCHEMA, 'records': []})
-    assert selection.row == 'A', selection
-
-    interesting = [e for e in EVENTS if e[0] in (
-        'open', 'subprocess.Popen', 'os.system', 'socket.connect',
-        'socket.getaddrinfo', 'socket.bind')]
-    # Importing the module itself opens its .py and cached .pyc (the
-    # interpreter tags the bytecode file); nothing else may be touched.
-    def own_module_path(args):
-        if not args:
-            return False
-        base = str(args[0]).replace('\\\\', '/').rsplit('/', 1)[-1]
-        return base.startswith('lw_default_policy.')
-    stray = [e for e in interesting
-             if e[0] != 'open' or not own_module_path(e[1])]
-    print(json.dumps({'events': len(EVENTS), 'stray': str(stray[:5])}))
-    assert not stray, stray[:5]
-''')
-
-
-def test_policy_module_does_no_io_at_import_or_pure_resolve(tmp_path):
-    proc = subprocess.run([sys.executable, '-c', NO_IO_PROBE],
-                          capture_output=True, text=True, cwd=str(REPO))
-    assert proc.returncode == 0, proc.stderr
-    assert json.loads(proc.stdout)['stray'] == '[]'
-
-
-# ---------------------------------------------------------------------------
-# Shipped state: no activatable rows anywhere under the policy dir
-# ---------------------------------------------------------------------------
-
-
-def test_no_qualified_rows_ship_anywhere_under_policy_dir():
-    policy_dir = REPO / 'experiments' / 'optimization_v8' / 'policy'
-    offenders = []
-    for path in sorted(policy_dir.rglob('*.json')):
-        try:
-            payload = json.loads(path.read_text())
-        except ValueError:
-            continue
-        candidates = payload if isinstance(payload, list) else \
-            payload.get('records', []) if isinstance(payload, dict) else []
-        for record in candidates if isinstance(candidates, list) else []:
-            if isinstance(record, dict) \
-                    and record.get('schema') == policy.ROW_RECORD_SCHEMA \
-                    and record.get('status') == policy.STATUS_QUALIFIED:
-                offenders.append(str(path))
-    assert offenders == []
-
-
-def test_shipped_template_is_pending_and_inert():
-    template = json.loads((REPO / 'experiments' / 'optimization_v8' / 'policy'
-                           / 'templates' / 'row_record_pending.json')
-                          .read_text())
-    assert template['schema'] == policy.ROW_RECORD_SCHEMA
-    assert template['status'] == 'pending'
-    ok, reason = policy.validate_row_record(template)
-    assert ok is False and reason.startswith('[not-qualified]'), reason

@@ -16,7 +16,6 @@ inside the arm, and region execution adds ZERO growth to the N8-10
 handle registry (the routed registry-bound note)."""
 import numpy as np
 import pytest
-from test_typed_graph_identity import adversarial_inputs
 
 from region_test_helpers import LW_TEST_THREADS
 from solweig_light._native_dispatch.region import (ExecutionMode, RegionPool, execute_regions, execute_serial,
@@ -25,6 +24,12 @@ from solweig_light._native_dispatch.region.consumers import (AosoaBConsumer, Den
                               dense_to_aosoa)
 from region_case import (aosoa_case, b_consumer, fresh_output,
                          oracle_consumer, outputs_bitwise_equal)
+
+#: The N8-10 native-handle arm was archived with the N8 native row (N9
+#: F4 closed_cpu_only): the research copy lives in the repo-only archive.
+_ARCHIVED_NATIVE = (
+    'archived with the N8 native row (N9 F4): '
+    'experiments/optimization_v8/native_dispatch/region_native_reduce.py')
 
 
 class AddTwoArrays:
@@ -143,19 +148,7 @@ def test_mode_is_a_parallelism_class_not_a_backend_id():
         pool.close()
 
 
-def _native_ready():
-    from solweig_light._native_dispatch.native_handle import (NativeHandleError,
-                                      prepare_native_handle)
-    try:
-        prepare_native_handle()
-        return True
-    except NativeHandleError:
-        return False
-
-
-@pytest.mark.skipif(not _native_ready(),
-                    reason='native artifact unavailable (auto-decline is '
-                           'the sanctioned planner behavior)')
+@pytest.mark.skip(reason=_ARCHIVED_NATIVE)
 def test_region_execution_adds_no_handle_registry_growth():
     """Routed registry-bound note: workers are threads sharing one pid
     and NativeHandle.execute writes no registry entries, so fanout over
@@ -176,8 +169,7 @@ def test_region_execution_adds_no_handle_registry_growth():
         pool.close()
 
 
-@pytest.mark.skipif(not _native_ready(),
-                    reason='native artifact unavailable')
+@pytest.mark.skip(reason=_ARCHIVED_NATIVE)
 def test_native_execution_error_propagates_through_region():
     """An ADMITTED native failure after launch (NativeExecutionError) is
     never hidden or converted by the region owner."""

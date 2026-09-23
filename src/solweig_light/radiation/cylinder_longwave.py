@@ -38,7 +38,7 @@ from numba import njit, prange
 
 # The njit kernels need the packed-visibility decode helper as a module
 # global; importing here is cycle-free exactly as in patch_radiation.
-from ..geometry.visibility_compiled import _decode_at
+from .._native_dispatch.aplus_decode import _decode_at_plus as _decode_at
 
 
 class CylinderLongwaveDemand(Enum):
@@ -179,17 +179,19 @@ def _longwave_primary_serial(sh,vs,vb,sun,shade,solid,sine,cosine,directions,gat
 
 
 def _lw_region_route(values,geometry,solar_gate,prepared,total,block_pixels,factor,sun_surface,shade_surface):
-    """N8-40 staged region dispatch (policy-selected row B/C).
+    """N9 default route: the bounded Numba stream for admitted invocations.
 
-    Returns a [7, total] float32 field stack, or None when the policy
-    resolves to row A (shipped state), the experiment machinery is absent,
-    or a producer declines before launch -- the caller's legacy loop runs
-    unchanged in every None case. A post-launch failure is never hidden.
+    Returns a [7, total] float32 field stack, or None when the invocation
+    is structurally declined (non-admitted channels, the all-raw payload
+    class, a lane-misaligned block size, degenerate extent) -- the
+    caller's legacy loop runs unchanged in every None case. A post-launch
+    failure is never hidden. There is no selection policy and no registry
+    consult anywhere in this path (N9 F4); the only env read on this seam
+    remains the expert stand-down below.
 
-    Staged expert migration (n840-6): an explicit native/ispc request is
-    served by the legacy B7-32 route in _lw_kernel, so the region route
-    stands down here (this file remains the ONLY env-read site; the
-    N8-22 expert route activates with the N8-41 wheels).
+    Established expert compatibility: an explicit native/ispc request is
+    served by the B7-32 route in _lw_kernel, so the stream route stands
+    down here (this file remains the ONLY env-read site).
     """
     if os.environ.get(_LW_BACKEND_ENV,'').strip().lower() in ('native','ispc'):
         return None
@@ -358,12 +360,12 @@ def define_patch_characteristics_primary(*args,block_pixels=128,parallel=True,**
     cardinal projection loops and the four cardinal output columns.
 
     ``parallel`` tri-state (N8-40b public seam): ``True`` is an explicit
-    parallel demand; ``False`` is an explicit serial demand -- the region
+    parallel demand; ``False`` is an explicit serial demand -- the stream
     route gate stays shut and the serial kernels run, never dispatching;
-    ``None`` is no explicit demand (the public wrapper's H=1 value) --
-    serial kernels exactly as ``False``, but the single
-    ``_lw_region_route`` consult fires so a policy-qualified row can
-    dispatch (the region owner carries its own bounded threading).
+    ``None`` is no explicit demand -- serial kernels exactly as ``False``
+    when the stream declines, but the single ``_lw_region_route`` consult
+    fires so an admitted invocation can take the bounded Numba stream
+    (the leaf's own prange carries the granted threading).
     """
     from . import engine as e
     from .patch_radiation import _reference, _block, _class_coefficients, _classes, _supported, patch_geometry

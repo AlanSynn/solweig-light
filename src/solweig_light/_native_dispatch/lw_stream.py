@@ -28,12 +28,11 @@ surface"):
   caller keeps legacy), the producer's own range contract
   ``0 <= start <= stop <= total`` validated through ``_leased``, the
   prepared classification coefficients, lane width, granted thread budget,
-  shared patch-level arguments, and (row C) the resolved+verified native
-  artifact identity. Immutable after mint; workers receive only the plan
-  and the borrowed descriptors. Never returned through public API, so it
-  is forgeable by no public call. Public defensive adapters
-  (``produce_blocks_aosoa`` / ``classify_block_aosoa`` /
-  ``lw_primary_b`` / ``primary_aosoa``) are unchanged for unknown callers.
+  and the shared patch-level arguments. Immutable after mint; workers
+  receive only the plan and the borrowed descriptors. Never returned
+  through public API, so it is forgeable by no public call. Public
+  defensive adapters (``produce_blocks_aosoa`` / ``classify_block_aosoa``
+  / ``lw_primary_b``) are unchanged for unknown callers.
 * ``BorrowedVisibility`` -- zero-copy per-patch payload descriptor views
   plus mode bytes, held under ONE top-level lease acquired once at mint
   (the producer's own ``_leased``: stable id-sorted lock order + the full
@@ -46,10 +45,15 @@ surface"):
   (3x uint32 + 2x bool ``[G_cap, P, W]`` + one float32 ``[capacity, 7]``
   output frame). Slots are keyed by the IN-FLIGHT scratch slot id
   (``ctx.slot.id`` -- lease-exclusive per executing block by the region
-  owner's construction), never by block index, so H concurrently
-  executing blocks never alias. H follows the granted budget: budget=1
-  allocates one slot and the owner runs with zero background threads;
-  budget=4 fans out four blocks on four disjoint slots.
+  owner's construction), never by block index, so concurrently executing
+  blocks never alias. The shipped stream is SELF_PARALLEL: the owner runs
+  blocks sequentially in the calling thread (in-flight <= 1, zero
+  background threads) and grants the budget to the leaf's own prange, so
+  ONE slot is preallocated; the lazy growth path stays as the correctness
+  safety valve for any future fanout consumer. (N9 F3 arms: the
+  single-slot configuration was the measured-fastest stream arm in all
+  six timed cells; the extra preallocated slots of the H=budget arm only
+  added per-call page cost.)
 
 Per-block observable order is the frozen one: classification BEFORE
 decode, then sh, vs, vb decode in original order (a reserved code raises
@@ -78,18 +82,6 @@ from typing import Any
 
 import numpy as np
 
-
-def _AosoaNativeCBase():
-    """The measured whole-scene C consumer, as this module's mixin base.
-
-    The dispatcher imports THIS module lazily (inside ``_execute_row``),
-    so importing it here cannot cycle; the module body of
-    ``radiation._lw_dispatch`` is import-light.
-    """
-    from solweig_light.radiation._lw_dispatch import AosoaNativeCConsumer
-    return AosoaNativeCConsumer
-
-
 #: The frozen 17-argument signature order (N8-04 contract; identical to
 #: region.consumers / _lw_dispatch).
 _ORDERED = ('sh', 'vs', 'vb', 'sun', 'shade', 'solid', 'sine', 'cosine',
@@ -101,9 +93,12 @@ _ORDERED = ('sh', 'vs', 'vb', 'sun', 'shade', 'solid', 'sine', 'cosine',
 _CHANNELS = ('sh', 'vs', 'vb')
 _MASKS = ('sun', 'shade')
 
+#: Visibility-patch mode byte for raw (dense) storage
+#: (``geometry.visibility_compiled``: binary=1, ternary=2, raw=4).
+_MODE_RAW = 4
+
 __all__ = ['InvocationPlan', 'BorrowedVisibility', 'BlockSlot',
-           'plan_invocation', 'AosoaBStreamConsumer',
-           'AosoaCStreamConsumer']
+           'plan_invocation', 'AosoaBStreamConsumer']
 
 
 # ---------------------------------------------------------------------------
@@ -131,9 +126,7 @@ class InvocationPlan:
 
     ``lease`` is the top-level ExitStack over the three visibility leaves
     (producer lock order + full-range contract); ``close()`` releases it
-    after the region join. ``generation_dir`` is the resolved content-
-    verified artifact identity for row C (``None`` for row B); the
-    generation was loaded (and therefore verified) at mint time.
+    after the region join.
     """
 
     row: str
@@ -161,7 +154,6 @@ class InvocationPlan:
     reflection_factor: Any
     borrowed: BorrowedVisibility
     lease: ExitStack
-    generation_dir: str | None = None
 
     def close(self) -> None:
         """Release the top-level leaf lease (idempotent; after join)."""
@@ -226,6 +218,27 @@ def _admitted_channels(channels) -> bool:
                for channel in channels)
 
 
+def _all_patches_raw(borrowed: BorrowedVisibility) -> bool:
+    """The measured stream-loss class: EVERY patch of ALL THREE channels
+    is raw (mode 4).
+
+    The N9-F3 continuous comparison timed the stream against the legacy
+    kernels per payload mix: the stream wins binary and mixed payloads
+    and loses ONLY the all-raw class (per-pair ratios 0.86-0.93, all
+    direction-consistent) -- there, whole-array dense decode through the
+    AoSoA producer has no advantage over the legacy `_block` decode. An
+    all-raw invocation therefore declines PRE-LAUNCH (``None`` -> the
+    caller's trusted legacy loop); any patch with binary/ternary mode in
+    any channel keeps the stream. The mode bytes are part of the pinned
+    descriptor, so the check reads no payload and costs O(P).
+    """
+    for descriptor in (borrowed.sh, borrowed.vs, borrowed.vb):
+        modes = descriptor[1]
+        if not bool((modes == _MODE_RAW).all()):
+            return False
+    return True
+
+
 def plan_invocation(row, values, geometry, solar_gate, prepared, total,
                     block_pixels, factor, sun_surface, shade_surface,
                     width=8):
@@ -233,16 +246,15 @@ def plan_invocation(row, values, geometry, solar_gate, prepared, total,
 
     Every decline here sends the caller to its trusted legacy loop BEFORE
     any launch: non-admitted channels, an unresolvable classification
-    table, or a lane-misaligned block size (the caller seam's own gate,
-    restated for direct private callers). A row-C artifact that fails to
-    resolve/verify raises loudly (``NativeArtifactError``) -- availability
-    problems never silently rewrite the selection.
+    table, a lane-misaligned block size (the caller seam's own gate,
+    restated for direct private callers), or the all-raw payload class
+    (``_all_patches_raw`` -- the one measured stream loss, N9-F3).
 
     Acquiring the leaf lease validates the full range contract
     ``0 <= 0 <= total <= leaf pixels`` in the producer's exact lock
     order; descriptors are pinned under the same lease.
     """
-    if row not in ('B', 'C'):
+    if row != 'B':
         raise ValueError(f'unknown stream row {row!r}')
     if total < 1 or block_pixels < width or block_pixels % width:
         return None  # empty/degenerate or lane-misaligned: trusted legacy
@@ -275,18 +287,20 @@ def plan_invocation(row, values, geometry, solar_gate, prepared, total,
                                       vs=_descriptor(channels[1]),
                                       vb=_descriptor(channels[2]))
 
-        generation_dir = None
-        if row == 'C':
-            from . import lw_native_aosoa
-            resolved = lw_native_aosoa._resolve_generation_dir(None)
-            lw_native_aosoa.load_generation(resolved)
-            generation_dir = str(resolved)
+        if _all_patches_raw(borrowed):
+            lease.close()
+            return None  # measured stream-loss class: trusted legacy
 
-        from .region.region_pool import resolve_budget
+        # Budget PINNED to 1 (N9 F4): the shipped route is the measured B1
+        # arm -- SELF_PARALLEL, one slot, zero background pool threads, the
+        # leaf's own prange owning numba's threads. The dispatcher passes
+        # this budget to the region owner, so no pool is ever sized wider
+        # than the plan grants. (The budget arm H=thread_budget lost or
+        # tied B1 in all six F3 cells and paid 4x slot memory.)
         return InvocationPlan(
             row=row, total=total, patches=geometry.altitude.size,
             width=width, block_pixels=block_pixels,
-            thread_budget=resolve_budget(), geometry=geometry,
+            thread_budget=1, geometry=geometry,
             solar_gate=solar_gate, prepared=prepared,
             altitude=values['solar_altitude'],
             azimuth=values['solar_azimuth'], asvf=values['asvf'],
@@ -298,8 +312,7 @@ def plan_invocation(row, values, geometry, solar_gate, prepared, total,
             sky_side=values['Lsky_side'][:, 2],
             surface_sun=sun_surface, surface_sh=shade_surface,
             lup=values['Lup'].reshape(-1), reflection_factor=factor,
-            borrowed=borrowed, lease=lease,
-            generation_dir=generation_dir)
+            borrowed=borrowed, lease=lease)
     except BaseException:
         lease.close()
         raise
@@ -325,15 +338,18 @@ class _StreamBase:
     def __init__(self, plan: InvocationPlan):
         self._plan = plan
         self._alloc_lock = threading.Lock()
-        # H bounded slots: one per budget slot id the owner can lease.
-        # The region owner's scratch pool has exactly `budget` slots, so
-        # in-flight blocks never exceed this; a pool with a different
-        # budget simply grows the table on first sight of a new id
-        # (still bounded by the owner's real slot count).
+        # ONE preallocated slot: the shipped stream consumer is
+        # SELF_PARALLEL, so the owner runs blocks sequentially in the
+        # calling thread (in-flight <= 1 by construction) and slot id 0
+        # is the only id ever leased. A pool that did fan out concurrent
+        # blocks would simply grow the table here on first sight of a new
+        # id (thread-safe, still bounded by the owner's real slot count) --
+        # correctness never depends on the preallocation size. The N9-F3
+        # single-slot arm was the measured-fastest stream configuration
+        # in all six cells; extra slots only added per-call page cost.
         plan_gangs = plan.slot_gangs
-        self._slots = {i: BlockSlot(plan_gangs, plan.patches, plan.width,
-                                    plan.block_capacity)
-                       for i in range(plan.thread_budget)}
+        self._slots = {0: BlockSlot(plan_gangs, plan.patches, plan.width,
+                                    plan.block_capacity)}
 
     # -- slot ownership ----------------------------------------------------
 
@@ -446,43 +462,4 @@ class AosoaBStreamConsumer(_StreamBase):
         self._lw_primary_b(
             *(payload[name] for name in _ORDERED), payload['rows'],
             parallel=True, out=frame)
-        ctx.output[:, ctx.start:ctx.stop] = frame.T
-
-
-class AosoaCStreamConsumer(_StreamBase, _AosoaNativeCBase()):
-    """BLOCK_FANOUT stream consumer for row C (native ``primary_aosoa``).
-
-    Subclasses the measured whole-scene C consumer so the routed C arm
-    identity is unchanged (an instance still satisfies
-    ``isinstance(consumer, _lw_dispatch.AosoaNativeCConsumer)``);
-    produce/consume are the bounded stream -- MRO resolves both to this
-    stream's ``_StreamBase``. The leaf runs single-threaded per call, so
-    parallelism is the owner's block fanout over the H disjoint slots.
-    The artifact identity was resolved, content-verified and loaded at
-    mint time; the per-block call reuses the pinned generation (no
-    loader work in workers). Post-launch native failures stay
-    ``NativeExecutionError`` -- loud, never a fallback.
-    """
-
-    mode = None  # bound at __init__ (ExecutionMode import stays lazy)
-
-    def __init__(self, plan: InvocationPlan):
-        super().__init__(plan)
-        from solweig_light._native_dispatch.region.region_pool import (
-            ExecutionMode)
-        from solweig_light._native_dispatch import lw_native_aosoa
-        self.mode = ExecutionMode.BLOCK_FANOUT
-        self._primary_aosoa = lw_native_aosoa.primary_aosoa
-
-    def consume(self, payload, ctx) -> None:
-        frame = self._frame(payload, ctx)
-        self._primary_aosoa(
-            payload['sh'].view(np.float32), payload['vs'].view(np.float32),
-            payload['vb'].view(np.float32), payload['sun'], payload['shade'],
-            payload['solid'], payload['sine'], payload['cosine'],
-            payload['directions'], payload['gate'], payload['solar_gate'],
-            payload['sky_down'], payload['sky_side'], payload['surface_sun'],
-            payload['surface_sh'], payload['lup'],
-            payload['reflection_factor'], payload['rows'], out=frame,
-            generation_dir=self._plan.generation_dir)
         ctx.output[:, ctx.start:ctx.stop] = frame.T

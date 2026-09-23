@@ -47,9 +47,6 @@ NAMES = ('sh', 'vs', 'vb', 'sun', 'shade', 'solid', 'sine', 'cosine',
          'directions', 'gate', 'solar_gate', 'sky_down', 'sky_side',
          'surface_sun', 'surface_sh', 'lup', 'reflection_factor')
 
-REPO = Path(__file__).resolve().parents[3]
-STAGE = REPO / 'experiments' / 'optimization_v8' / 'native' / 'stage'
-
 POISON_U32 = np.uint32(0xDEADBEEF)
 
 
@@ -167,11 +164,3 @@ def outputs_bitwise(a, b):
     import numpy as np
     return all(np.array_equal(x.view(np.uint32), y.view(np.uint32))
                for x, y in zip(a, b))
-
-
-def staged_generation():
-    """The newest lw-g8-* generation dir, or None (skip label contract)."""
-    if not STAGE.is_dir():
-        return None
-    candidates = sorted(STAGE.glob('*/manifest.json'))
-    return candidates[-1].parent if candidates else None

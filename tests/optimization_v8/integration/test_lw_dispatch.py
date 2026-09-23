@@ -10,32 +10,28 @@
 #but WITHOUT ANY WARRANTY; without even the implied warranty of
 #MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 #GNU General Public License for more details.
-"""N8-40 integration: the driver's policy-selected region dispatch.
+"""N9 integration: the driver's STRUCTURAL region dispatch.
+
+There is no selection policy and no registry anywhere in this path (N9
+F4): the route declines structurally -- degenerate extent, a lane-
+misaligned block size, non-admitted channels, the all-raw payload class
+(N9-F3 measured stream loss) -- and otherwise runs the bounded Numba
+stream. An explicit expert request (``SOLWEIG_LIGHT_LW_BACKEND=
+native|ispc``) stands down to the legacy B7-32 route at the seam, and a
+driver-level ``parallel=False`` serial demand never consults the route.
 
 Every routed result is compared BITWISE (uint32 views -- NaN/signed-zero
 exact) against the same driver run with ``_lw_region_route`` forced to
-None, over IDENTICAL inputs. The shipped-state test exercises the REAL
-shipped registry file (no injection): empty records must resolve auto ->
-A without touching any machinery.
-
-Skip labels (never fake-pass):
-  [no-staged-artifact] -- no lw-g8-* generation under
-                          experiments/optimization_v8/native/stage (row C
-                          tests need the genuine N8-13 artifact).
+None, over IDENTICAL inputs.
 """
-import hashlib
 import importlib.util
-import json
-import shutil
 import sys
-import uuid
 from pathlib import Path
 
 import numpy as np
 import pytest
 
 from solweig_light.radiation import cylinder_longwave as cyl
-from solweig_light.radiation import _lw_dispatch as dispatch
 
 # The v6 cylinder family's conftest, loaded by file path: a bare
 # `import conftest` is shadowed by sibling suites in one pytest session.
@@ -47,35 +43,22 @@ _v6 = importlib.util.module_from_spec(_spec)
 sys.modules['_n840_v6_conftest'] = _v6
 _spec.loader.exec_module(_v6)
 lcyl_arguments = _v6.lcyl_arguments
-lcyl_patches = _v6.lcyl_patches
 packed = _v6.packed
-
-# N8-41 vendoring: the machinery and the policy module ship in the
-# package -- the SAME module identity the dispatch itself binds.
-_HELPERS = Path(__file__).resolve().parent.parent / 'policy'
-if str(_HELPERS) not in sys.path:
-    sys.path.insert(0, str(_HELPERS))
-from solweig_light._native_dispatch import lw_default_policy as policy  # noqa: E402
-from policy_test_helpers import COMMIT, make_promotion_record, write_json  # noqa: E402
-from solweig_light._native_dispatch import installed_loader  # noqa: E402  (N8-21; genuine loaded outcome)
-
-_REPO = Path(__file__).resolve().parents[3]
-_STAGE = _REPO / 'experiments' / 'optimization_v8' / 'native' / 'stage'
 
 _ROWS, _COLS, _PATCHES = 37, 53, 153  # tail block + tail gang coverage
 
 
 @pytest.fixture(autouse=True)
 def _shipped_env(monkeypatch):
-    """Every test starts from the shipped no-env state; policy state and
-    any pools a previous test created are torn down (the production
-    per-tile teardown does the same)."""
+    """Every test starts from the shipped no-env state; any pools a
+    previous test created are torn down (the production per-tile
+    teardown does the same)."""
     monkeypatch.delenv('SOLWEIG_LIGHT_LW_BACKEND', raising=False)
-    policy.reset_for_tests()
+    sys.modules.pop('solweig_light._native_dispatch.lw_default_policy',
+                    None)
     yield
     import solweig_light._native_dispatch.region.region_pool as rp
     rp.reset_pools_for_tests()  # the region suite's own teardown hygiene
-    policy.reset_for_tests()
 
 
 @pytest.fixture()
@@ -139,174 +122,24 @@ def _run_pair(**args):
     return legacy, routed
 
 
-def _write_evidence(tmp_path):
-    """Fabricated promotion + review tree; returns a row_record builder."""
-    promotion_path, promotion_sha = write_json(
-        tmp_path / 'evidence' / 'promotion.json', make_promotion_record())
-    review_path, review_sha = write_json(
-        tmp_path / 'evidence' / 'review.json',
-        {'schema': 'sw8-lw-review-v1', 'task': 'N8-40-integration',
-         'verdict': 'APPROVE-WITH-NOTES'})
-
-    def row_record(**overrides):
-        record = {
-            'schema': policy.ROW_RECORD_SCHEMA,
-            'status': 'qualified',
-            'row': 'C',
-            'host_class': policy.current_host_class(),
-            'created_utc': '2026-09-22T00:00:00Z',
-            'source_commit': COMMIT,
-            'artifact_identity': {
-                'kind': 'installed-native-generation',
-                'generation': 'gen-fabricated',
-                'kernel_sha256': '2' * 64,
-                'dylib_sha256': '3' * 64,
-            },
-            'promotion_record': {
-                'path': 'evidence/promotion.json',
-                'sha256': promotion_sha,
-                'schema': policy.PROMOTION_RECORD_SCHEMA,
-            },
-            'cells': ['primary-0', 'primary-2'],
-            'independent_review': {
-                'path': 'evidence/review.json',
-                'sha256': review_sha,
-            },
-        }
-        record.update(overrides)
-        return record
-
-    return row_record
-
-
-def _inject_registry(monkeypatch, tmp_path, records):
-    """Point the policy module's call-time globals at the tmp evidence.
-
-    REPO_ROOT moves so record evidence paths resolve under tmp; the packet
-    ``tools/`` tree (real promotion-gate code) is mirrored into the fake
-    root because ``_assess_promotion`` imports it relative to REPO_ROOT.
-    """
-    path = tmp_path / 'registry.json'
-    path.write_text(json.dumps(
-        {'schema': policy.REGISTRY_SCHEMA, 'records': list(records)}))
-    tools = _REPO / 'optimization_v8_native_default' / 'tools'
-    mirrored = tmp_path / 'optimization_v8_native_default' / 'tools'
-    if tools.is_dir() and not mirrored.is_dir():
-        shutil.copytree(tools, mirrored)
-    monkeypatch.setattr(policy, 'DEFAULT_REGISTRY_PATH', path)
-    monkeypatch.setattr(policy, 'REPO_ROOT', tmp_path)
-
-
-def _staged_generation():
-    manifests = sorted(_STAGE.glob('*/manifest.json'))
-    if not manifests:
-        pytest.skip('[no-staged-artifact] run build_aosoa.py to produce '
-                    f'{_STAGE}/<gen>')
-    return manifests[-1].parent
-
-
-def _genuine_outcome(tmp_path, staged):
-    """A REAL N8-21 LoadOutcome for a copy of the staged N8-13 generation
-    (fake installed package, policy-suite pattern)."""
-    name = f'fake_native_pkg_{uuid.uuid4().hex[:10]}'
-    root = tmp_path / name
-    generated = root / 'backends' / 'native_generated'
-    generated.mkdir(parents=True)
-    (root / '__init__.py').write_text('')
-    shutil.copytree(staged, generated / staged.name)
-    sys.path.insert(0, str(tmp_path))
-    try:
-        importlib.import_module(name)
-        installed_loader.reset_for_tests()
-        outcome = installed_loader.attempt_load(name)
-    finally:
-        sys.modules.pop(name, None)
-        while str(tmp_path) in sys.path:
-            sys.path.remove(str(tmp_path))
-    installed_loader.reset_for_tests()
-    assert outcome.status == 'loaded', outcome.reason
-    return outcome
+def _policy_gone():
+    """The qualification selector is gone from the package (N9 F4) and
+    no routed call imported a stale copy."""
+    import importlib
+    assert importlib.util.find_spec(
+        'solweig_light._native_dispatch.lw_default_policy') is None
+    assert 'solweig_light._native_dispatch.lw_default_policy' \
+        not in sys.modules
 
 
 # ---------------------------------------------------------------------------
-# Shipped state: the wiring is inert byte-for-byte
+# The structural default: the bounded Numba stream
 # ---------------------------------------------------------------------------
 
-def test_shipped_registry_routes_legacy_bitwise(args, region_spy):
-    """Real shipped registry (no injection): [absent] -> row A -> the
-    legacy loop, and the region machinery is never touched."""
-    legacy, routed = _run_pair(**args)
-    assert _bitwise(legacy, routed)
-    assert region_spy == []
-    assert any('[absent]' in reason for reason in policy.policy_reasons())
-
-
-def test_explicit_expert_env_stays_with_legacy_route(args, region_spy,
-                                                     monkeypatch):
-    """Staged expert migration (n840-6): env=native/ispc is served by the
-    legacy B7-32 route; the policy selector is never consulted."""
-    called = []
-    monkeypatch.setattr(policy, 'resolve_lw_backend',
-                        lambda *a, **k: called.append(1))
-    for value in ('native', 'ispc'):
-        monkeypatch.setenv('SOLWEIG_LIGHT_LW_BACKEND', value)
-        legacy, routed = _run_pair(**args)
-        assert _bitwise(legacy, routed)
-    assert called == []
-    assert region_spy == []
-
-
-def test_unknown_legacy_env_value_routes_legacy(args, region_spy,
-                                                monkeypatch):
-    monkeypatch.setenv('SOLWEIG_LIGHT_LW_BACKEND', 'numba')
-    legacy, routed = _run_pair(**args)
-    assert _bitwise(legacy, routed)
-    assert region_spy == []
-
-
-def test_serial_demand_never_dispatches(args, region_spy):
-    """parallel=False keeps the legacy serial kernel in both runs."""
-    legacy, routed = _run_pair(**args, parallel=False)
-    assert _bitwise(legacy, routed)
-    assert region_spy == []
-
-
-def test_lane_misaligned_block_pixels_decline(args, region_spy,
-                                              monkeypatch, tmp_path):
-    """A qualified row still declines (pre-launch) when the driver's block
-    size is not lane-aligned; the trusted legacy loop serves the call."""
-    row_record = _write_evidence(tmp_path)
-    module_rel = 'src/solweig_light/_native_dispatch/lw_b_control.py'
-    real = _REPO / module_rel
-    module_copy = tmp_path / module_rel
-    module_copy.parent.mkdir(parents=True)
-    module_copy.write_bytes(real.read_bytes())
-    record = row_record(row='B', artifact_identity={
-        'kind': 'python-module', 'module_path': module_rel,
-        'module_sha256': hashlib.sha256(real.read_bytes()).hexdigest()})
-    _inject_registry(monkeypatch, tmp_path, [record])
-    legacy, routed = _run_pair(**args, block_pixels=100)
-    assert _bitwise(legacy, routed)
-    assert region_spy == []
-
-
-# ---------------------------------------------------------------------------
-# Qualified rows: the region path executes and stays bitwise-faithful
-# ---------------------------------------------------------------------------
-
-def test_row_b_qualified_record_routes_region(args, region_spy, monkeypatch,
-                                              tmp_path):
-    row_record = _write_evidence(tmp_path)
-    module_rel = 'src/solweig_light/_native_dispatch/lw_b_control.py'
-    real = _REPO / module_rel
-    module_copy = tmp_path / module_rel
-    module_copy.parent.mkdir(parents=True)
-    module_copy.write_bytes(real.read_bytes())
-    record = row_record(row='B', artifact_identity={
-        'kind': 'python-module', 'module_path': module_rel,
-        'module_sha256': hashlib.sha256(real.read_bytes()).hexdigest()})
-    _inject_registry(monkeypatch, tmp_path, [record])
-
+def test_structural_default_routes_stream_bitwise(args, region_spy):
+    """No env, admitted packed channels: the stream executes, bitwise-
+    identical to the legacy loop, with no selection policy anywhere in
+    the path."""
     legacy, routed = _run_pair(**args)
     assert _bitwise(legacy, routed)
     assert len(region_spy) == 1
@@ -314,52 +147,131 @@ def test_row_b_qualified_record_routes_region(args, region_spy, monkeypatch,
     assert consumer.mode.value == 'self_parallel'
     assert plan.block_pixels == 128
     assert report.blocks == plan.total_blocks
-    # The success path returns without logging; assert the selector itself
-    # reached the qualified row under this exact injected state.
-    selection = policy.resolve_lw_backend()
-    assert selection.row == 'B' and selection.mode == 'auto-qualified'
+    _policy_gone()
 
 
-def test_row_c_qualified_record_routes_native(args, region_spy, monkeypatch,
-                                              tmp_path):
-    staged = _staged_generation()
-    outcome = _genuine_outcome(tmp_path, staged)
-    manifest = json.loads((staged / 'manifest.json').read_text())
-    row_record = _write_evidence(tmp_path)
-    record = row_record(row='C', artifact_identity={
-        'kind': 'installed-native-generation',
-        'generation': manifest['generation'],
-        'kernel_sha256': manifest['kernel']['sha256'],
-        'dylib_sha256': manifest['artifacts'][0]['sha256']})
-    _inject_registry(monkeypatch, tmp_path, [record])
-    monkeypatch.setattr(policy, '_default_attempt_load', lambda: outcome)
-
+def test_unknown_legacy_env_value_takes_structural_default(args, region_spy,
+                                                           monkeypatch):
+    """A non-expert env value ('numba') is not the expert stand-down: the
+    structural default applies exactly as with no env at all."""
+    monkeypatch.setenv('SOLWEIG_LIGHT_LW_BACKEND', 'numba')
     legacy, routed = _run_pair(**args)
     assert _bitwise(legacy, routed)
     assert len(region_spy) == 1
-    plan, consumer, output, report = region_spy[0]
-    assert isinstance(consumer, dispatch.AosoaNativeCConsumer)
-    assert consumer.mode.value == 'block_fanout'
-    assert report.blocks == plan.total_blocks
+    _policy_gone()
 
 
-def test_dense_channel_declines_before_launch(monkeypatch, tmp_path, rng,
-                                              region_spy):
-    """A qualified row over a NON-admitted (dense) visibility channel is a
-    pre-launch producer decline: trusted legacy loop, machinery untouched.
-    The shipped B7-32 contract already establishes fallback outside the
-    admitted domain."""
+def test_explicit_expert_env_stands_down_to_b7_32(args, region_spy,
+                                                  monkeypatch):
+    """Established expert compatibility: env=native/ispc is served by the
+    legacy B7-32 route, so the stream route returns None at the seam
+    (the region machinery is never touched)."""
+    for value in ('native', 'ispc'):
+        monkeypatch.setenv('SOLWEIG_LIGHT_LW_BACKEND', value)
+        legacy, routed = _run_pair(**args)
+        assert _bitwise(legacy, routed)
+    assert region_spy == []
+
+
+def test_serial_demand_never_dispatches(args, region_spy):
+    """parallel=False keeps the legacy serial kernel in both runs: the
+    route gate stays shut, the route is never consulted."""
+    legacy, routed = _run_pair(**args, parallel=False)
+    assert _bitwise(legacy, routed)
+    assert region_spy == []
+
+
+def test_lane_misaligned_block_pixels_decline(args, region_spy):
+    """A lane-misaligned block size is a STRUCTURAL pre-launch decline:
+    the trusted legacy loop serves the call, machinery untouched."""
+    legacy, routed = _run_pair(**args, block_pixels=100)
+    assert _bitwise(legacy, routed)
+    assert region_spy == []
+
+
+def test_dense_channel_declines_before_launch(rng, region_spy):
+    """A NON-admitted (dense) visibility channel is a pre-launch producer
+    decline: trusted legacy loop, machinery untouched -- fallback outside
+    the admitted domain is the unchanged B7-32 contract."""
     args = lcyl_arguments(rng, rows=_ROWS, cols=_COLS)  # dense mats
-    record = _write_evidence(tmp_path)(row='B', artifact_identity={
-        'kind': 'python-module',
-        'module_path': 'src/solweig_light/_native_dispatch/lw_b_control.py',
-        'module_sha256': hashlib.sha256(
-            (_REPO / 'src/solweig_light/_native_dispatch/lw_b_control.py')
-            .read_bytes()).hexdigest()})
-    _inject_registry(monkeypatch, tmp_path, [record])
     legacy, routed = _run_pair(**args)
     assert _bitwise(legacy, routed)
     assert region_spy == []
+
+
+def test_all_raw_payload_class_declines(region_spy, rng):
+    """The one measured stream loss (N9-F3): ALL-raw packed payloads
+    decline pre-launch and the legacy loop serves the call."""
+    gen = np.random.default_rng(20260922)
+    raw = tuple(packed(gen, _ROWS, _COLS, _PATCHES, ('raw', 'raw', 'raw'))
+                for _ in range(3))
+    args = lcyl_arguments(rng, rows=_ROWS, cols=_COLS,
+                          shmat=raw[0], vegshmat=raw[1],
+                          vbshvegshmat=raw[2])
+    legacy, routed = _run_pair(**args)
+    assert _bitwise(legacy, routed)
+    assert region_spy == []
+
+
+def test_all_raw_decline_parity_same_process_with_guard_alternation(
+        args, rng, region_spy):
+    """Release-owner REQUIRED (f4_release_disposition.md section 2): an
+    all-raw tile through the driver is bitwise == the legacy A8 result
+    computed in the SAME process, and a raw -> packed -> raw alternation
+    exercises slot reuse across the raw-guard boundary -- the trailing
+    raw tile must still match A8 exactly (no stream-state leakage)."""
+    gen = np.random.default_rng(20260923)
+    channels = tuple(packed(gen, _ROWS, _COLS, _PATCHES,
+                            ('raw', 'raw', 'raw')) for _ in range(3))
+    raw_args = lcyl_arguments(rng, rows=_ROWS, cols=_COLS,
+                              shmat=channels[0], vegshmat=channels[1],
+                              vbshvegshmat=channels[2])
+
+    # The A8 references: identical inputs, route forced off, same process.
+    real_route = cyl._lw_region_route
+    cyl._lw_region_route = lambda *a, **k: None
+    try:
+        legacy_raw = cyl.Lcyl_v2022a_primary(**raw_args)
+        legacy_mixed = cyl.Lcyl_v2022a_primary(**args)
+    finally:
+        cyl._lw_region_route = real_route
+
+    # Alternation raw -> packed -> raw: the middle (admitted) tile takes
+    # the stream and reuses its bounded slots; both raw tiles decline
+    # pre-launch at the guard.
+    first = cyl.Lcyl_v2022a_primary(**raw_args)
+    middle = cyl.Lcyl_v2022a_primary(**args)
+    last = cyl.Lcyl_v2022a_primary(**raw_args)
+
+    assert _bitwise(first, legacy_raw)
+    assert _bitwise(middle, legacy_mixed)
+    assert _bitwise(last, legacy_raw)
+    assert len(region_spy) == 1  # only the admitted middle tile dispatched
+
+
+def test_routed_call_pins_budget_one_and_pool_has_zero_workers(args,
+                                                               monkeypatch):
+    """Release-owner REQUIRED: the default route executes on the shared
+    pool keyed (pid, 1) with ZERO background workers, and the driver
+    passes ``budget=1`` (the plan's pinned B1 arm) -- never the wider
+    runtime default (threads_per_worker)."""
+    import os
+    import solweig_light._native_dispatch.region.region_pool as rp
+    received = {}
+    real = rp.execute_regions
+
+    def spy(plan, consumer, output, **kwargs):
+        received['budget'] = kwargs.get('budget')
+        return real(plan, consumer, output, **kwargs)
+
+    monkeypatch.setattr(rp, 'execute_regions', spy)
+    routed = cyl.Lcyl_v2022a_primary(**args)
+    assert routed is not None
+    assert received['budget'] == 1
+    pool = rp._POOLS.get((os.getpid(), 1))
+    assert pool is not None, 'the (pid, 1) shared owner was not created'
+    assert pool.worker_count == 0
+    # teardown hygiene is the autouse fixture's reset_pools_for_tests()
 
 
 # ---------------------------------------------------------------------------
@@ -367,20 +279,11 @@ def test_dense_channel_declines_before_launch(monkeypatch, tmp_path, rng,
 # explicit teardown
 # ---------------------------------------------------------------------------
 
-def test_region_pool_reuse_and_shutdown(args, monkeypatch, tmp_path):
+def test_region_pool_reuse_and_shutdown(args):
     """Two routed calls share ONE pool per budget (registry growth bound),
     and shutdown_all_pools empties the live set."""
     import solweig_light._native_dispatch.region.region_pool as rp
-    row_record = _write_evidence(tmp_path)
-    module_rel = 'src/solweig_light/_native_dispatch/lw_b_control.py'
-    real = _REPO / module_rel
-    module_copy = tmp_path / module_rel
-    module_copy.parent.mkdir(parents=True)
-    module_copy.write_bytes(real.read_bytes())
-    record = row_record(row='B', artifact_identity={
-        'kind': 'python-module', 'module_path': module_rel,
-        'module_sha256': hashlib.sha256(real.read_bytes()).hexdigest()})
-    _inject_registry(monkeypatch, tmp_path, [record])
+
     def _live_pools():
         # LIVE filter: post n8-14 repair, close() always untracks, so this
         # is a pure safety net (delta review R-D1/N-D1); the reuse/growth
