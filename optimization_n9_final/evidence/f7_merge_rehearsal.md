@@ -80,3 +80,25 @@ final manifests - NO src/ changes:
 
 ## Final rehearsal (re-run at the closing tip; appended below by the
 closing record commit)
+
+Appended by the closing record-only commit, whose only change is this
+file - verifiable with `git log --oneline 18780156..HEAD` (exactly one
+commit) and `git diff 18780156 HEAD --stat` (this file only).
+
+- Code immutability across the record commits:
+  `git rev-parse 22876fb6:src` == `git rev-parse 18780156:src`
+  = 2b5b554f9809847fc615ce1f886b12267f0df4ef (IDENTICAL).
+- Closing tip rehearsed: 187801565e4602f0a113ead0fee9d7486b21bd73
+  (the FINAL_SELECTION.json + MERGE_MANIFEST.json commit).
+- Disposable detached worktree /tmp/n9_merge_rehearsal at main
+  (14e88876); `git merge --ff-only 18780156` -> OK.
+- merged HEAD = 187801565e4602f0a113ead0fee9d7486b21bd73
+- merged tree  = 17d8c68dee2f6d3efe4877d7b8b3f8b84555cf9e
+- branch-tip tree = 17d8c68dee2f6d3efe4877d7b8b3f8b84555cf9e
+  (IDENTICAL - the merge is bit-for-bit the tested tree)
+- post-merge `git status` clean.
+
+The code tree merged is byte-identical to the tree every gate ran
+against (22876fb6, tree cf94ff98...): the record commits add evidence,
+tests, and manifests only. F7 complete; no further commits planned on
+this branch.
