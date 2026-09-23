@@ -1,9 +1,16 @@
 {
   "record": "N9-F6 discrepancy notice: f6_cold_gate_ruling.json premise vs authoritative verdict",
   "notice_by": "n9-performance-owner (performance_owner)",
-  "notice_utc": "2026-09-23T17:55:00Z",
-  "status": "DISCREPANCY_RECORDED_AWAITING_REISSUE",
-  "non_binding": "This is a discrepancy notice by the measurement owner, NOT a re-ruling. The cold-gate disposition remains n9-release-owner's to re-issue.",
+  "notice_utc": "VOID_AS_STATED - see notice_utc_correction",
+  "notice_mtime_utc": "2026-09-23T17:40:51Z",
+  "notice_utc_correction": "The originally stated 2026-09-23T17:55:00Z was future-dated - the same error class as the superseded ruling's 17:40:00Z stamp. The file mtime (17:40:51Z) stands as creation time; the release-owner's clock read 17:44:05Z on first read. The erroneous value is retained here rather than silently rewritten.",
+  "status": "RESOLVED_BY_AMENDMENT_1",
+  "resolution": {
+    "amendment": "evidence/f6_cold_gate_ruling_amendment_1.json (mtime 17:39:54Z, clock-verified ruling_utc 17:39:10Z) supersedes f6_cold_gate_ruling.json IN ITS ENTIRETY; the original is retained unmodified with its ruling_utc declared VOID",
+    "disposition": "COLD_LIMITATION_WITHDRAWN - run-2 cold median 0.9226 is within the 1.03 bound, so the gate PASSES AS MEASURED; cold_jit_regression_one_time is omitted from FINAL_SELECTION entirely (not restated weakened)",
+    "parallel_drafting_note": "The amendment hit disk ~1 minute before this notice; the conflict described below existed only between the ORIGINAL ruling (17:17:31Z) and the authoritative verdict (17:26:30Z), and was resolved concurrently with its reporting."
+  },
+  "non_binding": "This is a discrepancy notice by the measurement owner, NOT a re-ruling. The cold-gate disposition was made by n9-release-owner via Amendment 1, which resolves this notice.",
   "conflict": {
     "ruling": "evidence/f6_cold_gate_ruling.json (mtime 17:17:31Z, stated ruling_utc 17:40:00Z) dispositions gates.cold_within_3pct=false at 1.0843 and binds 'terminal_label GATE_FAILURE retained verbatim'",
     "authoritative": "evidence/f6_verdict.json (recorded_utc 17:26:30Z) has gates.cold_within_3pct=true, cold_marginal=true, terminal_label SHIPPED_ROUTE_CONFIRMED",
@@ -16,14 +23,18 @@
       "17:14:15": "run-1 verdict preserved as f6_verdict_run1_invalid_mainwarm.json (invalidation)",
       "17:16:23": "run-2 raw archive f6_final_vs_main_timed_20260923T171623Z.json (authoritative)",
       "17:17:31": "f6_cold_gate_ruling.json written (premised on run-1)",
-      "17:26:30": "authoritative f6_verdict.json (gate math replayed from run-2 raw without re-measurement)"
+      "17:26:30": "authoritative f6_verdict.json (gate math replayed from run-2 raw without re-measurement)",
+      "17:39:54": "f6_cold_gate_ruling_amendment_1.json written (supersedes the original ruling entirely; drafted in parallel with the discrepancy report)",
+      "17:40:51": "this notice written"
     }
   },
   "why_run1_cold_pair_misled": {
     "run1": "n=1 cold pair at loadavg_1m 7.61-7.75; final_cold 2695.349 ms is the slowest final-cold observation across both runs",
     "run2": "3 paired cold samples at loadavg_1m 4.67-5.39; per-pair ratios [1.0153, 0.9226, 0.9069], median 0.9226 vs bound 1.03; run-1's main_cold 2485.7 sits inside run-2's main range [2425.0, 2467.9, 2507.0]",
     "reading": "window noise on the final side, not a stable compile-cost delta; cold is JIT-compile-dominated with +/-15% between-process spread at this sample size",
-    "censor_proximity": "run-1's n=1 cold pair sat at loadavg_1m 7.61-7.75, within ~0.5 of the session's 8.225 censor bound (in the censorable-noise regime, though not itself censored); run-2's cold samples ran at 4.67-5.39"
+    "censor_proximity": "run-1's n=1 cold pair sat at loadavg_1m 7.61-7.75, within ~0.5 of the session's 8.225 censor bound (in the censorable-noise regime, though not itself censored); run-2's cold samples ran at 4.67-5.39",
+    "release_owner_precision": "run-1's cold pair was NOT mechanically tainted - the harness defect sat in MAIN's warm cells. Run-1 cold is SUPERSEDED AS A DECISION BASIS by the stronger n=3 paired measurement at lower loadavg, not declared invalid; the amendment says nothing false about run-1 cold.",
+    "separate_intent_question_answered": "The release-owner confirms they did NOT intend to disposition run-1's cold pair independently; the original ruling's premise was run-1-as-authoritative, unaware of the harness defect. The alternative reading offered in my discrepancy message is withdrawn and must not be recorded."
   },
   "corroboration": {
     "by": "n9-team-lead (independent check, completed before this notice was drafted)",
@@ -34,9 +45,10 @@
     "what_it_is_not": "It is a MODEL on source trees, not a direct installed-tree measurement; F5's installed gates remain the separate direct installed record. And if a persistent writable NUMBA_CACHE_DIR is ever introduced (the recorded future work), 'cold' changes meaning entirely (observed in-process disk-cache load ~320 ms, run-1 analysis, vs compile ~2.4-2.7 s) and the gate would need its own record -- consistent with the original ruling's ground that the mitigation is new behavior invalidating evidence reuse."
   },
   "for_f7_integrator": {
-    "use_for_cold_gate_line": "f6_verdict.json gates.cold_within_3pct=true (0.9226, MARGINAL, raw archive f6_final_vs_main_timed_20260923T171623Z.json cold_phase)",
-    "do_not_ingest": "the ruling's merge_manifest_gate_table_entry (cold FAIL 1.0843) and its final_selection limitations entry cold_jit_regression_one_time, pending a re-issued ruling",
-    "unaffected_by_this_notice": "parity (bitwise, all 6 cells), carried-cell warm results and geomean 1.60x, declined cells within 3%, pre-committed threads_per_worker=1 rule NOT triggered, terminal SHIPPED_ROUTE_CONFIRMED"
+    "use_for_cold_gate_line": "the AMENDMENT's merge_manifest_gate_table_entry (f6_cold_gate_ruling_amendment_1.json): verdict PASS, measured 0.9226, label MARGINAL (margin within 2x per-sample spread; one sample above 1.0), source f6_verdict.json /cold run 2 + raw f6_final_vs_main_timed_20260923T171623Z.json, superseded_record pointer to the run-1 invalidation",
+    "do_not_ingest": "the SUPERSEDED f6_cold_gate_ruling.json gate-table entry (cold FAIL 1.0843) and its final_selection limitations entry cold_jit_regression_one_time - withdrawn in full by Amendment 1; carry instead the amendment's accepted_residuals_for_the_manifest list (128-cell MARGINAL margins, cold parity MARGINAL, declined 128-raw 2.6% within bound, single-channel-raw compositions unmeasured)",
+    "further_measurement": "NONE ADMISSIBLE per Amendment 1 - run 2 is terminal for this campaign; the causal-correction allowance is consumed",
+    "unaffected_by_this_notice": "parity (bitwise, all 6 cells), carried-cell warm results and geomean 1.5981, declined cells within 3%, pre-committed threads_per_worker=1 rule NOT triggered, terminal SHIPPED_ROUTE_CONFIRMED"
   },
   "raw_records_touched": "none; the ruling file is unmodified; this notice is additive"
 }

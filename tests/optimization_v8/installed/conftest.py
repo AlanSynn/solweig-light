@@ -295,7 +295,7 @@ def _run_noenv_pipeline(python: Path, script: str, scene: Path, scratch: Path,
             "labelled GDAL_CACHEMAX=64 remedy attempt completed, so the "
             "pass is remedy-assisted, not a pinned-default run")
     elif all(a["diagnosis"] == "blocked:host-memory-pressure"
-             for a in record["attempts"]):
+             for a in pinned):
         record["status"] = "blocked:host-memory-pressure"
         record["admission_note"] = (
             "scene phase reservation ~1.74 GB + 410 MB fixed parent charge vs "

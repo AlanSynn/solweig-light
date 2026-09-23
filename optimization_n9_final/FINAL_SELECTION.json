@@ -52,8 +52,8 @@
       "parity": "Ldown+Lside bitwise FINAL == MAIN on all 6 cells, all 9 reps"
     },
     "installed_wheel_gates": {
-      "source": "optimization_v8_native_default/evidence/installed/installed_gates.json (run 6)",
-      "wheel_sha256_prefix": "8e979dd9c1a90219",
+      "source": "optimization_v8_native_default/evidence/installed/installed_gates.json (run 7; run 7 re-verified every content gate on the rebuilt wheel after the conftest pinned-attempts status fix)",
+      "wheel_sha256_prefix": "aa184a71bc16d015",
       "dx_surface_parity": "passed (subprocess-origin capture, zero unexpected divergences)",
       "env_read_surface_R1": "passed - the dispatch region's ONLY env read is SOLWEIG_LIGHT_LW_BACKEND at cylinder_longwave.py:196/:216; _lw_dispatch and _native_dispatch read NO environment",
       "aplus_decode_R2": "passed - module present in wheel and wired into both consumer seams (module-identity binding)",
@@ -67,7 +67,7 @@
   "unmeasured_or_blocked": {
     "single_channel_raw_compositions": "UNMEASURED and stream by design (e.g. one raw channel among packed ones); the structural guard is exactly the measured all-raw loss class, not the mixed compositions",
     "installed_tree_cold": "NOT MEASURED - F6 cold is source-tree cold under the fresh-cache protocol; the installed tree is the installed gates' domain",
-    "installed_api_cli_product_runs": "ADMISSION-BLOCKED, environmental: 6 runs, 4 labelled attempts each including the GDAL_CACHEMAX=64 diagnostic refused BY CONSTRUCTION (admission charge = default_gdal_cache_bytes() = 5% of probed physical RAM, runtime_memory.py:485-494; the planner never reads the env var and the pinned no-env contract forbids RuntimeOptions overrides). Requires available-memory view >= ~4.3 GB; diagnostics and construction proof retained in installed_gates.json + evidence/review/f5_review.md. Not a DX property of the product.",
+    "installed_api_cli_product_runs": "ADMISSION-BLOCKED, environmental: 7 runs, 4 labelled attempts each (3 pinned + the GDAL_CACHEMAX=64 diagnostic) refused BY CONSTRUCTION (admission charge = default_gdal_cache_bytes() = 5% of probed physical RAM, runtime_memory.py:485-494; the planner never reads the env var and the pinned no-env contract forbids RuntimeOptions overrides). Requires available-memory view >= ~4.3 GB; diagnostics and construction proof retained in installed_gates.json + evidence/review/f5_review.md. Not a DX property of the product.",
     "inferential_statistics": "NONE - single host, n=9 paired reps and n=3 cold samples; no confidence claims are made or implied"
   },
   "gates": {

@@ -54,7 +54,7 @@
       "verdict": "PASS (rule not triggered)"
     },
     {
-      "gate": "installed-wheel content and wiring (N9 F5, run 6, wheel 8e979dd9c1a90219)",
+      "gate": "installed-wheel content and wiring (N9 F5, run 7, wheel aa184a71bc16d015)",
       "source": "optimization_v8_native_default/evidence/installed/installed_gates.json",
       "measured": {
         "dx_surface_parity_subprocess_origin": "passed, zero unexpected divergences",
@@ -70,7 +70,7 @@
     "B=128 all-binary and B=128 mix carried-cell wins are MARGINAL (margin within 2x per-pair spread) - do not headline them",
     "cold parity is MARGINAL: within the 1.03 bound, one of three samples above 1.0",
     "single-channel-raw compositions are UNMEASURED and stream by design; the structural guard is exactly the measured all-raw loss class",
-    "installed API/CLI product runs: 6 runs, 4 labelled attempts each, all blocked:host-memory-pressure - refused BY CONSTRUCTION under the no-env contract (admission charge probes physical RAM via default_gdal_cache_bytes(), runtime_memory.py:485-494; GDAL_CACHEMAX is never read; RuntimeOptions overrides forbidden). Self-driving ~4 min each once available-memory view >= ~4.3 GB. Environmental, not a DX property",
+    "installed API/CLI product runs: 7 runs, 4 labelled attempts each, all blocked:host-memory-pressure - refused BY CONSTRUCTION under the no-env contract (admission charge probes physical RAM via default_gdal_cache_bytes(), runtime_memory.py:485-494; GDAL_CACHEMAX is never read; RuntimeOptions overrides forbidden). Self-driving ~4 min each once available-memory view >= ~4.3 GB. Environmental, not a DX property",
     "single host, n=9 paired reps, n=3 cold samples - no inferential claims",
     "run-1 F6 record is INVALID (timer-boundary defect) and retained only as provenance; run 2 is terminal per amendment 1 (causal-correction allowance consumed)"
   ],

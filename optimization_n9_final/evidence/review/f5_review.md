@@ -132,6 +132,18 @@ Both runs identical; cold (SVF-regenerating) path equals warm. Real evidence, ho
 | 3 (no-env-only retry) | purged | 1 passed, 2 skipped — both product runs `[host-memory-pressure]` |
 | 4 (retry after 3-min pause) | purged | 1 passed, 2 skipped — unchanged `[host-memory-pressure]` |
 | 5 (+ release-owner gates R1/R2) | purged | **15 passed, 7 skipped, 0 failed** (155s) |
+| 6 (noenv-only, + remedy diagnostic) | purged | 1 passed, 2 skipped — remedy refused identically (deficit ~1.15 GB) |
+| 7 (FINAL full suite, single build `aa184a71…`) | purged | **15 passed, 7 skipped, 0 failed** (159s); product runs blocked with 4 labelled attempts each — RECORD OF NOTE |
+
+Run 7 is the committed record: one build (`solweig_light-0.1.0.dev0-py3-none-any.whl`, sha256
+`aa184a71bc16d015…`) carries the passing surface gate (zero unexpected divergences), both
+release-owner gates R1/R2 green, and api/cli gate records with FOUR attempts each — three
+pinned no-env attempts plus the labelled `gdal-cachemax-64-diagnostic`, all
+`blocked:host-memory-pressure`. The CLI fixture's inline retry loop was given the same
+remedy-diagnostic attempt as the API pipeline (parity fix), and both fixtures now compute
+status from the PINNED attempts only (`remedy_note` discloses a remedy-assisted pass if one
+ever lands). Per release-owner instruction: no further retries; the block is recorded as a
+measured environmental limitation.
 
 Skip labels (never fake passes): 1 archive skip (`test_native_wheel_gates.py`, F4 reason),
 4 deferred N8-41/42 skips, 2 `[host-memory-pressure]` skips of the API/CLI no-env product runs.
@@ -196,3 +208,20 @@ Two positive gates appended to `tests/optimization_v8/installed/test_installed_w
 - The stale-`build/` hazard is structural: ANY future module removal taints subsequent wheel
   builds in tree until purged. Recommend a purge step (or `pip wheel` from a pristine copy) be
   mandated in the F7 packaging/manifest instructions.
+
+## Integrator addendum (team-lead, F7 close; post-review events)
+
+- **Run 7 (pytest-951)** landed after this review's six-run history: a fresh full-suite
+  run that verifies the conftest status-logic fix (`blocked:host-memory-pressure` now
+  judged over the PINNED attempts only, not the labelled remedy attempt) and refreshes
+  `installed_gates.json` on a rebuilt wheel (`aa184a71bc16d015` — same tree content,
+  new zip entry timestamps). Outcome unchanged: api/cli product runs blocked at all
+  4 labelled attempts each; surface + R1 + R2 + banned-members green. Environmental
+  block confirmed terminal for this campaign.
+- The `mode_label`/`task` staleness residual above is RESOLVED on disk as of run 7:
+  the record now reads "N8-23; disposition N9 F4 closed_cpu_only" with the archived
+  machinery wording (installed_test_helpers.py rewording, landed in the F5 evidence
+  commit and re-recorded by run 7).
+- The stale-`build/` purge recommendation is adopted verbatim in
+  `optimization_n9_final/MERGE_MANIFEST.json` (packaging_handover.D2_wheel_taint)
+  and FINAL_SELECTION.json commands.wheel_build_handover.
