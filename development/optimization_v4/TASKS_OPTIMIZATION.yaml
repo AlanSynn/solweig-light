@@ -1,0 +1,436 @@
+schema: 2
+project: solweig-light
+status: specification_only
+baseline: 14e888760727583ef782a4dc0e7a5c7c6e6ff9d1
+supplements_existing_TASKS_yaml: true
+target:
+  spatial_tiles: 24
+  actual_tile_shape:
+  - 1024
+  - 1024
+  timesteps: 24
+  patches: 153
+  seconds: 1800
+  margin_seconds:
+  - 1200
+  - 1380
+  physical_resolution_overlap_outputs_cache_checkpoint: freeze before evaluation
+  hardware: actual local CPU/RAM/storage to identify
+  evaluation_stage: L4_final_combined_candidate_only
+orchestration:
+  requested_lead: Astra
+  requested_bounded_worker: Luna Max when supported
+  model_effort_selection: discover and explicitly record actual model/effort; never
+    assume inheritance is cheaper
+  maximum_active_worker_sessions: 4
+  recursive_delegation: false
+  human_intermediate_approval: false
+  worker_progress_polling: false
+  trigger: real completion events or supported blocking waits
+  independent_review: true
+  performance_lease: exclusive; also prevent non-benchmark host builds/tests
+  shared_integration_files_owner: integrator
+  conditional_tasks: activate only by measured benefit and proof readiness
+  review_integration_dependencies: 'V4-50/V4-51 recurring services: each immutable
+    patch needs its own review; reuse valid evidence rather than duplicate runs'
+  branch_rule: isolated perf/lean-cpu-v4 local integration branch; owned worker worktrees;
+    never main
+  worker_maximum_validation_tier: L2
+  auto_push_pr_merge: false
+tasks:
+- id: V4-BOOT
+  title: Isolated local branch/worktree and lean-policy audit
+  status: pending
+  depends_on: []
+  role: integrator
+  strategy_ids: []
+  owned_scope:
+  - local Git worktrees and optimization_v4/evidence/branch/
+  maximum_validation_tier: none
+  gate:
+  - actual HEAD/user work preserved; perf/lean-cpu-v4 separate worktree created without
+    reset
+  - no remote push/PR/main merge; old cadence references reconciled once
+- id: V4-00
+  title: Actual source, contract and evidence inventory
+  status: pending
+  depends_on:
+  - V4-BOOT
+  role: inventory_worker
+  strategy_ids: []
+  owned_scope:
+  - optimization_v4/evidence/inventory/
+  gate:
+  - actual HEAD/worktree and current protocol identities recorded
+  - existing optimizations and old evidence mapped; no fake reset of P0-P6
+  maximum_validation_tier: L2
+- id: V4-01
+  title: Freeze lean development and final-scale protocol without executing a large
+    batch
+  status: pending
+  depends_on:
+  - V4-00
+  role: evidence_owner
+  strategy_ids: []
+  owned_scope:
+  - benchmarks/protocols/optimization_v4/
+  - optimization_v4/evidence/baseline/
+  gate:
+  - real versus synthetic corpus explicitly identified
+  - tuning/evaluation separation, resources, cache, outputs and pass rules frozen
+  - current numeric gates reused, not relaxed
+  - manifest/header discovery only for large target; one final candidate run and no
+    default large baseline sweep
+  maximum_validation_tier: L2
+- id: V4-02
+  title: Small stage costs and strategy censuses only
+  status: pending
+  depends_on:
+  - V4-01
+  role: evidence_owner
+  strategy_ids:
+  - S11
+  owned_scope:
+  - tools/optimization_v4/
+  - optimization_v4/evidence/calibration/
+  gate:
+  - non-overlapping small-fixture stage counters and diagnostic timings
+  - 128/256 scaling/concurrency evidence; no 1024 execution
+  - existing source-bound references reused; original large reference recapture deferred
+  maximum_validation_tier: L3
+- id: V4-10
+  title: SVF absorption and suffix-bound portfolio
+  status: pending
+  depends_on:
+  - V4-02
+  role: luna_max_worker
+  strategy_ids:
+  - R01
+  - R02
+  - R08
+  - V01
+  owned_scope:
+  - src/solweig_light/geometry/sky_compiled.py
+  - src/solweig_light/geometry/shadows.py
+  - src/solweig_light/geometry/svf.py
+  - tests/optimization_v4/rays/
+  gate:
+  - separate early-exit/state-projection changes
+  - all three masks and all SVF fields exact on admitted domain
+  - fallback and small geometry-cold impact recorded
+  - family L0-L2 evidence only; requests for L3 route to shared lab and L4 waits for
+    final freeze
+  maximum_validation_tier: L2
+- id: V4-20
+  title: Ordered radiation decode and exact partial evaluation
+  status: pending
+  depends_on:
+  - V4-02
+  role: luna_max_worker
+  strategy_ids:
+  - P01
+  - P02
+  - P03
+  owned_scope:
+  - src/solweig_light/radiation/patch_radiation.py
+  - src/solweig_light/geometry/visibility_compiled.py
+  - tests/optimization_v4/radiation/
+  gate:
+  - typed contributions and ordered accumulators match
+  - raw/lazy/alias/profile fallbacks preserved
+  - native layout and stage benefit measured separately
+  - family L0-L2 evidence only; requests for L3 route to shared lab and L4 waits for
+    final freeze
+  maximum_validation_tier: L2
+- id: V4-30
+  title: Ground-view owned preparation and fused postprocessing
+  status: pending
+  depends_on:
+  - V4-02
+  role: luna_max_worker
+  strategy_ids:
+  - G02
+  - G03
+  - G07
+  owned_scope:
+  - src/solweig_light/radiation/ground_view.py
+  - tests/optimization_v4/gvf/
+  gate:
+  - first/later water snapshots and mutated Tg match
+  - all 16 original intermediate fields comparable
+  - copy/scratch reduction and whole-timestep impact
+  - family L0-L2 evidence only; requests for L3 route to shared lab and L4 waits for
+    final freeze
+  maximum_validation_tier: L2
+- id: V4-40
+  title: Resource admission and persistent tile workers
+  status: pending
+  depends_on:
+  - V4-02
+  role: luna_max_worker
+  strategy_ids:
+  - S01
+  - S02
+  - S03
+  - S09
+  owned_scope:
+  - src/solweig_light/runtime.py
+  - src/solweig_light/runtime_worker.py
+  - tests/optimization_v4/runtime/
+  gate:
+  - measured/derived live memory inventory with raw and native reserve
+  - cancellation/stale-state/lifecycle tests
+  - fixed-budget small-batch curves and bounded memory
+  - family L0-L2 evidence only; requests for L3 route to shared lab and L4 waits for
+    final freeze
+  maximum_validation_tier: L2
+- id: V4-11
+  title: Input-only bush controls or richer shadow certificates
+  status: pending
+  depends_on:
+  - V4-10
+  role: numerical_specialist
+  strategy_ids:
+  - R04
+  - R05
+  - R06
+  - R07
+  owned_scope:
+  - src/solweig_light/geometry/sky_compiled.py
+  - src/solweig_light/radiation/wall_shadows.py
+  - tests/optimization_v4/rays/
+  gate:
+  - complete control prepass or all-output wall proof
+  - retained fallbacks and deciding cost crossover
+  - family L0-L2 evidence only; requests for L3 route to shared lab and L4 waits for
+    final freeze
+  activate_when: ray residual and admitted coverage justify added complexity
+  maximum_validation_tier: L2
+- id: V4-21
+  title: Classification and exact signature reuse
+  status: pending
+  depends_on:
+  - V4-20
+  role: numerical_specialist
+  strategy_ids:
+  - P04
+  - P05
+  - P06
+  - P07
+  - P08
+  - P09
+  - P10
+  owned_scope:
+  - src/solweig_light/radiation/patch_radiation.py
+  - tests/optimization_v4/radiation/
+  gate:
+  - exact-key census justifies reuse
+  - machine-function certificate before threshold promotion
+  - all live radiation/state and fallback behavior preserved
+  - family L0-L2 evidence only; requests for L3 route to shared lab and L4 waits for
+    final freeze
+  activate_when: classification/duplicate work remains a measured bottleneck; do not
+    activate all IDs blindly
+  maximum_validation_tier: L2
+- id: V4-31
+  title: GVF prefix replay and static emission reuse
+  status: pending
+  depends_on:
+  - V4-30
+  role: luna_max_worker
+  strategy_ids:
+  - G01
+  - G04
+  - G05
+  - G06
+  owned_scope:
+  - src/solweig_light/radiation/ground_view.py
+  - tests/optimization_v4/gvf/
+  gate:
+  - exact repeated-add tables, blocker/edge states and all outputs
+  - prepare/read savings exceed memory/build overhead
+  - family L0-L2 evidence only; requests for L3 route to shared lab and L4 waits for
+    final freeze
+  activate_when: prefix/material census and measured GVF residual justify reuse
+  maximum_validation_tier: L2
+- id: V4-41
+  title: Lossless codec and out-of-core residuals
+  status: pending
+  depends_on:
+  - V4-40
+  role: systems_worker
+  strategy_ids:
+  - V02
+  - V03
+  - V04
+  - V05
+  - V06
+  owned_scope:
+  - src/solweig_light/geometry/visibility.py
+  - src/solweig_light/geometry/visibility_native.py
+  - tests/optimization_v4/storage/
+  gate:
+  - codec round-trip of arbitrary bits and original schema compatibility
+  - no model-domain changes
+  - small raw/duplicate behavior and derived capacity; actual large capacity stays
+    unverified until L4
+  - family L0-L2 evidence only; requests for L3 route to shared lab and L4 waits for
+    final freeze
+  activate_when: memory/raw/export bottleneck remains; coordinate V01 source ownership
+    after V3-10
+  maximum_validation_tier: L2
+- id: V4-42
+  title: Durable I/O, state reuse and batch tail
+  status: pending
+  depends_on:
+  - V4-40
+  role: systems_worker
+  strategy_ids:
+  - S04
+  - S05
+  - S06
+  - S07
+  - S08
+  - S10
+  owned_scope:
+  - src/solweig_light/persistence.py
+  - src/solweig_light/io/rasters.py
+  - tests/optimization_v4/persistence/
+  gate:
+  - all original checkpoint guarantees and failures retained
+  - bounded producer/consumer ownership
+  - actual I/O/tail improvement without benchmark-policy changes
+  - family L0-L2 evidence only; requests for L3 route to shared lab and L4 waits for
+    final freeze
+  activate_when: I/O/checkpoint/tail cost is large enough to repay implementation
+  maximum_validation_tier: L2
+- id: V4-43
+  title: Comfort and optional preparation residuals
+  status: pending
+  depends_on:
+  - V4-02
+  role: luna_max_worker
+  strategy_ids:
+  - F01
+  - F02
+  - F03
+  - F04
+  - F05
+  - F06
+  owned_scope:
+  - src/solweig_light/comfort/
+  - src/solweig_light/forcing/
+  - tests/optimization_v4/forcing_comfort/
+  gate:
+  - all original workflows and scientific policies remain
+  - isolated optional dependencies
+  - stage gain large enough for full-batch impact
+  - family L0-L2 evidence only; requests for L3 route to shared lab and L4 waits for
+    final freeze
+  activate_when: measured residual rather than availability of a convenient microbenchmark
+  maximum_validation_tier: L2
+- id: V4-50
+  title: Completion-triggered independent family review
+  status: pending
+  depends_on:
+  - V4-02
+  role: independent_reviewer
+  strategy_ids: []
+  owned_scope:
+  - optimization_v4/evidence/reviews/
+  gate:
+  - reviewer distinct from implementation owner
+  - proof/domain/diff/commands/results assessed
+  - accepted/rejected/blocked decision with reasons
+  maximum_validation_tier: L2
+- id: V4-51
+  title: Integrate accepted immutable variants
+  status: pending
+  depends_on:
+  - V4-02
+  role: integrator
+  strategy_ids: []
+  owned_scope:
+  - src/solweig_light/radiation/engine.py
+  - src/solweig_light/pipeline.py
+  - shared dispatch/schema/manifest/status files
+  gate:
+  - each selected immutable patch has its own V4-50 review
+  - only new interactions and affected small per-step checks; one stable installed
+    wheel
+  - combined source identity recorded on optimization branch only; no merge to main
+  maximum_validation_tier: L2
+- id: V4-52
+  title: Exclusive small-scale shortlist measurements
+  status: pending
+  depends_on:
+  - V4-51
+  role: evidence_owner
+  strategy_ids: []
+  owned_scope:
+  - optimization_v4/evidence/portfolio/
+  gate:
+  - one quiet-host lease; 128/256 and 2-4 small tiles only
+  - at most two variants per family and four resource tuples
+  - diagnostic paired timing and scaling uncertainty; no 1024 trial
+  maximum_validation_tier: L3
+- id: V4-60
+  title: Residual bottleneck decision
+  status: pending
+  depends_on:
+  - V4-52
+  role: astra_lead
+  strategy_ids: []
+  owned_scope:
+  - optimization_v4/evidence/decisions/
+  gate:
+  - select next justified small experiment or freeze final candidate
+  - do not launch full historical release matrix; retain original numerical gates
+  maximum_validation_tier: L2
+- id: V4-70
+  title: Final candidate freeze and one installed small pipeline qualification
+  status: pending
+  depends_on:
+  - V4-60
+  role: evidence_owner
+  strategy_ids: []
+  owned_scope:
+  - optimization_v4/evidence/final/
+  gate:
+  - selected code reviews complete; affected installed small suites and full small
+    chronology pass
+  - source/wheel/profile/input/resource/cache identities frozen for final campaign
+  - reference coverage and evidence reuse/deferred release checks explicitly recorded
+  maximum_validation_tier: L2
+- id: V4-72
+  title: One final-scale batch and explicitly scoped target observation
+  status: pending
+  depends_on:
+  - V4-70
+  role: exclusive_evidence_owner
+  strategy_ids: []
+  owned_scope:
+  - optimization_v4/evidence/final/
+  maximum_validation_tier: L4
+  gate:
+  - one primary 24 x 1024-square candidate batch; no automatic repeats or large matrix
+  - default no new full baseline; at most one justified missing-reference capture
+    predeclared
+  - at most one causal-fix retry after retained failure and affected small checks
+  - target/runtime/resource/output outcome explicit; missing parity remains unverified
+- id: V4-71
+  title: Final branch-review handover without push/PR/main merge
+  status: pending
+  depends_on:
+  - V4-72
+  role: astra_lead
+  strategy_ids: []
+  owned_scope:
+  - optimization_v4/evidence/final_summary.md
+  gate:
+  - branch/base/tip/source identities, independent reviews and test ledger delivered
+  - single target observation and unexecuted release gates accurately scoped
+  - validation/CI costs and commands retained; branch remains unmerged
+  maximum_validation_tier: none
+policy: lean-validation-v4
+supersedes_v3_operational_plan: true

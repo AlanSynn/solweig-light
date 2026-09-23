@@ -1,0 +1,117 @@
+{
+  "abi": {
+    "abi_version": 1,
+    "exported_symbols": [
+      "lw_primary_f32",
+      "lw_primary_f64"
+    ],
+    "python_c_api": false,
+    "wrapper_abi_layout_version": "lw-region-abi-1"
+  },
+  "artifact_tag": "g8",
+  "artifacts": [
+    {
+      "binary_format": "mach-o-dylib",
+      "bytes": 34280,
+      "kind": "shared-library",
+      "path": "liblw_native_g8.dylib",
+      "sha256": "eb1071fcef64e5763839b65240986e9519d3de1906cf821925d1e0922582b46a"
+    }
+  ],
+  "build": {
+    "cc_flags": [
+      "-arch",
+      "arm64",
+      "-dynamiclib"
+    ],
+    "ispc_flags": [
+      "-O2",
+      "--opt=disable-fma",
+      "--math-lib=default",
+      "--pic"
+    ],
+    "link_deps": [
+      "/usr/lib/libSystem.B.dylib"
+    ],
+    "target": "neon-i32x8"
+  },
+  "build_mode": "native-release",
+  "created_utc": "2026-09-22T19:56:37Z",
+  "fma_audit": {
+    "asm_sha256": "bbdfdc9588d8349cbf9e554631d682d3313269cc99d4a321f22f5c4957afc0e8",
+    "match_count": 0,
+    "matches": [],
+    "mnemonics": [
+      "fmadd",
+      "fmla",
+      "fmsub",
+      "fnmadd",
+      "fnmsub",
+      "fnmla"
+    ],
+    "passed": true,
+    "tool": "regex-text-scan"
+  },
+  "generated_sources": [
+    {
+      "kind": "ispc-generated-header",
+      "path": "lw_primary_g8.h",
+      "sha256": "7d2b2ed46fc630083623da1aa425269ad38f15e5aec2d24d9b8c8af290ab2d5f"
+    },
+    {
+      "kind": "disassembly-audit-copy",
+      "path": "lw_primary_g8.s",
+      "sha256": "bbdfdc9588d8349cbf9e554631d682d3313269cc99d4a321f22f5c4957afc0e8"
+    }
+  ],
+  "generation": "lw-g8-42aeba6a50dc5937",
+  "kernel": {
+    "name": "lw_primary.ispc",
+    "sha256": "52652a598cd85ead04747a83a52b1184035c880aa0b32cf518efef06b961663c",
+    "source_ref": "src/solweig_light/backends/native/lw_primary.ispc"
+  },
+  "manifest_version": 1,
+  "math_profile": {
+    "fast_math": false,
+    "fma_contraction": "disabled",
+    "id": "lw-primary-strict-fp-contract-off",
+    "math_lib": "default"
+  },
+  "package": "solweig-light",
+  "platform": {
+    "arch": "arm64",
+    "link_deps": [
+      "/usr/lib/libSystem.B.dylib"
+    ],
+    "os": "darwin",
+    "os_min_version": "26.0",
+    "requirements": [
+      "cpu-feature:neon"
+    ]
+  },
+  "scalar_profiles": {
+    "f32": {
+      "surface_scalars": "float32",
+      "symbol": "lw_primary_f32"
+    },
+    "f64": {
+      "accumulator_round": "float32-at-accumulator-add",
+      "surface_scalars": "float64",
+      "symbol": "lw_primary_f64"
+    }
+  },
+  "toolchain": {
+    "cc": {
+      "kind": "clang",
+      "path": "/usr/bin/clang",
+      "sha256": "b8763cf250e607a778bb4603cecb5b90338814d0a3dfcba0d57b1de242f610e9",
+      "version": "Apple clang version 21.0.0 (clang-2100.1.1.101)"
+    },
+    "ispc": {
+      "llvm": "22.1.8",
+      "path": "/opt/homebrew/bin/ispc",
+      "sha256": "e43e5eae271552b60f6c0ee8eba25a7692642535d84438bdb304d54fd8f431d4",
+      "version": "1.31.0"
+    }
+  }
+}

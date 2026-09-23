@@ -1,0 +1,113 @@
+{
+  "record": "N8-60 HANDOVER: same-branch independent-reviewer handover of the retained native-default packet state",
+  "recorded_utc": "SET_AT_COMMIT",
+  "author": {
+    "agent": "n8-rev-n8-13",
+    "yaml_role": "independent_reviewer",
+    "note": "Per the N8-50 freeze record's 'next' field, this handover is AUTHORED by the independent reviewer (role flip: the reviewer writes, the integrator verifies and commits). Every commit/record below is cited verbatim from the tree at HEAD 5ed9699e; nothing in this record is new policy or new measurement."
+  },
+  "headline": {
+    "outcome": "B-ONLY: numba_improvement_only_native_goal_open",
+    "statement": "The N8 native-default packet ships NO native default. The selection (commit 4761c4d6) measured native C losing end-to-end to the parallel main-parity Numba row A0p in 3/3 mixes at the production block B=1024 (tier B: A0p 3.3627 ms vs C1 3.4655 ms all-binary uniform all-min) and applied the pre-registered branch numba_improvement_only_native_goal_open. The NUMBA improvements are retained and shipped (row A everywhere); the NATIVE GOAL REMAINS OPEN; promotion is INCOMPLETE by measured decision; NOTHING was published -- no qualified artifact, no default flip, the qualification registry ships empty and fail-closes to row A.",
+    "what_is_true_and_not_true": "TRUE: row A (main-parity Numba) is the shipped behavior and is bitwise main-parity; the native machinery is present, inert, and parity-proven in harness cells only. NOT TRUE (never claim): that native is deployed, qualified, faster end-to-end at production block, or that source-fallback success constitutes native deployment success."
+  },
+  "handover_of": {
+    "branch": "perf/native-optimization",
+    "head_at_authoring": "5ed9699e (N8-50 freeze)",
+    "anchor_commits": [
+      "4761c4d6 N8-32 selection: numba_improvement_only_native_goal_open (APPROVE-WITH-NOTES; R-SEL-1 applied)",
+      "b4a4c5ba N8-40 formal completion + N8-42/43/44 unavailable-state closure; N1/N2 docstring repairs",
+      "5ed9699e N8-50 freeze: retained state frozen; first complete installed no-env pass"
+    ],
+    "worktree": "/Users/alansynn/Workspace/solweig-v8-native"
+  },
+  "yaml_gate_disposition": {
+    "gate_1_N8_51_outcome_or_unavailable_state_present": {
+      "status": "SATISFIED -- UNAVAILABLE STATE PRESENT",
+      "evidence": "N8-50 freeze record scale_protocol_N8-51 section: 'UNAVAILABLE STATE -- no final scale campaign'; reason recorded verbatim there: the final 1024/24-spatial-tile campaign exists to qualify a native DEFAULT candidate, the selection advanced no candidate, and running a scale campaign without a candidate would produce a record with nothing to promote. Per the goal contract, 'source fallback success is not native deployment success, and missing-candidate is unverified, not passed.' What WAS measured: the production block B=1024 end-to-end in tier B under the amended quiet window (3 mixes x REPS=9, parity, min-of-9, both accountings) -- n8_31_tierB_record.json. The whole-scene driver-level campaign remains unwritten because the flipped-design native path it would measure does not exist.",
+      "reactivation": "any future campaign reruns the frozen N8-42/43 cells (commits 730eb4de / b4a4c5ba records) and this protocol after new pre-registered evidence per the selection's flip conditions; no gate loosening after failures."
+    },
+    "gate_2_native_goal_vs_B_only_outcome_honest_no_publication": {
+      "status": "SATISFIED -- HONEST, NOTHING PUBLISHED",
+      "evidence": [
+        "N8-44 promotion record (evidence/promotion/n8_44_no_certificate.json): 'NO CERTIFICATE (promotion incomplete by measured decision, honestly recorded)'; gate_criteria_not_loosened 'AFFIRMED POSITIVELY: no promotion criterion was loosened at any point. The only threshold amended in this packet was the tier-B MEASUREMENT window (loadavg < 2.0 -> < 5.0, amendment_2026-09-23T0817Z), recorded and reviewer-verified PRE-RESULTS (zero tier-B timed records existed; n8_30_review_n8_13_tierB R-B4), before any candidate had failed.'",
+        "Shipped state is fallback-only on this platform by fail-closed empty registry; native execution exists only in the N8-31 harness cells, INFORMATIONAL/NON-PROMOTION; no platform is claimed native-qualified (n8_44 yaml_gate_disposition.gate_actual_platform_native_vs_fallback_scope_explicit).",
+        "The headline of this record is the B-only outcome; the native goal is OPEN; no publication act (no default flip, no qualified artifact, no upstream certificate) exists anywhere in the packet."
+      ]
+    }
+  },
+  "shipped_end_state": {
+    "summary": "row A (main-parity Numba) everywhere by fail-closed empty registry; vendored machinery inert; candidate native wheel ships staged generation with no qualification claim",
+    "verification": [
+      "src/solweig_light/_native_dispatch/qualification_registry.json ships {\"records\": []}; resolve fail-closes to row A; records-blind inert selector verified in-tree (selection review R-S5)",
+      "policy+dx suites: 95 passed at freeze (env-var surface equals frozen dx baseline with the one self-validating vendored-driver exclusion; registry empty; template pending+inert; legacy env parity byte-compat)",
+      "integration+region suites: 167 passed in 41.6s at freeze",
+      "installed wheel/source suite: 24 passed, 4 skipped in 95.6s -- FIRST COMPLETE PASS of both no-env pipeline gates (offline wheelhouse -> plain pip wheel -> fresh venv outside the repo; API and real CLI workflow under read-only site-packages, network guard, non-writable native cache with auto never building; full 48-band UTCI+TMRT default output contract verified via GDAL); freeze-time snapshot evidence/installed/installed_gates.json (api_gate=passed, cli_gate=passed, 4 labelled deferred skips)",
+      "dx surface AFFIRMED at freeze, not re-frozen: no new runtime env var, no CLI/import surface change since the N8-01 baseline (the one delta remains the vendored N8-20 build driver, build-time only, reads exactly ['PATH', 'SOLWEIG_LIGHT_ISPC'])",
+      "the 4 installed-suite skips are the deferred native-channel labels ([native-wheel-deferred-N8-41], [companion-collision-deferred-N8-41], [upstream-collision-deferred-N8-42], [native-qualification-deferred-N8-42]), dispositioned by N8-42's unavailable-state record and the selection"
+    ],
+    "defect_found_and_repaired_at_freeze": "installed_cli_run fixture never set record['scene'] (the API fixture did); test_noenv_cli_real_invocation reached its output assertion for the FIRST time because prior runs were always [host-memory-pressure]-skipped -- KeyError exposed the latent fixture bug; repaired and the suite re-run green. The gate itself had passed on the first attempt; only the evidence-record shape was defective (N8-50 freeze record, verbatim)."
+  },
+  "measured_evidence_summary": {
+    "tier_A_B128": "evidence/trials/n8_31_tierA_record.json + archive abc_quiet_window_timed_20260922T232539Z.json; native C beat B1 at 128 under the corrected canonical composition (R-SEL-1-corrected B1 row 0.5035/0.4688/0.2024); INFORMATIONAL/NON-PROMOTION",
+    "tier_B_B1024_production_block": "evidence/trials/n8_31_tierB_record.json + archive abc_quiet_window_timed_20260923T082119Z.json; uniform all-min composition verified exact for all 12 e2e values (tier-B review R-B1); all-binary {A0p 3.3627, A0s 4.503, B1 3.5468, C1 3.4655}, mix {2.7487, 3.6432, 3.0173, 2.9668}, all-raw {0.5485, 1.0613, 0.6943, 0.7338}; native C loses end-to-end to A0p in 3/3 mixes; kernel_leaf_comparison carries both relative fractions and absolute ms deltas (R-TB1); counter_accounting_excluding_pack_masks INFORMATIONAL; n6_envelope_BINDING",
+    "selection": "evidence/selection/n8_32_selection_record.json (commit 4761c4d6, review APPROVE-WITH-NOTES, reviewer n8-rev-n8-13): pre-registration genuine (skeleton commit 290da338 at 2026-09-22T23:55:56Z, ~8.5h before the tier-B archive); conjunctive branch reading and across-required-cells sub-clause reading both confirmed; R-TB2 disposition CLOSED; campaign disposition (do not start N8-42/43/44 without a candidate) PASS",
+    "amendment_integrity": "the sole gate amendment (tier-B loadavg < 2.0 -> < 5.0) was pre-results (evidence-tree mtimes; zero tier-B timed records existed), user-authorized, with > 8.0 in-window censor retained; frozen cells n8_31_frozen_cells_addendum.json amendments 1945Z/1955Z/0817Z"
+  },
+  "known_residuals": [
+    {
+      "id": "R1-tierA-r13-lineage",
+      "item": "N8-31 tier-A record carries the R13 lineage: its original per-row composition_rule was proven not reproducible under any single rule (tier-A delta review); repaired to transcription fidelity under the uniform all-min rule, and the B1 undercharge was later found via the harness call signature (B receives pre-packed sun_a/shade_a) and corrected at selection-commit time as R-SEL-1 (tier-A B1 row corrected to 0.5035/0.4688/0.2024; outcome-invariant, C < B1 at 128 under every composition). The selection SKELETON's tier-A B1 row (0.4757/0.4396/0.175) and its malformed recorded_utc ('2026-09-22T24:05Z') are STALE -- per R-SEL-1, 'the skeleton's numbers must never be cited over the corrected records.'",
+      "guard": "cite n8_31_tierA_record.json + n8_32_selection_record.json dispositions.R-SEL-1, never the skeleton, for tier-A numbers"
+    },
+    {
+      "id": "R2-conftest-discipline",
+      "item": "conftest discipline in the multi-suite tree: bare 'from conftest import ...' breaks under combined runs because pytest rebinds the bare conftest module name to the last-collected sibling suite's conftest (recorded in tests/optimization_v8/installed/conftest.py header, citing experiments/optimization_v8/policy/results/full_tree_failures.json). N8-31-era repair moved the native test helpers to uniquely named modules (tests/optimization_v8/native/native_test_helpers.py, installed_test_helpers.py). Any new suite must use a uniquely named helpers module.",
+      "guard": "never 'from conftest import'; unique helpers-module names per suite"
+    },
+    {
+      "id": "R3-N13-7-block-sizes-0",
+      "item": "N13-7 (deferred, explicitly at next harness touch): quiet_window_abc.py parses '--block-sizes' with tuple(int(s) ...) and no validation, so '--block-sizes 0' produces a vacuous pass (zero-sized blocks; check-tagged archiving refusal does not cover it). Deferred by decision; fix at the next harness touch, not before (editing the reviewed harness invalidates the affected review scope).",
+      "guard": "if quiet_window_abc.py is edited for any reason, add block-size validation in the same delta review"
+    },
+    {
+      "id": "R4-expert-route-flip",
+      "item": "Expert-route flip obligation (wheels-time migration decision, n840-6 'staged expert migration' in evidence/integration/n8_40_integration_record.json + n841-7/n841-8 in evidence/integration/n8_41_pre_wiring_notes.json): vendoring was executed EARLY (integrator decision during the tier-B quiet-window wait) with the guardrail that 'the expert env route continues serving the legacy B7-32 path until the wheels-time flip'; when flipping the expert route to the installed loader, 'keep the single env-read site (cylinder_longwave seam)'; and after any loader-route change, 'a broken selector module must not be silently row A without a recorded decline (N8-21 taxonomy or equivalent) -- reviewer probe showed ImportError today resolves quietly to A (fail-safe but unrecorded)'.",
+      "guard": "any expert-route flip is a pre-registered delta with its own review; preserve the single env-read site and recorded-decline taxonomy"
+    },
+    {
+      "id": "R5-memory-gated-skips",
+      "item": "The installed no-env gates are memory-gated: the scene's fixed ~1.74 GB phase reservation against budget = 0.5 x host available-memory view can block runs under concurrent load; this is 'blocked:host-memory-pressure', environmental, retried (20s backoff, 3 attempts), never a fake pass. The freeze-time pass was the FIRST complete one precisely because earlier runs were so skipped. A latent fixture bug (record['scene'] never set in installed_cli_run) surfaced only when the gate first ran to its assertion.",
+      "guard": "treat [host-memory-pressure] skips as environmental blocks with exact numbers recorded; do not weaken the admission model to force runs"
+    },
+    {
+      "id": "R6-registry-empty-invariant",
+      "item": "The registry-empty invariant tests are the GUARD for any future qualification: the shipped qualification_registry.json must stay {\"records\": []} until a candidate clears the promotion gates, and the fail-closed resolve must return row A. Guarding suites include tests/optimization_v8/integration/test_lw_dispatch.py, test_lw_public_seam.py, tests/optimization_v8/artifacts/test_installed_loader.py, tests/optimization_v8/installed/test_deferred_gates.py, tests/optimization_v8/region/test_region_fork_policy.py.",
+      "guard": "any future qualification must land as: new registry record + passing promotion gates + pre-registered selection amendment -- never by relaxing these tests"
+    }
+  ],
+  "unavailable_state_lineage": {
+    "N8_42": "evidence/integration/n8_42_unavailable_state.json -- 'small exact chronology and no-env DX qualification NOT STARTED -- no qualified native candidate exists to qualify'; NOT-STARTED BY DECISION, not skipped-by-omission; 'Starting this qualification without a selected candidate would manufacture promotion evidence the selection does not authorize.'",
+    "N8_43": "evidence/default_trials/n8_43_unavailable_state.json -- 'frozen installed-default paired comparison NOT STARTED -- there is no installed native default to compare'; the ordinary default (row A) WAS measured as arm A0 in both N8-31 tiers, so the comparison machinery ran; what does not exist is a native DEFAULT arm.",
+    "N8_44": "evidence/promotion/n8_44_no_certificate.json -- 'NO CERTIFICATE (promotion incomplete by measured decision, honestly recorded)'; promotion REJECTED as inapplicable; criteria never loosened.",
+    "retry_budget": "the one-final-workload-campaign budget was consumed by tier B (one candidate campaign, zero retries, completed censored-free); the at-most-one-causal-retry budget remains unspent (N8-50 freeze record)."
+  },
+  "reactivation_path": {
+    "precondition": "new PRE-REGISTERED evidence meeting the selection record's flip conditions (pre-registration must precede measurement; selection-before-qualification; no gate loosening after candidate failures; fail-closed empty registry until qualification)",
+    "sequence": "rerun the frozen N8-42/43 campaign cells (frozen pre-selection, commit 730eb4de) -> whole-scene driver-level campaign per the N8-51 scale protocol -> qualification registry record only after promotion gates pass -> wheels-time expert-route flip per R4 -> only then any default change",
+    "budget": "at-most-one-causal-retry budget remains unspent but the one-final-campaign budget is consumed; a new campaign needs new explicit authorization per the goal contract"
+  },
+  "dossier": "FUTURE_OPTIMIZATION.md (repo root) carries the durable practice: evidence-ledger discipline, the 9-step future sequence, residual metrics, known mistakes (incl. 'Default enabling on one giant-block synthetic win' -- the exact failure mode this packet's 3/3-mixes-at-production-block rule exists to prevent), and future interfaces. This handover defers to the dossier for forward-looking optimization ideas; the residuals above are obligations, not ideas.",
+  "review_lineage": [
+    "n8_30_review_n8_13_delta.{json,md} -- harness delta/conftest repair/tier-A record fidelity (R13-D1, R13-D2 issued, applied)",
+    "n8_30_review_n8_13_tierB.{json,md} -- tier-B transcription (R-B1..R-B5: APPROVE; R-TB1 required note, applied)",
+    "n8_30_review_n8_32_selection.{json,md} -- selection review (APPROVE-WITH-NOTES; R-SEL-1 required, applied at commit 4761c4d6)"
+  ],
+  "scope_guard": {
+    "author_wrote_only": "optimization_v8_native_default/evidence/handover/ (this record + .md companion) and /tmp scratch",
+    "no_src_changes": true,
+    "no_commits": true,
+    "citation_rule": "commits and records cited verbatim from the tree at HEAD 5ed9699e; no new measurement, no new policy"
+  },
+  "next": "integrator verifies this handover against the cited commits/records and commits it; packet N8 ends here with native goal OPEN"
+}

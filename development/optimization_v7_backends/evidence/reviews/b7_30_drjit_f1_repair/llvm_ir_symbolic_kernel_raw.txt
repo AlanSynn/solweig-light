@@ -1,0 +1,528 @@
+fastmath after disable: {'drjit_version': '1.5.0', 'backend': 'drjit.llvm', 'has_llvm_backend': True, 'fastmath_flag_after_disable': False, 'thread_count': 8, 'thread_control_method': 'dr.set_thread_count (count includes calling thread)'}
+jit_var_cond(cond=r118): created a conditional statement ("unnamed") with 12/22 state variables (126/80 bytes), 0 side effects.
+jit_var_cond(cond=r101): created a conditional statement ("unnamed") with 12/22 state variables (126/80 bytes), 0 side effects.
+jit_var_loop(loop_start=r22, loop_cond=r35, loop_end=r173): created a loop ("unnamed") with 9/26 state variables (36/100 bytes), 1 side effect, array size 8.
+jit_eval(): launching 1 kernel.
+define void @drjit_f53f25ecb3713634dc344c6e67500954(i64 %start, i64 %end, i32 %thread_id, ptr noalias %params) #0 {
+entry:
+    br label %body
+
+body:
+    %index = phi i64 [ %index_next, %suffix ], [ %start, %entry ]
+    %rd1_p1 = getelementptr inbounds ptr, ptr %params, i32 3
+    %rd1 = load ptr, ptr %rd1_p1, align 8, !alias.scope !2, !noalias !2, !invariant.load !4
+    %rd2_p1 = getelementptr inbounds ptr, ptr %params, i32 4
+    %rd2 = load ptr, ptr %rd2_p1, align 8, !alias.scope !2, !noalias !2, !invariant.load !4
+    %r3_p1 = getelementptr inbounds ptr, ptr %params, i32 5
+    %r3_p2 = load ptr, ptr %r3_p1, align 8, !alias.scope !2, !noalias !2, !invariant.load !4
+    %r3_0 = load i32, ptr %r3_p2, align 4, !alias.scope !2, !noalias !2, !invariant.load !4
+    %r3_1 = insertelement <4 x i32> undef, i32 %r3_0, i32 0
+    %r3 = shufflevector <4 x i32> %r3_1, <4 x i32> undef, <4 x i32> zeroinitializer
+    %r4_p1 = getelementptr inbounds ptr, ptr %params, i32 6
+    %r4_p2 = load ptr, ptr %r4_p1, align 8, !alias.scope !2, !noalias !2, !invariant.load !4
+    %r4_0 = load i32, ptr %r4_p2, align 4, !alias.scope !2, !noalias !2, !invariant.load !4
+    %r4_1 = insertelement <4 x i32> undef, i32 %r4_0, i32 0
+    %r4 = shufflevector <4 x i32> %r4_1, <4 x i32> undef, <4 x i32> zeroinitializer
+    %rd5_p1 = getelementptr inbounds ptr, ptr %params, i32 7
+    %rd5 = load ptr, ptr %rd5_p1, align 8, !alias.scope !2, !noalias !2, !invariant.load !4
+    %rd6_p1 = getelementptr inbounds ptr, ptr %params, i32 8
+    %rd6 = load ptr, ptr %rd6_p1, align 8, !alias.scope !2, !noalias !2, !invariant.load !4
+    %r7_0 = trunc i64 %index to i32
+    %r7_1 = insertelement <4 x i32> undef, i32 %r7_0, i32 0
+    %r7_2 = shufflevector <4 x i32> %r7_1, <4 x i32> undef, <4 x i32> zeroinitializer
+    %r7 = add <4 x i32> %r7_2, <i32 0, i32 1, i32 2, i32 3>
+    %r8_1 = insertelement <4 x i32> undef, i32 0, i32 0
+    %r8 = shufflevector <4 x i32> %r8_1, <4 x i32> undef, <4 x i32> zeroinitializer
+    br label %l_9_before
+
+l_9_before:
+    br label %l_9_cond
+
+l_9_cond:
+    %r10 = phi <4 x i32> [ %r8, %l_9_before ], [ %r30, %l_9_end ]
+    %r11_0 = trunc i64 %index to i32
+    %r11_1 = insertelement <4 x i32> undef, i32 %r11_0, i32 0
+    %r11_2 = shufflevector <4 x i32> %r11_1, <4 x i32> undef, <4 x i32> zeroinitializer
+    %r11 = add <4 x i32> %r11_2, <i32 0, i32 1, i32 2, i32 3>
+    %p12_0 = trunc i64 %end to i32
+    %p12_1 = insertelement <4 x i32> undef, i32 %p12_0, i32 0
+    %p12_2 = shufflevector <4 x i32> %p12_1, <4 x i32> undef, <4 x i32> zeroinitializer
+    %p12 = icmp ult <4 x i32> %r11, %p12_2
+    %p13 = icmp ult <4 x i32> %r10, %r4
+    %p14 = and <4 x i1> %p12, %p13
+    %p14_red = call i1 @llvm.vector.reduce.or.v4i1(<4 x i1> %p14)
+    br i1 %p14_red, label %l_9_body, label %l_9_done
+
+l_9_body:
+    %r16 = mul <4 x i32> %r3, %r10
+    %r17 = add <4 x i32> %r7, %r16
+    %f18_1 = getelementptr inbounds float, ptr %rd2, <4 x i32> %r17
+    %f18 = call <4 x float> @llvm.masked.gather.v4f32(<4 x ptr> %f18_1, i32 4, <4 x i1> %p14, <4 x float> zeroinitializer), !alias.scope !2, !noalias !2
+    %f19_1 = insertelement <4 x float> undef, float 0x0, i32 0
+    %f19 = shufflevector <4 x float> %f19_1, <4 x float> undef, <4 x i32> zeroinitializer
+    %p20 = fcmp oeq <4 x float> %f18, %f19
+    %f21_1 = getelementptr inbounds float, ptr %rd5, <4 x i32> %r17
+    %f21 = call <4 x float> @llvm.masked.gather.v4f32(<4 x ptr> %f21_1, i32 4, <4 x i1> %p14, <4 x float> zeroinitializer), !alias.scope !2, !noalias !2
+    %p22 = fcmp oeq <4 x float> %f21, %f19
+    %f23_1 = getelementptr inbounds float, ptr %rd6, <4 x i32> %r17
+    %f23 = call <4 x float> @llvm.masked.gather.v4f32(<4 x ptr> %f23_1, i32 4, <4 x i1> %p14, <4 x float> zeroinitializer), !alias.scope !2, !noalias !2
+    %p24 = fcmp oeq <4 x float> %f23, %f19
+    %p25 = or <4 x i1> %p22, %p24
+    %p26 = or <4 x i1> %p20, %p25
+    %u27_1 = getelementptr inbounds i1, ptr %rd1, <4 x i32> %r17
+    call void @llvm.masked.scatter.v4i1(<4 x i1> %p26, <4 x ptr> %u27_1, i32 1, <4 x i1> %p14), !alias.scope !2, !noalias !2
+    %r28_1 = insertelement <4 x i32> undef, i32 1, i32 0
+    %r28 = shufflevector <4 x i32> %r28_1, <4 x i32> undef, <4 x i32> zeroinitializer
+    %r29 = add <4 x i32> %r10, %r28
+    %r30 = select <4 x i1> %p14, <4 x i32> %r29, <4 x i32> %r10
+    br label %l_9_end
+
+l_9_end:
+    br label %l_9_cond
+
+l_9_done:
+    br label %suffix
+
+suffix:
+    %index_next = add i64 %index, 4
+    %cond = icmp uge i64 %index_next, %end
+    br i1 %cond, label %done, label %body, !llvm.loop !5
+
+done:
+    ret void
+}
+
+declare void @llvm.masked.scatter.v4i1(<4 x i1>, <4 x ptr>, i32, <4 x i1>)
+
+declare i1 @llvm.vector.reduce.or.v4i1(<4 x i1>)
+
+declare <4 x float> @llvm.masked.gather.v4f32(<4 x ptr>, i32, <4 x i1>, <4 x float>)
+
+!0 = !{!0}
+!1 = !{!1, !0}
+!2 = !{!1}
+!3 = !{i32 1}
+!4 = !{}
+!5 = !{!"llvm.loop.unroll.disable", !"llvm.loop.vectorize.enable", i1 0}
+
+attributes #0 = { norecurse nounwind "frame-pointer"="none" "no-builtins" "no-stack-arg-probe" "target-cpu"="apple-m1" "target-features"="+fp-armv8,+fp16fml,+fullfp16,+lse,+neon,+ras,+rcpc,+rdm,+v8.1a,+v8.2a,+v8.3a,+v8.4a,+v8.5a,+v8a" }
+  -> launching f53f25ecb3713634 (n=8, in=6, out=0, se=1, ops=33, jit=95 us):
+     cache hit, load: 487 us, 712 B.
+jit_eval(): done.
+jit_var_loop(loop_start=r54, loop_cond=r191, loop_end=r216): created a loop ("unnamed") with 3/11 state variables (12/41 bytes), 0 side effects, array size 8.
+jit_eval(): launching 1 kernel.
+define void @drjit_d86b988e11772194c75f0b58f422eb4b(i64 %start, i64 %end, i32 %thread_id, ptr noalias %params) #0 {
+entry:
+    br label %body
+
+body:
+    %index = phi i64 [ %index_next, %suffix ], [ %start, %entry ]
+    %r1_p1 = getelementptr inbounds ptr, ptr %params, i32 3
+    %r1_p2 = load ptr, ptr %r1_p1, align 8, !alias.scope !2, !noalias !2, !invariant.load !4
+    %r1_0 = load i32, ptr %r1_p2, align 4, !alias.scope !2, !noalias !2, !invariant.load !4
+    %r1_1 = insertelement <4 x i32> undef, i32 %r1_0, i32 0
+    %r1 = shufflevector <4 x i32> %r1_1, <4 x i32> undef, <4 x i32> zeroinitializer
+    %rd2_p1 = getelementptr inbounds ptr, ptr %params, i32 4
+    %rd2 = load ptr, ptr %rd2_p1, align 8, !alias.scope !2, !noalias !2, !invariant.load !4
+    %r3_p1 = getelementptr inbounds ptr, ptr %params, i32 5
+    %r3_p2 = load ptr, ptr %r3_p1, align 8, !alias.scope !2, !noalias !2, !invariant.load !4
+    %r3_0 = load i32, ptr %r3_p2, align 4, !alias.scope !2, !noalias !2, !invariant.load !4
+    %r3_1 = insertelement <4 x i32> undef, i32 %r3_0, i32 0
+    %r3 = shufflevector <4 x i32> %r3_1, <4 x i32> undef, <4 x i32> zeroinitializer
+    %rd4_p1 = getelementptr inbounds ptr, ptr %params, i32 6
+    %rd4 = load ptr, ptr %rd4_p1, align 8, !alias.scope !2, !noalias !2, !invariant.load !4
+    %rd5_p1 = getelementptr inbounds ptr, ptr %params, i32 7
+    %rd5 = load ptr, ptr %rd5_p1, align 8, !alias.scope !2, !noalias !2, !invariant.load !4
+    %d6_p1 = getelementptr inbounds ptr, ptr %params, i32 8
+    %d6_p2 = load ptr, ptr %d6_p1, align 8, !alias.scope !2, !noalias !2, !invariant.load !4
+    %d6_0 = load double, ptr %d6_p2, align 8, !alias.scope !2, !noalias !2, !invariant.load !4
+    %d6_1 = insertelement <4 x double> undef, double %d6_0, i32 0
+    %d6 = shufflevector <4 x double> %d6_1, <4 x double> undef, <4 x i32> zeroinitializer
+    %rd7_p1 = getelementptr inbounds ptr, ptr %params, i32 9
+    %rd7 = load ptr, ptr %rd7_p1, align 8, !alias.scope !2, !noalias !2, !invariant.load !4
+    %rd8_p1 = getelementptr inbounds ptr, ptr %params, i32 10
+    %rd8 = load ptr, ptr %rd8_p1, align 8, !alias.scope !2, !noalias !2, !invariant.load !4
+    %rd9_p1 = getelementptr inbounds ptr, ptr %params, i32 11
+    %rd9 = load ptr, ptr %rd9_p1, align 8, !alias.scope !2, !noalias !2, !invariant.load !4
+    %rd10_p1 = getelementptr inbounds ptr, ptr %params, i32 12
+    %rd10 = load ptr, ptr %rd10_p1, align 8, !alias.scope !2, !noalias !2, !invariant.load !4
+    %rd11_p1 = getelementptr inbounds ptr, ptr %params, i32 13
+    %rd11 = load ptr, ptr %rd11_p1, align 8, !alias.scope !2, !noalias !2, !invariant.load !4
+    %d12_p1 = getelementptr inbounds ptr, ptr %params, i32 14
+    %d12_p2 = load ptr, ptr %d12_p1, align 8, !alias.scope !2, !noalias !2, !invariant.load !4
+    %d12_0 = load double, ptr %d12_p2, align 1, !alias.scope !2, !noalias !2, !invariant.load !4
+    %d12_1 = insertelement <4 x double> undef, double %d12_0, i32 0
+    %d12 = shufflevector <4 x double> %d12_1, <4 x double> undef, <4 x i32> zeroinitializer
+    %rd13_p1 = getelementptr inbounds ptr, ptr %params, i32 15
+    %rd13 = load ptr, ptr %rd13_p1, align 8, !alias.scope !2, !noalias !2, !invariant.load !4
+    %f14_p1 = getelementptr inbounds ptr, ptr %params, i32 16
+    %f14_p2 = load ptr, ptr %f14_p1, align 8, !alias.scope !2, !noalias !2, !invariant.load !4
+    %f14_p3 = getelementptr inbounds float, ptr %f14_p2, i64 %index
+    %f14 = load <4 x float>, ptr %f14_p3, align 16, !alias.scope !2, !noalias !2, !nontemporal !3
+    %f15_p1 = getelementptr inbounds ptr, ptr %params, i32 17
+    %f15_p2 = load ptr, ptr %f15_p1, align 8, !alias.scope !2, !noalias !2, !invariant.load !4
+    %f15_0 = load float, ptr %f15_p2, align 4, !alias.scope !2, !noalias !2, !invariant.load !4
+    %f15_1 = insertelement <4 x float> undef, float %f15_0, i32 0
+    %f15 = shufflevector <4 x float> %f15_1, <4 x float> undef, <4 x i32> zeroinitializer
+    %f16_p1 = getelementptr inbounds ptr, ptr %params, i32 18
+    %f16_p2 = load ptr, ptr %f16_p1, align 8, !alias.scope !2, !noalias !2, !invariant.load !4
+    %f16_0 = load float, ptr %f16_p2, align 4, !alias.scope !2, !noalias !2, !invariant.load !4
+    %f16_1 = insertelement <4 x float> undef, float %f16_0, i32 0
+    %f16 = shufflevector <4 x float> %f16_1, <4 x float> undef, <4 x i32> zeroinitializer
+    %rd17_p1 = getelementptr inbounds ptr, ptr %params, i32 19
+    %rd17 = load ptr, ptr %rd17_p1, align 8, !alias.scope !2, !noalias !2, !invariant.load !4
+    %rd18_p1 = getelementptr inbounds ptr, ptr %params, i32 20
+    %rd18 = load ptr, ptr %rd18_p1, align 8, !alias.scope !2, !noalias !2, !invariant.load !4
+    %rd19_p1 = getelementptr inbounds ptr, ptr %params, i32 21
+    %rd19 = load ptr, ptr %rd19_p1, align 8, !alias.scope !2, !noalias !2, !invariant.load !4
+    %r20_1 = insertelement <4 x i32> undef, i32 0, i32 0
+    %r20 = shufflevector <4 x i32> %r20_1, <4 x i32> undef, <4 x i32> zeroinitializer
+    %f21_1 = insertelement <4 x float> undef, float 0x0, i32 0
+    %f21 = shufflevector <4 x float> %f21_1, <4 x float> undef, <4 x i32> zeroinitializer
+    %r22_0 = trunc i64 %index to i32
+    %r22_1 = insertelement <4 x i32> undef, i32 %r22_0, i32 0
+    %r22_2 = shufflevector <4 x i32> %r22_1, <4 x i32> undef, <4 x i32> zeroinitializer
+    %r22 = add <4 x i32> %r22_2, <i32 0, i32 1, i32 2, i32 3>
+    br label %l_23_before
+
+l_23_before:
+    br label %l_23_cond
+
+l_23_cond:
+    %r24 = phi <4 x i32> [ %r20, %l_23_before ], [ %r156, %l_23_end ]
+    %f25 = phi <4 x float> [ %f21, %l_23_before ], [ %f142, %l_23_end ]
+    %f26 = phi <4 x float> [ %f21, %l_23_before ], [ %f143, %l_23_end ]
+    %f27 = phi <4 x float> [ %f21, %l_23_before ], [ %f145, %l_23_end ]
+    %f28 = phi <4 x float> [ %f21, %l_23_before ], [ %f147, %l_23_end ]
+    %f29 = phi <4 x float> [ %f21, %l_23_before ], [ %f148, %l_23_end ]
+    %f30 = phi <4 x float> [ %f21, %l_23_before ], [ %f149, %l_23_end ]
+    %f31 = phi <4 x float> [ %f21, %l_23_before ], [ %f151, %l_23_end ]
+    %f32 = phi <4 x float> [ %f21, %l_23_before ], [ %f153, %l_23_end ]
+    %r33_0 = trunc i64 %index to i32
+    %r33_1 = insertelement <4 x i32> undef, i32 %r33_0, i32 0
+    %r33_2 = shufflevector <4 x i32> %r33_1, <4 x i32> undef, <4 x i32> zeroinitializer
+    %r33 = add <4 x i32> %r33_2, <i32 0, i32 1, i32 2, i32 3>
+    %p34_0 = trunc i64 %end to i32
+    %p34_1 = insertelement <4 x i32> undef, i32 %p34_0, i32 0
+    %p34_2 = shufflevector <4 x i32> %p34_1, <4 x i32> undef, <4 x i32> zeroinitializer
+    %p34 = icmp ult <4 x i32> %r33, %p34_2
+    %p35 = icmp ult <4 x i32> %r24, %r1
+    %p36 = and <4 x i1> %p34, %p35
+    %p36_red = call i1 @llvm.vector.reduce.or.v4i1(<4 x i1> %p36)
+    br i1 %p36_red, label %l_23_body, label %l_23_done
+
+l_23_body:
+    %r38 = mul <4 x i32> %r3, %r24
+    %r39 = add <4 x i32> %r22, %r38
+    %f40_1 = getelementptr inbounds float, ptr %rd2, <4 x i32> %r39
+    %f40 = call <4 x float> @llvm.masked.gather.v4f32(<4 x ptr> %f40_1, i32 4, <4 x i1> %p36, <4 x float> zeroinitializer), !alias.scope !2, !noalias !2
+    %f41_1 = insertelement <4 x float> undef, float 0x3ff0000000000000, i32 0
+    %f41 = shufflevector <4 x float> %f41_1, <4 x float> undef, <4 x i32> zeroinitializer
+    %p42 = fcmp oeq <4 x float> %f40, %f41
+    %f43_1 = getelementptr inbounds float, ptr %rd4, <4 x i32> %r39
+    %f43 = call <4 x float> @llvm.masked.gather.v4f32(<4 x ptr> %f43_1, i32 4, <4 x i1> %p36, <4 x float> zeroinitializer), !alias.scope !2, !noalias !2
+    %p44 = fcmp oeq <4 x float> %f43, %f41
+    %p45 = and <4 x i1> %p42, %p44
+    %f46_1 = insertelement <4 x float> undef, float 0x0, i32 0
+    %f46 = shufflevector <4 x float> %f46_1, <4 x float> undef, <4 x i32> zeroinitializer
+    %f47 = select <4 x i1> %p45, <4 x float> %f41, <4 x float> %f46
+    %f48_1 = getelementptr inbounds float, ptr %rd5, <4 x i32> %r24
+    %f48 = call <4 x float> @llvm.masked.gather.v4f32(<4 x ptr> %f48_1, i32 4, <4 x i1> %p36, <4 x float> zeroinitializer), !alias.scope !2, !noalias !2
+    %f49 = fmul <4 x float> %f47, %f48
+    %f50 = fadd <4 x float> %f25, %f49
+    %d51 = fpext <4 x float> %f26 to <4 x double>
+    %f52_1 = getelementptr inbounds float, ptr %rd7, <4 x i32> %r24
+    %f52 = call <4 x float> @llvm.masked.gather.v4f32(<4 x ptr> %f52_1, i32 4, <4 x i1> %p36, <4 x float> zeroinitializer), !alias.scope !2, !noalias !2
+    %d53 = fpext <4 x float> %f52 to <4 x double>
+    %d54 = fmul <4 x double> %d6, %d53
+    %f55_1 = getelementptr inbounds float, ptr %rd8, <4 x i32> %r24
+    %f55 = call <4 x float> @llvm.masked.gather.v4f32(<4 x ptr> %f55_1, i32 4, <4 x i1> %p36, <4 x float> zeroinitializer), !alias.scope !2, !noalias !2
+    %d56 = fpext <4 x float> %f55 to <4 x double>
+    %d57 = fmul <4 x double> %d54, %d56
+    %p58 = fcmp oeq <4 x float> %f43, %f46
+    %f59_1 = getelementptr inbounds float, ptr %rd9, <4 x i32> %r39
+    %f59 = call <4 x float> @llvm.masked.gather.v4f32(<4 x ptr> %f59_1, i32 4, <4 x i1> %p36, <4 x float> zeroinitializer), !alias.scope !2, !noalias !2
+    %p60 = fcmp oeq <4 x float> %f59, %f46
+    %p61 = or <4 x i1> %p58, %p60
+    %d62_1 = insertelement <4 x double> undef, double 0x3ff0000000000000, i32 0
+    %d62 = shufflevector <4 x double> %d62_1, <4 x double> undef, <4 x i32> zeroinitializer
+    %d63_1 = insertelement <4 x double> undef, double 0x0, i32 0
+    %d63 = shufflevector <4 x double> %d63_1, <4 x double> undef, <4 x i32> zeroinitializer
+    %d64 = select <4 x i1> %p61, <4 x double> %d62, <4 x double> %d63
+    %d65 = fmul <4 x double> %d57, %d64
+    %d66 = fadd <4 x double> %d51, %d65
+    %f67 = fptrunc <4 x double> %d66 to <4 x float>
+    %b68_1 = getelementptr inbounds i8, ptr %rd11, <4 x i32> %r24
+    %b68_2 = call <4 x i8> @llvm.masked.gather.v4i8(<4 x ptr> %b68_1, i32 1, <4 x i1> %p36, <4 x i8> zeroinitializer), !alias.scope !2, !noalias !2
+    %p68 = trunc <4 x i8> %b68_2 to <4 x i1>
+    %p69 = and <4 x i1> %p36, %p68
+    %f70 = fsub <4 x float> %f41, %f40
+    %f71 = fmul <4 x float> %f70, %f59
+    %p72 = fcmp oeq <4 x float> %f71, %f41
+    %d73 = select <4 x i1> %p72, <4 x double> %d62, <4 x double> %d63
+    %p74 = xor <4 x i1> %p68, <i1 1, i1 1, i1 1, i1 1>
+    %p75 = and <4 x i1> %p36, %p74
+    %f76_1 = getelementptr inbounds float, ptr %rd18, <4 x i32> %r24
+    %f76 = call <4 x float> @llvm.masked.gather.v4f32(<4 x ptr> %f76_1, i32 4, <4 x i1> %p36, <4 x float> zeroinitializer), !alias.scope !2, !noalias !2
+    %f77 = fmul <4 x float> %f47, %f76
+    %f78 = fadd <4 x float> %f29, %f77
+    %d79 = fpext <4 x float> %f30 to <4 x double>
+    %f80_1 = getelementptr inbounds float, ptr %rd19, <4 x i32> %r24
+    %f80 = call <4 x float> @llvm.masked.gather.v4f32(<4 x ptr> %f80_1, i32 4, <4 x i1> %p36, <4 x float> zeroinitializer), !alias.scope !2, !noalias !2
+    %d81 = fpext <4 x float> %f80 to <4 x double>
+    %d82 = fmul <4 x double> %d54, %d81
+    %d83 = fmul <4 x double> %d82, %d64
+    %d84 = fadd <4 x double> %d79, %d83
+    %f85 = fptrunc <4 x double> %d84 to <4 x float>
+    br label %l_86_start
+
+l_86_start:
+    %u86_t = call i1 @llvm.vector.reduce.or.v4i1(<4 x i1> %p69)
+    br i1 %u86_t, label %l_86_t, label %l_86_next
+
+l_86_t:
+    %d87 = fpext <4 x float> %f27 to <4 x double>
+    %b88_1 = getelementptr inbounds i8, ptr %rd10, <4 x i32> %r39
+    %b88_2 = call <4 x i8> @llvm.masked.gather.v4i8(<4 x ptr> %b88_1, i32 1, <4 x i1> %p69, <4 x i8> zeroinitializer), !alias.scope !2, !noalias !2
+    %p88 = trunc <4 x i8> %b88_2 to <4 x i1>
+    %d89_1 = insertelement <4 x double> undef, double 0x3ff0000000000000, i32 0
+    %d89 = shufflevector <4 x double> %d89_1, <4 x double> undef, <4 x i32> zeroinitializer
+    %d90_1 = insertelement <4 x double> undef, double 0x0, i32 0
+    %d90 = shufflevector <4 x double> %d90_1, <4 x double> undef, <4 x i32> zeroinitializer
+    %d91 = select <4 x i1> %p88, <4 x double> %d89, <4 x double> %d90
+    %d92 = fmul <4 x double> %d6, %d91
+    %f93_1 = getelementptr inbounds float, ptr %rd7, <4 x i32> %r24
+    %f93 = call <4 x float> @llvm.masked.gather.v4f32(<4 x ptr> %f93_1, i32 4, <4 x i1> %p69, <4 x float> zeroinitializer), !alias.scope !2, !noalias !2
+    %d94 = fpext <4 x float> %f93 to <4 x double>
+    %d95 = fmul <4 x double> %d92, %d94
+    %f96_1 = getelementptr inbounds float, ptr %rd8, <4 x i32> %r24
+    %f96 = call <4 x float> @llvm.masked.gather.v4f32(<4 x ptr> %f96_1, i32 4, <4 x i1> %p69, <4 x float> zeroinitializer), !alias.scope !2, !noalias !2
+    %d97 = fpext <4 x float> %f96 to <4 x double>
+    %d98 = fmul <4 x double> %d95, %d97
+    %d99 = fmul <4 x double> %d98, %d73
+    %d100 = fadd <4 x double> %d87, %d99
+    %f101 = fptrunc <4 x double> %d100 to <4 x float>
+    %d102 = fpext <4 x float> %f28 to <4 x double>
+    %b103_1 = getelementptr inbounds i8, ptr %rd13, <4 x i32> %r39
+    %b103_2 = call <4 x i8> @llvm.masked.gather.v4i8(<4 x ptr> %b103_1, i32 1, <4 x i1> %p69, <4 x i8> zeroinitializer), !alias.scope !2, !noalias !2
+    %p103 = trunc <4 x i8> %b103_2 to <4 x i1>
+    %d104 = select <4 x i1> %p103, <4 x double> %d89, <4 x double> %d90
+    %d105 = fmul <4 x double> %d12, %d104
+    %d106 = fmul <4 x double> %d105, %d94
+    %d107 = fmul <4 x double> %d106, %d97
+    %d108 = fmul <4 x double> %d107, %d73
+    %d109 = fadd <4 x double> %d102, %d108
+    %f110 = fptrunc <4 x double> %d109 to <4 x float>
+    %d111 = fpext <4 x float> %f31 to <4 x double>
+    %f112_1 = getelementptr inbounds float, ptr %rd19, <4 x i32> %r24
+    %f112 = call <4 x float> @llvm.masked.gather.v4f32(<4 x ptr> %f112_1, i32 4, <4 x i1> %p69, <4 x float> zeroinitializer), !alias.scope !2, !noalias !2
+    %d113 = fpext <4 x float> %f112 to <4 x double>
+    %d114 = fmul <4 x double> %d95, %d113
+    %d115 = fmul <4 x double> %d114, %d73
+    %d116 = fadd <4 x double> %d111, %d115
+    %f117 = fptrunc <4 x double> %d116 to <4 x float>
+    %d118 = fpext <4 x float> %f32 to <4 x double>
+    %d119 = fmul <4 x double> %d106, %d113
+    %d120 = fmul <4 x double> %d119, %d73
+    %d121 = fadd <4 x double> %d118, %d120
+    %f122 = fptrunc <4 x double> %d121 to <4 x float>
+    br label %l_86_t_trailer
+
+l_86_t_trailer:
+    br label %l_86_next
+
+l_86_next:
+    %u86_0_t = phi <4 x float> [ %f101, %l_86_t_trailer ], [ undef, %l_86_start ]
+    %u86_1_t = phi <4 x float> [ %f110, %l_86_t_trailer ], [ undef, %l_86_start ]
+    %u86_2_t = phi <4 x float> [ %f117, %l_86_t_trailer ], [ undef, %l_86_start ]
+    %u86_3_t = phi <4 x float> [ %f122, %l_86_t_trailer ], [ undef, %l_86_start ]
+    %u86_f = call i1 @llvm.vector.reduce.or.v4i1(<4 x i1> %p75)
+    br i1 %u86_f, label %l_86_f, label %l_86_end
+
+l_86_f:
+    %d124 = fpext <4 x float> %f27 to <4 x double>
+    %f125_1 = getelementptr inbounds float, ptr %rd7, <4 x i32> %r24
+    %f125 = call <4 x float> @llvm.masked.gather.v4f32(<4 x ptr> %f125_1, i32 4, <4 x i1> %p75, <4 x float> zeroinitializer), !alias.scope !2, !noalias !2
+    %d126 = fpext <4 x float> %f125 to <4 x double>
+    %d127 = fmul <4 x double> %d6, %d126
+    %f128_1 = getelementptr inbounds float, ptr %rd8, <4 x i32> %r24
+    %f128 = call <4 x float> @llvm.masked.gather.v4f32(<4 x ptr> %f128_1, i32 4, <4 x i1> %p75, <4 x float> zeroinitializer), !alias.scope !2, !noalias !2
+    %d129 = fpext <4 x float> %f128 to <4 x double>
+    %d130 = fmul <4 x double> %d127, %d129
+    %d131 = fmul <4 x double> %d130, %d73
+    %d132 = fadd <4 x double> %d124, %d131
+    %f133 = fptrunc <4 x double> %d132 to <4 x float>
+    %d134 = fpext <4 x float> %f31 to <4 x double>
+    %f135_1 = getelementptr inbounds float, ptr %rd19, <4 x i32> %r24
+    %f135 = call <4 x float> @llvm.masked.gather.v4f32(<4 x ptr> %f135_1, i32 4, <4 x i1> %p75, <4 x float> zeroinitializer), !alias.scope !2, !noalias !2
+    %d136 = fpext <4 x float> %f135 to <4 x double>
+    %d137 = fmul <4 x double> %d127, %d136
+    %d138 = fmul <4 x double> %d137, %d73
+    %d139 = fadd <4 x double> %d134, %d138
+    %f140 = fptrunc <4 x double> %d139 to <4 x float>
+    br label %l_86_f_trailer
+
+l_86_f_trailer:
+    br label %l_86_end
+
+l_86_end:
+    %u86_0_f = phi <4 x float> [ %f133, %l_86_f_trailer ], [ undef, %l_86_next ]
+    %u86_1_f = phi <4 x float> [ %f28, %l_86_f_trailer ], [ undef, %l_86_next ]
+    %u86_2_f = phi <4 x float> [ %f140, %l_86_f_trailer ], [ undef, %l_86_next ]
+    %u86_3_f = phi <4 x float> [ %f32, %l_86_f_trailer ], [ undef, %l_86_next ]
+    %f144 = select <4 x i1> %p69, <4 x float> %u86_0_t, <4 x float> %u86_0_f
+    %f146 = select <4 x i1> %p69, <4 x float> %u86_1_t, <4 x float> %u86_1_f
+    %f150 = select <4 x i1> %p69, <4 x float> %u86_2_t, <4 x float> %u86_2_f
+    %f152 = select <4 x i1> %p69, <4 x float> %u86_3_t, <4 x float> %u86_3_f
+    %f142 = select <4 x i1> %p36, <4 x float> %f50, <4 x float> %f25
+    %f143 = select <4 x i1> %p36, <4 x float> %f67, <4 x float> %f26
+    %f145 = select <4 x i1> %p36, <4 x float> %f144, <4 x float> %f27
+    %f147 = select <4 x i1> %p36, <4 x float> %f146, <4 x float> %f28
+    %f148 = select <4 x i1> %p36, <4 x float> %f78, <4 x float> %f29
+    %f149 = select <4 x i1> %p36, <4 x float> %f85, <4 x float> %f30
+    %f151 = select <4 x i1> %p36, <4 x float> %f150, <4 x float> %f31
+    %f153 = select <4 x i1> %p36, <4 x float> %f152, <4 x float> %f32
+    %r154_1 = insertelement <4 x i32> undef, i32 1, i32 0
+    %r154 = shufflevector <4 x i32> %r154_1, <4 x i32> undef, <4 x i32> zeroinitializer
+    %r155 = add <4 x i32> %r24, %r154
+    %r156 = select <4 x i1> %p36, <4 x i32> %r155, <4 x i32> %r24
+    br label %l_23_end
+
+l_23_end:
+    br label %l_23_cond
+
+l_23_done:
+    %r162_1 = insertelement <4 x i32> undef, i32 0, i32 0
+    %r162 = shufflevector <4 x i32> %r162_1, <4 x i32> undef, <4 x i32> zeroinitializer
+    %f163 = fadd <4 x float> %f25, %f14
+    %f164 = fmul <4 x float> %f163, %f15
+    %f165_1 = insertelement <4 x float> undef, float 0x3fe0000000000000, i32 0
+    %f165 = shufflevector <4 x float> %f165_1, <4 x float> undef, <4 x i32> zeroinitializer
+    %f166 = fmul <4 x float> %f164, %f165
+    %f167 = fdiv <4 x float> %f166, %f16
+    %f29_p1 = getelementptr inbounds ptr, ptr %params, i32 22
+    %f29_p2 = load ptr, ptr %f29_p1, align 8, !alias.scope !2, !noalias !2, !invariant.load !4
+    %f29_p3 = getelementptr inbounds float, ptr %f29_p2, i64 %index
+    store <4 x float> %f29, ptr %f29_p3, align 16, !alias.scope !2, !noalias !2, !nontemporal !3
+    %f30_p1 = getelementptr inbounds ptr, ptr %params, i32 23
+    %f30_p2 = load ptr, ptr %f30_p1, align 8, !alias.scope !2, !noalias !2, !invariant.load !4
+    %f30_p3 = getelementptr inbounds float, ptr %f30_p2, i64 %index
+    store <4 x float> %f30, ptr %f30_p3, align 16, !alias.scope !2, !noalias !2, !nontemporal !3
+    %f31_p1 = getelementptr inbounds ptr, ptr %params, i32 24
+    %f31_p2 = load ptr, ptr %f31_p1, align 8, !alias.scope !2, !noalias !2, !invariant.load !4
+    %f31_p3 = getelementptr inbounds float, ptr %f31_p2, i64 %index
+    store <4 x float> %f31, ptr %f31_p3, align 16, !alias.scope !2, !noalias !2, !nontemporal !3
+    %f32_p1 = getelementptr inbounds ptr, ptr %params, i32 25
+    %f32_p2 = load ptr, ptr %f32_p1, align 8, !alias.scope !2, !noalias !2, !invariant.load !4
+    %f32_p3 = getelementptr inbounds float, ptr %f32_p2, i64 %index
+    store <4 x float> %f32, ptr %f32_p3, align 16, !alias.scope !2, !noalias !2, !nontemporal !3
+    br label %l_172_before
+
+l_172_before:
+    br label %l_172_cond
+
+l_172_cond:
+    %r173 = phi <4 x i32> [ %r162, %l_172_before ], [ %r201, %l_172_end ]
+    %f174 = phi <4 x float> [ %f21, %l_172_before ], [ %f193, %l_172_end ]
+    %f175 = phi <4 x float> [ %f21, %l_172_before ], [ %f198, %l_172_end ]
+    %r176_0 = trunc i64 %index to i32
+    %r176_1 = insertelement <4 x i32> undef, i32 %r176_0, i32 0
+    %r176_2 = shufflevector <4 x i32> %r176_1, <4 x i32> undef, <4 x i32> zeroinitializer
+    %r176 = add <4 x i32> %r176_2, <i32 0, i32 1, i32 2, i32 3>
+    %p177_0 = trunc i64 %end to i32
+    %p177_1 = insertelement <4 x i32> undef, i32 %p177_0, i32 0
+    %p177_2 = shufflevector <4 x i32> %p177_1, <4 x i32> undef, <4 x i32> zeroinitializer
+    %p177 = icmp ult <4 x i32> %r176, %p177_2
+    %p178 = icmp ult <4 x i32> %r173, %r1
+    %p179 = and <4 x i1> %p177, %p178
+    %p179_red = call i1 @llvm.vector.reduce.or.v4i1(<4 x i1> %p179)
+    br i1 %p179_red, label %l_172_body, label %l_172_done
+
+l_172_body:
+    %f181_1 = getelementptr inbounds float, ptr %rd7, <4 x i32> %r173
+    %f181 = call <4 x float> @llvm.masked.gather.v4f32(<4 x ptr> %f181_1, i32 4, <4 x i1> %p179, <4 x float> zeroinitializer), !alias.scope !2, !noalias !2
+    %f182 = fmul <4 x float> %f167, %f181
+    %f183_1 = getelementptr inbounds float, ptr %rd8, <4 x i32> %r173
+    %f183 = call <4 x float> @llvm.masked.gather.v4f32(<4 x ptr> %f183_1, i32 4, <4 x i1> %p179, <4 x float> zeroinitializer), !alias.scope !2, !noalias !2
+    %f184 = fmul <4 x float> %f182, %f183
+    %r185 = mul <4 x i32> %r3, %r173
+    %r186 = add <4 x i32> %r22, %r185
+    %b187_1 = getelementptr inbounds i8, ptr %rd17, <4 x i32> %r186
+    %b187_2 = call <4 x i8> @llvm.masked.gather.v4i8(<4 x ptr> %b187_1, i32 1, <4 x i1> %p179, <4 x i8> zeroinitializer), !alias.scope !2, !noalias !2
+    %p187 = trunc <4 x i8> %b187_2 to <4 x i1>
+    %f188_1 = insertelement <4 x float> undef, float 0x3ff0000000000000, i32 0
+    %f188 = shufflevector <4 x float> %f188_1, <4 x float> undef, <4 x i32> zeroinitializer
+    %f189_1 = insertelement <4 x float> undef, float 0x0, i32 0
+    %f189 = shufflevector <4 x float> %f189_1, <4 x float> undef, <4 x i32> zeroinitializer
+    %f190 = select <4 x i1> %p187, <4 x float> %f188, <4 x float> %f189
+    %f191 = fmul <4 x float> %f184, %f190
+    %f192 = fadd <4 x float> %f174, %f191
+    %f193 = select <4 x i1> %p179, <4 x float> %f192, <4 x float> %f174
+    %f194_1 = getelementptr inbounds float, ptr %rd19, <4 x i32> %r173
+    %f194 = call <4 x float> @llvm.masked.gather.v4f32(<4 x ptr> %f194_1, i32 4, <4 x i1> %p179, <4 x float> zeroinitializer), !alias.scope !2, !noalias !2
+    %f195 = fmul <4 x float> %f182, %f194
+    %f196 = fmul <4 x float> %f195, %f190
+    %f197 = fadd <4 x float> %f175, %f196
+    %f198 = select <4 x i1> %p179, <4 x float> %f197, <4 x float> %f175
+    %r199_1 = insertelement <4 x i32> undef, i32 1, i32 0
+    %r199 = shufflevector <4 x i32> %r199_1, <4 x i32> undef, <4 x i32> zeroinitializer
+    %r200 = add <4 x i32> %r173, %r199
+    %r201 = select <4 x i1> %p179, <4 x i32> %r200, <4 x i32> %r173
+    br label %l_172_end
+
+l_172_end:
+    br label %l_172_cond
+
+l_172_done:
+    %f203 = fadd <4 x float> %f25, %f26
+    %f204 = fadd <4 x float> %f203, %f27
+    %f205 = fadd <4 x float> %f204, %f28
+    %f207_p1 = getelementptr inbounds ptr, ptr %params, i32 26
+    %f207_p2 = load ptr, ptr %f207_p1, align 8, !alias.scope !2, !noalias !2, !invariant.load !4
+    %f207_p3 = getelementptr inbounds float, ptr %f207_p2, i64 %index
+    %f207 = fadd <4 x float> %f205, %f174
+    store <4 x float> %f207, ptr %f207_p3, align 16, !alias.scope !2, !noalias !2, !nontemporal !3
+    %f208 = fadd <4 x float> %f29, %f30
+    %f209 = fadd <4 x float> %f208, %f31
+    %f210 = fadd <4 x float> %f209, %f32
+    %f175_p1 = getelementptr inbounds ptr, ptr %params, i32 27
+    %f175_p2 = load ptr, ptr %f175_p1, align 8, !alias.scope !2, !noalias !2, !invariant.load !4
+    %f175_p3 = getelementptr inbounds float, ptr %f175_p2, i64 %index
+    store <4 x float> %f175, ptr %f175_p3, align 16, !alias.scope !2, !noalias !2, !nontemporal !3
+    %f212_p1 = getelementptr inbounds ptr, ptr %params, i32 28
+    %f212_p2 = load ptr, ptr %f212_p1, align 8, !alias.scope !2, !noalias !2, !invariant.load !4
+    %f212_p3 = getelementptr inbounds float, ptr %f212_p2, i64 %index
+    %f212 = fadd <4 x float> %f210, %f175
+    store <4 x float> %f212, ptr %f212_p3, align 16, !alias.scope !2, !noalias !2, !nontemporal !3
+    br label %suffix
+
+suffix:
+    %index_next = add i64 %index, 4
+    %cond = icmp uge i64 %index_next, %end
+    br i1 %cond, label %done, label %body, !llvm.loop !5
+
+done:
+    ret void
+}
+
+declare i1 @llvm.vector.reduce.or.v4i1(<4 x i1>)
+
+declare <4 x i8> @llvm.masked.gather.v4i8(<4 x ptr>, i32, <4 x i1>, <4 x i8>)
+
+declare <4 x float> @llvm.masked.gather.v4f32(<4 x ptr>, i32, <4 x i1>, <4 x float>)
+
+!0 = !{!0}
+!1 = !{!1, !0}
+!2 = !{!1}
+!3 = !{i32 1}
+!4 = !{}
+!5 = !{!"llvm.loop.unroll.disable", !"llvm.loop.vectorize.enable", i1 0}
+
+attributes #0 = { norecurse nounwind "frame-pointer"="none" "no-builtins" "no-stack-arg-probe" "target-cpu"="apple-m1" "target-features"="+fp-armv8,+fp16fml,+fullfp16,+lse,+neon,+ras,+rcpc,+rdm,+v8.1a,+v8.2a,+v8.3a,+v8.4a,+v8.5a,+v8a" }
+  -> launching d86b988e11772194 (n=8, in=19, out=7, ops=213, jit=181 us):
+     cache hit, load: 242 us, 3.836 KiB.
+jit_eval(): done.
+done, out shape (8, 7)
+=== stderr size:        0
+0
+0

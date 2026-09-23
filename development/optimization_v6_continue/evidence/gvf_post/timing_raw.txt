@@ -1,0 +1,36 @@
+numba 0.67.0 numpy 2.4.6 threads=10 pid=2925
+contended development tier; raw medians only, no claims
+-- block (16, 32, 128) --
+              original numpy: median    0.211 ms/call  (min 0.203)
+            candidate serial: median    0.424 ms/call  (min 0.405)
+          candidate parallel: median    0.133 ms/call  (min 0.091)
+   serial/original ratio 2.013, parallel/original 0.630
+-- block (16, 32, 256) --
+              original numpy: median    0.353 ms/call  (min 0.341)
+            candidate serial: median    0.869 ms/call  (min 0.816)
+          candidate parallel: median    0.163 ms/call  (min 0.127)
+   serial/original ratio 2.463, parallel/original 0.461
+-- block (16, 32, 1024) --
+              original numpy: median    1.290 ms/call  (min 1.220)
+            candidate serial: median    3.323 ms/call  (min 3.301)
+          candidate parallel: median    0.360 ms/call  (min 0.278)
+   serial/original ratio 2.577, parallel/original 0.279
+run2 exit=0
+== run 2 (post C6-60 fixes, 2026-09-21 12:25) ==
+numba 0.67.0 numpy 2.4.6 threads=10 pid=57176
+contended development tier; raw medians only, no claims
+-- block (16, 32, 128) --
+              original numpy: median    0.212 ms/call  (min 0.205)
+            candidate serial: median    0.423 ms/call  (min 0.400)
+          candidate parallel: median    0.144 ms/call  (min 0.087)
+   serial/original ratio 1.998, parallel/original 0.679
+-- block (16, 32, 256) --
+              original numpy: median    0.357 ms/call  (min 0.345)
+            candidate serial: median    0.826 ms/call  (min 0.812)
+          candidate parallel: median    0.162 ms/call  (min 0.127)
+   serial/original ratio 2.317, parallel/original 0.455
+-- block (16, 32, 1024) --
+              original numpy: median    1.269 ms/call  (min 1.228)
+            candidate serial: median    3.376 ms/call  (min 3.265)
+          candidate parallel: median    0.327 ms/call  (min 0.251)
+   serial/original ratio 2.660, parallel/original 0.258

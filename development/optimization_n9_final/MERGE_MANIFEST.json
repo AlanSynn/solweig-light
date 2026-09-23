@@ -1,0 +1,99 @@
+{
+  "record": "N9 FINAL merge manifest - merge-ready tree for perf/native-optimization",
+  "manifest_utc_date": "2026-09-23",
+  "companion_selection": "optimization_n9_final/FINAL_SELECTION.json (selection: closed_cpu_only, exactly one)",
+  "merge_topology": {
+    "target": "main at 14e888760727583ef782a4dc0e7a5c7c6e6ff9d1 (merge-base; branch 155 ahead, 0 behind)",
+    "source": "perf/native-optimization (tip at manifest time: F6 evidence commit 806d16a8; record-only commits continue on top)",
+    "property": "PURE FAST-FORWARD - no merge commits, no conflicts possible",
+    "command": "git checkout main && git merge --ff-only perf/native-optimization",
+    "equivalent_push": "git push origin perf/native-optimization:main (ff-only by construction)",
+    "authorization": "NOT EXECUTED by this campaign - no push, no PR, no main merge, no release, no remote history deletion without separate user authorization",
+    "rehearsal": "evidence/f7_merge_rehearsal.md (ff-only rehearsal with tree-identity proof; final rehearsal at the closing tip appended there)"
+  },
+  "immutable_hashes": {
+    "main": "14e888760727583ef782a4dc0e7a5c7c6e6ff9d1",
+    "verified_code_tree": {
+      "commit": "22876fb6853e6cd10237214bd514b777fe717594",
+      "tree": "cf94ff9853559ff19a776a58a0314034421af6dc",
+      "note": "the commit at which the F4 regression gates, F6 campaign, and the first ff-only rehearsal ran"
+    },
+    "record_commits": ["ca9a6564 (F5 evidence)", "806d16a8 (F6 evidence)", "see evidence/f7_merge_rehearsal.md for the closing-tip rehearsal record"],
+    "record_commit_scope": "evidence and installed-gate tests ONLY - no src/ changes after 22876fb6"
+  },
+  "gate_table": [
+    {
+      "gate": "cold regression vs pinned main (compact same-budget cold/warm cell; fresh JIT cache per sample, paired)",
+      "source": "f6_verdict.json /cold (run 2, recorded 2026-09-23T17:26:30Z; raw f6_final_vs_main_timed_20260923T171623Z.json)",
+      "bound": "<= 1.03",
+      "measured": 0.9226,
+      "metric": "median of 3 paired fresh-cache cold samples (per-sample ratios 1.0153 / 0.9226 / 0.9069)",
+      "verdict": "PASS",
+      "label": "MARGINAL (margin within 2x per-sample spread; one sample above 1.0)",
+      "superseded_record": "run-1 single-sample 1.0843 / terminal_label GATE_FAILURE is INVALID (MAIN worker missing untimed warm pass -> JIT disk-cache load timed in MAIN's first warm cell); run-1 retained as f6_verdict_run1_invalid_mainwarm.json; see f6_verdict.json measurement_notes",
+      "ruling": "f6_cold_gate_ruling_amendment_1.json supersedes f6_cold_gate_ruling.json (2026-09-23T17:39:10Z)"
+    },
+    {
+      "gate": "bitwise output parity vs pinned main (Ldown+Lside, uint32 sha256)",
+      "source": "f6_final_vs_main_timed_20260923T171623Z.json parity_per_cell + digest_pairs_by_rep",
+      "measured": "FINAL == MAIN on all 6 cells, all 9 reps",
+      "verdict": "PASS",
+      "note": "independent of every timing claim; the parity chain (shipped aplus decode -> bounded stream -> digest proof) stands even where timing is MARGINAL"
+    },
+    {
+      "gate": "declined-cell (all-raw) regression vs main",
+      "source": "f6_verdict.json /cells (B=1024 all-raw, B=128 all-raw)",
+      "bound": "<= 3% regression",
+      "measured": "B=1024 all-raw 1.2162x FASTER (per-pair median); B=128 all-raw 0.9747 (2.6% max regression), within bound and within 2x spread",
+      "verdict": "PASS"
+    },
+    {
+      "gate": "pre-committed threads_per_worker=1 restoration rule",
+      "source": "f6_verdict.json /plain_boolean_restoration",
+      "measured": "NOT_TRIGGERED - the stream wins its carried cells at budget 1; no plain-boolean restoration",
+      "verdict": "PASS (rule not triggered)"
+    },
+    {
+      "gate": "installed-wheel content and wiring (N9 F5, run 7, wheel aa184a71bc16d015)",
+      "source": "optimization_v8_native_default/evidence/installed/installed_gates.json",
+      "measured": {
+        "dx_surface_parity_subprocess_origin": "passed, zero unexpected divergences",
+        "R1_env_read_surface": "dispatch region reads ONLY SOLWEIG_LIGHT_LW_BACKEND at cylinder_longwave.py:196/:216; _lw_dispatch.py and _native_dispatch/* read NO environment (AST-verified in the installed tree)",
+        "R2_aplus_decode": "wheel ships _native_dispatch/aplus_decode.py and the installed product binds _decode_at_plus into BOTH consumer seams (cylinder_longwave + patch_radiation, module-identity asserted)",
+        "banned_machinery": "no qualification_registry.json, lw_default_policy, lw_native_aosoa, installed_loader, native_handle, build_native in the wheel"
+      },
+      "verdict": "PASS",
+      "open_item": "installed no-env API/CLI product runs admission-blocked (environmental; see honesty_labels)"
+    }
+  ],
+  "honesty_labels": [
+    "B=128 all-binary and B=128 mix carried-cell wins are MARGINAL (margin within 2x per-pair spread) - do not headline them",
+    "cold parity is MARGINAL: within the 1.03 bound, one of three samples above 1.0",
+    "single-channel-raw compositions are UNMEASURED and stream by design; the structural guard is exactly the measured all-raw loss class",
+    "installed API/CLI product runs: 7 runs, 4 labelled attempts each, all blocked:host-memory-pressure - refused BY CONSTRUCTION under the no-env contract (admission charge probes physical RAM via default_gdal_cache_bytes(), runtime_memory.py:485-494; GDAL_CACHEMAX is never read; RuntimeOptions overrides forbidden). Self-driving ~4 min each once available-memory view >= ~4.3 GB. Environmental, not a DX property",
+    "single host, n=9 paired reps, n=3 cold samples - no inferential claims",
+    "run-1 F6 record is INVALID (timer-boundary defect) and retained only as provenance; run 2 is terminal per amendment 1 (causal-correction allowance consumed)"
+  ],
+  "packaging_handover": {
+    "D2_wheel_taint": "Wheels must be built from a PURGED build/ directory or a pristine copy: a stale build/ resurrects archived N8 modules into the wheel (caught by the banned-members gate; namelist proof in evidence/review/f5_tainted_wheel_namelist.json, narrative in evidence/review/f5_review.md)",
+    "archived_machinery": "research copies under experiments/optimization_v8/native_dispatch/ are repo-only and ship in no wheel",
+    "companion_and_compat_channels": "deferred items recorded in installed_gates.json /deferred (selection-pinned native artifact re-freeze N/A after F3 closure; companion distribution and legacy executable channel unchanged)"
+  },
+  "post_merge_smoke_at_verified_tree": {
+    "import": "solweig_light 0.1.0.dev0 at HEAD 22876fb6853e6cd1",
+    "lw_stream_exports": "InvocationPlan, BorrowedVisibility, BlockSlot, plan_invocation, AosoaBStreamConsumer",
+    "lw_default_policy": "ABSENT",
+    "lw_native_aosoa": "ABSENT",
+    "lw_dispatch_env": "zero os.environ/getenv",
+    "cli": "solweig_light.cli.main importable and callable",
+    "collection": "pytest tests/ --collect-only = 6492 collected (4 pre-existing optional-extras ModuleNotFoundError only)"
+  },
+  "operator_checklist": [
+    "confirm branch position still 0 behind main (git rev-list --count HEAD..main == 0) - if main moved, re-evaluate before merging",
+    "git checkout main && git merge --ff-only perf/native-optimization",
+    "verify merged tree: git rev-parse HEAD^{tree} matches the closing-tip tree recorded in evidence/f7_merge_rehearsal.md",
+    "run pytest tests/optimization_v8/ and the no-env smoke of choice",
+    "build any release wheel ONLY from a purged build/ or pristine copy (D2)",
+    "no release publication without separate user authorization"
+  ]
+}

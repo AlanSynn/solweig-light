@@ -1,0 +1,116 @@
+{
+ "schema": "sw8-n8-02-child-v1",
+ "requested": {
+  "backend": "native",
+  "block_pixels": 128,
+  "threads": 4,
+  "cpu_budget": 4,
+  "instrument": false,
+  "entry": "pool"
+ },
+ "env": {
+  "threads_at_import": {
+   "BLIS_NUM_THREADS": "4",
+   "MKL_NUM_THREADS": "4",
+   "NUMBA_NUM_THREADS": "4",
+   "NUMEXPR_NUM_THREADS": "4",
+   "OMP_NUM_THREADS": "4",
+   "OPENBLAS_NUM_THREADS": "4",
+   "VECLIB_MAXIMUM_THREADS": "4"
+  },
+  "lw_backend": "native",
+  "native_cache": "/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/work/native_cache_pool_native",
+  "numba_cache_dir": "/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/work/numba_cache"
+ },
+ "numba": {
+  "config_NUMBA_NUM_THREADS": 4,
+  "thread_set_ok": true,
+  "final_get_num_threads": 4,
+  "threading_layer": "workqueue",
+  "version": "0.67.0"
+ },
+ "options": {
+  "cache_dir": null,
+  "legacy_cache_policy": "trust",
+  "cache_enabled": true,
+  "memory_budget_bytes": 12884901888,
+  "cpu_budget": 4,
+  "workers": 1,
+  "threads_per_worker": 4,
+  "block_pixels": 128,
+  "checkpoint_interval": 1,
+  "resume": false
+ },
+ "module_origin": {
+  "solweig_light": "/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/__init__.py"
+ },
+ "run_wall_s": 6.7038,
+ "import_s": 0.909,
+ "child_total_s": 7.777,
+ "peak_rss_self_bytes": 187203584,
+ "peak_rss_children_bytes": 208961536,
+ "counters_path": null,
+ "output_manifest": {
+  "file_count": 10,
+  "digest": "c059e7b94574a071",
+  "files": [
+   {
+    "path": "output_folder/0_0/Kdown_0_0.tif",
+    "size": 328366,
+    "sha256": "d091ab73f4b85a32b89be1151439e38f13dccf2b3351bfce79a6d30d158adbee"
+   },
+   {
+    "path": "output_folder/0_0/Kup_0_0.tif",
+    "size": 328366,
+    "sha256": "742d9382dc191384357694de199dfcdcdbbf765e55faf8c47e3ade1fe758144c"
+   },
+   {
+    "path": "output_folder/0_0/Ldown_0_0.tif",
+    "size": 328366,
+    "sha256": "4f35961831e77c0db7cdfbcd87818cad5d976fe79ceb3a8ed7cb1e7c1d5ac983"
+   },
+   {
+    "path": "output_folder/0_0/Lup_0_0.tif",
+    "size": 328366,
+    "sha256": "728e2ef059f1c1add58366d8acecaf5970c9627d1c353336fc33094b90645605"
+   },
+   {
+    "path": "output_folder/0_0/Shadow_0_0.tif",
+    "size": 328366,
+    "sha256": "1937ede07da38a9e8820c9f305871c536311052114c7c116a9752732aba79d33"
+   },
+   {
+    "path": "output_folder/0_0/TMRT_0_0.tif",
+    "size": 328366,
+    "sha256": "e05d317a66eced838ddcc94a9909a50a267cc4269e5c03ec98dd476ad2728c86"
+   },
+   {
+    "path": "output_folder/0_0/Ta_0_0.tif",
+    "size": 328366,
+    "sha256": "543115f078f18e068c97d8256bc388fac7bdf923a19989cafb5f63319bcd40a6"
+   },
+   {
+    "path": "output_folder/0_0/UTCI_0_0.tif",
+    "size": 328366,
+    "sha256": "6305665d7b2fbbb68d9f2e436b94af3180d2b37b9d04bb9a4e17151300feb86e"
+   },
+   {
+    "path": "output_folder/0_0/WBGT_0_0.tif",
+    "size": 328366,
+    "sha256": "f6c30c55939bde29f8bfde66ebc82afac7211757c44482747e43f4d7348fd1be"
+   },
+   {
+    "path": "output_folder/0_0/Wind_0_0.tif",
+    "size": 328366,
+    "sha256": "15b659c0a8c4d6e55fdcd258052516b850c723b3fff8308071dc596ce23ec1be"
+   }
+  ]
+ },
+ "versions": {
+  "python": "3.12.13",
+  "numpy": "2.4.6",
+  "numba": "0.67.0",
+  "machine": "arm64"
+ },
+ "pid": 27481
+}

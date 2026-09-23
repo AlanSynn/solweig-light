@@ -1,0 +1,181 @@
+{
+  "checked_date": "2026-09-21",
+  "repository_access": "GitHub connector; not a full local clone",
+  "sources": [
+    {
+      "id": "S01",
+      "title": "Branch identity",
+      "url": "https://api.github.com/repos/AlanSynn/solweig-light/branches/perf/claude-glm53-cpu-v5",
+      "git_blob_sha": "e7a2d6ec8594b234820e7783e0ca26d821de7f3d",
+      "scope": "branch metadata, source-inspection checkpoint"
+    },
+    {
+      "id": "S02",
+      "title": "Final protocol",
+      "url": "https://github.com/AlanSynn/solweig-light/blob/e7a2d6ec8594b234820e7783e0ca26d821de7f3d/benchmarks/protocols/claude_v5/final_protocol_v1.json",
+      "git_blob_sha": null,
+      "scope": "two spatial cases, runtime and cache conditions"
+    },
+    {
+      "id": "S03",
+      "title": "Final campaign and harness",
+      "url": "https://github.com/AlanSynn/solweig-light/blob/e7a2d6ec8594b234820e7783e0ca26d821de7f3d/optimization_v5_claude/evidence/final_batch/CAMPAIGN_v1.md",
+      "git_blob_sha": null,
+      "scope": "reported one-pass two-case times; interpret with run_final_large.py"
+    },
+    {
+      "id": "S04",
+      "title": "Public API orchestration",
+      "url": "https://github.com/AlanSynn/solweig-light/blob/e7a2d6ec8594b234820e7783e0ca26d821de7f3d/src/solweig_light/api.py",
+      "git_blob_sha": "596a87c34f938906c151113fb0a20e188ee59f01",
+      "scope": "thermal_comfort, _calculate_svf, run_utci_tiles"
+    },
+    {
+      "id": "S05",
+      "title": "Standalone geometry service",
+      "url": "https://github.com/AlanSynn/solweig-light/blob/e7a2d6ec8594b234820e7783e0ca26d821de7f3d/src/solweig_light/geometry/service.py",
+      "git_blob_sha": "74c3671656f44db06364f65eff117df045fc6b5f",
+      "scope": "_producer, _export, _compare, prepare_geometry_exports"
+    },
+    {
+      "id": "S06",
+      "title": "Chronological pipeline",
+      "url": "https://github.com/AlanSynn/solweig-light/blob/e7a2d6ec8594b234820e7783e0ca26d821de7f3d/src/solweig_light/pipeline.py",
+      "git_blob_sha": "58608f99d42d1c93ed77e90b61491a8d2be063e3",
+      "scope": "normalization, unextended native key, output/state demand"
+    },
+    {
+      "id": "S07",
+      "title": "Geometry and simulation identities",
+      "url": "https://github.com/AlanSynn/solweig-light/blob/e7a2d6ec8594b234820e7783e0ca26d821de7f3d/src/solweig_light/identities.py",
+      "git_blob_sha": "f11b0cb3b0fc4ffa89a37495a7900fda29a9966e",
+      "scope": "InputGuard, geometry_identity dependency closure"
+    },
+    {
+      "id": "S08",
+      "title": "Geometry store",
+      "url": "https://github.com/AlanSynn/solweig-light/blob/e7a2d6ec8594b234820e7783e0ca26d821de7f3d/src/solweig_light/cache/geometry.py",
+      "git_blob_sha": "1f47ab7ee9fe6e9ac03fb9bd39c31fc6fdd893b2",
+      "scope": "whole identity hash and exact manifest equality"
+    },
+    {
+      "id": "S09",
+      "title": "Old in-process portfolio",
+      "url": "https://github.com/AlanSynn/solweig-light/blob/e7a2d6ec8594b234820e7783e0ca26d821de7f3d/optimization_v5_claude/evidence/portfolio/portfolio_v1.py",
+      "git_blob_sha": "fccb08fdc389afcdb43206b0adc26f4d59c4039b",
+      "scope": "RuntimeOptions-only native thread limitation concern"
+    },
+    {
+      "id": "S10",
+      "title": "Radiation engine Lside",
+      "url": "https://github.com/AlanSynn/solweig-light/blob/e7a2d6ec8594b234820e7783e0ca26d821de7f3d/src/solweig_light/radiation/engine.py",
+      "git_blob_sha": "583055c198fa4f7b1a3c1eba226988ca394c5ef5",
+      "scope": "Lvikt_veg, Lside_veg_v2022a"
+    },
+    {
+      "id": "S11",
+      "title": "Engine final dependency ordering",
+      "url": "https://github.com/AlanSynn/solweig-light/blob/e7a2d6ec8594b234820e7783e0ca26d821de7f3d/src/solweig_light/radiation/engine.py",
+      "git_blob_sha": "583055c198fa4f7b1a3c1eba226988ca394c5ef5",
+      "scope": "Solweig_2022a_calc: TMRT before cylinder cardinal diagnostic addition"
+    },
+    {
+      "id": "S12",
+      "title": "Patch radiation",
+      "url": "https://github.com/AlanSynn/solweig-light/blob/e7a2d6ec8594b234820e7783e0ca26d821de7f3d/src/solweig_light/radiation/patch_radiation.py",
+      "git_blob_sha": "464117ac6a0eb524402d7783ce435632b706d2f6",
+      "scope": "Kside, _shortwave/_longwave, class preparation, dormant P01"
+    },
+    {
+      "id": "S13",
+      "title": "Ground view",
+      "url": "https://github.com/AlanSynn/solweig-light/blob/e7a2d6ec8594b234820e7783e0ca26d821de7f3d/src/solweig_light/radiation/ground_view.py",
+      "git_blob_sha": "be62ef2ca34ecad8130a1f9f35eeab1761bf17ef",
+      "scope": "_direction_snapshot, _gvf_fused, _postprocess_block"
+    },
+    {
+      "id": "S14",
+      "title": "Legacy verification",
+      "url": "https://github.com/AlanSynn/solweig-light/blob/e7a2d6ec8594b234820e7783e0ca26d821de7f3d/src/solweig_light/cache/legacy.py",
+      "git_blob_sha": "ad508137f2496fd821a71efba15e573cd749e749",
+      "scope": "full member CRC/readability then separate import path"
+    },
+    {
+      "id": "S15",
+      "title": "Runtime memory/pool",
+      "url": "https://github.com/AlanSynn/solweig-light/blob/e7a2d6ec8594b234820e7783e0ca26d821de7f3d/src/solweig_light/runtime.py",
+      "git_blob_sha": "cf7b39f321f03559c1c3859722ea352d0cd86201",
+      "scope": "RuntimeOptions, estimate_memory, execute_tiles persistent pool"
+    },
+    {
+      "id": "S16",
+      "title": "Accepted/rejected v5 handover",
+      "url": "https://github.com/AlanSynn/solweig-light/blob/e7a2d6ec8594b234820e7783e0ca26d821de7f3d/optimization_v5_claude/evidence/handover/MERGE_REVIEW_NOTES_v1.md",
+      "git_blob_sha": "4942000a9708bd03a8795dcc2c5bd82e23e3214a",
+      "scope": "already applied work, P01 regressions, actual GLM-only route record"
+    },
+    {
+      "id": "S17",
+      "title": "Decoder",
+      "url": "https://github.com/AlanSynn/solweig-light/blob/e7a2d6ec8594b234820e7783e0ca26d821de7f3d/src/solweig_light/geometry/visibility_compiled.py",
+      "git_blob_sha": "121a73fa88f6d9b254674c37f50fbbd4ccb434a0",
+      "scope": "_decode, descriptor, fused copies and preflight"
+    },
+    {
+      "id": "S18",
+      "title": "Post-S07 census",
+      "url": "https://github.com/AlanSynn/solweig-light/blob/e7a2d6ec8594b234820e7783e0ca26d821de7f3d/optimization_v5_claude/evidence/census/census_dense256_post_s07.json",
+      "git_blob_sha": "7110064fd4a4c580c7231b8379ec348a7b5a05b8",
+      "scope": "instrumented warm diagnostic, not 1024 phase timings"
+    },
+    {
+      "id": "S19",
+      "title": "Math profile",
+      "url": "https://github.com/AlanSynn/solweig-light/blob/e7a2d6ec8594b234820e7783e0ca26d821de7f3d/src/solweig_light/radiation/_math_profile.py",
+      "git_blob_sha": null,
+      "scope": "SLEEF domain and fallback behavior"
+    },
+    {
+      "id": "S20",
+      "title": "State and output model",
+      "url": "https://github.com/AlanSynn/solweig-light/blob/e7a2d6ec8594b234820e7783e0ca26d821de7f3d/src/solweig_light/models.py",
+      "git_blob_sha": "f6db62488b2480f4dac407902570a204e35f063a",
+      "scope": "carried state and requested output names"
+    },
+    {
+      "id": "O01",
+      "title": "Claude Code subagents",
+      "url": "https://code.claude.com/docs/en/sub-agents",
+      "git_blob_sha": null,
+      "scope": "official: model inheritance, frontmatter, worktree default"
+    },
+    {
+      "id": "O02",
+      "title": "Z.ai Claude Code integration",
+      "url": "https://docs.z.ai/devpack/tool/claude",
+      "git_blob_sha": null,
+      "scope": "official: Claude aliases can map to GLM; verify current route"
+    },
+    {
+      "id": "O03",
+      "title": "Numba threading layers",
+      "url": "https://numba.readthedocs.io/en/stable/user/threading-layer.html",
+      "git_blob_sha": null,
+      "scope": "official: thread pool, mask, environment-before-import"
+    },
+    {
+      "id": "O04",
+      "title": "Git worktree",
+      "url": "https://git-scm.com/docs/git-worktree",
+      "git_blob_sha": null,
+      "scope": "official: explicit detached worktree without named branch"
+    },
+    {
+      "id": "O05",
+      "title": "Numba performance tips",
+      "url": "https://numba.readthedocs.io/en/stable/user/performance-tips.html",
+      "git_blob_sha": null,
+      "scope": "official: nopython, loop performance, fastmath semantics"
+    }
+  ]
+}

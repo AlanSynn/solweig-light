@@ -1,0 +1,42 @@
+schema: 2
+task_id: REPLACE
+baseline_commit: REPLACE
+baseline_worktree_hash: REPLACE
+requested_role: bounded_implementation
+actual_model_and_effort: TO_RECORD_FROM_RUNTIME
+objective: REPLACE
+strategy_ids: []
+owned_files: []
+shared_files_not_to_edit:
+- src/solweig_light/radiation/engine.py
+- src/solweig_light/pipeline.py
+required_reads: []
+fast_domain: REPLACE
+fallback: unchanged_baseline
+invariants:
+- Existing public, numerical, state, artifact and durability contracts remain in force.
+commands_to_execute: []
+fixtures_and_reference_paths: []
+acceptance_evidence: []
+expected_terminal_result: templates/WORKER_RESULT.json
+limits:
+  recursive_subagents: false
+  intermediate_user_approval: false
+  progress_polling: false
+  benchmark_requires_exclusive_host_lease: true
+  packet_target_max_words: 1200
+  summary_target_max_words: 350
+  maximum_tier: L2
+  large_1024_run_allowed: false
+  hosted_ci_allowed: false
+  push_pr_main_merge_allowed: false
+  rebuild_environment_each_edit: false
+stop_only_when:
+- Owned scope is small-verified and independently review-ready, or a real blocker
+  is recorded.
+- No automatic full-scale or release-matrix expansion; return to integrator.
+next_dependency: REPLACE
+work_branch: RECORD_OWNED_WORKER_BRANCH
+integration_branch: perf/lean-cpu-v4
+evidence_dependency_keys: []
+small_fixture_tier: L0-L2

@@ -1,0 +1,32 @@
+{
+ "schema": "solweig-v7-drjit-fastmath-audit-v1",
+ "drjit_version": "1.5.0",
+ "backend": "drjit.llvm (non-AD)",
+ "fastmath_default": true,
+ "fastmath_after_disable": false,
+ "disable_method": "dr.set_flag(dr.JitFlag.FastMath, False) before any trace; verified via dr.flag(dr.JitFlag.FastMath)",
+ "ir_audit": {
+  "source": "llvm_ir_symbolic_kernel_raw.txt (PrintIR at log level 4, one full symbolic-kernel launch, spec=f64, B=8 P=3)",
+  "float_ops_with_fast_flag": 0,
+  "llvm_fma_intrinsic_count": 0,
+  "fmuladd_count": 0,
+  "fdiv_count": 1,
+  "fdiv_note": "the reflection /pi divide; runtime data divisor forces true IEEE divide",
+  "masked_gather_count": 27,
+  "fptrunc_count": 8,
+  "fptrunc_note": "float64 chain -> float32 rounding at the accumulator adds (real-pipeline specialization)",
+  "fpext_count": 17,
+  "fpext_note": "float32 -> float64 promotions of the surface/coefficient chains",
+  "uniform_conditional_branches": 7,
+  "packet_shape": "<4 x float> (NEON, target apple-m1)"
+ },
+ "division_folding_hazard": {
+  "demonstration": "llvm_ir_division.txt",
+  "summary": "literal/constant-foldable divisors fold to reciprocal multiply even with FastMath OFF; all varying scalars enter as runtime data arrays to force true fdiv",
+  "bitwise_probes": "literal-vs-data-divisor paths diverge on a substantial fraction of values: pi(f32) ~39656/262144 (~15.1%) and 30/64 at d=3.0 measured by the B7-30 reviewer; independently re-verified post-trials by the author with a corrected probe (pi 39373/262144 = 15.02%, d=3.0 87113/262144 = 33.23%, 32/64 on a 64-value sample; full divisor sweep in llvm_ir_division.txt)",
+  "correction_history": "an earlier revision recorded 0/262144 differences; that probe was tautological - its 'divide' side used a scalar constructor whose literal divisor folds to the same reciprocal multiply as the comparison side, so both paths were multiplies. IR inspection (fdiv present or absent) remains the conclusive structural detector.",
+  "mitigation_status": "load-bearing: the kernel's data-variable divisor construction is what makes the reflection term bitwise-exact; without it ~15% of pixel values would diverge from the Numba baseline"
+ },
+ "contraction_conclusion": "fp_contract effectively OFF: no FMA/fmuladd instructions, no fast flags on any float op; accumulation order preserved exactly as the Numba baseline (fastmath=False).",
+ "denormal_note": "default LLVM denormal handling; no flush-to-zero flags present in IR; NaN/Inf/-0.0 payloads bitwise-matched against the baseline (adversarial_replay.json)."
+}

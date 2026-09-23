@@ -1,0 +1,974 @@
+{
+ "schema": "c5-15-stage-census-v3",
+ "fixture": "tests/fixtures/generated/p7/vegetation_rich_256",
+ "scene": "/tmp/scene_veg256",
+ "config": {
+  "threads_per_worker": 4,
+  "block_pixels": 1024,
+  "workers": 1
+ },
+ "measurement_class": "diagnostic stage census, not benchmark timing",
+ "profile_total_seconds": 16.3021,
+ "top_by_cumtime": [
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/pipeline.py",
+   "line": 79,
+   "name": "run_tile",
+   "calls": 1,
+   "tottime": 0.0004,
+   "cumtime": 16.3026
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/pipeline.py",
+   "line": 91,
+   "name": "_run_tile",
+   "calls": 1,
+   "tottime": 0.0157,
+   "cumtime": 16.301
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/engine.py",
+   "line": 1478,
+   "name": "Solweig_2022a_calc",
+   "calls": 24,
+   "tottime": 0.0245,
+   "cumtime": 13.6202
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/engine.py",
+   "line": 1766,
+   "name": "Lcyl_v2022a",
+   "calls": 24,
+   "tottime": 0.0003,
+   "cumtime": 6.2393
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/patch_radiation.py",
+   "line": 923,
+   "name": "Lcyl_v2022a",
+   "calls": 24,
+   "tottime": 0.0018,
+   "cumtime": 6.2321
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/patch_radiation.py",
+   "line": 880,
+   "name": "define_patch_characteristics",
+   "calls": 24,
+   "tottime": 0.0312,
+   "cumtime": 6.2177
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/patch_radiation.py",
+   "line": 198,
+   "name": "_longwave_fused_block",
+   "calls": 1536,
+   "tottime": 5.4064,
+   "cumtime": 5.7283
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/engine.py",
+   "line": 1750,
+   "name": "Kside_veg_v2022a",
+   "calls": 14,
+   "tottime": 0.0003,
+   "cumtime": 3.9799
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/patch_radiation.py",
+   "line": 513,
+   "name": "Kside_veg_v2022a",
+   "calls": 14,
+   "tottime": 0.0241,
+   "cumtime": 3.9796
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/patch_radiation.py",
+   "line": 170,
+   "name": "_shortwave_fused_block",
+   "calls": 896,
+   "tottime": 3.0315,
+   "cumtime": 3.0755
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/engine.py",
+   "line": 1735,
+   "name": "gvf_2018a",
+   "calls": 14,
+   "tottime": 0.0003,
+   "cumtime": 1.9231
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/ground_view.py",
+   "line": 544,
+   "name": "_gvf_fused",
+   "calls": 14,
+   "tottime": 0.9132,
+   "cumtime": 1.9228
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/persistence.py",
+   "line": 419,
+   "name": "checkpoint",
+   "calls": 24,
+   "tottime": 0.002,
+   "cumtime": 1.494
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/engine.py",
+   "line": 1705,
+   "name": "_operate",
+   "calls": 244185,
+   "tottime": 1.2207,
+   "cumtime": 1.479
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/patch_radiation.py",
+   "line": 249,
+   "name": "_classes",
+   "calls": 2432,
+   "tottime": 0.729,
+   "cumtime": 1.2245
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/ground_view.py",
+   "line": 501,
+   "name": "_postprocess_block",
+   "calls": 2016,
+   "tottime": 0.1555,
+   "cumtime": 0.7664
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/engine.py",
+   "line": 1337,
+   "name": "Lside_veg_v2022a",
+   "calls": 24,
+   "tottime": 0.072,
+   "cumtime": 0.7026
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/persistence.py",
+   "line": 324,
+   "name": "_flush",
+   "calls": 26,
+   "tottime": 0.0011,
+   "cumtime": 0.6895
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/persistence.py",
+   "line": 187,
+   "name": "_band_digest",
+   "calls": 240,
+   "tottime": 0.0025,
+   "cumtime": 0.6582
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/osgeo/gdal_array.py",
+   "line": 264,
+   "name": "BandRasterIONumPy",
+   "calls": 1205,
+   "tottime": 0.0005,
+   "cumtime": 0.6382
+  },
+  {
+   "file": "~",
+   "line": 0,
+   "name": "<built-in method osgeo._gdal_array.BandRasterIONumPy>",
+   "calls": 1205,
+   "tottime": 0.6377,
+   "cumtime": 0.6377
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/osgeo/gdal.py",
+   "line": 10754,
+   "name": "ReadAsArray",
+   "calls": 965,
+   "tottime": 0.0015,
+   "cumtime": 0.6256
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/osgeo/gdal_array.py",
+   "line": 597,
+   "name": "BandReadAsArray",
+   "calls": 965,
+   "tottime": 0.0029,
+   "cumtime": 0.6234
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/engine.py",
+   "line": 1324,
+   "name": "Lvikt_veg",
+   "calls": 96,
+   "tottime": 0.0036,
+   "cumtime": 0.6185
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/persistence.py",
+   "line": 414,
+   "name": "write",
+   "calls": 24,
+   "tottime": 0.0002,
+   "cumtime": 0.6008
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/io/rasters.py",
+   "line": 66,
+   "name": "write",
+   "calls": 24,
+   "tottime": 0.0019,
+   "cumtime": 0.5994
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/osgeo/gdal.py",
+   "line": 9864,
+   "name": "FlushCache",
+   "calls": 240,
+   "tottime": 0.0002,
+   "cumtime": 0.5652
+  },
+  {
+   "file": "~",
+   "line": 0,
+   "name": "<built-in method osgeo._gdal.Band_FlushCache>",
+   "calls": 240,
+   "tottime": 0.565,
+   "cumtime": 0.565
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/geometry/visibility.py",
+   "line": 254,
+   "name": "__getitem__",
+   "calls": 2142,
+   "tottime": 0.0499,
+   "cumtime": 0.4546
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/geometry/visibility_native.py",
+   "line": 103,
+   "name": "__getitem__",
+   "calls": 4284,
+   "tottime": 0.0034,
+   "cumtime": 0.402
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/geometry/visibility.py",
+   "line": 145,
+   "name": "__getitem__",
+   "calls": 4284,
+   "tottime": 0.0023,
+   "cumtime": 0.3979
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/_math_profile.py",
+   "line": 87,
+   "name": "atan32",
+   "calls": 1792,
+   "tottime": 0.3889,
+   "cumtime": 0.3945
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/geometry/visibility_native.py",
+   "line": 98,
+   "name": "decode_patch",
+   "calls": 4284,
+   "tottime": 0.0038,
+   "cumtime": 0.3912
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/geometry/visibility.py",
+   "line": 128,
+   "name": "decode_patch",
+   "calls": 4284,
+   "tottime": 0.3693,
+   "cumtime": 0.3868
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/persistence.py",
+   "line": 52,
+   "name": "_sync_file",
+   "calls": 270,
+   "tottime": 0.0008,
+   "cumtime": 0.3535
+  },
+  {
+   "file": "~",
+   "line": 0,
+   "name": "<built-in method posix.fsync>",
+   "calls": 662,
+   "tottime": 0.3466,
+   "cumtime": 0.3466
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/osgeo/gdal.py",
+   "line": 5547,
+   "name": "FlushCache",
+   "calls": 260,
+   "tottime": 0.0003,
+   "cumtime": 0.3303
+  },
+  {
+   "file": "~",
+   "line": 0,
+   "name": "<built-in method osgeo._gdal.Dataset_FlushCache>",
+   "calls": 260,
+   "tottime": 0.33,
+   "cumtime": 0.33
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/dispatcher.py",
+   "line": 342,
+   "name": "_compile_for_args",
+   "calls": 12,
+   "tottime": 0.0001,
+   "cumtime": 0.3104
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/dispatcher.py",
+   "line": 860,
+   "name": "compile",
+   "calls": 19,
+   "tottime": 0.0004,
+   "cumtime": 0.3083
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/engine.py",
+   "line": 1693,
+   "name": "_operands",
+   "calls": 291588,
+   "tottime": 0.1095,
+   "cumtime": 0.2939
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/geometry/visibility_compiled.py",
+   "line": 83,
+   "name": "_descriptor",
+   "calls": 9088,
+   "tottime": 0.0021,
+   "cumtime": 0.2477
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/dispatcher.py",
+   "line": 86,
+   "name": "_compile_cached",
+   "calls": 4,
+   "tottime": 0.0,
+   "cumtime": 0.2416
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/dispatcher.py",
+   "line": 79,
+   "name": "compile",
+   "calls": 4,
+   "tottime": 0.0,
+   "cumtime": 0.2416
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/dispatcher.py",
+   "line": 101,
+   "name": "_compile_core",
+   "calls": 4,
+   "tottime": 0.0001,
+   "cumtime": 0.2416
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/compiler.py",
+   "line": 713,
+   "name": "compile_extra",
+   "calls": 4,
+   "tottime": 0.0,
+   "cumtime": 0.2413
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/compiler.py",
+   "line": 433,
+   "name": "compile_extra",
+   "calls": 4,
+   "tottime": 0.0,
+   "cumtime": 0.2399
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/compiler.py",
+   "line": 500,
+   "name": "_compile_bytecode",
+   "calls": 4,
+   "tottime": 0.0,
+   "cumtime": 0.2394
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/compiler.py",
+   "line": 456,
+   "name": "_compile_core",
+   "calls": 4,
+   "tottime": 0.0,
+   "cumtime": 0.2394
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/compiler_machinery.py",
+   "line": 342,
+   "name": "run",
+   "calls": 4,
+   "tottime": 0.0002,
+   "cumtime": 0.2387
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/compiler_lock.py",
+   "line": 32,
+   "name": "_acquire_compile_lock",
+   "calls": 135,
+   "tottime": 0.0003,
+   "cumtime": 0.2386
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/compiler_machinery.py",
+   "line": 267,
+   "name": "_runPass",
+   "calls": 108,
+   "tottime": 0.0016,
+   "cumtime": 0.238
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/compiler_machinery.py",
+   "line": 271,
+   "name": "check",
+   "calls": 324,
+   "tottime": 0.0003,
+   "cumtime": 0.235
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/comfort/utci.py",
+   "line": 412,
+   "name": "utci_calculator_uniform",
+   "calls": 24,
+   "tottime": 0.213,
+   "cumtime": 0.2232
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/engine.py",
+   "line": 1723,
+   "name": "shadowingfunction_wallheight_23",
+   "calls": 14,
+   "tottime": 0.0002,
+   "cumtime": 0.2071
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/wall_shadows.py",
+   "line": 274,
+   "name": "exact_23",
+   "calls": 14,
+   "tottime": 0.1897,
+   "cumtime": 0.2044
+  },
+  {
+   "file": "~",
+   "line": 0,
+   "name": "<built-in method numpy.asarray>",
+   "calls": 708758,
+   "tottime": 0.1917,
+   "cumtime": 0.1917
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/typed_passes.py",
+   "line": 439,
+   "name": "run_pass",
+   "calls": 4,
+   "tottime": 0.0002,
+   "cumtime": 0.1655
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/ground_view.py",
+   "line": 493,
+   "name": "_lup_expression",
+   "calls": 504,
+   "tottime": 0.0023,
+   "cumtime": 0.1629
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/typed_passes.py",
+   "line": 107,
+   "name": "run_pass",
+   "calls": 4,
+   "tottime": 0.0,
+   "cumtime": 0.1499
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/typed_passes.py",
+   "line": 68,
+   "name": "type_inference_stage",
+   "calls": 4,
+   "tottime": 0.0001,
+   "cumtime": 0.1498
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/typeinfer.py",
+   "line": 1064,
+   "name": "propagate",
+   "calls": 4,
+   "tottime": 0.0,
+   "cumtime": 0.149
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/typeinfer.py",
+   "line": 147,
+   "name": "propagate",
+   "calls": 8,
+   "tottime": 0.0002,
+   "cumtime": 0.149
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/typeinfer.py",
+   "line": 564,
+   "name": "__call__",
+   "calls": 32,
+   "tottime": 0.0002,
+   "cumtime": 0.1473
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/typeinfer.py",
+   "line": 574,
+   "name": "resolve",
+   "calls": 40,
+   "tottime": 0.0002,
+   "cumtime": 0.1472
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/typing/context.py",
+   "line": 268,
+   "name": "resolve_function_type",
+   "calls": 40,
+   "tottime": 0.0002,
+   "cumtime": 0.147
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/typeinfer.py",
+   "line": 1531,
+   "name": "resolve_call",
+   "calls": 40,
+   "tottime": 0.0,
+   "cumtime": 0.147
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/typing/context.py",
+   "line": 320,
+   "name": "_resolve_user_function_type",
+   "calls": 40,
+   "tottime": 0.0001,
+   "cumtime": 0.1469
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/typing/templates.py",
+   "line": 356,
+   "name": "apply",
+   "calls": 221,
+   "tottime": 0.0002,
+   "cumtime": 0.1468
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/types/functions.py",
+   "line": 285,
+   "name": "get_call_type",
+   "calls": 37,
+   "tottime": 0.0006,
+   "cumtime": 0.1467
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/typing/templates.py",
+   "line": 614,
+   "name": "generic",
+   "calls": 55,
+   "tottime": 0.0001,
+   "cumtime": 0.146
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/typing/templates.py",
+   "line": 705,
+   "name": "_get_impl",
+   "calls": 55,
+   "tottime": 0.0002,
+   "cumtime": 0.1452
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/types/functions.py",
+   "line": 535,
+   "name": "get_call_type",
+   "calls": 7,
+   "tottime": 0.0,
+   "cumtime": 0.1451
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/typing/templates.py",
+   "line": 756,
+   "name": "_build_impl",
+   "calls": 6,
+   "tottime": 0.0001,
+   "cumtime": 0.145
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/dispatcher.py",
+   "line": 302,
+   "name": "get_call_template",
+   "calls": 7,
+   "tottime": 0.0,
+   "cumtime": 0.1449
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/persistence.py",
+   "line": 32,
+   "name": "_digest",
+   "calls": 251,
+   "tottime": 0.001,
+   "cumtime": 0.1377
+  },
+  {
+   "file": "~",
+   "line": 0,
+   "name": "<method 'update' of '_hashlib.HASH' objects>",
+   "calls": 1523,
+   "tottime": 0.1304,
+   "cumtime": 0.1304
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/typed/typedlist.py",
+   "line": 341,
+   "name": "append",
+   "calls": 459,
+   "tottime": 0.0006,
+   "cumtime": 0.1225
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/typed/typedlist.py",
+   "line": 212,
+   "name": "empty_list",
+   "calls": 3,
+   "tottime": 0.0,
+   "cumtime": 0.1212
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/typed/typedlist.py",
+   "line": 270,
+   "name": "_parse_arg",
+   "calls": 3,
+   "tottime": 0.0,
+   "cumtime": 0.121
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/typed/typedlist.py",
+   "line": 228,
+   "name": "__init__",
+   "calls": 3,
+   "tottime": 0.0,
+   "cumtime": 0.121
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/llvmlite/binding/ffi.py",
+   "line": 210,
+   "name": "__call__",
+   "calls": 5195,
+   "tottime": 0.0738,
+   "cumtime": 0.1174
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/persistence.py",
+   "line": 154,
+   "name": "save_state",
+   "calls": 24,
+   "tottime": 0.0008,
+   "cumtime": 0.1169
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/engine.py",
+   "line": 1689,
+   "name": "_divide",
+   "calls": 47403,
+   "tottime": 0.0707,
+   "cumtime": 0.1073
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/persistence.py",
+   "line": 83,
+   "name": "_encode",
+   "calls": 264,
+   "tottime": 0.002,
+   "cumtime": 0.0974
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/persistence.py",
+   "line": 483,
+   "name": "complete",
+   "calls": 1,
+   "tottime": 0.0002,
+   "cumtime": 0.0931
+  },
+  {
+   "file": "~",
+   "line": 0,
+   "name": "<built-in method _io.open>",
+   "calls": 1651,
+   "tottime": 0.0754,
+   "cumtime": 0.0881
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/typing/templates.py",
+   "line": 1083,
+   "name": "_get_signature",
+   "calls": 3,
+   "tottime": 0.0,
+   "cumtime": 0.0736
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/typing/templates.py",
+   "line": 1137,
+   "name": "generic",
+   "calls": 2,
+   "tottime": 0.0,
+   "cumtime": 0.0735
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/types/functions.py",
+   "line": 391,
+   "name": "get_call_type",
+   "calls": 2,
+   "tottime": 0.0,
+   "cumtime": 0.0735
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/caching.py",
+   "line": 713,
+   "name": "load_overload",
+   "calls": 10,
+   "tottime": 0.0001,
+   "cumtime": 0.0649
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/cpu.py",
+   "line": 269,
+   "name": "get_executable",
+   "calls": 14,
+   "tottime": 0.0001,
+   "cumtime": 0.0624
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/caching.py",
+   "line": 724,
+   "name": "_load_overload",
+   "calls": 10,
+   "tottime": 0.0001,
+   "cumtime": 0.0621
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/codegen.py",
+   "line": 986,
+   "name": "get_pointer_to_function",
+   "calls": 14,
+   "tottime": 0.0,
+   "cumtime": 0.0613
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/codegen.py",
+   "line": 567,
+   "name": "_ensure_finalized",
+   "calls": 27,
+   "tottime": 0.0,
+   "cumtime": 0.061
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/codegen.py",
+   "line": 748,
+   "name": "finalize",
+   "calls": 4,
+   "tottime": 0.0001,
+   "cumtime": 0.061
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/timezonefinder/timezonefinder.py",
+   "line": 1001,
+   "name": "__init__",
+   "calls": 1,
+   "tottime": 0.0001,
+   "cumtime": 0.056
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/codegen.py",
+   "line": 732,
+   "name": "add_ir_module",
+   "calls": 10,
+   "tottime": 0.0001,
+   "cumtime": 0.0551
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/timezonefinder/polygon_array.py",
+   "line": 55,
+   "name": "__init__",
+   "calls": 2,
+   "tottime": 0.0001,
+   "cumtime": 0.053
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/_math_profile.py",
+   "line": 69,
+   "name": "tan32",
+   "calls": 1792,
+   "tottime": 0.0296,
+   "cumtime": 0.0514
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/codegen.py",
+   "line": 792,
+   "name": "_finalize_final_module",
+   "calls": 14,
+   "tottime": 0.0001,
+   "cumtime": 0.0493
+  },
+  {
+   "file": "~",
+   "line": 0,
+   "name": "<method 'read' of '_io.BufferedReader' objects>",
+   "calls": 1558,
+   "tottime": 0.0491,
+   "cumtime": 0.0491
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/lowering.py",
+   "line": 188,
+   "name": "lower",
+   "calls": 4,
+   "tottime": 0.0,
+   "cumtime": 0.0466
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/timezonefinder/coord_accessors.py",
+   "line": 244,
+   "name": "create_coord_accessor",
+   "calls": 2,
+   "tottime": 0.0,
+   "cumtime": 0.0461
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/timezonefinder/coord_accessors.py",
+   "line": 96,
+   "name": "__init__",
+   "calls": 2,
+   "tottime": 0.0078,
+   "cumtime": 0.0461
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/persistence.py",
+   "line": 205,
+   "name": "__init__",
+   "calls": 1,
+   "tottime": 0.0001,
+   "cumtime": 0.046
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/caching.py",
+   "line": 477,
+   "name": "rebuild",
+   "calls": 10,
+   "tottime": 0.0001,
+   "cumtime": 0.0447
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/compiler.py",
+   "line": 227,
+   "name": "_rebuild",
+   "calls": 10,
+   "tottime": 0.0001,
+   "cumtime": 0.0446
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/persistence.py",
+   "line": 442,
+   "name": "_validate_publication",
+   "calls": 1,
+   "tottime": 0.0001,
+   "cumtime": 0.0389
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/patch_radiation.py",
+   "line": 223,
+   "name": "_class_coefficients",
+   "calls": 38,
+   "tottime": 0.0094,
+   "cumtime": 0.0382
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/timezonefinder/flatbuf/io/polygons.py",
+   "line": 276,
+   "name": "derive_payload_offset_table",
+   "calls": 2,
+   "tottime": 0.0003,
+   "cumtime": 0.0377
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/timezonefinder/flatbuf/io/polygons.py",
+   "line": 265,
+   "name": "read",
+   "calls": 10,
+   "tottime": 0.0022,
+   "cumtime": 0.0373
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/codegen.py",
+   "line": 1007,
+   "name": "_finalize_specific",
+   "calls": 14,
+   "tottime": 0.0001,
+   "cumtime": 0.0356
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/codegen.py",
+   "line": 741,
+   "name": "add_llvm_module",
+   "calls": 10,
+   "tottime": 0.0,
+   "cumtime": 0.0351
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/persistence.py",
+   "line": 280,
+   "name": "_validate_previous_completion",
+   "calls": 1,
+   "tottime": 0.0001,
+   "cumtime": 0.0351
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/patch_radiation.py",
+   "line": 152,
+   "name": "_fused_guard",
+   "calls": 2432,
+   "tottime": 0.0136,
+   "cumtime": 0.0345
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/.venv/lib/python3.12/site-packages/numba/core/codegen.py",
+   "line": 653,
+   "name": "_optimize_functions",
+   "calls": 10,
+   "tottime": 0.0007,
+   "cumtime": 0.0334
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/comfort/wbgt.py",
+   "line": 716,
+   "name": "black_globe_temperature",
+   "calls": 24,
+   "tottime": 0.0322,
+   "cumtime": 0.0323
+  },
+  {
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/persistence.py",
+   "line": 57,
+   "name": "_atomic_json",
+   "calls": 51,
+   "tottime": 0.0007,
+   "cumtime": 0.0322
+  },
+  {
+   "file": "~",
+   "line": 0,
+   "name": "<method 'extend' of 'list' objects>",
+   "calls": 10862,
+   "tottime": 0.0012,
+   "cumtime": 0.0319
+  }
+ ]
+}

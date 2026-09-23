@@ -1,0 +1,229 @@
+{
+ "amendment_2": {
+  "authority": "host owner, recorded PRE-RESULT in f0_protocol_freeze.md Amendment 2 + supplement (~13:2xZ 2026-09-23, before any F3 timing existed); the final opportunity was launched under it",
+  "censor": {
+   "amendment2_reading_1p6x_start": 5.459,
+   "applied_abs": 8.0,
+   "censored_under_either_bound": 0,
+   "max_observed_per_rep_1m": 2.7
+  },
+  "launch": {
+   "actual_start_loadavg_1m": 3.4116,
+   "actual_start_loadavg_5m": 7.3794,
+   "compliant": true,
+   "note": "launched at the first window meeting the STRICTER frozen 1-min < 5.0 bound (harness gate), therefore also compliant with Amendment 2 < 10.0; no settle time was hunted beyond the frozen post-JIT 65 s quiesce. 5-min sanity VIEW recorded at all three checkpoints (7.38 start / 6.40 pre-timing / end snapshot); the frozen numeric gate is defined on the 1-min value only.",
+   "pages_available": 411375,
+   "required": "1-min loadavg < 10.0 AND available >= 92,000 pages (5-min view annotated, memory and censor rules unchanged)"
+  },
+  "marginality": {
+   "binding_failures": {
+    "mixed_B4_over_C4": {
+     "median_of_times_ratio": 0.9591,
+     "pairs_below_1p0": 5,
+     "per_pair_median_ratio": 0.9696
+    },
+    "note": "these are the cells that decide gate 2; raw is direction-consistent 9/9 for BOTH controls, so no reading of the spread makes C qualify",
+    "raw": {
+     "A8_over_C4_all_9_pairs_below_1p0": true,
+     "B4_over_C4_all_9_pairs_below_1p0": true,
+     "max_pair_B4_over_C4": 0.9741
+    }
+   },
+   "effect_on_terminal_label": "none: MARGINAL attaches only to the two PASS claims (guarding the binary-cell headline); gate 2 fails on mixed and raw regardless, so NATIVE_LOSS stands",
+   "gate1_geomean_pass": {
+    "label": "MARGINAL",
+    "margin_vs_1p10": 0.2163,
+    "per_rep_geomean_min": 1.0945,
+    "per_rep_geomean_spread": 0.4879,
+    "value": 1.3163,
+    "within_2x_spread": true
+   },
+   "gate2_binary_cell_pass": {
+    "label": "MARGINAL",
+    "margin_vs_1p05_median_of_times": 0.0019,
+    "median_of_times_ratio": 1.0519,
+    "pairs_where_C4_won": 1,
+    "per_pair_median_ratio": 1.1298,
+    "per_pair_spread": 0.5436,
+    "within_2x_spread": true
+   },
+   "rule": "gate margin within 2x the observed spread -> label MARGINAL, not a clear pass"
+  },
+  "verdict_basis": "per-pair RATIOS (confirmed): medians of paired ratios reported here alongside the median-of-times ratios used in the frozen gate math"
+ },
+ "cells": {
+  "B=1024 all-binary": {
+   "median_ms": {
+    "A8": 4.827,
+    "B1": 2.323,
+    "B4": 2.451,
+    "C1": 2.173,
+    "C4": 2.33
+   },
+   "primary": true,
+   "speedup_A8_over_C4": 2.0717,
+   "speedup_B4_over_C4": 1.0519
+  },
+  "B=1024 all-raw": {
+   "median_ms": {
+    "A8": 1.762,
+    "B1": 1.889,
+    "B4": 2.046,
+    "C1": 2.11,
+    "C4": 2.218
+   },
+   "primary": true,
+   "speedup_A8_over_C4": 0.7944,
+   "speedup_B4_over_C4": 0.9225
+  },
+  "B=1024 mix": {
+   "median_ms": {
+    "A8": 4.024,
+    "B1": 3.055,
+    "B4": 3.094,
+    "C1": 2.979,
+    "C4": 3.226
+   },
+   "primary": true,
+   "speedup_A8_over_C4": 1.2474,
+   "speedup_B4_over_C4": 0.9591
+  },
+  "B=128 all-binary": {
+   "median_ms": {
+    "A8": 1.344,
+    "B1": 1.094,
+    "B4": 1.169,
+    "C1": 1.143,
+    "C4": 1.281
+   },
+   "primary": false,
+   "speedup_A8_over_C4": 1.0492,
+   "speedup_B4_over_C4": 0.9126
+  },
+  "B=128 all-raw": {
+   "median_ms": {
+    "A8": 0.945,
+    "B1": 1.071,
+    "B4": 1.089,
+    "C1": 1.114,
+    "C4": 1.162
+   },
+   "primary": false,
+   "speedup_A8_over_C4": 0.8133,
+   "speedup_B4_over_C4": 0.9372
+  },
+  "B=128 mix": {
+   "median_ms": {
+    "A8": 1.202,
+    "B1": 1.15,
+    "B4": 1.295,
+    "C1": 1.25,
+    "C4": 1.378
+   },
+   "primary": false,
+   "speedup_A8_over_C4": 0.8723,
+   "speedup_B4_over_C4": 0.9398
+  }
+ },
+ "configuration": {
+  "arms": "A8 default composition (_classes + _block x3 + _longwave_primary prange; fused route env-gated OFF at defaults, asserted); B/C = _lw_dispatch._execute_row bounded stream (row B SELF_PARALLEL numba, row C BLOCK_FANOUT native primary_aosoa)",
+  "budget_N": 4,
+  "cells": "B=1024 primary, B=128 secondary x mixes binary/mixed/raw; P=153 production table (create_patches(2)); real scene SVF values; REPS=9 paired alternating",
+  "tier_note": "N8-02 tier-B config: threads=4, cpu_budget=4, workers=1; numba.set_num_threads(4)"
+ },
+ "decision": "native C LOSES the frozen gates: gate 2 (every primary cell C >= 1.05x BOTH A8 and B) fails on mixed (B4/C4 0.959) and raw (A8/C4 0.794, B4/C4 0.922). Per the frozen decision rules: terminal LOSS; no further large tests; L2/L3 chronology SKIPPED (also moots the stream-wireability question). Per f0 closure semantics this closes native for this release (closed_cpu_only path).",
+ "findings": [
+  "C beats A8 only on all-binary (2.07x) where AoSoA decode savings are largest; on raw the stream is 26% SLOWER than the dense A8 path - consistent with the N8 attribution that the direct producer has no raw advantage.",
+  "C ~ B everywhere (geomean B4/C4 0.999): the native leaf adds no measurable advantage over the Numba AoSoA consumer at matched budget - the shared stream preparation dominates the composed time.",
+  "Even on the winning binary cell, B4 (2.451 ms) is within noise of C4 (2.330 ms) and B1 (2.323 ms): any stream win is a NUMBA-stream win, not a native win.",
+  "H=4 vs H=1 deltas are small and cannot help: one block per frozen cell means max_in_flight=1 by construction (structural, recorded in region reports).",
+  "Candidate-source default-path overhead (selector consult per routed call) measured at +2.05% on the protected check - within the frozen 3% bound.",
+  "Amendment 2 marginality labels: the only PASS claims in this verdict (gate-1 geomean 1.316; gate-2 binary cell 1.052) are both MARGINAL by the frozen within-2x-spread rule; the verdict rests on the gate-2 failures (mixed 5/9 pairs below 1.0; raw 9/9 pairs below 1.0 for both controls), which are unaffected."
+ ],
+ "gates": {
+  "gate1_ge_1_10": true,
+  "gate1_geomean_A8_over_C4": 1.3162857376186368,
+  "gate2_cell_detail": {
+   "B=1024 all-binary": true,
+   "B=1024 all-raw": false,
+   "B=1024 mix": false
+  },
+  "gate2_every_primary_both_controls_1_05": false,
+  "gate3_protected_regression_pct": 2.049,
+  "gate3_within_3pct": true,
+  "gate4_coverage_pass": true,
+  "geomean_A8_over_C1": 1.3860179490902123,
+  "geomean_B4_over_C4": 0.99895846842232
+ },
+ "harness": "optimization_n9_final/tools/f3_continuous.py",
+ "limitations": [
+  "n=9 per cell, no inferential confidence claims (frozen).",
+  "Single host (darwin-arm64, 10 CPUs); one ISA/mix/budget family; no global native default was claimable regardless.",
+  "Frozen cells are single-block (total=block size) per the brief; multi-block fanout behavior is exercised only structurally (declared=1 blocks per cell).",
+  "N8-04 adversarial scalar provenance saturates outputs to canonical NaN at P=153; the finite-scalar parity variant was added so the precheck has real power (untimed, workload unchanged)."
+ ],
+ "native_counters": {
+  "pass": true,
+  "per_cell": {
+   "B=1024 all-binary": {
+    "declared": 1,
+    "entries": 1
+   },
+   "B=1024 all-raw": {
+    "declared": 1,
+    "entries": 1
+   },
+   "B=1024 mix": {
+    "declared": 1,
+    "entries": 1
+   },
+   "B=128 all-binary": {
+    "declared": 1,
+    "entries": 1
+   },
+   "B=128 all-raw": {
+    "declared": 1,
+    "entries": 1
+   },
+   "B=128 mix": {
+    "declared": 1,
+    "entries": 1
+   }
+  }
+ },
+ "opportunities": [
+  {
+   "evidence": "f3_continuous_gaterefused_20260923T131342Z.json",
+   "n": 1,
+   "outcome": "WINDOW_GATE_REFUSED",
+   "reason": "1-min loadavg 7.21 >= 5.0 at session-start gate check"
+  },
+  {
+   "evidence": "f3_continuous_timed_20260923T144131Z.json",
+   "n": 2,
+   "outcome": "VALID_TIMED_SESSION"
+  }
+ ],
+ "parity": "A8==B4==C4 bitwise on [7,total] on ALL 6 cells, BOTH variants (N8-04 adversarial grid + finite-scalar; grid alone saturates to canonical NaN at P=153)",
+ "protected_check": {
+  "A8_median_ms": 3.89,
+  "A8route_median_ms": 3.969,
+  "note": "A8 through candidate-source production entry seam (_lw_region_route consult, registry read, fail-closed row A) vs bare legacy loop, B=1024 mix, 9 paired alternating reps, same budget"
+ },
+ "raw_archive": "f3_continuous_timed_20260923T144131Z.json",
+ "record": "N9-F3 TERMINAL VERDICT: continuous composed A8/B/C comparison (protocol N9-CONT-v1)",
+ "recorded_utc": "2026-09-23T14:41:31Z (timed session)",
+ "terminal_label": "NATIVE_LOSS",
+ "window_gate": {
+  "censored_records": 0,
+  "per_rep_max_1m": 2.7,
+  "pre_timing": {
+   "loadavg_1m": 2.75
+  },
+  "rule": "1-min loadavg < 5.0 AND available >= 92,000 pages",
+  "start": {
+   "loadavg_1m": 3.41,
+   "pages_available": 411375
+  }
+ }
+}

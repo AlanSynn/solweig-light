@@ -1,0 +1,66 @@
+{
+  "purpose": "Coordinator-held obligations routed to N8-41 (wheel assembly), recorded as they arise. Sources are the named reviews; nothing here is new policy.",
+  "as_of": "2026-09-22T20:40Z",
+  "branch": "perf/native-optimization @ 16cdc56c (worktree /Users/alansynn/Workspace/solweig-v8-native)",
+  "obligations": [
+    {
+      "id": "n841-1",
+      "item": "Integrate linked-image FMA scan into build_native.py verify path (before wheel assembly): otool -tV of the FINAL linked artifact through the reviewed fma_audit regex, with positive control.",
+      "source": "n8_30_review_n8_20_packaging note N2; adopted build-side by N8-21 (declined at runtime-load: no-subprocess gate 8.2, otool xcrun-shim fragility, manifest sha256 pin already fails mutated images). Existing evidence: experiments/optimization_v8/artifacts/linked_image_fma_scan.json + tests/optimization_v8/artifacts/test_linked_image_scan.py (positive control incl.).",
+      "note": "Editing reviewed build_native.py invalidates the affected part of N8-20's review - schedule a delta review with N8-41's own review."
+    },
+    {
+      "id": "n841-2",
+      "item": "Add repo-level .gitignore rule for staged native dylibs (staged artifacts are currently excluded only by user-global ~/.config/git/ignore *.dylib).",
+      "source": "n8_30_review_n8_20_packaging note N4."
+    },
+    {
+      "id": "n841-3",
+      "item": "pyproject package-data globs for packaged native generations + @rpath install name handling; reuse wheel_tags.py (rejects any/purelib/abi3 for native wheels).",
+      "source": "n8-20 author terminal summary 'Next'; BUILD_DESIGN.md; n8_30_review_n8_20_packaging obligation 1."
+    },
+    {
+      "id": "n841-4",
+      "item": "Rerun n8-23-dx installed tests against a real native wheel (they are origin-parametrized; current runs are source/no-native fallback mode, labelled).",
+      "source": "DX_CONTRACT installation-channel matrix; n8_23-dx deferred-gate labels."
+    },
+    {
+      "id": "n841-5",
+      "item": "Optional build-side isinstance hardening in build_native.py validators (loader-side broadened catch lands earlier via N8-21 N1 repair; hardening the validator itself removes the non-typed failure surfaces at the source). Also consider positively requiring expected requirement strings (n8-21 review N3: empty requirements list currently loads within the arm64 domain).",
+      "source": "n8_30_review_n8_21_artifacts N1 + N3."
+    },
+    {
+      "id": "n841-6",
+      "item": "Manifest stamp assumes artifacts[0] is the dylib (n8-21 review N4) - make explicit at wheel assembly. Vendor the tests' sys.path sibling bootstrap (n8-21 review N5) if installed tests move into the package. TASKS_CLAUDE.yaml owned_scope for N8-21 omits tests/optimization_v8/artifacts/ (coordinator-authorized; record only).",
+      "source": "n8_30_review_n8_21_artifacts N2/N4/N5."
+    }
+  ],
+  "n841-7": {
+    "title": "post-integration review obligations dying with vendoring (n8_30_review_n8_40_integration notes N1-N3)",
+    "items": [
+      "vendor lw_default_policy + region + layout + native + numba + artifacts machinery under the package; delete the sys.path bootstrap in radiation/_lw_dispatch.py (removes the repo-only namespace-name surface incl. the foreign-region teardown hazard)",
+      "after vendoring, a broken selector module must not be silently row A without a recorded decline (N8-21 taxonomy or equivalent) - reviewer probe showed ImportError today resolves quietly to A (fail-safe but unrecorded)",
+      "docstring wording at next touch: shipped row A DOES run the selector (per-call registry read); only the execution machinery is untouched",
+      "keep the single env-read site (cylinder_longwave seam) when flipping the expert route to the installed loader"
+    ]
+  },
+  "_review_refs": [
+    "optimization_v8_native_default/evidence/reviews/n8_30_review_n8_40_integration.json",
+    "optimization_v8_native_default/evidence/integration/n8_40_review_notes_disposition.json"
+  ],
+  "n841-8": {
+    "title": "vendoring executed EARLY (integrator decision, 2026-09-22 evening, during tier-B quiet-window wait)",
+    "rationale": [
+      "the machinery move is row-selection-independent: all rows relocate; wheel CONTENT remains selection-gated; the expert-env route flip remains wheels-time",
+      "schedule compression: vendoring + test rewiring is the largest remaining implementation block; the measurement gate blocks tier B, not this",
+      "precedent: N8-40 wiring was likewise executed ahead of its yaml gate (needs N8-32) as selection-independent work, reviewed on its own diff"
+    ],
+    "guardrails": [
+      "shipped-state behavior byte-identical: rows still records-gated, decline taxonomy unchanged",
+      "single env-read site preserved (cylinder_longwave seam); dispatch module still reads no env",
+      "expert env route continues serving the legacy B7-32 path until the wheels-time flip",
+      "experiments/ tree KEPT intact this commit (evidence durability: tier archives + stage provenance live there); code becomes unused duplicate, deletion is a later explicit step",
+      "N8-32 selection still gates wheel building; N8-40 formal record still lands post-selection"
+    ]
+  }
+}

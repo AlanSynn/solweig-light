@@ -1,0 +1,119 @@
+{
+  "schema": "solweig-v7-review-record-v1",
+  "task": "B7-30",
+  "candidate": "C_drjit (experiments/optimization_v7/drjit/ at /Users/alansynn/Workspace/solweig-v7-drjit, detached c66ff3b6)",
+  "reviewer": "independent review agent (fresh, not the author agent)",
+  "date": "2026-09-22",
+  "routing_statement": "Model routing note for the record: this session has no verified Anthropic Opus route; you are an independent GLM review by a fresh agent distinct from the author agent.",
+  "verdict": "APPROVE-WITH-NOTES",
+  "scope_of_approval": "Exactness gate of candidate C_drjit for the frozen _longwave_primary reducer graph (blob 27ba6ce4; b7_02 typed contract): 520/520 fixture replay, adversarial/negative domains, no-contraction and true-division claims, typed-graph fidelity, adapter honesty. NOT approved by this review: any performance claim (dev-tier timings are labeled dev-tier and remain outside the B7-03 protocol), integration/dispatch, and final campaign qualification.",
+  "reruns_performed": {
+    "fixture_replay_independent_harness": {
+      "log": "/tmp/b7_30_drjit_review/logs/rerun_fixture_replay.json",
+      "result": "520 captured / 520 admitted / 0 rejected / 520 bitwise-matched (uint32) / 0 input-canary failures, wall 1.3 s (author claimed 1.17 s)",
+      "note": "harness rebuilt from b7_02_capture_manifest.json + b7_02_fixtures.npz; no author script exists in the candidate directory"
+    },
+    "independent_adversarial_suite": {
+      "log": "/tmp/b7_30_drjit_review/logs/rerun_adversarial.json",
+      "result": "24/24 ok vs BOTH numba baselines (serial+parallel), bitwise uint32: B=0/1/4/17, P=1/2/153; NaN/Inf visibility+lup+sky tables; -0.0 sine and vs; denormal visibility (1e-40/1e-45); f64/f32/python-float surfaces; stride-12 sky views; all-gate/all-nogate; vis all-zero/all-two; both loop modes; input canaries; all 5 rejections (f64 visibility, mixed surface specs, python-float reflection_factor, P=610, f64 sun mask) raise Unsupported pre-launch with inputs untouched"
+    },
+    "long_p_boundary": {
+      "log": "inline in review transcript",
+      "result": "B=1/7 P=609, B=4 P=608, B=3 P=1 all bitwise vs both baselines"
+    },
+    "reflection_divide_value_probe": {
+      "log": "/tmp/b7_30_drjit_review/logs/ (rerun_divide_probe.py output)",
+      "result": "on 2041 f32 values where true f32 division by pi(0x40490FDB) differs bitwise from reciprocal-multiply, the shipped kernel returned the TRUE-DIVIDE bits 2041/2041 and matched the numba baseline everywhere; reciprocal-multiply bits would have differed"
+    },
+    "fresh_kernel_ir_both_specs": {
+      "logs": ["/tmp/b7_30_drjit_review/logs/ir_child_f64.txt", "/tmp/b7_30_drjit_review/logs/ir_child_f32.txt"],
+      "result": "f64 spec: 2 kernels/call, 1 fdiv (divisor is a runtime parameter load, not a constant), 0 llvm.fma/fmuladd, 0 fast-flagged float ops, 8 fptrunc / 17 fpext, 27 masked.gather - reproduces the author's audit counts exactly. f32 spec (never audited by the author): 2 kernels, 1 fdiv, 0 fma, 0 fast flags, 0 fpext/fptrunc (consistent with all-float32 chains)"
+    },
+    "division_folding_hazard_recheck": {
+      "result": "hazard confirmed structurally (literal divisor lowers to fmul with host reciprocal splat, no fdiv, FastMath OFF) and is VALUE-VISIBLE: 30/64 linspace values differ literal-vs-data divisor in drjit for d=3.0; shipped kernel unaffected (uses data variables)"
+    }
+  },
+  "typed_graph_fidelity": {
+    "baseline_identity": "kernel bodies of _longwave_primary and _longwave_primary_serial byte-identical between frozen blob 27ba6ce4 and both checkout heads",
+    "nodes_verified": [
+      "sky/veg/building predicates with f32 compares vs exactly-representable 1.0/0.0",
+      "A0/A5 sky accumulation: bool->f32 1.0/0.0 via select, f32 mul+add, patch-ordered",
+      "vegetation chains ((surface_sh*solid)*cosine)*veg with f64 promotion in the real-pipeline spec, RN32 only at accumulator add (fpext/fadd/fptrunc confirmed in IR)",
+      "A6 then A1 update order",
+      "solar_gate as uniform runtime branch on a width-1 Bool; untaken side not executed at runtime (real LLVM branch, both sides recorded); update order A8,A7,A3,A2 in gate, A7,A2 otherwise (IR text order confirmed)",
+      "four separately grouped sun/shade expressions (((surface*sun/shade)*solid)*cosine/sine)*building, not precombined",
+      "reflection after completed sweep 1 re-reading A0: f32(A0+lup)*rf*0.5f then true fdiv by pi data variable; pi bits 0x40490FDB verified",
+      "sweep-2 mask (sh==0)|(vs==0)|(vb==0) captured during sweep 1 into a scratch Bool buffer - boolean-identical because inputs are immutable (canary-verified); side->A9 then down->A4 with explicit rounding",
+      "output folds (((A0+A1)+A2)+A3)+A4 and (((A5+A6)+A7)+A8)+A9; columns 2-6 are raw A5..A9",
+      "transpose/copy boundary: pure [B,P]->[P,B] permutation into a C-contiguous arena; gather offsets idx+B*p; no arithmetic can be reordered by the copy (bitwise replay confirms)"
+    ]
+  },
+  "adapter_honesty": {
+    "validation_before_native": "yes - _pack validates dtypes/shapes/P before any Dr.Jit array or kernel work; B=0 returns without touching the JIT",
+    "no_input_mutation": "verified by sha256 canaries on all 520 fixtures and all adversarial cases",
+    "no_silent_fallback": "Unsupported(ValueError) only; distinct unsupported-vs-failed outcomes",
+    "costs_declared": "transposes/copies inside adapter boundary, declared; per-call ThreadPoolExecutor for large-B transposes declared; dr.set_thread_count at init declared (process-global); FastMath-off is process-global and declared"
+  },
+  "findings": [
+    {
+      "id": "F1",
+      "severity": "medium",
+      "description": "The recorded division-folding probe result '0/262144 bit differences for every divisor (3.0, 7.0, 0.1, pi, 1e6, 9.7)' in fastmath_contraction_audit.json and llvm_ir_division.txt is not reproducible. Reviewer measures 39656/262144 (~15.1%) differing standard-normal f32 values for the pi divisor alone, and 30/64 differing linspace values comparing drjit literal-divisor vs data-divisor paths for d=3.0 with FastMath OFF. The qualitative hazard claim (Dr.Jit folds literal divisors into host reciprocal multiplies even with FastMath off; IR inspection is the reliable detector) is CORRECT and was independently confirmed; only the recorded number is wrong, and the error is in the conservative direction (the hazard is easier to detect by value than recorded, which strengthens rather than weakens the case for the structural mitigation).",
+      "recommendation": "Author amends the probe sentence in evidence/llvm_ir_division.txt and evidence/fastmath_contraction_audit.json (and proof_record.md) to the reproduced rates; affected scope for re-review is only the division-hazard note, not the kernel."
+    },
+    {
+      "id": "F2",
+      "severity": "medium",
+      "description": "The candidate directory ships no generating scripts for fixture_replay.json, adversarial_replay.json, the IR dumps, or dev_tier_timing.json (only the module plus evidence; stray probe files at the worktree root). VALIDATION_POLICY treats missing source provenance as unverified-by-default. The review independently reproduced all headline claims, so the claims now stand on reviewer evidence, but the deliverable is not self-reproducing.",
+      "recommendation": "Author lands the replay/audit/timing scripts (or one harness entry point) under experiments/optimization_v7/drjit/ before B7-31 trials."
+    },
+    {
+      "id": "F3",
+      "severity": "low",
+      "description": "The author's IR audit covers only the f64 specialization; the f32 (synthetic-domain) symbolic kernel IR was never dumped. Closed by this review: fresh f32 IR shows the same no-contraction and true-fdiv conclusions.",
+      "recommendation": "Include the f32-spec IR dump in evidence (reviewer copies available at /tmp/b7_30_drjit_review/logs/ir_child_f32.txt)."
+    },
+    {
+      "id": "F4",
+      "severity": "low",
+      "description": "fastmath_contraction_audit.json describes its dump as 'one full symbolic-kernel launch' but the file records two kernel launches per call (a side-effect mask-scatter loop kernel plus the main compute kernel); the audit counts (e.g. 27 masked.gather) span both kernels. The no-contraction conclusion is unchanged (reviewer recounted across both kernels and across a fresh dump).",
+      "recommendation": "Wording fix in the audit JSON; optionally note the two-launch structure since it matters for per-call launch-overhead accounting in trials."
+    },
+    {
+      "id": "F5",
+      "severity": "info",
+      "description": "Trial-design: candidate thread usage is two pools - the drjit pool (dr.set_thread_count, process-global, count includes the calling thread) for JIT kernel execution, plus a separate per-call host ThreadPoolExecutor(min(8, cpu_count)) used only for large-B transposes inside the adapter. The numba baseline uses a single pool. Under the B7-03 equal-CPU-budget rule these are different budget shapes and must be labeled as such; B7-03 process isolation already prevents the process-global drjit state (FastMath off, thread count) from leaking between configurations.",
+      "recommendation": "In B7-31, pin dr.set_thread_count to the same CPU budget as the numba pool for the paired comparison, report the transpose-pool width alongside, and log requested/configured/effective counts after init per protocol."
+    },
+    {
+      "id": "F6",
+      "severity": "info",
+      "description": "Trial-design: cold-first-use measurement depends on DRJIT_CACHE_DIR state - compiled LLVM kernels persist on disk across processes (author records 150.6 ms uncached vs 4.7 ms warm). The B7-03 cold-first-use guard must freeze the cache regime explicitly. Adapter stage costs (pack/validate/transposes ~20 ms at B=65536, symbolic run ~49 ms, materialize ~0.3 ms) exist only in proof_record prose, not in the timing evidence JSON.",
+      "recommendation": "Freeze DRJIT_CACHE_DIR (empty vs pre-warmed) as part of the trial freeze; measure and record adapter stage costs in the trial evidence JSONs."
+    },
+    {
+      "id": "F7",
+      "severity": "low",
+      "description": "Dev-tier timing JSON lacks a recorded LLVM version fingerprint (only 'Dr.Jit LLVM JIT' and apple-m1 target features); B7-03 runtime_fingerprints asks for llvm version per trial. Also B=96 pair showed high variance (C: 1.046 vs 2.646 ms) - acceptable for dev-tier, must be handled by the B7-03 paired-median design.",
+      "recommendation": "Record the LLVM version string in the capability token / trial fingerprints."
+    }
+  ],
+  "recommended_disposition": "advance to B7-31 trials as exact-eligible C variant",
+  "disposition_conditions": [
+    "F1/F2 evidence repairs applied by the author before or alongside B7-31 (no re-review of the kernel required; the affected scope is the division-hazard note and script provenance)",
+    "B7-31 trial design must implement F5 (thread budget labeling) and F6 (cache-regime freeze, stage-cost measurement)",
+    "performance claims remain unproven until B7-03 protocol trials; the dev-tier 'pipeline win / large-B loss' split is a selection hypothesis, not evidence"
+  ],
+  "artifacts": {
+    "review_json": "/tmp/b7_30_drjit_review/review.json",
+    "review_md": "/tmp/b7_30_drjit_review/review.md",
+    "rerun_scripts": [
+      "/tmp/b7_30_drjit_review/rerun_fixture_replay.py",
+      "/tmp/b7_30_drjit_review/rerun_adversarial.py",
+      "/tmp/b7_30_drjit_review/rerun_divide_probe.py",
+      "/tmp/b7_30_drjit_review/rerun_ir_audit.py",
+      "/tmp/b7_30_drjit_review/ir_dump_child.py"
+    ],
+    "logs_dir": "/tmp/b7_30_drjit_review/logs/"
+  }
+}

@@ -1,0 +1,872 @@
+{
+ "arms": [
+  "A8",
+  "B4",
+  "B1",
+  "C4",
+  "C1"
+ ],
+ "cells": [
+  {
+   "B": 1024,
+   "mix": "all-binary"
+  },
+  {
+   "B": 1024,
+   "mix": "mix"
+  },
+  {
+   "B": 1024,
+   "mix": "all-raw"
+  },
+  {
+   "B": 128,
+   "mix": "all-binary"
+  },
+  {
+   "B": 128,
+   "mix": "mix"
+  },
+  {
+   "B": 128,
+   "mix": "all-raw"
+  }
+ ],
+ "censored_records": [],
+ "env": {
+  "SOLWEIG_LIGHT_FUSED_RAD": null,
+  "SOLWEIG_LIGHT_LW_BACKEND": null,
+  "SOLWEIG_LIGHT_PATCH_CLASS_TABLES": null,
+  "native_cache": "/Users/alansynn/Workspace/solweig-v8-native/experiments/optimization_v8/native/stage",
+  "numba_cache_dir": "/Users/alansynn/Workspace/solweig-v8-native/.numba_cache/f3"
+ },
+ "host": {
+  "machine": "arm64",
+  "ncpu": 10,
+  "numba": "0.67.0",
+  "numba_threads": 4,
+  "tier_budget_N": 4,
+  "tier_note": "N8-02 tier-B configuration: threads=4, cpu_budget=4, workers=1"
+ },
+ "mode": "TIMED",
+ "native_verification": {
+  "B=1024 all-binary": {
+   "budget": 4,
+   "counters_equal_declared": true,
+   "declared_blocks": 1,
+   "extent_complete": true,
+   "native_entries": 1,
+   "region_report": {
+    "blocks": 1,
+    "blocks_skipped_after_cancel": 0,
+    "blocks_started": 1,
+    "budget": 4,
+    "max_in_flight": 1,
+    "mode": "block_fanout",
+    "pool": "solweig-region-4",
+    "pool_workers": 3,
+    "regions": 1,
+    "slot_buffer_allocations": 0
+   },
+   "sentinel_elements_remaining": 0
+  },
+  "B=1024 all-raw": {
+   "budget": 4,
+   "counters_equal_declared": true,
+   "declared_blocks": 1,
+   "extent_complete": true,
+   "native_entries": 1,
+   "region_report": {
+    "blocks": 1,
+    "blocks_skipped_after_cancel": 0,
+    "blocks_started": 1,
+    "budget": 4,
+    "max_in_flight": 1,
+    "mode": "block_fanout",
+    "pool": "solweig-region-4",
+    "pool_workers": 3,
+    "regions": 1,
+    "slot_buffer_allocations": 0
+   },
+   "sentinel_elements_remaining": 0
+  },
+  "B=1024 mix": {
+   "budget": 4,
+   "counters_equal_declared": true,
+   "declared_blocks": 1,
+   "extent_complete": true,
+   "native_entries": 1,
+   "region_report": {
+    "blocks": 1,
+    "blocks_skipped_after_cancel": 0,
+    "blocks_started": 1,
+    "budget": 4,
+    "max_in_flight": 1,
+    "mode": "block_fanout",
+    "pool": "solweig-region-4",
+    "pool_workers": 3,
+    "regions": 1,
+    "slot_buffer_allocations": 0
+   },
+   "sentinel_elements_remaining": 0
+  },
+  "B=128 all-binary": {
+   "budget": 4,
+   "counters_equal_declared": true,
+   "declared_blocks": 1,
+   "extent_complete": true,
+   "native_entries": 1,
+   "region_report": {
+    "blocks": 1,
+    "blocks_skipped_after_cancel": 0,
+    "blocks_started": 1,
+    "budget": 4,
+    "max_in_flight": 1,
+    "mode": "block_fanout",
+    "pool": "solweig-region-4",
+    "pool_workers": 3,
+    "regions": 1,
+    "slot_buffer_allocations": 0
+   },
+   "sentinel_elements_remaining": 0
+  },
+  "B=128 all-raw": {
+   "budget": 4,
+   "counters_equal_declared": true,
+   "declared_blocks": 1,
+   "extent_complete": true,
+   "native_entries": 1,
+   "region_report": {
+    "blocks": 1,
+    "blocks_skipped_after_cancel": 0,
+    "blocks_started": 1,
+    "budget": 4,
+    "max_in_flight": 1,
+    "mode": "block_fanout",
+    "pool": "solweig-region-4",
+    "pool_workers": 3,
+    "regions": 1,
+    "slot_buffer_allocations": 0
+   },
+   "sentinel_elements_remaining": 0
+  },
+  "B=128 mix": {
+   "budget": 4,
+   "counters_equal_declared": true,
+   "declared_blocks": 1,
+   "extent_complete": true,
+   "native_entries": 1,
+   "region_report": {
+    "blocks": 1,
+    "blocks_skipped_after_cancel": 0,
+    "blocks_started": 1,
+    "budget": 4,
+    "max_in_flight": 1,
+    "mode": "block_fanout",
+    "pool": "solweig-region-4",
+    "pool_workers": 3,
+    "regions": 1,
+    "slot_buffer_allocations": 0
+   },
+   "sentinel_elements_remaining": 0
+  }
+ },
+ "per_cell": [
+  {
+   "B": 1024,
+   "mix": "all-binary",
+   "parity": {
+    "finite": {
+     "digest_a8": "ff7b7683ea3da88f",
+     "digest_b": "ff7b7683ea3da88f",
+     "digest_c": "ff7b7683ea3da88f",
+     "ok": true,
+     "shape": [
+      7,
+      1024
+     ]
+    },
+    "grid": {
+     "digest_a8": "327150777794a85a",
+     "digest_b": "327150777794a85a",
+     "digest_c": "327150777794a85a",
+     "ok": true,
+     "shape": [
+      7,
+      1024
+     ]
+    },
+    "note": "grid = N8-04 adversarial provenance (saturates to NaN at P=153); finite = seeded finite patch scalars so payload bits move the output. Both must agree.",
+    "ok": true
+   }
+  },
+  {
+   "B": 1024,
+   "mix": "mix",
+   "parity": {
+    "finite": {
+     "digest_a8": "e46e6fd75abb7b52",
+     "digest_b": "e46e6fd75abb7b52",
+     "digest_c": "e46e6fd75abb7b52",
+     "ok": true,
+     "shape": [
+      7,
+      1024
+     ]
+    },
+    "grid": {
+     "digest_a8": "327150777794a85a",
+     "digest_b": "327150777794a85a",
+     "digest_c": "327150777794a85a",
+     "ok": true,
+     "shape": [
+      7,
+      1024
+     ]
+    },
+    "note": "grid = N8-04 adversarial provenance (saturates to NaN at P=153); finite = seeded finite patch scalars so payload bits move the output. Both must agree.",
+    "ok": true
+   }
+  },
+  {
+   "B": 1024,
+   "mix": "all-raw",
+   "parity": {
+    "finite": {
+     "digest_a8": "47115271520435bf",
+     "digest_b": "47115271520435bf",
+     "digest_c": "47115271520435bf",
+     "ok": true,
+     "shape": [
+      7,
+      1024
+     ]
+    },
+    "grid": {
+     "digest_a8": "327150777794a85a",
+     "digest_b": "327150777794a85a",
+     "digest_c": "327150777794a85a",
+     "ok": true,
+     "shape": [
+      7,
+      1024
+     ]
+    },
+    "note": "grid = N8-04 adversarial provenance (saturates to NaN at P=153); finite = seeded finite patch scalars so payload bits move the output. Both must agree.",
+    "ok": true
+   }
+  },
+  {
+   "B": 128,
+   "mix": "all-binary",
+   "parity": {
+    "finite": {
+     "digest_a8": "1b5d1b2e83ef2a61",
+     "digest_b": "1b5d1b2e83ef2a61",
+     "digest_c": "1b5d1b2e83ef2a61",
+     "ok": true,
+     "shape": [
+      7,
+      128
+     ]
+    },
+    "grid": {
+     "digest_a8": "9055311c37a6fde7",
+     "digest_b": "9055311c37a6fde7",
+     "digest_c": "9055311c37a6fde7",
+     "ok": true,
+     "shape": [
+      7,
+      128
+     ]
+    },
+    "note": "grid = N8-04 adversarial provenance (saturates to NaN at P=153); finite = seeded finite patch scalars so payload bits move the output. Both must agree.",
+    "ok": true
+   }
+  },
+  {
+   "B": 128,
+   "mix": "mix",
+   "parity": {
+    "finite": {
+     "digest_a8": "522d28b8fe22b339",
+     "digest_b": "522d28b8fe22b339",
+     "digest_c": "522d28b8fe22b339",
+     "ok": true,
+     "shape": [
+      7,
+      128
+     ]
+    },
+    "grid": {
+     "digest_a8": "9055311c37a6fde7",
+     "digest_b": "9055311c37a6fde7",
+     "digest_c": "9055311c37a6fde7",
+     "ok": true,
+     "shape": [
+      7,
+      128
+     ]
+    },
+    "note": "grid = N8-04 adversarial provenance (saturates to NaN at P=153); finite = seeded finite patch scalars so payload bits move the output. Both must agree.",
+    "ok": true
+   }
+  },
+  {
+   "B": 128,
+   "mix": "all-raw",
+   "parity": {
+    "finite": {
+     "digest_a8": "6c3215ee6f961adb",
+     "digest_b": "6c3215ee6f961adb",
+     "digest_c": "6c3215ee6f961adb",
+     "ok": true,
+     "shape": [
+      7,
+      128
+     ]
+    },
+    "grid": {
+     "digest_a8": "9055311c37a6fde7",
+     "digest_b": "9055311c37a6fde7",
+     "digest_c": "9055311c37a6fde7",
+     "ok": true,
+     "shape": [
+      7,
+      128
+     ]
+    },
+    "note": "grid = N8-04 adversarial provenance (saturates to NaN at P=153); finite = seeded finite patch scalars so payload bits move the output. Both must agree.",
+    "ok": true
+   }
+  }
+ ],
+ "pre_timing_loadavg": [
+  2.74658203125,
+  6.4013671875,
+  9.42138671875
+ ],
+ "pre_timing_snapshot": {
+  "at_utc": "2026-09-23T14:41:30Z",
+  "gate": "pass",
+  "loadavg": [
+   2.74658203125,
+   6.4013671875,
+   9.42138671875
+  ],
+  "memory": {
+   "bytes_available": 6576799744,
+   "page_size": 16384,
+   "pages_available": 401416,
+   "pages_free": 59122,
+   "pages_inactive": 294654,
+   "pages_speculative": 47640
+  },
+  "rule": "1-min loadavg < 5.0 AND available >= 92000 pages (16 KB)"
+ },
+ "protocol": "N9-CONT-v1",
+ "raw_ms": {
+  "B=1024 all-binary": {
+   "A8": [
+    8.761624805629253,
+    4.7738749999552965,
+    4.710708046332002,
+    5.435041850432754,
+    5.239875055849552,
+    5.002208054065704,
+    4.752207780256867,
+    4.827499855309725,
+    4.597665974870324
+   ],
+   "B1": [
+    3.8395000156015158,
+    2.570666838437319,
+    2.563250018283725,
+    2.4247500114142895,
+    2.285375026986003,
+    2.1585829090327024,
+    2.1415420342236757,
+    2.113000024110079,
+    2.322582993656397
+   ],
+   "B4": [
+    3.912832820788026,
+    3.900917014107108,
+    3.5480831284075975,
+    2.532375045120716,
+    2.392624970525503,
+    2.4034171365201473,
+    2.3484169505536556,
+    2.451458014547825,
+    2.4353330954909325
+   ],
+   "C1": [
+    2.3880000226199627,
+    4.154791124165058,
+    2.7878331020474434,
+    2.5660840328782797,
+    2.1727499552071095,
+    2.0990418270230293,
+    1.9864169880747795,
+    1.9561669323593378,
+    2.161583863198757
+   ],
+   "C4": [
+    2.5792501401156187,
+    3.176666097715497,
+    3.140500048175454,
+    2.601542044430971,
+    2.2937089670449495,
+    1.9892498385161161,
+    2.105250023305416,
+    1.9782090093940496,
+    2.3300410248339176
+   ]
+  },
+  "B=1024 all-raw": {
+   "A8": [
+    1.9133330788463354,
+    1.6809580847620964,
+    1.6345421317964792,
+    1.8512089736759663,
+    1.7622499726712704,
+    1.7188750207424164,
+    1.6586249694228172,
+    1.916874898597598,
+    1.815167022868991
+   ],
+   "B1": [
+    1.8832499627023935,
+    1.9112499430775642,
+    1.860833028331399,
+    2.0138341933488846,
+    1.83412479236722,
+    1.8877079710364342,
+    1.991333905607462,
+    1.8887920305132866,
+    1.9744997844099998
+   ],
+   "B4": [
+    2.0202919840812683,
+    2.079209079965949,
+    2.0390418358147144,
+    2.076042117550969,
+    2.1101669408380985,
+    1.8847088795155287,
+    1.96666712872684,
+    2.062374958768487,
+    2.0462078973650932
+   ],
+   "C1": [
+    2.110457979142666,
+    2.0087079610675573,
+    2.2493749856948853,
+    2.31774989515543,
+    2.1582499612122774,
+    2.0779171027243137,
+    2.044250024482608,
+    2.1870839409530163,
+    2.0727498922497034
+   ],
+   "C4": [
+    2.2865000646561384,
+    2.165375044569373,
+    2.292207907885313,
+    2.131209010258317,
+    2.3187920451164246,
+    2.1217919420450926,
+    2.2989590652287006,
+    2.165332902222872,
+    2.2183749824762344
+   ]
+  },
+  "B=1024 mix": {
+   "A8": [
+    4.256957909092307,
+    3.9294578600674868,
+    3.903792006894946,
+    4.04962501488626,
+    3.8923751562833786,
+    4.206041106954217,
+    4.023707937449217,
+    4.115083022043109,
+    3.8735000416636467
+   ],
+   "B1": [
+    2.923916094005108,
+    3.306875005364418,
+    2.999457996338606,
+    3.0553340911865234,
+    3.4197501372545958,
+    3.123125061392784,
+    3.0140408780425787,
+    2.8144579846411943,
+    3.293749876320362
+   ],
+   "B4": [
+    3.2639168202877045,
+    3.0935420654714108,
+    3.4568749833852053,
+    3.327957820147276,
+    2.9645420145243406,
+    3.0352501198649406,
+    3.128250129520893,
+    2.9204580932855606,
+    3.065334167331457
+   ],
+   "C1": [
+    2.8713338542729616,
+    2.753417007625103,
+    2.87891598418355,
+    2.766750054433942,
+    3.3819579984992743,
+    3.1791250221431255,
+    2.9790420085191727,
+    3.0837079975754023,
+    3.200584091246128
+   ],
+   "C4": [
+    3.0540828593075275,
+    3.2136670779436827,
+    3.184791887179017,
+    3.239791840314865,
+    3.2669168431311846,
+    3.289666958153248,
+    3.2263328321278095,
+    2.8959999326616526,
+    3.2922918908298016
+   ]
+  },
+  "B=128 all-binary": {
+   "A8": [
+    1.4457500074058771,
+    1.3864999637007713,
+    1.445207977667451,
+    1.2804169673472643,
+    1.2994168791919947,
+    1.3435001019388437,
+    1.3370420783758163,
+    1.2623341754078865,
+    1.3633330818265676
+   ],
+   "B1": [
+    1.1315830051898956,
+    1.0302918963134289,
+    1.1197500862181187,
+    1.0604169219732285,
+    1.0389580857008696,
+    1.0939999483525753,
+    1.1015001218765974,
+    1.0561668314039707,
+    1.1593750678002834
+   ],
+   "B4": [
+    1.2413328513503075,
+    1.2342908885329962,
+    1.1667502112686634,
+    1.1687919031828642,
+    1.0386670473963022,
+    1.1452080216258764,
+    1.1832080781459808,
+    1.244792016223073,
+    1.0835831053555012
+   ],
+   "C1": [
+    1.2272919993847609,
+    1.0469171684235334,
+    1.1326249223202467,
+    1.089625060558319,
+    1.2010831851512194,
+    1.182457897812128,
+    1.1535407975316048,
+    1.1107909958809614,
+    1.1432080063968897
+   ],
+   "C4": [
+    1.4487910084426403,
+    1.0472079738974571,
+    1.322000054642558,
+    1.1195831466466188,
+    1.3702081050723791,
+    1.135125057771802,
+    1.327125122770667,
+    1.2772090267390013,
+    1.2809170875698328
+   ]
+  },
+  "B=128 all-raw": {
+   "A8": [
+    0.8877499494701624,
+    1.0122500825673342,
+    0.9345840662717819,
+    0.9815001394599676,
+    0.945208827033639,
+    0.9854580275714397,
+    0.8402909152209759,
+    0.8891250472515821,
+    0.9853749070316553
+   ],
+   "B1": [
+    1.14716705866158,
+    0.9859579149633646,
+    1.0180838871747255,
+    1.1124999728053808,
+    1.0708339978009462,
+    1.161250052973628,
+    1.0095410980284214,
+    0.9633328299969435,
+    1.1777081526815891
+   ],
+   "B4": [
+    1.294582849368453,
+    1.1810839641839266,
+    0.9977910667657852,
+    1.0735001415014267,
+    1.0893328581005335,
+    1.0232089553028345,
+    1.1249170638620853,
+    1.1745409574359655,
+    1.0590420570224524
+   ],
+   "C1": [
+    1.0395830031484365,
+    1.0177500080317259,
+    1.1144171003252268,
+    1.0883749928325415,
+    1.2687088456004858,
+    1.1693751439452171,
+    1.1873750481754541,
+    1.0159998200833797,
+    1.1250409297645092
+   ],
+   "C4": [
+    1.3228340540081263,
+    1.0247079189866781,
+    1.3184158597141504,
+    1.159957842901349,
+    1.1624170001596212,
+    1.1052079498767853,
+    1.22925010509789,
+    1.0233328212052584,
+    1.215208088979125
+   ]
+  },
+  "B=128 mix": {
+   "A8": [
+    1.2932908721268177,
+    1.2594577856361866,
+    1.201750012114644,
+    1.2972077820450068,
+    1.1706668883562088,
+    1.192667055875063,
+    1.158708008006215,
+    1.1101248674094677,
+    1.3023330830037594
+   ],
+   "B1": [
+    1.1972908396273851,
+    1.147791976109147,
+    1.132874982431531,
+    1.111124875023961,
+    1.1452499311417341,
+    1.2042091693729162,
+    1.149625051766634,
+    1.1996671091765165,
+    1.28875020891428
+   ],
+   "B4": [
+    1.2450420763343573,
+    1.192291034385562,
+    1.2953749392181635,
+    1.3243749272078276,
+    1.3357079587876797,
+    1.2639998458325863,
+    1.304832985624671,
+    1.1949159670621157,
+    1.3062499929219484
+   ],
+   "C1": [
+    1.2441668659448624,
+    1.2006661854684353,
+    1.2802910059690475,
+    1.1262500192970037,
+    1.2813750654459,
+    1.3911668211221695,
+    1.3582920655608177,
+    1.2504998594522476,
+    1.1374589521437883
+   ],
+   "C4": [
+    1.3780000153928995,
+    1.2216251343488693,
+    1.419957960024476,
+    1.142249908298254,
+    1.4356249012053013,
+    1.2558749876916409,
+    1.3947500847280025,
+    1.3922499492764473,
+    1.2368748430162668
+   ]
+  },
+  "protected A8route vs A8 (B=1024 mix)": {
+   "A8": [
+    4.106499953195453,
+    4.33937506750226,
+    3.8647090550512075,
+    3.8457910995930433,
+    3.86712490580976,
+    3.889749990776181,
+    4.4714168179780245,
+    4.182542208582163,
+    3.8644580636173487
+   ],
+   "A8route": [
+    4.078333964571357,
+    3.973166923969984,
+    3.930165898054838,
+    3.884750185534358,
+    3.9215420838445425,
+    4.5779999345541,
+    3.947458928450942,
+    4.4232080690562725,
+    3.969375044107437
+   ]
+  }
+ },
+ "recorded_utc": "2026-09-23T14:40:23Z",
+ "reps": 9,
+ "session_end_snapshot": {
+  "admitted_busy_processes": [
+   "Finder",
+   "python"
+  ],
+  "at_utc": "2026-09-23T14:41:31Z",
+  "loadavg": [
+   2.74658203125,
+   6.4013671875,
+   9.42138671875
+  ],
+  "memory": {
+   "bytes_available": 6579077120,
+   "page_size": 16384,
+   "pages_available": 401555,
+   "pages_free": 59249,
+   "pages_inactive": 294666,
+   "pages_speculative": 47640
+  }
+ },
+ "session_start_snapshot": {
+  "admitted_busy_processes": [
+   "Finder"
+  ],
+  "at_utc": "2026-09-23T14:40:23Z",
+  "gate": "pass",
+  "loadavg": [
+   3.41162109375,
+   7.37939453125,
+   9.9833984375
+  ],
+  "memory": {
+   "bytes_available": 6739968000,
+   "page_size": 16384,
+   "pages_available": 411375,
+   "pages_free": 87158,
+   "pages_inactive": 278574,
+   "pages_speculative": 45643
+  },
+  "rule": "1-min loadavg < 5.0 AND available >= 92000 pages (16 KB)"
+ },
+ "verdict": {
+  "cell_gate_both_controls_1_05": {
+   "B=1024 all-binary": true,
+   "B=1024 all-raw": false,
+   "B=1024 mix": false
+  },
+  "censored": false,
+  "gate1_geomean_A8_C4_ge_1_10": true,
+  "gate2_every_primary_cell_both_1_05": false,
+  "gate3_protected_regression_pct": 2.049,
+  "gate3_within_3pct": true,
+  "gate4_coverage": {
+   "pass": true,
+   "per_cell": {
+    "B=1024 all-binary": {
+     "declared": 1,
+     "entries": 1
+    },
+    "B=1024 all-raw": {
+     "declared": 1,
+     "entries": 1
+    },
+    "B=1024 mix": {
+     "declared": 1,
+     "entries": 1
+    },
+    "B=128 all-binary": {
+     "declared": 1,
+     "entries": 1
+    },
+    "B=128 all-raw": {
+     "declared": 1,
+     "entries": 1
+    },
+    "B=128 mix": {
+     "declared": 1,
+     "entries": 1
+    }
+   }
+  },
+  "geomean_speedup_A8_over_C1": 1.3860179490902123,
+  "geomean_speedup_A8_over_C4": 1.3162857376186368,
+  "geomean_speedup_B4_over_C4": 0.99895846842232,
+  "note": "cell/geo gates bind at the matched budget N=4 (C4/B4); C1/B1 are the H=1 bounded-execution cells. median_ms ratios reported alongside per-pair medians.",
+  "terminal_label": "NATIVE_LOSS"
+ },
+ "warm_cold_first_call_ms": {
+  "B=1024 all-binary": {
+   "A8": 4.825,
+   "A8route": 7.559,
+   "B1": 2.345,
+   "B4": 2.191,
+   "C1": 2.235,
+   "C4": 2.305
+  },
+  "B=1024 all-raw": {
+   "A8": 1.742,
+   "A8route": 1.924,
+   "B1": 2.003,
+   "B4": 2.087,
+   "C1": 2.239,
+   "C4": 2.26
+  },
+  "B=1024 mix": {
+   "A8": 4.194,
+   "A8route": 4.363,
+   "B1": 3.002,
+   "B4": 2.933,
+   "C1": 3.238,
+   "C4": 3.395
+  },
+  "B=128 all-binary": {
+   "A8": 1.434,
+   "B1": 1.058,
+   "B4": 1.134,
+   "C1": 1.15,
+   "C4": 1.385
+  },
+  "B=128 all-raw": {
+   "A8": 0.948,
+   "B1": 1.341,
+   "B4": 1.16,
+   "C1": 1.273,
+   "C4": 1.327
+  },
+  "B=128 mix": {
+   "A8": 1.287,
+   "B1": 1.198,
+   "B4": 1.233,
+   "C1": 1.205,
+   "C4": 1.379
+  }
+ }
+}

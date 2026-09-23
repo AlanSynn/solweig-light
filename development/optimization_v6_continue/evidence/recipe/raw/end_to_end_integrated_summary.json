@@ -1,0 +1,171 @@
+{
+ "commit": "e7a2d6ec8594b234820e7783e0ca26d821de7f3d",
+ "note": "development-tier contended host; wall times recorded, no benchmark claims",
+ "output_parity": {
+  "output_files_left": [
+   "TMRT_0_0.tif",
+   "UTCI_0_0.tif"
+  ],
+  "output_files_right": [
+   "TMRT_0_0.tif",
+   "UTCI_0_0.tif"
+  ],
+  "outputs_bytes_equal": {
+   "TMRT_0_0.tif": true,
+   "UTCI_0_0.tif": true
+  },
+  "outputs_pixel_bitwise_equal": {
+   "TMRT_0_0.tif": true,
+   "UTCI_0_0.tif": true
+  },
+  "svf_exports_pixel_bitwise_equal": {
+   "SkyViewFactor_0_0.tif": true,
+   "svfs_zip_members": true
+  },
+  "visibility_channels_bitwise_equal": {
+   "shadowmat": true,
+   "vbshmat": true,
+   "vegshadowmat": true
+  }
+ },
+ "scene_sha256": {
+  "run1": {
+   "Building_DSM.tif": "f5091bee49e15d901a3855f9b904fe546d552a4a47c0c8d306a2673807d17f78",
+   "DEM.tif": "b58de75ebae6791b9e0c5769dea8e4ddf2e44b8fa3371f75f9289d18e63ba883",
+   "Trees.tif": "bfacf1e14961a708758992663b9ad962331df823255046f335ca9706055c7ed9",
+   "met.txt": "bc8ee6361071dd109649857127d6b777571e868bdb06db0e47968b39e99189e4"
+  },
+  "run3": {
+   "Building_DSM.tif": "f5091bee49e15d901a3855f9b904fe546d552a4a47c0c8d306a2673807d17f78",
+   "DEM.tif": "b58de75ebae6791b9e0c5769dea8e4ddf2e44b8fa3371f75f9289d18e63ba883",
+   "Trees.tif": "bfacf1e14961a708758992663b9ad962331df823255046f335ca9706055c7ed9",
+   "met.txt": "bc8ee6361071dd109649857127d6b777571e868bdb06db0e47968b39e99189e4"
+  }
+ },
+ "schema": "c6-10-end-to-end-integrated-v2",
+ "simulation": "none; runs execute the actual integrated source",
+ "stages": [
+  {
+   "keys": [
+    "1747ce8c85794ad6357cb65ce640cabca99ce82c2b3438503a21cb4d27553288"
+   ],
+   "stage": "integrated-cold",
+   "store_calls": [
+    {
+     "hit": true,
+     "identity_fields": [
+      "dependencies",
+      "implementation",
+      "inputs",
+      "math_profile",
+      "normalization",
+      "patch_arrays",
+      "patch_option",
+      "policy",
+      "upstream_commit"
+     ],
+     "key": "1747ce8c85794ad6357cb65ce640cabca99ce82c2b3438503a21cb4d27553288",
+     "producer_calls": 0,
+     "route": "pipeline"
+    },
+    {
+     "hit": false,
+     "identity_fields": [
+      "dependencies",
+      "implementation",
+      "inputs",
+      "math_profile",
+      "normalization",
+      "patch_arrays",
+      "patch_option",
+      "policy",
+      "upstream_commit"
+     ],
+     "key": "1747ce8c85794ad6357cb65ce640cabca99ce82c2b3438503a21cb4d27553288",
+     "producer_calls": 1,
+     "route": "standalone"
+    }
+   ],
+   "svf_by_route": {
+    "standalone": 1
+   },
+   "svf_calls": 1,
+   "wall_s": 4.799969959072769
+  },
+  {
+   "keys": [
+    "1747ce8c85794ad6357cb65ce640cabca99ce82c2b3438503a21cb4d27553288"
+   ],
+   "stage": "integrated-warm",
+   "store_calls": [
+    {
+     "hit": true,
+     "identity_fields": [
+      "dependencies",
+      "implementation",
+      "inputs",
+      "math_profile",
+      "normalization",
+      "patch_arrays",
+      "patch_option",
+      "policy",
+      "upstream_commit"
+     ],
+     "key": "1747ce8c85794ad6357cb65ce640cabca99ce82c2b3438503a21cb4d27553288",
+     "producer_calls": 0,
+     "route": "pipeline"
+    }
+   ],
+   "svf_by_route": {},
+   "svf_calls": 0,
+   "wall_s": 4.505463166977279
+  },
+  {
+   "keys": [
+    "8f0c0707194319f8ac80280f087cc739931152f79445bb880364812d139c63b6"
+   ],
+   "stage": "integrated-cold-2",
+   "store_calls": [
+    {
+     "hit": true,
+     "identity_fields": [
+      "dependencies",
+      "implementation",
+      "inputs",
+      "math_profile",
+      "normalization",
+      "patch_arrays",
+      "patch_option",
+      "policy",
+      "upstream_commit"
+     ],
+     "key": "8f0c0707194319f8ac80280f087cc739931152f79445bb880364812d139c63b6",
+     "producer_calls": 0,
+     "route": "pipeline"
+    },
+    {
+     "hit": false,
+     "identity_fields": [
+      "dependencies",
+      "implementation",
+      "inputs",
+      "math_profile",
+      "normalization",
+      "patch_arrays",
+      "patch_option",
+      "policy",
+      "upstream_commit"
+     ],
+     "key": "8f0c0707194319f8ac80280f087cc739931152f79445bb880364812d139c63b6",
+     "producer_calls": 1,
+     "route": "standalone"
+    }
+   ],
+   "svf_by_route": {
+    "standalone": 1
+   },
+   "svf_calls": 1,
+   "wall_s": 4.813243584008887
+  }
+ ]
+}

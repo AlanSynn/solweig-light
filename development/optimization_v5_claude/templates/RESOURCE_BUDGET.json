@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "status": "fill_from_local_environment_before_execution",
+  "inference_sessions_artificial_cap": null,
+  "provider_backpressure": "actual limits apply",
+  "local_cpu_budget": null,
+  "local_ram_budget_bytes": null,
+  "local_jobs": [],
+  "reserved_agent_client_bytes": null,
+  "performance_lease": {
+    "maximum_active": 1,
+    "other_local_validation_allowed": false
+  },
+  "L4_owner": null,
+  "note": "Logical agents, CPU test jobs and SOLWEIG tile workers are separate counts."
+}

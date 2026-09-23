@@ -1,0 +1,100 @@
+{
+  "task": "N8-00",
+  "title": "Pin current branch, baseline closures and actual model routes",
+  "recorded": "2026-09-22",
+  "evidence_class": "source_observation",
+  "coordinator": {
+    "harness": "Claude Code CLI",
+    "coordinator_model_name": "GLM-5.3",
+    "model_identity_note": "Routed per user memory: agent aliases sonnet->GLM-5.3-flash, opus->GLM-5.3, served by GLM not Anthropic. Provider/model identity of subagents is unverified from names alone (MODEL_ROUTING.md); attribution recorded as 'glm_served_unverified_identity' unless a route check proves otherwise.",
+    "no_secrets_printed": true,
+    "no_provider_config_edits": true
+  },
+  "branches": {
+    "work_branch": {
+      "name": "perf/native-optimization",
+      "head": "16cdc56cbc8755675487b9c9c1f5a7e987e2c9e4",
+      "worktree": "/Users/alansynn/Workspace/solweig-v8-native",
+      "note": "Named continuation branch. All N8 source/evidence commits land here. Not pushed; no hosted CI triggered."
+    },
+    "user_checkout": {
+      "name": "perf/cpu-optimization",
+      "head": "dca2035c4046ac4387f694a6c7b66967e590500c",
+      "worktree": "/Users/alansynn/Workspace/solweig-light",
+      "protected": true,
+      "untracked_user_paths": [
+        "optimization_v4/",
+        "optimization_v5_claude/evidence/inherited_v4/",
+        "optimization_v5_claude/evidence/input_provenance.json",
+        "optimization_v5_claude/evidence/v5_hypothetical_throughput.json",
+        "optimization_v5_claude/evidence/v5_packet_checks.json",
+        "optimization_v7_backends/",
+        "optimization_v8_native_default/",
+        "tests/reference/small_original_cpu/scene/processed_inputs/.solweig-light/"
+      ],
+      "note": "Session was invoked here. HEAD and untracked user files must remain untouched. optimization_v8_native_default/ was rsynced (excluding __pycache__) into the work branch worktree; the worktree copy is the live v8 packet."
+    },
+    "relationship": "perf/native-optimization contains perf/cpu-optimization (dca2035c is ancestor); 21 commits ahead (B7-30..B7-60 v7 backend work)."
+  },
+  "pins_never_reset": {
+    "native_baseline": "16cdc56cbc8755675487b9c9c1f5a7e987e2c9e4",
+    "main_dx_reference": "14e888760727583ef782a4dc0e7a5c7c6e6ff9d1",
+    "behavioral_upstream_baseline": "nvnsudharsan/SOLWEIG-GPU 0d7fe742abeeddd890dd58fc76ed7f78bd47faec"
+  },
+  "accepted_source_closures": [
+    {
+      "name": "B7 final (v7 backend packet)",
+      "frozen_source_sha": "009a1e66",
+      "additional_evidence_only_commits": ["4ab7961a", "fc3f4f68", "6868f91c", "16cdc56c"],
+      "content": "C_native ISPC 1.31.0 lw_primary.ispc gang-8 single-thread ctypes adapter, env-gated SOLWEIG_LIGHT_LW_BACKEND=native/ispc, bitwise-verified vs Numba A; integrated at src/solweig_light/backends/ and radiation/cylinder_longwave.py resolver",
+      "outcome": "B7-60: end-to-end A vs C_native at 4 synthetic 1024^2 tiles x 24 records: native 1.2-3% SLOWER (per-round 1.012/1.052/1.029); bitwise parity 4/4; default arm stayed correct",
+      "evidence": "optimization_v7_backends/B7_53_HANDOVER.md, optimization_v7_backends/evidence/"
+    },
+    {
+      "name": "C6-81r patch-classification exact tables (R04+G06)",
+      "head": "dca2035c",
+      "content": "Exact tables landed on perf/cpu-optimization; inherited by perf/native-optimization",
+      "relevance": "N8-17 (classifier/contribution reuse) must not repeat R04/G06; dossiers/04_predicate_state.md"
+    }
+  ],
+  "applicable_instructions": [
+    "AGENTS.md (root)",
+    "optimization_v8_native_default/START_HERE.txt",
+    "optimization_v8_native_default/DESIGN_AUTHORITY.md",
+    "optimization_v8_native_default/DX_CONTRACT.md",
+    "optimization_v8_native_default/PLAN.md",
+    "optimization_v8_native_default/VALIDATION_POLICY.md",
+    "optimization_v8_native_default/TASKS_CLAUDE.yaml",
+    "optimization_v8_native_default/CLAUDE_PROJECT_RULES.md",
+    "optimization_v8_native_default/DELEGATION.md",
+    "optimization_v8_native_default/MODEL_ROUTING.md",
+    "optimization_v8_native_default/BENCHMARK_PROTOCOL.md",
+    "optimization_v8_native_default/KERNEL_CONTRACT.md",
+    "dossiers/ as dispatched per task"
+  ],
+  "model_routes_check": {
+    "method": "memory + client configuration; no secrets printed",
+    "coordinator": "GLM-5.3 (glm_served, identity unverified from name)",
+    "subagents": "Agent tool with model overrides sonnet/opus; memory says sonnet->GLM-5.3-flash, opus->GLM-5.3; treat as glm_served_unverified_identity",
+    "no_new_gateway_setup": true
+  },
+  "host": {
+    "machine": "Apple M1 Pro (arm64, macOS 26.6 / Darwin 25.6.0)",
+    "cores": 10,
+    "ram_bytes": 17179869184,
+    "ram_gib": 16,
+    "note": "Fixed local budget: one benchmark owner at a time; workers bounded; 16 GiB constrains 1024^2 x 24 campaigns."
+  },
+  "environment": {
+    "worktree_venv": "/Users/alansynn/Workspace/solweig-v8-native/.venv",
+    "created_by": "uv sync --python 3.12 --frozen",
+    "versions": {"python": "3.12.13", "numba": "0.67.0", "numpy": "2.4.6", "gdal": "3.13.3", "solweig_light": "0.1.0.dev0 editable (worktree src)"},
+    "baseline_parity": "Matches B7 baseline venv closure (optimization_v7_backends/B7_53_HANDOVER.md section 7); never mutated"
+  },
+  "gates": {
+    "same_branch_and_dirty_paths_recorded": true,
+    "no_source_reset": true,
+    "no_provider_or_credential_edits": true
+  },
+  "next": ["N8-01", "N8-02", "N8-04"]
+}

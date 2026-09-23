@@ -1,0 +1,484 @@
+{
+ "schema": "sw6-campaign-synthetic-phase1-attribution-v1",
+ "label": "SYNTHETIC dev-tier in-sim attribution; single-lease observation; no statistical/actual-target claims",
+ "pstats": "/Users/alansynn/Workspace/solweig-light-claude-v5/optimization_v6_continue/evidence/campaign_synthetic/runs/profile_t1024_tile0_0/pstats/profile_r0.pstats",
+ "profiled_total_self_s": 136.1013,
+ "families_additive_self": {
+  "visibility": {
+   "self_s": 36.7611,
+   "ncalls": 985283,
+   "pct_of_total_self": 27.01
+  },
+  "gvf_ground_view": {
+   "self_s": 20.2349,
+   "ncalls": 19992,
+   "pct_of_total_self": 14.87
+  },
+  "engine_radiation": {
+   "self_s": 15.801,
+   "ncalls": 1728582,
+   "pct_of_total_self": 11.61
+  },
+  "patch_radiation": {
+   "self_s": 12.8738,
+   "ncalls": 429042,
+   "pct_of_total_self": 9.46
+  },
+  "cyl_lw": {
+   "self_s": 10.2469,
+   "ncalls": 148230,
+   "pct_of_total_self": 7.53
+  },
+  "checkpoint_digest_io": {
+   "self_s": 10.1757,
+   "ncalls": 257757,
+   "pct_of_total_self": 7.48
+  },
+  "sleef_math": {
+   "self_s": 7.1424,
+   "ncalls": 114701,
+   "pct_of_total_self": 5.25
+  },
+  "wall_shadows": {
+   "self_s": 5.5554,
+   "ncalls": 57,
+   "pct_of_total_self": 4.08
+  },
+  "numpy_python_core": {
+   "self_s": 5.3786,
+   "ncalls": 7895920,
+   "pct_of_total_self": 3.95
+  },
+  "kside_cylsw": {
+   "self_s": 4.5152,
+   "ncalls": 14648,
+   "pct_of_total_self": 3.32
+  },
+  "comfort": {
+   "self_s": 4.2528,
+   "ncalls": 363,
+   "pct_of_total_self": 3.12
+  },
+  "gvf_prepared": {
+   "self_s": 0.9853,
+   "ncalls": 137172,
+   "pct_of_total_self": 0.72
+  },
+  "other_unmapped": {
+   "self_s": 0.7421,
+   "ncalls": 1138195,
+   "pct_of_total_self": 0.55
+  },
+  "io_persistence": {
+   "self_s": 0.5482,
+   "ncalls": 6219,
+   "pct_of_total_self": 0.4
+  },
+  "pipeline_setup": {
+   "self_s": 0.4099,
+   "ncalls": 17,
+   "pct_of_total_self": 0.3
+  },
+  "numba_dispatcher": {
+   "self_s": 0.3384,
+   "ncalls": 813779,
+   "pct_of_total_self": 0.25
+  },
+  "lside_demand": {
+   "self_s": 0.1276,
+   "ncalls": 588,
+   "pct_of_total_self": 0.09
+  },
+  "solar_materials": {
+   "self_s": 0.0061,
+   "ncalls": 852,
+   "pct_of_total_self": 0.0
+  },
+  "runtime_cache": {
+   "self_s": 0.0044,
+   "ncalls": 4872,
+   "pct_of_total_self": 0.0
+  },
+  "geometry_other": {
+   "self_s": 0.0015,
+   "ncalls": 52,
+   "pct_of_total_self": 0.0
+  }
+ },
+ "stage_nested_cum": {
+  "engine_total": {
+   "family": "engine_radiation",
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/engine.py",
+   "line": 1481,
+   "func": "Solweig_2022a_calc",
+   "ncalls": 24,
+   "self_s": 0.6091,
+   "cum_s": 119.748
+  },
+  "engine_gvf_dispatcher": {
+   "family": "engine_radiation",
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/engine.py",
+   "line": 1740,
+   "func": "gvf_2018a",
+   "ncalls": 14,
+   "self_s": 0.0035,
+   "cum_s": 28.5319
+  },
+  "engine_gvf_prepared_step": {
+   "family": "gvf_prepared",
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/gvf_prepared.py",
+   "line": 293,
+   "func": "prepared_gvf_step",
+   "ncalls": 14,
+   "self_s": 0.0012,
+   "cum_s": 28.5272
+  },
+  "engine_Kside_wrapper": {
+   "family": "patch_radiation",
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/patch_radiation.py",
+   "line": 512,
+   "func": "Kside_veg_v2022a",
+   "ncalls": 14,
+   "self_s": 0.0021,
+   "cum_s": 31.22
+  },
+  "engine_Kside_of_which_cylinder_sw": {
+   "family": "kside_cylsw",
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/cylinder_shortwave.py",
+   "line": 126,
+   "func": "kside_cylinder_anisotropic",
+   "ncalls": 14,
+   "self_s": 0.3009,
+   "cum_s": 31.2037
+  },
+  "engine_cylinder_longwave_demand": {
+   "family": "cyl_lw",
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/cylinder_longwave.py",
+   "line": 397,
+   "func": "Lcyl_v2022a_by_demand",
+   "ncalls": 24,
+   "self_s": 0.001,
+   "cum_s": 37.1442
+  },
+  "engine_Lside_demand": {
+   "family": "lside_demand",
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/pipeline_demand.py",
+   "line": 328,
+   "func": "lside_veg_v2022a_demanded",
+   "ncalls": 24,
+   "self_s": 0.0009,
+   "cum_s": 8.4538
+  },
+  "engine_sunonsurface": {
+   "self_s": 0.0,
+   "cum_s": 0.0,
+   "ncalls": 0
+  },
+  "engine_residual_estimate": {
+   "self_s": 14.3981,
+   "note": "cum(engine) minus the named sub-components; includes engine-body numpy assembly (_operate etc.), TsWaveDelay, Kup/Kdown/Ldown math, and any double-count guard error"
+  },
+  "comfort_utci": {
+   "family": "comfort",
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/comfort/utci.py",
+   "line": 412,
+   "func": "utci_calculator_uniform",
+   "ncalls": 24,
+   "self_s": 0.0598,
+   "cum_s": 3.5749
+  },
+  "comfort_wbgt": {
+   "globe": {
+    "family": "comfort",
+    "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/comfort/wbgt.py",
+    "line": 716,
+    "func": "black_globe_temperature",
+    "ncalls": 24,
+    "self_s": 0.6991,
+    "cum_s": 0.6998
+   },
+   "wetbulb": {
+    "family": "comfort",
+    "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/comfort/wbgt.py",
+    "line": 690,
+    "func": "isobaric_wet_bulb_temperature_from_rh",
+    "ncalls": 1,
+    "self_s": 0.0,
+    "cum_s": 0.0003
+   }
+  },
+  "checkpoint_write": {
+   "family": "io_persistence",
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/persistence.py",
+   "line": 456,
+   "func": "write",
+   "ncalls": 24,
+   "self_s": 0.0029,
+   "cum_s": 8.3811
+  },
+  "visibility_decode_nested": {
+   "decode_block": {
+    "family": "visibility",
+    "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/geometry/visibility_compiled.py",
+    "line": 127,
+    "func": "decode_block",
+    "ncalls": 116736,
+    "self_s": 0.8599,
+    "cum_s": 30.7522
+   },
+   "_decode_at": {
+    "self_s": 0.0,
+    "cum_s": 0.0,
+    "ncalls": 0
+   },
+   "decode_prepared_shortwave": {
+    "family": "visibility",
+    "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/geometry/visibility_prepared.py",
+    "line": 362,
+    "func": "decode_shortwave_block",
+    "ncalls": 14336,
+    "self_s": 0.0094,
+    "cum_s": 0.1053
+   },
+   "note": "nested INSIDE Kside/cylinder components; never additive with them"
+  }
+ },
+ "profiler_distortion": {
+  "wall_reps_s": [
+   133.2706,
+   152.2634,
+   148.8363
+  ],
+  "wall_median_s": 148.8363,
+  "profiled_run_s": 136.1233,
+  "distortion_pct": -8.5,
+  "note": "profiled total vs median unprofiled wall; positive = profiler overhead"
+ },
+ "top25_self_entries": [
+  {
+   "family": "visibility",
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/geometry/visibility_compiled.py",
+   "line": 17,
+   "func": "_decode",
+   "ncalls": 116736,
+   "self_s": 28.693,
+   "cum_s": 28.7761
+  },
+  {
+   "family": "gvf_ground_view",
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/ground_view.py",
+   "line": 198,
+   "func": "_gather_block_parallel",
+   "ncalls": 8064,
+   "self_s": 18.4775,
+   "cum_s": 18.4775
+  },
+  {
+   "family": "engine_radiation",
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/engine.py",
+   "line": 1710,
+   "func": "_operate",
+   "ncalls": 694445,
+   "self_s": 12.4853,
+   "cum_s": 14.6246
+  },
+  {
+   "family": "patch_radiation",
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/patch_radiation.py",
+   "line": 271,
+   "func": "_classes",
+   "ncalls": 38912,
+   "self_s": 12.2833,
+   "cum_s": 20.5807
+  },
+  {
+   "family": "cyl_lw",
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/cylinder_longwave.py",
+   "line": 92,
+   "func": "_longwave_primary",
+   "ncalls": 24576,
+   "self_s": 9.3566,
+   "cum_s": 9.3909
+  },
+  {
+   "family": "checkpoint_digest_io",
+   "file": "~",
+   "line": 0,
+   "func": "<built-in method osgeo._gdal.Band_FlushCache>",
+   "ncalls": 240,
+   "self_s": 7.0304,
+   "cum_s": 7.0304
+  },
+  {
+   "family": "sleef_math",
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/_sleef_classifier.py",
+   "line": 141,
+   "func": "atan_array",
+   "ncalls": 28672,
+   "self_s": 6.4981,
+   "cum_s": 6.5106
+  },
+  {
+   "family": "visibility",
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/geometry/visibility.py",
+   "line": 128,
+   "func": "decode_patch",
+   "ncalls": 4284,
+   "self_s": 5.7621,
+   "cum_s": 5.8276
+  },
+  {
+   "family": "wall_shadows",
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/wall_shadows.py",
+   "line": 203,
+   "func": "_wall23_serial",
+   "ncalls": 14,
+   "self_s": 5.5496,
+   "cum_s": 5.5497
+  },
+  {
+   "family": "kside_cylsw",
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/cylinder_shortwave.py",
+   "line": 59,
+   "func": "_shortwave_cylinder",
+   "ncalls": 14336,
+   "self_s": 4.2138,
+   "cum_s": 4.2387
+  },
+  {
+   "family": "comfort",
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/comfort/utci.py",
+   "line": 398,
+   "func": "_utci_uniform_serial",
+   "ncalls": 24,
+   "self_s": 3.493,
+   "cum_s": 3.493
+  },
+  {
+   "family": "numpy_python_core",
+   "file": "~",
+   "line": 0,
+   "func": "<built-in method numpy.asarray>",
+   "ncalls": 2228356,
+   "self_s": 1.8487,
+   "cum_s": 1.8487
+  },
+  {
+   "family": "checkpoint_digest_io",
+   "file": "~",
+   "line": 0,
+   "func": "<method 'update' of '_hashlib.HASH' objects>",
+   "ncalls": 249085,
+   "self_s": 1.8427,
+   "cum_s": 1.8427
+  },
+  {
+   "family": "gvf_ground_view",
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/ground_view.py",
+   "line": 502,
+   "func": "_postprocess_block",
+   "ncalls": 8064,
+   "self_s": 1.7486,
+   "cum_s": 8.4352
+  },
+  {
+   "family": "engine_radiation",
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/engine.py",
+   "line": 1340,
+   "func": "Lside_veg_v2022a",
+   "ncalls": 17,
+   "self_s": 1.035,
+   "cum_s": 8.3027
+  },
+  {
+   "family": "gvf_prepared",
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/gvf_prepared.py",
+   "line": 204,
+   "func": "run_prepared_gvf_step",
+   "ncalls": 14,
+   "self_s": 0.916,
+   "cum_s": 28.2799
+  },
+  {
+   "family": "visibility",
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/geometry/visibility_compiled.py",
+   "line": 127,
+   "func": "decode_block",
+   "ncalls": 116736,
+   "self_s": 0.8599,
+   "cum_s": 30.7522
+  },
+  {
+   "family": "cyl_lw",
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/cylinder_longwave.py",
+   "line": 310,
+   "func": "define_patch_characteristics_primary",
+   "ncalls": 24,
+   "self_s": 0.7819,
+   "cum_s": 37.1168
+  },
+  {
+   "family": "visibility",
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/geometry/visibility.py",
+   "line": 254,
+   "func": "__getitem__",
+   "ncalls": 2142,
+   "self_s": 0.7722,
+   "cum_s": 6.6505
+  },
+  {
+   "family": "engine_radiation",
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/engine.py",
+   "line": 1694,
+   "func": "_divide",
+   "ncalls": 168384,
+   "self_s": 0.7212,
+   "cum_s": 0.8612
+  },
+  {
+   "family": "comfort",
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/comfort/wbgt.py",
+   "line": 716,
+   "func": "black_globe_temperature",
+   "ncalls": 24,
+   "self_s": 0.6991,
+   "cum_s": 0.6998
+  },
+  {
+   "family": "engine_radiation",
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/engine.py",
+   "line": 1481,
+   "func": "Solweig_2022a_calc",
+   "ncalls": 24,
+   "self_s": 0.6091,
+   "cum_s": 119.748
+  },
+  {
+   "family": "numpy_python_core",
+   "file": "~",
+   "line": 0,
+   "func": "<built-in method numpy.zeros>",
+   "ncalls": 78429,
+   "self_s": 0.5823,
+   "cum_s": 0.5823
+  },
+  {
+   "family": "io_persistence",
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/persistence.py",
+   "line": 202,
+   "func": "_stored_bytes_digest",
+   "ncalls": 240,
+   "self_s": 0.5065,
+   "cum_s": 1.1616
+  },
+  {
+   "family": "engine_radiation",
+   "file": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/engine.py",
+   "line": 1698,
+   "func": "_operands",
+   "ncalls": 862829,
+   "self_s": 0.4953,
+   "cum_s": 2.2756
+  }
+ ]
+}

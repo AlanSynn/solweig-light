@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "classification": "v4_document_and_policy_integrity_only",
+  "successful": true,
+  "tests_run": 14,
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "elapsed_seconds": 0.034750157000019044,
+  "goal_codepoints_with_command": 3937,
+  "dag_task_count": 21,
+  "python": "3.13.5",
+  "production_solweig_executed": false,
+  "original_oracle_executed": false,
+  "target_benchmark_executed": false,
+  "repository_branch_created": false,
+  "github_settings_changed": false,
+  "subagents_executed": false,
+  "log": "test_ci_does_not_mask_required_checks (__main__.PacketChecks.test_ci_does_not_mask_required_checks) ... ok\ntest_dag_acyclic_and_references (__main__.PacketChecks.test_dag_acyclic_and_references) ... ok\ntest_dependency_reuse_not_file_name_only (__main__.PacketChecks.test_dependency_reuse_not_file_name_only) ... ok\ntest_final_task_has_source_freeze_dependency (__main__.PacketChecks.test_final_task_has_source_freeze_dependency) ... ok\ntest_full_chronology_on_small_grid (__main__.PacketChecks.test_full_chronology_on_small_grid) ... ok\ntest_goal_under_4000 (__main__.PacketChecks.test_goal_under_4000) ... ok\ntest_json_documents_parse (__main__.PacketChecks.test_json_documents_parse) ... ok\ntest_local_markdown_links (__main__.PacketChecks.test_local_markdown_links) ... ok\ntest_no_model_execution_claim (__main__.PacketChecks.test_no_model_execution_claim) ... ok\ntest_one_final_candidate_no_default_large_baseline (__main__.PacketChecks.test_one_final_candidate_no_default_large_baseline) ... ok\ntest_separate_branch_no_remote_or_merge (__main__.PacketChecks.test_separate_branch_no_remote_or_merge) ... ok\ntest_strategy_catalog_retained (__main__.PacketChecks.test_strategy_catalog_retained) ... ok\ntest_workers_cannot_run_large (__main__.PacketChecks.test_workers_cannot_run_large) ... ok\ntest_yaml_documents_parse (__main__.PacketChecks.test_yaml_documents_parse) ... ok\n\n----------------------------------------------------------------------\nRan 14 tests in 0.035s\n\nOK\n"
+}

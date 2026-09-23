@@ -1,0 +1,86 @@
+diff --git i/src/solweig_light/api.py w/src/solweig_light/api.py
+index 596a87c3..8fcbfff7 100644
+--- i/src/solweig_light/api.py
++++ w/src/solweig_light/api.py
+@@ -155,6 +155,30 @@ def run_utci_tiles(
+         jobs.append(dict(base_path=base_path, preprocess_dir=preprocess_dir,
+                          selected_date_str=selected_date_str, tile=tile, paths=paths, flags=flags))
+     plan_admission(jobs, runtime)
++    # C6-42: corrected phase admission (private calculator; parent-side,
++    # in-process only).  policy='reject' preserves the public resource-failure
++    # semantics: ResourceAdmissionError aborts before any worker is spawned,
++    # so first-serial-order failure and publication semantics are unchanged.
++    from .runtime_memory import (
++        PHASE_SIMULATION,
++        PhaseJob,
++        default_gdal_cache_bytes,
++        plan_phase_admission,
++        shape_from_building_dsm,
++    )
++    plan_phase_admission(
++        [PhaseJob(PHASE_SIMULATION,
++                  **shape_from_building_dsm(
++                      job['paths'], block_pixels=runtime.block_pixels).to_dict(),
++                  tile=job['tile'])
++         for job in jobs],
++        budget_bytes=runtime.resolved_memory_budget_bytes,
++        active_workers=min(runtime.workers,
++                           max(1, runtime.cpu_budget // runtime.threads_per_worker)),
++        threads_per_worker=runtime.threads_per_worker,
++        gdal_cache_bytes=default_gdal_cache_bytes(),
++        policy='reject',
++    )
+     # Even one public tile gets native limits before numerical libraries load.
+     # The internal run_tile entry remains available to numerical test harnesses.
+     execute_tiles(jobs, runtime)
+diff --git i/src/solweig_light/geometry/service.py w/src/solweig_light/geometry/service.py
+index 74c36716..ab3a20e8 100644
+--- i/src/solweig_light/geometry/service.py
++++ w/src/solweig_light/geometry/service.py
+@@ -273,6 +273,29 @@ def prepare_geometry_exports(preprocess_dir, tile, paths, patch_option, overwrit
+     # The full pipeline inventory conservatively overestimates geometry-only
+     # work and preserves logical extent/patch count rather than shrinking either.
+     plan_admission([{'tile': tile, 'paths': paths, 'patches': patch_count}], runtime)
++    # C6-42: geometry-phase corrected single-job check.  The corrected cold
++    # geometry reservation exceeds the legacy estimate, so this tightens
++    # admission for budgets inside the [3.4742, 4.8320) GiB interval; see
++    # m7_integration_recipe.md section 3 before enabling.  Raises
++    # ResourceAdmissionError in-process before any raster array is read.
++    from ..runtime_memory import (
++        PHASE_GEOMETRY,
++        PhaseJob,
++        default_gdal_cache_bytes,
++        plan_phase_admission,
++        shape_from_building_dsm,
++    )
++    plan_phase_admission(
++        [PhaseJob(PHASE_GEOMETRY,
++                  **shape_from_building_dsm(
++                      paths, patches=patch_count,
++                      block_pixels=runtime.block_pixels).to_dict(),
++                  tile=tile)],
++        budget_bytes=runtime.resolved_memory_budget_bytes,
++        active_workers=1,
++        gdal_cache_bytes=default_gdal_cache_bytes(),
++        policy='reject',
++    )
+     guard.check()
+     output = Path(preprocess_dir) / 'SVF'
+     output.mkdir(parents=True, exist_ok=True)
+diff --git i/src/solweig_light/runtime.py w/src/solweig_light/runtime.py
+index cf7b39f3..7a08b428 100644
+--- i/src/solweig_light/runtime.py
++++ w/src/solweig_light/runtime.py
+@@ -673,6 +673,12 @@ def _child_environment(options: RuntimeOptions) -> dict[str, str]:
+         "NUMBA_NUM_THREADS",
+     ):
+         env[name] = value
++    # C6-42: cap the per-process GDAL block cache at the allowance the phase
++    # admission calculator charges (5% of physical RAM when GDAL_CACHEMAX is
++    # unset; M2 §5).  GDAL reads this at first use in each fresh child, the
++    # same mechanism as the thread caps above.  Value is megabytes.
++    from .runtime_memory import default_gdal_cache_bytes
++    env['GDAL_CACHEMAX'] = str(max(1, default_gdal_cache_bytes() // (1024 * 1024)))
+     return env
+ 
+ 

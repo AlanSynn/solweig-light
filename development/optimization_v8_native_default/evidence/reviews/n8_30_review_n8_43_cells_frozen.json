@@ -1,0 +1,80 @@
+{
+  "schema": "sw8-n8-30-review-v1",
+  "review_of": "optimization_v8_native_default/evidence/selection/n8_43_campaign_cells_frozen.json (untracked NEW at HEAD 3079d69a; author n8-43-freeze; this review independent, read-only + light verification)",
+  "reviewer": "n8-rev-n8-41 (independent; did not author; previously reviewed the N8-41 vendoring and n841-3 install_assets, not this record)",
+  "review_utc": "2026-09-23T03:05Z",
+  "worktree": "/Users/alansynn/Workspace/solweig-v8-native @ HEAD 3079d69a, branch perf/native-optimization; working tree clean except the record under review",
+  "verdict": "APPROVE-WITH-NOTES",
+  "blocking_defects": [],
+  "required_repairs": [
+    "R1 (before the campaign starts, via a dated AMENDMENT record -- not a silent edit): correct two false statements in scene_inventory_at_freeze. (a) tests/reference/state_sequence_original_cpu/scene is described as 'IDENTICAL duplicate of small_original_cpu scene; same 32x35, 24 records' -- it is NOT: raster inputs are byte-identical (Building_DSM.tif e13aefb5..., DEM.tif a550dd0b...), but met.txt has 49 lines = 48 records (small has 25 = 24), processed_inputs differ, and the captured reference outputs differ. It is a DISTINCT 48-record forcing on the same geometry, with PRESENT reference outputs. (b) census_gaps 'NO 48-record fixture exists (every named scene has exactly 24 met records)' is false -- a 48-record scene fixture exists in the enumerated tree. No PROMOTION_POLICY/BENCHMARK_PROTOCOL sentence requires a 48-step cell, so the CELL TABLE needs no change; the operator should nonetheless consciously ratify (or amend pre-start) the exclusion of a 48-record reference-anchored cell, since the freeze rule bars adding cells after start."
+  ],
+  "recommended_repairs": [
+    "R2: fix two line-number citations: the fourth engine gate line is 1762, not 1767 (1767 is the 'def define_patch_characteristics(' line; grep -n confirms gates at 1655/1762/1770/1778; both structural_wiring_facts and cell n843-p1 env_and_options cite 1767); and the driver seam sits at cylinder_longwave.py:386-390 (guard 386, _lw_region_route call 388), not 401-404 (those lines are the legacy loop tail). Substance unaffected in both cases.",
+    "R3: the strict-tier headroom claim 'the 1.5 GB view floor is >= 3x the expected process-tree peak-sum upper bound' overstates: by the record's own numbers (c5 ~250.5 MiB peak + ~0.3 GiB baseline ~= 0.55 GB) the factor is ~2.6-2.8x depending on GB/GiB convention. The floor still holds with real headroom; state the honest multiplier.",
+    "R4: the record distinguishes the abc archives as 'tag=check' vs the timed archive, but the JSONs carry no literal top-level tag field -- the distinction is real (5 check smokes vs 1 timed, block_sizes [128], INFORMATIONAL/NON-PROMOTION) but rests on filename + content, not a tag field. One clarifying word in the amendment."
+  ],
+  "claims": [
+    {
+      "claim": "1. Pre-results declaration: zero B=1024 A/B/C records exist",
+      "status": "PASS",
+      "finding": "Executed: experiments/optimization_v8/native/evidence/ holds exactly 5 abc_quiet_window_check_* smokes + 1 timed archive (abc_quiet_window_timed_20260922T232539Z.json) whose block_sizes == [128], mode TIMED, status 'INFORMATIONAL / NON-PROMOTION' -- the single tier-A archive, exactly as declared. evidence/trials/ holds exactly 2 files (n8_31_tierA_record.json: cells 'B=128 x mixes {all-binary, mix, all-raw} x REPS=9', tier label 'ambient-host tier; INFORMATIONAL / NON-PROMOTION', cannot_alone_support [N8-32 selection, any default-enablement]; n8_31_frozen_cells_addendum.json) -- no tier-B transcription. No B=1024 A/B/C comparison record exists anywhere (the '1024' grep hits in check files/policy docs are policy text and envelope numbers, not records)."
+    },
+    {
+      "claim": "2. The 6+1 cell table satisfies every PROMOTION_POLICY sentence (13-row matrix checked row by row)",
+      "status": "PASS",
+      "finding": "All 13 matrix rows quote-and-match the actual policy sentences (PROMOTION_POLICY.md lines 20,21,22,23,24,25,26,32 + memory/scale/N6/N7/labels). Structural hunt results: (a) DENSE COVERAGE: c1 and c3 are the same scene at two configurations -- the sentence says 'workload/configuration cells', so two configs of one dense scene are two valid cells; satisfied. (b) ORDINARY-DEFAULT CELL: p1 (public pipeline, untouched defaults) satisfies 'at least one cell executes an ordinary main-compatible call... including default block=128'; c1/c2/c6 satisfy it at the driver boundary; no sentence requires the ordinary-default and protected cells to be distinct, so p1 holding both roles plus the canary role is permitted. (c) PROTECTED CELL: p1 predeclared with the <=3% paired median bound; removal-with-guard-coverage and no-workload-shrinking language transcribed correctly. (d) PRODUCTION H/B PINS: c3/c4/c5 pin B=1024 H=4; H=4 support verified (RuntimeOptions validation: threads_per_worker > cpu_budget raises; cpu_budget >= 4 required). (e) Protocol small-matrix reading: the 128/256 x dense/veg held-out menu is covered 3/4 (128d, 128v, 256v) with scene_256_dense's exclusion PREDECLARED as budget discipline -- a recorded scoping decision, not a hidden omission; gate sentences do not demand the full cross-product. (f) 'verify current main exact defaults': verified -- engine wrappers pass block_pixels=get_runtime_options().block_pixels (default 128) and parallel=threads_per_worker>1; RuntimeOptions defaults block_pixels=128, threads_per_worker=1; DX main_surface.json @14e88876 pins threads_per_worker 1."
+    },
+    {
+      "claim": "3. THE H FINDING: at the public H=1 default, resolve_lw_backend is structurally unreachable",
+      "status": "PASS",
+      "finding": "Every link independently confirmed at HEAD 3079d69a. (L1) grep -n: exactly four gate sites in radiation/engine.py -- 1655, 1762, 1770, 1778 -- each 'parallel=get_runtime_options().threads_per_worker > 1' (the record cites 1767 for one; see R2). (L2) cylinder_longwave.py:356 and :406: 'def define_patch_characteristics_primary(*args,block_pixels=128,parallel=True,**kwargs)' and 'def Lcyl_v2022a_primary(*args,block_pixels=128,parallel=True,**kwargs)' -- driver defaults parallel=True. (L3) seam guard cylinder_longwave.py:386-388: 'if parallel and rows*cols:' -> _lw_region_route -- with parallel False the seam cannot fire; tests/optimization_v8/integration/test_lw_dispatch.py::test_serial_demand_never_dispatches pins parallel=False -> region_spy == [] (never dispatches). (L4) RuntimeOptions defaults threads_per_worker: int = 1 (runtime.py dataclass, within the cited window); main DX reference evidence/dx_baseline/main_surface.json records git_commit 14e888760727583ef782a4dc0e7a5c7c6e6ff9d1 with threads_per_worker: 1. (L5) materialization corroborated: resolve_budget() reads get_runtime_options().threads_per_worker (region_pool.py); _child_environment sets OMP/OPENBLAS/.../NUMBA_NUM_THREADS + GDAL_CACHEMAX before first import (runtime.py:663+). CONCLUSION CONFIRMED: through the public wrappers at defaults, parallel=False, the seam never fires, _lw_region_route is never called, resolve_lw_backend is never consulted, and no registry content can produce a native no-env public default. The finding is decisive and correctly LIMITED to the public pipeline boundary -- the campaign's primary cells c1-c6 route at the DRIVER boundary where parallel=True is the driver's own default, so native-eligible cells exist; only the default-objective (decision 3) is blocked."
+    },
+    {
+      "claim": "4. Scene census honesty",
+      "status": "PASS_WITH_REQUIRED_REPAIR_R1",
+      "finding": "Census COMPLETENESS independently reproduced: my own find (Building_DSM.tif + met.txt at scene layout) over tests/reference/ yields exactly 3 scenes -- public_roughness_original_cpu (24 records), small_original_cpu (24), state_sequence_original_cpu (48) -- precisely the set the record enumerates; no scene is missing from the record. c6/p1 oracle VERIFIED PRESENT: tests/reference/small_original_cpu/scene/output_folder/0_0/ holds exactly the 10 claimed TIFFs (Kdown/Kup/Ldown/Lup/Shadow/Ta/TMRT/UTCI/WBGT/Wind _0_0.tif); small's manifest.json present. c1-c5 'reference: absent -> unverified, not passed' verified (all four N8-03 fixtures: outputs ABSENT, manifests PRESENT). Undeclared scenes justified: public_roughness has NO manifest.json (verified; provenance unpinnable -- sound ground); scene_256_dense excluded by predeclared budget discipline. DEFECT (R1): the state_sequence entry mis-describes the scene as an identical 24-record duplicate, and the census-gap line denies the existence of the very 48-record fixture the census itself lists; both statements are false and must be amended before campaign start (cell table unaffected; no policy sentence requires a 48-step cell)."
+    },
+    {
+      "claim": "5. Arm definitions: N7 per-call read in ALL arms; RSSTreeSampler; memory arithmetic",
+      "status": "PASS",
+      "finding": "N7: resolve_lw_backend with no registry argument re-reads the shipped file on every call (code-verified in the vendoring review and re-confirmed at this HEAD); the freeze includes the read in all three arms' cost with per-cell recording -- faithful to the N8-31 addendum's N7 obligation and extended to three arms (a superset, fair direction). RSSTreeSampler: verified at tools/optimization_v8/n8_02_run.py:81-82 -- daemon thread, 0.15 s interval, 'ps -eo pid,ppid,rss,comm', ppid tree-walk, per-PID peaks; macOS KB->bytes and the double-count upper-bound discipline match BENCHMARK_PROTOCOL's memory/IO rule. Arithmetic RECOMPUTED from the record's own model: total AoSoA+sun/shade+output = pixels x (1836+306+28) B -- c1-c4 (16384 px): 33.9 MiB new + 28.7 MiB duplicate bound = 62.6 MiB (matches); c5 (65536 px): 135.7 + 114.7 = 250.4 MiB (matches the claimed ~250.5); c6/p1 (1120 px): 2.3 + 2.0 = 4.3 MiB (matches). Headroom: 1.5 GB view vs ~0.55 GB worst tree-sum is ~2.6-2.8x, NOT '>= 3x' as stated (R3) -- floor nonetheless holds. Block counts verified: c6 1120 px = 8x128 + 96 tail (lane-aligned, 96 % 8 == 0); c3 16384/1024 = 16 blocks; c5 65536/1024 = 64 blocks."
+    },
+    {
+      "claim": "6. Schedule: 3 alternating triples, untimed warm pass feeding bitwise parity BEFORE timed credit",
+      "status": "PASS",
+      "finding": "BENCHMARK_PROTOCOL: 'Triage uses two alternating pairs; finalists three pairs. Use A/C, C/A order or a frozen randomized schedule and preserve raw data.' The freeze predeclares 3 triples per cell with the frozen order A0,B1,auto / auto,B1,A0 / A0,B1,auto -- finalist count, frozen schedule (protocol-permitted alternative to randomization), raw preservation all consistent; B1 mid-triple in every pair is a declared cache-fairness rationale, not a results argument. Warm pass: ONE untimed full-discipline pass per arm per cell before pair 0, outputs feeding the parity gate, excluded from timed statistics -- consistent with 'workflow_warm ... native artifacts already warm' and the N8-31 base freeze's 'parity before timing'; the censor rules close a cell on parity failure with at most one rerun, matching the protocol's retry discipline."
+    },
+    {
+      "claim": "7. Quiet-window gates PROPOSED-FOR-OPERATOR-CONFIRMATION, consistent with N8-31 amendments",
+      "status": "PASS",
+      "finding": "The freeze marks the whole gate block 'PROPOSED-FOR-OPERATOR-CONFIRMATION -- the operator ratifies the gates; this freeze does not ratify them alone'. Transcription checked against trials/n8_31_frozen_cells_addendum.json: tier A (B=128): 'loadavg <= 8.0 at start AND memory view >= 1.5 GB; exceeds 12 CENSORED' -- verbatim match to amendment_2026-09-22T1945Z; tier B correction (amendment_2026-09-22T1955Z): 'loadavg < 2.0 (UNCHANGED) AND memory view >= 1.5 GB (>= 100x actual need)' -- verbatim match, including the 4.4 GB -> 1.5 GB floor correction; N8-23's separate 4.33 GB installed-gate admission explicitly unchanged. The freeze applies the harness tiers to driver/pipeline cells and says so."
+    },
+    {
+      "claim": "SPECIAL ATTENTION: is the H finding scoped as 'requires a separately reviewed wiring change' without smuggling a wiring decision?",
+      "status": "PASS",
+      "finding": "YES. The record's own words: 'This freeze changes nothing; cell n843-p1 measures and archives the fact empirically'; 'the H=1 pipeline routing gate is recorded as a finding, not edited'; 'default-objective evidence ... cannot be produced through the pipeline wrappers without a separately reviewed code change'; and it invokes PROMOTION_POLICY's OWN fallback sentence ('If only tuned expert cells win, report native opt-in success and default objective incomplete') rather than pre-deciding the outcome. No cell, arm, gate, or binding depends on any wiring change; p1 is defined to MEASURE the fail-closed no-routing behavior and treat any arm delta as an unintended change (canary, cannot be 'passed' by explanation). The separately-reviewed wiring work lives outside this freeze (a distinct seam-rework task exists on the team board). The freeze creates no result, predicts no label, and predeclares the removal/relaxation discipline. Correctly scoped."
+    }
+  ],
+  "notes": [
+    "N1: R1 is the only required repair; everything else is citation hygiene or operator-ratification input. The amendment should land BEFORE the campaign starts because the freeze rule bars adding cells after start -- that is exactly the window this review runs in.",
+    "N2: p1 carries three roles (ordinary-default cell, protected <=3% cell, wiring canary). No policy sentence forbids the concentration, and the canary semantics are strictly more conservative than a plain protected cell; recorded as an observation.",
+    "N3: The '48-record fixture exists' correction cuts BOTH ways and the record should present it neutrally: it does not obligate a 48-step cell (no policy sentence asks for one; BENCHMARK_PROTOCOL's 'full 24/48 chronological records' is a completeness rule for whatever fixture is used, not a step-count mandate), but a future 48-step reference-anchored cell is possible material and the operator should consciously decline or adopt it pre-start.",
+    "N4: B1's registry-write discipline (backup -> write -> restore; never env) is consistent with the selector mechanics verified in the vendoring review (env would bypass the selector via the legacy seam route). The final env-unset candidate run using the packaged allow-list matches BENCHMARK_PROTOCOL's closing rule.",
+    "N5: Load discipline: loadavg checked before execution (5.62 at start; all light read-only verification, one-time greps and JSON reads); nothing was run that could contaminate a benchmark window; no timed work; no builds; writes confined to evidence/reviews/."
+  ],
+  "rerun": {
+    "command_sets": [
+      {"command": "read-only verification (grep/sed/find/diff/python JSON reads) at HEAD 3079d69a", "result": "all evidence cited above; no test runs required by this bounded review and none performed"}
+    ],
+    "probes": [
+      "Census reproduction: find over tests/reference for scene layouts -> exactly the 3 enumerated scenes; state_sequence met.txt 49 lines (48 records) vs small 25 (24); rasters digest-identical; processed_inputs and outputs differ",
+      "H-chain: grep -n gate sites 1655/1762/1770/1778; driver defs at 356/406 with parallel=True; seam guard 386-388; serial-demand test pins spy==[]; RuntimeOptions defaults; dx main_surface.json @14e88876 threads_per_worker 1",
+      "Archive audit: 5 check smokes + 1 timed (block_sizes [128]); trials/ = tierA record + addendum only",
+      "Memory arithmetic recomputation from the record's own byte model (1836/306/28 B per pixel) -- all four per-cell figures reproduce"
+    ],
+    "interpreter": "system python3 + shell read-only tools (no project code executed)",
+    "timed_benchmarking": "none"
+  },
+  "scope_guard": "no commits, no timed work, no builds; writes only under evidence/reviews/; read-only verification at HEAD 3079d69a"
+}

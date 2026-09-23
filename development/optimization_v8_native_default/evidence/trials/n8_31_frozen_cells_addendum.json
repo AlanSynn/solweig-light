@@ -1,0 +1,79 @@
+{
+  "record": "N8-31 frozen-cell addendum: review-adopted obligations transcribed BEFORE any N8-31 results exist",
+  "recorded_utc": "2026-09-22T19:20Z",
+  "pre_results_declaration": "At this timestamp optimization_v8_native_default/evidence/trials/ contained no files (this record creates the directory). No A/B/C comparison result, timed or untimed, has been produced under N8-31. This addendum is therefore a pre-results protocol amendment, not a post-hoc gate edit. Base freeze instruments remain authoritative: BENCHMARK_PROTOCOL.md (dossier), native/quiet_window_abc.py (B=128+1024, mixes, A/B/C arms, parity before timing, min-of-N, INFORMATIONAL/NON-PROMOTION), and the n8-13 harness.",
+  "source_of_obligations": {
+    "review": "optimization_v8_native_default/evidence/reviews/n8_30_review_n8_40_integration.json (verdict APPROVE-WITH-NOTES)",
+    "disposition": "optimization_v8_native_default/evidence/integration/n8_40_review_notes_disposition.json"
+  },
+  "binding_cells": [
+    {
+      "id": "n831-cell-scene-envelope",
+      "obligation": "N6 position (reviewer, adopted): NO dispatch-level scene-size guard in src; the size envelope is a RECORD obligation.",
+      "requirement": "The first qualified record (N8-31 transcription or N8-32 selection) MUST state the scene-size envelope explicitly: approximately 2.25 GB routed-call overhead at 1024^2 and approximately 9 GB at 2048^2, P=153 (whole-scene uint32 AoSoA x3 + bool sun/shade x2, per n8_40_integration_record memory note). N8-31 end-to-end cells MUST include whole-process-peak accounting covering the whole-scene producer allocations (produce_blocks_aosoa + classify_block_aosoa outputs plus the legacy-loop inputs they duplicate).",
+      "rationale": "N8-32 cannot qualify a scope it has not stated; BENCHMARK_PROTOCOL memory-pressure kills are censored runs and must be attributable to a stated envelope."
+    },
+    {
+      "id": "n831-cell-registry-fairness",
+      "obligation": "N7 (reviewer): per-call registry read on every routed-eligible driver call.",
+      "requirement": "N8-31 end-to-end accounting MUST include one resolve_lw_backend() call (one small JSON stat+read) per driver call in the routed arm's cost. The fair shipped-state baseline arm (row A in repo state) pays the identical read, so both arms carry it; the cell must record that the read disappears only at N8-41 vendoring if a caching variant is ever proposed.",
+      "rationale": "Omitting it would overstate routed-arm cost relative to a post-vendoring deployment; including it keeps the repo-state comparison faithful to both arms."
+    }
+  ],
+  "unchanged_freezes": [
+    "block=128 and block=1024 both remain required cells",
+    "A (current Numba) / B (equivalent-layout Numba) / C (native) all three arms remain required with parity before timing",
+    "min-of-N and the quiet-host gate (loadavg and free+inactive thresholds in host_quiet_window_note.json) unchanged",
+    "INFORMATIONAL/NON-PROMOTION status of the quiet-window comparison unchanged",
+    "BENCHMARK_PROTOCOL rules on censored runs and single final large workload unchanged"
+  ],
+  "amendment_2026-09-22T1945Z": {
+    "title": "Two-tier quiet-window gate (pre-results; no timed record exists)",
+    "pre_results_declaration": "evidence/ dir of experiments/optimization_v8/native/ holds only abc_quiet_window_check_*.json (parity smoke, tag=check); zero tag=timed records exist. This amendment therefore precedes all results.",
+    "reason": "host_quiet_window_note.json conflated two constraints: the 4.4 GB memory view belongs to the B=1024 whole-scene allocations (~2.25 GB routed-call overhead) and N8-23's installed gates, while B=128 cells need ~30-120 MB. The harness itself records ambient loadavg per cell and enforces no memory gate; the abort gate was operational (worker-side). Holding ALL cells behind the overnight quiet window leaves the decisive small-block signal unmeasured indefinitely.",
+    "tier_A_small_blocks": {
+      "cells": "B=128, all three mixes, REPS=9, parity before timing (unchanged)",
+      "gate": "proceed at recorded ambient if loadavg <= 8.0 at start AND memory view >= 1.5 GB; per-cell loadavg recorded by the harness (already instrumented); any cell whose window loadavg exceeds 12 is CENSORED and re-run only within the same session budget",
+      "label": "ambient-host tier; informational; cannot alone support N8-32 selection or any default-enablement",
+      "exclusivity": "benchmark owner exclusive; coordinator runs no local builds/tests during the run"
+    },
+    "tier_B_production_block": {
+      "cells": "B=1024, all three mixes (unchanged)",
+      "gate": "UNCHANGED: loadavg < 2.0 AND memory view >= 4.4 GB (overnight cron 96eaac3e)",
+      "note": "N8-23 memory-gated installed gates remain skipped until the memory view clears 4.33 GB; separate from this comparison"
+    },
+    "harness_delta_required": "quiet_window_abc.py gains operational CLI args (--block-sizes, default '128,1024' = unchanged behavior; --max-loadavg guard mirroring the tier instructions). Default invocation semantics unchanged; delta covered by the queued n8-rev-n8-13 review.",
+    "unchanged": "B=128 and B=1024 both remain REQUIRED cells for N8-32; INFORMATIONAL/NON-PROMOTION status unchanged; min-of-N, parity-before-timing, censored-run rules unchanged"
+  },
+  "amendment_2026-09-22T1955Z_tierB_memory_correction": {
+    "title": "Tier-B memory floor corrected: 4.4 GB -> 1.5 GB view (pre-results; zero B=1024 timed records exist)",
+    "reason": "The 4.4 GB view requirement originated in host_quiet_window_note.json as N8-23's installed-gates admission (1.74 GB whole-scene reservation + parent vs 0.5x-available) and was carried into tier B by conflation. Code audit: the harness's B=1024 cell allocates (B,P) float32 inputs (~627 KB x3), bool sun/shade (~157 KB x2), uint32 [G,P,W] AoSoA (~627 KB x3), (B,7) outputs -- order ~10 MB total, independent of scene size. The whole-scene ~2.25 GB routed-call envelope (N6) governs the DRIVER/pipeline campaign (N8-50/51), not harness block cells.",
+    "tier_B_gate_corrected": "loadavg < 2.0 (UNCHANGED -- the binding constraint for timing validity) AND memory view >= 1.5 GB (>= 100x actual need, matches tier A floor)",
+    "unchanged": [
+      "cells: B=1024 x 3 mixes x REPS=9, parity before timing, min-of-N",
+      "informational/non-promotion status",
+      "N6 envelope obligation on the first qualified record (whole-scene pipeline campaign still must state ~2.25 GB @1024^2)",
+      "N8-23 installed gates remain memory-gated at 4.33 GB (separate task, unchanged)"
+    ]
+  },
+  "amendment_2026-09-23T0817Z_tierB_loadavg_floor": {
+    "title": "Tier-B loadavg floor relaxed: < 2.0 -> < 5.0 (pre-results; zero B=1024 timed records exist)",
+    "pre_results_declaration": "No tag=timed B=1024 record exists under evidence/trials/ or experiments/optimization_v8/native/evidence/ at this timestamp; tier A ran only under the ambient-host tier. This amendment therefore precedes all tier-B results.",
+    "observed_evidence": "Coordinator polling 2026-09-22 -> 2026-09-23T08:17Z (~50 checks): 1-min loadavg range 3.56-32.27, never < 2.0; the memory half (free+inactive >= 92000 pages) passed every check (min view ~2.5 GB). Host is shared (30-31 users; corporate agents; other user sessions). Host owner attests loadavg ~4-10 is the practical operating floor and sub-5.0 dips occur (3.56 observed earlier; 4.48 at 2026-09-23 ~08:12 local).",
+    "user_authorization": "Host owner selected the < 5.0 relaxation over {< 10 immediate, keep < 2.0} at 2026-09-23 (coordinator AskUserQuestion), premised on this amendment being recorded BEFORE any tier-B result exists.",
+    "tier_B_gate_amended": "loadavg < 5.0 (relaxed from < 2.0) AND memory view >= 92000 pages (~1.5 GB; UNCHANGED from amendment_2026-09-22T1955Z_tierB_memory_correction)",
+    "fairness_and_noise_provisions": [
+      "single quiet window shared by all three arms (unchanged); arms are never compared across windows",
+      "harness per-cell ambient loadavg recording (already instrumented) is MANDATORY in the archive; the N8-31 transcription MUST annotate per-cell loadavg as noise context",
+      "any cell whose in-window loadavg exceeds 8.0 is CENSORED and re-run only within the same session budget (mirrors tier A's 12-abort rule at a 1.6x ratio over the start bound; tier A: 12 over 8.0)",
+      "min-of-N (REPS=9) and parity-before-timing unchanged; INFORMATIONAL/NON-PROMOTION status unchanged"
+    ],
+    "unchanged": [
+      "cells: B=1024 x 3 mixes x REPS=9, parity before timing, min-of-N",
+      "N6 envelope obligation on the first qualified record (~2.25 GB @1024^2 whole-scene statement)",
+      "N7 driver-level resolve accounting on both arms",
+      "N8-23 installed gates remain memory-gated at 4.33 GB (separate, unchanged)"
+    ],
+    "scheduler_note": "session cron 51454019 (2.0-threshold poll, :13/:33/:53) is superseded by a 5.0-threshold poll; the GO to n8-13-native is dispatched exactly once under the amended gate, then the poll is deleted"
+  }
+}

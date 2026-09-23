@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "classification": "packet_integrity_and_abstract_algebra_checks_only",
+  "successful": true,
+  "tests_run": 16,
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "analysis_elapsed_seconds": 0.13283082599991758,
+  "environment": {
+    "python": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+    "numpy": "2.3.5",
+    "pyyaml": "6.0.3",
+    "platform": "Linux-6.18.44-x86_64-with-glibc2.41"
+  },
+  "details": {
+    "abstract_sky_state_sequences": 18724,
+    "abstract_sky_scope": "post-first-step symbolic finite no-positive-bush recurrence only",
+    "abstract_input_only_control_prepass_cases": 72,
+    "bush_test_scope": "arbitrary prepared temporary arrays and g update, not full shadow/SVF/first-step pipeline",
+    "catalog_candidates": 48,
+    "catalog_quarantined": 8,
+    "synthetic_exact_table_contributions": 14841,
+    "goal_codepoints": 3958,
+    "goal_with_command_codepoints": 3964,
+    "synthetic_ordered_partitions": 5,
+    "repeated_add_counterexample": {
+      "add": 1.4000000953674316,
+      "multiply": 1.399999976158142
+    },
+    "dependency_acyclic_tasks": 19
+  },
+  "production_solweig_executed": false,
+  "original_oracle_executed": false,
+  "target_hardware_benchmark_executed": false,
+  "universal_equivalence_proved": false,
+  "log": "test_absorbing_projection_abstract (__main__.PacketChecks.test_absorbing_projection_abstract) ... ok\ntest_bush_control_prepass_abstract (__main__.PacketChecks.test_bush_control_prepass_abstract) ... ok\ntest_catalog_counts_and_ids (__main__.PacketChecks.test_catalog_counts_and_ids) ... ok\ntest_exact_finite_state_partial_eval (__main__.PacketChecks.test_exact_finite_state_partial_eval) ... ok\ntest_goal_length (__main__.PacketChecks.test_goal_length) ... ok\ntest_invalid_values_rejected (__main__.PacketChecks.test_invalid_values_rejected) ... ok\ntest_known_schedule_example (__main__.PacketChecks.test_known_schedule_example) ... ok\ntest_list_schedule (__main__.PacketChecks.test_list_schedule) ... ok\ntest_no_fake_goal_pass (__main__.PacketChecks.test_no_fake_goal_pass) ... ok\ntest_pixel_order_interchange (__main__.PacketChecks.test_pixel_order_interchange) ... ok\ntest_reassociation_counterexample (__main__.PacketChecks.test_reassociation_counterexample) ... ok\ntest_repeated_add_not_multiplication (__main__.PacketChecks.test_repeated_add_not_multiplication) ... ok\ntest_resource_admission (__main__.PacketChecks.test_resource_admission) ... ok\ntest_source_ids_resolve (__main__.PacketChecks.test_source_ids_resolve) ... ok\ntest_task_dependencies (__main__.PacketChecks.test_task_dependencies) ... ok\ntest_task_strategy_ids (__main__.PacketChecks.test_task_strategy_ids) ... ok\n\n----------------------------------------------------------------------\nRan 16 tests in 0.133s\n\nOK\n"
+}

@@ -1,0 +1,249 @@
+{
+  "record": "N9-F0 inventory: heads verification, main-diff enumeration and classification, default import closure, packaging, N8 record state, zero-blocksize harness site",
+  "recorded_utc": "2026-09-23T00:00:00Z",
+  "owner": "release_owner (F0/F1R)",
+  "read_only_audit": true,
+
+  "heads": {
+    "source_sha": "7abe526aae2f97e689b1a1e4ae183e5370f29aa1",
+    "source_branch": "perf/native-optimization",
+    "target_sha": "14e888760727583ef782a4dc0e7a5c7c6e6ff9d1",
+    "target_ref": "origin/main (local ref; no network)",
+    "worktree": "/Users/alansynn/Workspace/solweig-v8-native",
+    "git_commands": [
+      "git rev-parse HEAD  -> 7abe526aae2f97e689b1a1e4ae183e5370f29aa1",
+      "git branch --show-current -> perf/native-optimization",
+      "git rev-parse origin/main -> 14e888760727583ef782a4dc0e7a5c7c6e6ff9d1",
+      "git log -1 --format='%H %s' 7abe526a -> N8-60 handover: same-branch closure; native goal OPEN, promotion incomplete, nothing published",
+      "git log -1 --format='%H %s' 14e88876 -> Optimize exact local CPU scheduling, visibility decoding, and JIT reuse"
+    ],
+    "worktree_cleanliness": "only untracked path is optimization_n9_final/ (this packet); no modified tracked files"
+  },
+
+  "diff_enumeration": {
+    "command": "git diff --name-status 14e88876..7abe526a",
+    "totals": {"added": 1082, "modified": 16, "deleted": 0},
+    "top_level_counts": {
+      "optimization_v6_continue/": 375, "optimization_v7_backends/": 194,
+      "optimization_v8_native_default/": 166, "tests/": 111,
+      "optimization_v5_claude/": 105, "experiments/": 43, "src/": 39,
+      "benchmarks/": 31, "tools/": 29, "setup.py": 1, "README.md": 1,
+      "pyproject.toml": 1, ".gitignore": 1, ".github/": 1
+    },
+
+    "classification_legend": {
+      "active_validated_improvement": "executes on a default `import solweig_light` -> thermal_comfort plain-scene call and carries accepted prior-campaign (v5/v6/v7) work with existing differential/identity evidence",
+      "required_dependency": "module-level or per-call dependency of an active path; removing it breaks an active feature",
+      "public_compatibility": "explicit expert/documented surface retained by the branch compatibility contract (default-off, env-gated)",
+      "dormant_research": "N8 native machinery; reachable in the shipped state only through the records-gated selector that always fails closed to row A (registry empty, n8_32: B/C not default-integrated)",
+      "evidence_or_test": "tests, fixtures, protocols, maintainer tools, campaign records",
+      "build_or_ci": "CI workflow, gitignore",
+      "packaging": "wheel/sdist build configuration"
+    },
+
+    "src_paths": [
+      {"path": "src/solweig_light/radiation/cylinder_longwave.py", "status": "A", "class": "active_validated_improvement",
+       "what": "Demand-specialized cylinder longwave (dossier D03 R-B): primary-output njit reduction `_longwave_primary[_serial]` + fused decode kernels, demand enum/set_demand/demand_scope, `Lcyl_v2022a_by_demand`. NOTE: this file does NOT exist on main; it bundles accepted v5/v6 work AND the N8-40/40b seam (`_lw_region_route` :181-197, `_lw_kernel` expert dispatch :203-223, tri-state `parallel`).",
+       "default_call": "YES - executed every timestep: engine.py:1653 imports `Lcyl_v2022a_by_demand`; pipeline.py:263 sets PIPELINE_CYLINDERS_ANISOTROPIC demand. The N8 seam portion also executes on the default call (2 env reads + selector registry read) but always returns None."},
+      {"path": "src/solweig_light/radiation/cylinder_shortwave.py", "status": "A", "class": "active_validated_improvement",
+       "what": "Demand-specialized cylinder shortwave (admitted scratch profile).",
+       "default_call": "YES - patch_radiation.py:640 lazy import of `kside_cylinder_anisotropic`; pipeline.py:265-266 sets its demand profile."},
+      {"path": "src/solweig_light/radiation/pipeline_demand.py", "status": "A", "class": "active_validated_improvement",
+       "what": "Private demand-profile context manager (RadiationDemand enum, radiation_demand).",
+       "default_call": "YES - engine.py:33 module-level import; pipeline.py:277-278 per timestep."},
+      {"path": "src/solweig_light/radiation/gvf_prepared.py", "status": "A", "class": "active_validated_improvement",
+       "what": "C6-30 prepared source-expression GVF step; guards are the G03 fused union plus three alias exclusions; SOLWEIG_LIGHT_GVF_PREPARE=0 routes to previous fused path bitwise.",
+       "default_call": "YES when threads_per_worker>1 - engine.py:1751 lazy import inside gvf_2018a."},
+      {"path": "src/solweig_light/radiation/gvf_postprocess.py", "status": "A", "class": "active_validated_improvement",
+       "what": "v6 GVF postprocess block.",
+       "default_call": "YES - ground_view.py:24 module-level import."},
+      {"path": "src/solweig_light/runtime_memory.py", "status": "A", "class": "active_validated_improvement",
+       "what": "v6 memory-boundary/GDAL-cache/allocator machinery.",
+       "default_call": "YES - api.py:215 and runtime.py:680 lazy imports on the thermal_comfort path."},
+      {"path": "src/solweig_light/runtime_phases.py", "status": "A", "class": "active_validated_improvement",
+       "what": "v6 phase scheduling (geometry phase jobs, worker phases).",
+       "default_call": "YES - api.py:73 lazy import (execute_geometry_phase)."},
+      {"path": "src/solweig_light/backends/__init__.py", "status": "A", "class": "public_compatibility",
+       "what": "B7-32 expert backend package marker.",
+       "default_call": "NO - imported only via cylinder_longwave._lw_kernel:217 on SOLWEIG_LIGHT_LW_BACKEND=native|ispc."},
+      {"path": "src/solweig_light/backends/native_lw.py", "status": "A", "class": "public_compatibility",
+       "what": "B7-32 expert ISPC dev-build route: builds/loads artifact, loud failure policy, UnsupportedInput pre-launch guard.",
+       "default_call": "NO - expert env only."},
+      {"path": "src/solweig_light/backends/native/lw_native.py", "status": "A", "class": "public_compatibility",
+       "what": "ctypes binding for the dev-built lw_primary artifact (expert route dependency).",
+       "default_call": "NO."},
+      {"path": "src/solweig_light/backends/native/lw_primary.ispc", "status": "A", "class": "public_compatibility",
+       "what": "ISPC kernel source (expert route; currently shipped as package-data).",
+       "default_call": "NO."},
+      {"path": "src/solweig_light/backends/native/build.sh", "status": "A", "class": "public_compatibility",
+       "what": "Dev-build script (maintainer convenience; currently shipped as package-data).",
+       "default_call": "NO."},
+      {"path": "src/solweig_light/geometry/visibility_prepared.py", "status": "A", "class": "public_compatibility",
+       "what": "v7 prepared-visibility decoder route; default-off contract SOLWEIG_LIGHT_PREPARED_VIS (pytest marker prepared_default_off).",
+       "default_call": "CONSULTED but declines: patch_radiation.py:124/:1014 call decode_shortwave_block/decode_longwave_block per block; returns None unless armed, then legacy decode runs."},
+      {"path": "src/solweig_light/radiation/_lw_dispatch.py", "status": "A", "class": "dormant_research",
+       "what": "N8-40 region dispatch: `region_route` (policy consult) + `_execute_row` (whole-scene AoSoA materialization `produce_blocks_aosoa(...,0,total,...)` + classify whole frame + region pool). Only src caller of _native_dispatch machinery.",
+       "default_call": "PARTIAL - `region_route` executes on every default LW call but returns None after the selector resolves row A; `_execute_row` is UNREACHABLE in shipped state (empty registry)."},
+      {"path": "src/solweig_light/_native_dispatch/__init__.py", "status": "A", "class": "dormant_research",
+       "what": "N8-41 vendoring home; `experiments_dir()` repo anchor helper. Nothing re-exported publicly.",
+       "default_call": "YES as import side effect (package parent of lw_default_policy and region) - executes no heavy work."},
+      {"path": "src/solweig_light/_native_dispatch/lw_default_policy.py", "status": "A", "class": "dormant_research",
+       "what": "N8-22 records-gated selector `resolve_lw_backend`; reads shipped qualification_registry.json from disk per resolve; fail-closed row A.",
+       "default_call": "YES - runs on every default LW call; :317-319 re-reads and json-parses the registry file PER CALL (no cache); :347-350 latent `sys.path.insert` of repo tools dir exists on the promotion-assess path (unreachable shipped)."},
+      {"path": "src/solweig_light/_native_dispatch/qualification_registry.json", "status": "A", "class": "dormant_research",
+       "what": "Shipped EMPTY registry (package-data).",
+       "default_call": "READ from disk on every default LW call via the selector."},
+      {"path": "src/solweig_light/_native_dispatch/direct_aosoa.py", "status": "A", "class": "dormant_research",
+       "what": "N8-11 AoSoA producer (generic packed decode with runtime mode divisor - the F1D target).",
+       "default_call": "NO - only inside `_lw_dispatch._execute_row` (unreachable shipped)."},
+      {"path": "src/solweig_light/_native_dispatch/lw_b_control.py", "status": "A", "class": "dormant_research",
+       "what": "N8-12 row-B Numba AoSoA consumer.",
+       "default_call": "NO."},
+      {"path": "src/solweig_light/_native_dispatch/lw_native_aosoa.py", "status": "A", "class": "dormant_research",
+       "what": "N8-13 native AoSoA entry wrapper (staged generation anchor in experiments/).",
+       "default_call": "NO."},
+      {"path": "src/solweig_light/_native_dispatch/native_handle.py", "status": "A", "class": "dormant_research",
+       "what": "N8-10 artifact handle + content verification.",
+       "default_call": "NO."},
+      {"path": "src/solweig_light/_native_dispatch/installed_loader.py", "status": "A", "class": "dormant_research",
+       "what": "N8-21 installed-artifact LoadOutcome loader (expert/auto-qualified paths).",
+       "default_call": "NO."},
+      {"path": "src/solweig_light/_native_dispatch/build_native.py", "status": "A", "class": "dormant_research",
+       "what": "N8-20 native build/verification driver (vendored read-only for loader verification).",
+       "default_call": "NO."},
+      {"path": "src/solweig_light/_native_dispatch/region/__init__.py", "status": "A", "class": "dormant_research",
+       "what": "N8-14 region dispatch + bounded pool re-exports.",
+       "default_call": "YES - pipeline.py:313 imports it in the per-timestep finally and calls shutdown_all_pools() (no-op unless a region route dispatched)."},
+      {"path": "src/solweig_light/_native_dispatch/region/region_plan.py", "status": "A", "class": "dormant_research",
+       "what": "Region plan computation.", "default_call": "YES at import (pulled by region/__init__)."},
+      {"path": "src/solweig_light/_native_dispatch/region/region_pool.py", "status": "A", "class": "dormant_research",
+       "what": "Bounded region pool owner.", "default_call": "YES at import (pulled by region/__init__); execution never happens shipped."},
+      {"path": "src/solweig_light/_native_dispatch/region/consumers.py", "status": "A", "class": "dormant_research",
+       "what": "AosoaBConsumer.", "default_call": "NO."},
+
+      {"path": "src/solweig_light/api.py", "status": "M", "class": "active_validated_improvement",
+       "what": "+83: runtime_phases/runtime_memory wiring on the thermal_comfort path.", "default_call": "YES."},
+      {"path": "src/solweig_light/pipeline.py", "status": "M", "class": "active_validated_improvement",
+       "what": "+113: demand-profile setup/restore (:258-266, :306-307), N8-40 region-pool shutdown consult in per-timestep finally (:312-318, N8 residue).", "default_call": "YES."},
+      {"path": "src/solweig_light/radiation/engine.py", "status": "M", "class": "active_validated_improvement",
+       "what": "+34: Lcyl_v2022a_by_demand dispatch (:1653-1662, tri-state parallel=None at H<=1), pipeline_demand import (:33), gvf_prepared dispatch (:1751).", "default_call": "YES."},
+      {"path": "src/solweig_light/radiation/patch_radiation.py", "status": "M", "class": "active_validated_improvement",
+       "what": "+553: fused decode routes, prepared-decoder consult, cylinder_shortwave narrow path (:640).", "default_call": "YES."},
+      {"path": "src/solweig_light/radiation/ground_view.py", "status": "M", "class": "active_validated_improvement",
+       "what": "+368: gvf_postprocess wiring + v6 block gather.", "default_call": "YES."},
+      {"path": "src/solweig_light/geometry/recipe.py", "status": "M", "class": "active_validated_improvement",
+       "what": "+181 shared geometry recipe/cache identities (accepted prior campaign).", "default_call": "YES."},
+      {"path": "src/solweig_light/geometry/service.py", "status": "M", "class": "active_validated_improvement", "what": "+40 geometry service deltas.", "default_call": "YES."},
+      {"path": "src/solweig_light/geometry/sky_compiled.py", "status": "M", "class": "active_validated_improvement", "what": "+20.", "default_call": "YES."},
+      {"path": "src/solweig_light/geometry/visibility_compiled.py", "status": "M", "class": "active_validated_improvement",
+       "what": "+58: `_decode_at`, `_fused_descriptor`, `_preflight_flat` used by cylinder_longwave fused kernels.", "default_call": "YES."},
+      {"path": "src/solweig_light/persistence.py", "status": "M", "class": "active_validated_improvement", "what": "+67 state/chronology.", "default_call": "YES."},
+      {"path": "src/solweig_light/runtime.py", "status": "M", "class": "active_validated_improvement", "what": "+339 runtime options/memory.", "default_call": "YES."},
+      {"path": "src/solweig_light/runtime_worker.py", "status": "M", "class": "active_validated_improvement", "what": "+103 worker scheduling.", "default_call": "YES."}
+    ],
+
+    "non_src_paths": [
+      {"path": "pyproject.toml", "status": "M", "class": "packaging"},
+      {"path": "setup.py", "status": "A", "class": "packaging",
+       "what": "N8-41 native-wheel build shim (guarded build_py/bdist_wheel + SOLWEIG_LIGHT_PACKAGE_NATIVE); its own docstring says 'this shim stays deletable'."},
+      {"path": ".github/workflows/cpu-reference.yml", "status": "M", "class": "build_or_ci",
+       "what": "Restructured: single `smoke` job on push/PR (pinned GDAL+poppler, wheel install, isolation, fast unit tests); original 3 full-wheel jobs gated to workflow_dispatch; poppler formula pin added everywhere."},
+      {"path": ".gitignore", "status": "M", "class": "build_or_ci"},
+      {"path": "README.md", "status": "M", "class": "evidence_or_test"},
+      {"path": "tests/** (111 files: tests/optimization_v5|v6|v8 trees, 1 tests/unit)", "class": "evidence_or_test"},
+      {"path": "benchmarks/fixtures/optimization_v8/** (21) + benchmarks/protocols (10)", "class": "evidence_or_test"},
+      {"path": "tools/optimization_v7 (17) + tools/optimization_v8 (7)", "class": "evidence_or_test"},
+      {"path": "experiments/optimization_v8/** (43)", "class": "dormant_research",
+       "what": "Maintainer tree: native staging, packaging assembly, quiet-window harness."},
+      {"path": "optimization_v5_claude/ (105), optimization_v6_continue/ (375), optimization_v7_backends/ (194), optimization_v8_native_default/ (166)", "class": "evidence_or_test",
+       "what": "Campaign packets: records, evidence, reviews, dossiers; repo-only, never packaged."}
+    ],
+
+    "src_classification_counts": {
+      "active_validated_improvement": "23 (7 added + 16 modified)",
+      "public_compatibility": 5,
+      "dormant_research": 11,
+      "required_dependency": "none standalone - dependencies are inside active files (e.g. visibility_compiled._decode_at for fused kernels)"
+    }
+  },
+
+  "default_import_closure": {
+    "statement": "`import solweig_light` imports NONE of _native_dispatch (pinned by tests/optimization_v8/policy/test_legacy_env_parity.py). The dormant machinery loads only inside the default pipeline's longwave route.",
+    "chain": [
+      "solweig_light.api thermal_comfort -> pipeline.py:245+ (transactional writer)",
+      "pipeline.py:258-259 import cylinder_longwave/cylinder_shortwave; :263-266 set demand profiles (restored :306-307)",
+      "per timestep: engine.py:1653-1662 `Lcyl_v2022a_by_demand(..., parallel=True if threads_per_worker>1 else None)`",
+      "cylinder_longwave.py:457-476 demand dispatch -> PIPELINE_CYLINDERS_ANISOTROPIC -> Lcyl_v2022a_primary -> define_patch_characteristics_primary",
+      "cylinder_longwave.py:392 `_lw_kernel(parallel)` -> :214 env read #1 (SOLWEIG_LIGHT_LW_BACKEND) -> returns plain Numba kernel when unset",
+      "cylinder_longwave.py:396-397 `parallel is not False` -> `_lw_region_route` -> :194 env read #2 -> :196 `from ._lw_dispatch import region_route`",
+      "_lw_dispatch.py:86-88 lane-alignment pre-check -> :93-94 `from solweig_light._native_dispatch import lw_default_policy; resolve_lw_backend()`",
+      "lw_default_policy.py:598/:581 env read #3 -> auto path -> :632-633/:317-319 load_registry(): DEFAULT_REGISTRY_PATH.read_text() + json.loads PER CALL -> empty records -> :661-669 Selection(row A,'auto-legacy')",
+      "_lw_dispatch.py:95-96 row not in (B,C) -> return None -> cylinder_longwave.py:400-412 legacy block loop (identical to unwired driver)",
+      "per timestep finally: pipeline.py:312-318 `from solweig_light._native_dispatch.region import shutdown_all_pools` (imports region/__init__ -> region_plan + region_pool at module scope) -> shutdown_all_pools() no-op"
+    ],
+    "default_call_dormant_cost": [
+      "3 env reads per LW call (cylinder_longwave.py:214, cylinder_longwave.py:194, lw_default_policy.py:581)",
+      "1 registry file read + JSON parse per LW call, i.e. per timestep per tile (lw_default_policy.py:317-319; no caching)",
+      "first-call import of _native_dispatch, _lw_dispatch, lw_default_policy, region(+region_plan+region_pool)",
+      "shutdown_all_pools() consult per timestep (pipeline.py:313-318)"
+    ],
+    "modules_loaded_on_default_call": [
+      "solweig_light._native_dispatch (package __init__)",
+      "solweig_light._native_dispatch.lw_default_policy",
+      "solweig_light._native_dispatch.qualification_registry.json (file read per call)",
+      "solweig_light._native_dispatch.region (+ region_plan, region_pool)",
+      "solweig_light.radiation._lw_dispatch"
+    ],
+    "modules_NEVER_loaded_on_default_call": [
+      "direct_aosoa, lw_b_control, lw_native_aosoa, native_handle, installed_loader, build_native, region.consumers",
+      "solweig_light.backends.* (expert env only)",
+      "geometry.visibility_prepared executes only its default-off decline on a default call"
+    ]
+  },
+
+  "packaging": {
+    "wheel_contents": {
+      "packages": "[tool.setuptools.packages.find] where=[\"src\"] -> only solweig_light* (src-layout); experiments/, tools/, benchmarks/, tests/, optimization_v*/ are NOT packaged (no MANIFEST.in in diff)",
+      "package_data_main": "data/*.txt, comfort/*.json, radiation/SLEEF_LICENSE.txt",
+      "package_data_branch_delta": "+ backends/native/*.ispc, backends/native/*.sh, backends/native/*.py, _native_dispatch/*.json, backends/native_generated/**, backends/native_generated/*/*",
+      "setup_py": "N8-41 shim: default build = pure wheel with purity guard; SOLWEIG_LIGHT_PACKAGE_NATIVE=<gen dir> = verified non-pure native wheel; self-described deletable"
+    },
+    "ci_delta": "cpu-reference.yml: smoke job (push/PR, ~3-4 min) + workflow_dispatch-only full wheel jobs; poppler formula pin (26.08.0 soname-163) added to all native install steps",
+    "pytest_config_delta": "marker `prepared_default_off` added; testpaths unchanged"
+  },
+
+  "n8_records_state": [
+    {"path": "optimization_v8_native_default/evidence/trials/n8_31_tierA_record.json",
+     "status": "tier A (B=128) A/B/C end-to-end cells; first campaign record", "note": "component accounting under the N8 frozen protocol"},
+    {"path": "optimization_v8_native_default/evidence/trials/n8_31_tierB_record.json",
+     "status": "tier B (B=1024) production-block record", "note": "SUM-OF-MINIMA diagnostic (A0p/B1/C1 = sums of per-stage min-of-9), NOT a continuous composed timing; verdict: C loses to A0p in all three mixes (+3.1% binary, +7.9% mixed, +33.8% raw) and to B1 on all-raw (+5.7%); must stay labeled diagnostic attribution"},
+    {"path": "optimization_v8_native_default/evidence/selection/n8_32_selection_record.json",
+     "status": "outcome_label=numba_improvement_only_native_goal_open", "note": "B AND C not default-integrated in production blocks; applied branch recorded with no gate loosening"},
+    {"path": "optimization_v8_native_default/evidence/freeze/n8_50_freeze_record.json",
+     "status": "frozen shipped state", "note": "row A everywhere by fail-closed empty registry; vendored machinery inert; candidate native wheel carries no qualification claim"},
+    {"path": "optimization_v8_native_default/evidence/promotion/ + templates/promotion_record.json + tools/promotion_gate.py",
+     "status": "qualification-time only", "note": "promotion gate re-verification is maintainer-tree; unreachable in every shipped-state resolve (empty registry returns before record validation)"},
+    {"path": "optimization_v8_native_default/evidence/reviews/n8_30_review_n8_13_tierB.json|md, n8_30_review_n8_32_selection.json|md",
+     "status": "independent reviews of tier B and selection", "note": "preserve"}
+  ],
+
+  "harness_zero_blocksize": {
+    "residual": "N13-7: N8-13-era ABC harness accepts '--block-sizes 0' as a vacuous pass",
+    "site": [
+      "experiments/optimization_v8/native/quiet_window_abc.py:350 argparse `--block-sizes` (default '128,1024', free-form string)",
+      "experiments/optimization_v8/native/quiet_window_abc.py:173 `sizes = tuple(int(s) for s in str(block_sizes).split(','))` - no positivity or range validation; 0/negative produce degenerate cells that run no timed work yet are recorded as passing observations"
+    ],
+    "secondary_same_shape": "tools/optimization_v8/n8_02_child.py:34 `--block-pixels` (type=int, default 128, no lower bound)",
+    "proposed_minimal_fix_NOT_applied": "in quiet_window_abc.py run() immediately after line 173 insert: `if not sizes or any(s < 1 for s in sizes): raise SystemExit(f'--block-sizes must be a comma list of positive integers; got {block_sizes!r}')`. Optionally mirror the one-line `if block_pixels < 1: raise SystemExit(...)` guard in n8_02_child.py after argparse. No protocol/workload change; rejects only inputs that never had a defined cell.",
+    "classification_note": "quiet_window_abc.py is maintainer-tree (experiments/); the fix is a small audit delta as planned by F0, apply-able by whoever owns the harness next"
+  },
+
+  "surprises": [
+    "cylinder_longwave.py and cylinder_shortwave.py do NOT exist on main - the accepted v5/v6 demand-specialized longwave/shortwave work and the N8 seam live in files that are entirely branch additions. CPU-only cleanup must EDIT them (remove the seam), never delete the files.",
+    "The dormant N8 selector cost is real and per-call: the shipped empty registry is re-read from disk and JSON-parsed on EVERY default longwave call (per timestep per tile), plus 3 env reads and a per-timestep region-package import + shutdown consult. Removing the seam is a measurable default-path hygiene win, not just dead-code removal.",
+    "lw_default_policy._assess_promotion (:347-350) inserts a repo tools dir into sys.path on the promotion-assess path - unreachable shipped, but a latent repo dependency on the qualification path.",
+    "The 16 modified files are ALL active v5/v6/v7 improvements; there is no modified-file N8 residue except pipeline.py:312-318 (region shutdown consult) and engine.py:1662 (tri-state parallel).",
+    "CI restructure (smoke-on-push + dispatch-only full jobs) is a branch-vs-main conflict candidate if main's workflow moved since 14e88876.",
+    "Region package (region_plan+region_pool) is imported on every default tile run through the pipeline finally block even though it can never execute - the heaviest dormant import on the installed path."
+  ]
+}

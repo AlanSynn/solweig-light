@@ -1,0 +1,92 @@
+{
+ "counts": {
+  "island.numba_lw_primary": 432,
+  "stage.classifier_classes": 684,
+  "stage.coefficients_prepared": 76,
+  "stage.decode_block_x3": 2052,
+  "stage.dpc_primary": 48,
+  "stage.geometry_legacy_load": 1,
+  "stage.lcyl_by_demand": 48,
+  "stage.output_checkpoint": 48,
+  "stage.output_write": 48,
+  "stage.patch_geometry": 152,
+  "stage.read_raster_pipeline": 5,
+  "stage.solweig_calc": 48,
+  "stage.utci": 48
+ },
+ "env_lw_backend": "",
+ "fallback_reasons": {},
+ "first_call_s": {
+  "island.numba_lw_primary": 1.116361,
+  "stage.classifier_classes": 9e-06,
+  "stage.coefficients_prepared": 1.5e-05,
+  "stage.decode_block_x3": 0.455372,
+  "stage.dpc_primary": 1.57474,
+  "stage.geometry_legacy_load": 0.047903,
+  "stage.lcyl_by_demand": 1.578142,
+  "stage.output_checkpoint": 0.006233,
+  "stage.output_write": 0.002606,
+  "stage.patch_geometry": 0.00319,
+  "stage.read_raster_pipeline": 0.027876,
+  "stage.solweig_calc": 1.650606,
+  "stage.utci": 2.445555
+ },
+ "install_perf_counter": 0.015501708025112748,
+ "max_s": {
+  "island.numba_lw_primary": 1.116361,
+  "stage.classifier_classes": 0.421556,
+  "stage.coefficients_prepared": 0.001424,
+  "stage.decode_block_x3": 0.455372,
+  "stage.dpc_primary": 1.57474,
+  "stage.geometry_legacy_load": 0.047903,
+  "stage.lcyl_by_demand": 1.578142,
+  "stage.output_checkpoint": 0.009044,
+  "stage.output_write": 0.003997,
+  "stage.patch_geometry": 0.00319,
+  "stage.read_raster_pipeline": 0.027876,
+  "stage.solweig_calc": 2.311649,
+  "stage.utci": 2.445555
+ },
+ "mean_us": {
+  "island.numba_lw_primary": 2711.419,
+  "stage.classifier_classes": 686.661,
+  "stage.coefficients_prepared": 721.947,
+  "stage.decode_block_x3": 260.07,
+  "stage.dpc_primary": 36077.319,
+  "stage.geometry_legacy_load": 47903.041,
+  "stage.lcyl_by_demand": 36367.801,
+  "stage.output_checkpoint": 6268.44,
+  "stage.output_write": 3111.485,
+  "stage.patch_geometry": 44.292,
+  "stage.read_raster_pipeline": 5922.725,
+  "stage.solweig_calc": 94383.467,
+  "stage.utci": 51124.954
+ },
+ "native_cache_env": "",
+ "native_entry_specs": {},
+ "notes": [
+  "wrapper overhead self-test: bare=27.0ns wrapped=184.4ns delta=157.4ns per call (timed-wrapper style used everywhere here)",
+  "default arm: native modules pre-imported by the instrument itself (not by the pipeline); counts below isolate pipeline-initiated calls. sys.modules evidence distinguishes the two.",
+  "native_lw already imported before install: False"
+ ],
+ "pid": 22281,
+ "sys_modules_native": {
+  "solweig_light.backends.native.lw_native": true,
+  "solweig_light.backends.native_lw": true
+ },
+ "total_s": {
+  "island.numba_lw_primary": 1.171333,
+  "stage.classifier_classes": 0.469676,
+  "stage.coefficients_prepared": 0.054868,
+  "stage.decode_block_x3": 0.533664,
+  "stage.dpc_primary": 1.731711,
+  "stage.geometry_legacy_load": 0.047903,
+  "stage.lcyl_by_demand": 1.745654,
+  "stage.output_checkpoint": 0.300885,
+  "stage.output_write": 0.149351,
+  "stage.patch_geometry": 0.006732,
+  "stage.read_raster_pipeline": 0.029614,
+  "stage.solweig_calc": 4.530406,
+  "stage.utci": 2.453998
+ }
+}

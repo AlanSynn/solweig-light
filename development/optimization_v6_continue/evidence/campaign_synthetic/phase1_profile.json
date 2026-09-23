@@ -1,0 +1,437 @@
+{
+ "schema": "sw6-campaign-synthetic-phase1-v1",
+ "label": "SYNTHETIC 1024^2 in-sim residual attribution; dev-tier single-lease",
+ "protocol": {
+  "scene": "/Users/alansynn/Workspace/solweig-light-claude-v5/optimization_v6_continue/evidence/campaign_synthetic/scenes/scene_t1024",
+  "tile": "0_0",
+  "threads": 4,
+  "transport": "chronology-probe in-process run_tile loop (execute_tiles swap)",
+  "temps": {
+   "prime": "cold JIT, fresh run dir; timing discarded",
+   "wall": "warm JIT + warm caches, NO profiler, fresh child per rep",
+   "profile": "warm, cProfile around the same in-process simulate region"
+  },
+  "timeout_s_per_slot": 3600.0,
+  "lease": "sequential single children only; unrelated OS/browser activity recorded via loadavg+ps per slot, never claimed absent"
+ },
+ "host_facts": {
+  "platform": "macOS (darwin); os.sched_getaffinity and psrset unavailable",
+  "python_os_cpu_count": 10,
+  "sched_getaffinity": null,
+  "os_getloadavg": [
+   31.5322265625,
+   26.68310546875,
+   18.60888671875
+  ],
+  "sysctl": {
+   "hw.ncpu": "10",
+   "hw.perflevel0.physicalcpu": "8",
+   "hw.perflevel1.physicalcpu": "2",
+   "hw.physicalcpu": "10",
+   "hw.memsize": "17179869184",
+   "machdep.cpu.brand_string": "Apple M1 Pro"
+  }
+ },
+ "scene_manifest": {
+  "schema": "sw6-campaign-synthetic-scene-v1",
+  "label": "SYNTHETIC dev-tier load fixture (C6-101r); NOT the actual-target dataset",
+  "dir": "/Users/alansynn/Workspace/solweig-light-claude-v5/optimization_v6_continue/evidence/campaign_synthetic/scenes/scene_t1024",
+  "tile_size": [
+   1024,
+   1024
+  ],
+  "tiles": [
+   "0_0",
+   "1_0",
+   "0_1",
+   "1_1"
+  ],
+  "tile_grid": {
+   "0_0": [
+    0,
+    0
+   ],
+   "1_0": [
+    1,
+    0
+   ],
+   "0_1": [
+    0,
+    1
+   ],
+   "1_1": [
+    1,
+    1
+   ]
+  },
+  "tile_distinct_building_sha_count": {
+   "DEM": 4,
+   "Building_DSM": 4,
+   "Trees": 4,
+   "metfiles": 1
+  },
+  "tile_distinction": "motif height/tree shift by tile index 0..3 (deterministic, no RNG)",
+  "motif": "dense_urban 32-pixel motif (pinned p7 generator lineage), no RNG",
+  "met_source": "/Users/alansynn/Workspace/solweig-light-claude-v5/optimization_v5_claude/evidence/census/scene_dense256/processed_inputs/metfiles/metfile_0_0.txt",
+  "met_records_including_header": 25,
+  "epsg": 32618,
+  "sha256": {
+   "processed_inputs/DEM/DEM_0_0.tif": "f8ff5b1f623ba2cdfcdd926b149c26baeba430ef52485428289d555820a6d875",
+   "processed_inputs/Building_DSM/Building_DSM_0_0.tif": "8ffb183e60a0319c885de6aa37d3dbfab75fd42d706296dac5d587bedd21f52f",
+   "processed_inputs/Trees/Trees_0_0.tif": "06a361c115214c9a0118b8ca3a81d3e816192b9a9b5ca1585922292d6b749588",
+   "processed_inputs/metfiles/metfile_0_0.txt": "bc8ee6361071dd109649857127d6b777571e868bdb06db0e47968b39e99189e4",
+   "processed_inputs/DEM/DEM_1_0.tif": "fddaa4922302ad89592d6e28dad05c4318c7fe14d8d76a2c8d25db12bb276c8c",
+   "processed_inputs/Building_DSM/Building_DSM_1_0.tif": "a7246209ad7b58ce52f3dc9289f84836d194ef32982ca1f25f2106d3af957b9f",
+   "processed_inputs/Trees/Trees_1_0.tif": "7914a7c8750ddb912d4f8f9e494a540d6f86bcbcc101d6507210c01b6ed03a5e",
+   "processed_inputs/metfiles/metfile_1_0.txt": "bc8ee6361071dd109649857127d6b777571e868bdb06db0e47968b39e99189e4",
+   "processed_inputs/DEM/DEM_0_1.tif": "faea8931a428a72e92fa5e38a829c4c3dc2510cf9bd63f80023021391f1b996e",
+   "processed_inputs/Building_DSM/Building_DSM_0_1.tif": "3f8737c365a4de46c7ac7788935e67984d5cb6b31975119cde79466b55815d35",
+   "processed_inputs/Trees/Trees_0_1.tif": "e524edb2ca3c9a6945f5695d58ab0b7a0d72c62756952a7d3626746c0730a8ed",
+   "processed_inputs/metfiles/metfile_0_1.txt": "bc8ee6361071dd109649857127d6b777571e868bdb06db0e47968b39e99189e4",
+   "processed_inputs/DEM/DEM_1_1.tif": "efda0acdf6df126145bba9e54c65e77d8805a859e5e8dcca68fed180e2cd1bea",
+   "processed_inputs/Building_DSM/Building_DSM_1_1.tif": "465d6054b19d2842c0d98bac3dbac9c66c74bab90ba1efe473e69bd54da1aa70",
+   "processed_inputs/Trees/Trees_1_1.tif": "7b7d6c9f5effd8151ff1744fe3f82940b2ac12c4e3cafe6624636891a5c667f2",
+   "processed_inputs/metfiles/metfile_1_1.txt": "bc8ee6361071dd109649857127d6b777571e868bdb06db0e47968b39e99189e4"
+  },
+  "layout": "processed_inputs/{Building_DSM,DEM,Trees,metfiles}; walls/aspect/SVF/cache are produced INSIDE the timed stages, pristine scene has none"
+ },
+ "schedule": [
+  {
+   "mode": "prime",
+   "rep": 0
+  },
+  {
+   "mode": "wall",
+   "rep": 0
+  },
+  {
+   "mode": "wall",
+   "rep": 1
+  },
+  {
+   "mode": "wall",
+   "rep": 2
+  },
+  {
+   "mode": "profile",
+   "rep": 0
+  }
+ ],
+ "slots": [
+  {
+   "slot": 0,
+   "mode": "prime",
+   "rep": 0,
+   "wall_s": 571.041,
+   "returncode": 0,
+   "timed_out": false,
+   "host_before": {
+    "loadavg": [
+     31.5322265625,
+     26.68310546875,
+     18.60888671875
+    ],
+    "heavy_processes": [
+     {
+      "pcpu": 77.3,
+      "command": "/Library/Application Support/PaloAltoNetworks/Traps/bin/pmd"
+     }
+    ],
+    "busy_non_browser": [
+     {
+      "pcpu": 77.3,
+      "command": "/Library/Application Support/PaloAltoNetworks/Traps/bin/pmd"
+     }
+    ],
+    "ps_error": null,
+    "exclusive_now": false
+   },
+   "host_after": {
+    "loadavg": [
+     8.79541015625,
+     13.7119140625,
+     15.955078125
+    ],
+    "heavy_processes": [
+     {
+      "pcpu": 50.2,
+      "command": "/System/Library/PrivateFrameworks/SkyLight.framework/Resources/WindowServer"
+     }
+    ],
+    "busy_non_browser": [],
+    "ps_error": null,
+    "exclusive_now": true
+   },
+   "stderr_tail": [
+    "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/pipeline_demand.py:313: RuntimeWarning: divide by zero encountered in log",
+    "  np.log(one_minus)",
+    "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/pipeline_demand.py:313: RuntimeWarning: divide by zero encountered in log",
+    "  np.log(one_minus)",
+    "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/engine.py:1696: RuntimeWarning: invalid value encountered in divide",
+    "  return np.divide(a, b)"
+   ],
+   "stages_s": {
+    "walls_aspect": 5.9266,
+    "svf_geometry_total": 413.5711,
+    "simulation_total_wall": 146.8685,
+    "simulation_in_process_loop": 146.8551,
+    "jobs_total": 1,
+    "jobs_selected": 1
+   },
+   "native_mask": 4,
+   "set_num_threads_error": null,
+   "route_counts": {
+    "gvf_prepared_step": 14
+   },
+   "output_digest": "c1725d13a18a70df",
+   "module_origin": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/__init__.py",
+   "math_profile_id": null
+  },
+  {
+   "slot": 1,
+   "mode": "wall",
+   "rep": 0,
+   "wall_s": 144.469,
+   "returncode": 0,
+   "timed_out": false,
+   "host_before": {
+    "loadavg": [
+     8.79541015625,
+     13.7119140625,
+     15.955078125
+    ],
+    "heavy_processes": [],
+    "busy_non_browser": [],
+    "ps_error": null,
+    "exclusive_now": true
+   },
+   "host_after": {
+    "loadavg": [
+     11.47998046875,
+     12.9775390625,
+     15.310546875
+    ],
+    "heavy_processes": [],
+    "busy_non_browser": [],
+    "ps_error": null,
+    "exclusive_now": true
+   },
+   "stderr_tail": [
+    "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/pipeline_demand.py:313: RuntimeWarning: divide by zero encountered in log",
+    "  np.log(one_minus)",
+    "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/engine.py:1696: RuntimeWarning: invalid value encountered in divide",
+    "  return np.divide(a, b)"
+   ],
+   "stages_s": {
+    "walls_aspect": 4.9982,
+    "svf_geometry_total": 2.1035,
+    "simulation_total_wall": 133.2706,
+    "simulation_in_process_loop": 133.2633,
+    "jobs_total": 1,
+    "jobs_selected": 1
+   },
+   "native_mask": 4,
+   "set_num_threads_error": null,
+   "route_counts": {
+    "gvf_prepared_step": 14
+   },
+   "output_digest": "c1725d13a18a70df",
+   "module_origin": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/__init__.py",
+   "math_profile_id": null
+  },
+  {
+   "slot": 2,
+   "mode": "wall",
+   "rep": 1,
+   "wall_s": 162.654,
+   "returncode": 0,
+   "timed_out": false,
+   "host_before": {
+    "loadavg": [
+     11.47998046875,
+     12.9775390625,
+     15.310546875
+    ],
+    "heavy_processes": [],
+    "busy_non_browser": [],
+    "ps_error": null,
+    "exclusive_now": true
+   },
+   "host_after": {
+    "loadavg": [
+     48.02392578125,
+     21.3720703125,
+     17.91259765625
+    ],
+    "heavy_processes": [
+     {
+      "pcpu": 78.0,
+      "command": "/System/Library/PrivateFrameworks/SkyLight.framework/Resources/WindowServer"
+     },
+     {
+      "pcpu": 69.9,
+      "command": "/System/Library/CoreServices/ControlCenter.app/Contents/MacOS/ControlCenter"
+     }
+    ],
+    "busy_non_browser": [
+     {
+      "pcpu": 69.9,
+      "command": "/System/Library/CoreServices/ControlCenter.app/Contents/MacOS/ControlCenter"
+     }
+    ],
+    "ps_error": null,
+    "exclusive_now": false
+   },
+   "stderr_tail": [
+    "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/pipeline_demand.py:313: RuntimeWarning: divide by zero encountered in log",
+    "  np.log(one_minus)",
+    "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/engine.py:1696: RuntimeWarning: invalid value encountered in divide",
+    "  return np.divide(a, b)"
+   ],
+   "stages_s": {
+    "walls_aspect": 5.0203,
+    "svf_geometry_total": 1.9925,
+    "simulation_total_wall": 152.2634,
+    "simulation_in_process_loop": 152.2593,
+    "jobs_total": 1,
+    "jobs_selected": 1
+   },
+   "native_mask": 4,
+   "set_num_threads_error": null,
+   "route_counts": {
+    "gvf_prepared_step": 14
+   },
+   "output_digest": "c1725d13a18a70df",
+   "module_origin": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/__init__.py",
+   "math_profile_id": null
+  },
+  {
+   "slot": 3,
+   "mode": "wall",
+   "rep": 2,
+   "wall_s": 159.729,
+   "returncode": 0,
+   "timed_out": false,
+   "host_before": {
+    "loadavg": [
+     48.02392578125,
+     21.3720703125,
+     17.91259765625
+    ],
+    "heavy_processes": [
+     {
+      "pcpu": 63.4,
+      "command": "/System/Library/PrivateFrameworks/SkyLight.framework/Resources/WindowServer"
+     }
+    ],
+    "busy_non_browser": [],
+    "ps_error": null,
+    "exclusive_now": true
+   },
+   "host_after": {
+    "loadavg": [
+     38.8359375,
+     30.1171875,
+     22.2607421875
+    ],
+    "heavy_processes": [
+     {
+      "pcpu": 56.3,
+      "command": "/System/Library/PrivateFrameworks/SkyLight.framework/Resources/WindowServer"
+     }
+    ],
+    "busy_non_browser": [],
+    "ps_error": null,
+    "exclusive_now": true
+   },
+   "stderr_tail": [
+    "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/pipeline_demand.py:313: RuntimeWarning: divide by zero encountered in log",
+    "  np.log(one_minus)",
+    "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/engine.py:1696: RuntimeWarning: invalid value encountered in divide",
+    "  return np.divide(a, b)"
+   ],
+   "stages_s": {
+    "walls_aspect": 4.9888,
+    "svf_geometry_total": 2.0713,
+    "simulation_total_wall": 148.8363,
+    "simulation_in_process_loop": 148.8254,
+    "jobs_total": 1,
+    "jobs_selected": 1
+   },
+   "native_mask": 4,
+   "set_num_threads_error": null,
+   "route_counts": {
+    "gvf_prepared_step": 14
+   },
+   "output_digest": "c1725d13a18a70df",
+   "module_origin": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/__init__.py",
+   "math_profile_id": null
+  },
+  {
+   "slot": 4,
+   "mode": "profile",
+   "rep": 0,
+   "wall_s": 147.318,
+   "returncode": 0,
+   "timed_out": false,
+   "host_before": {
+    "loadavg": [
+     38.8359375,
+     30.1171875,
+     22.2607421875
+    ],
+    "heavy_processes": [
+     {
+      "pcpu": 53.7,
+      "command": "/System/Library/PrivateFrameworks/SkyLight.framework/Resources/WindowServer"
+     }
+    ],
+    "busy_non_browser": [],
+    "ps_error": null,
+    "exclusive_now": true
+   },
+   "host_after": {
+    "loadavg": [
+     14.80126953125,
+     24.02490234375,
+     21.041015625
+    ],
+    "heavy_processes": [
+     {
+      "pcpu": 201.8,
+      "command": "/Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/152.0.7977.83/Helpers/Google Chrome Helper (Renderer).app/Contents/MacOS/Google Chrome Helper (Renderer)"
+     },
+     {
+      "pcpu": 50.9,
+      "command": "/System/Library/PrivateFrameworks/SkyLight.framework/Resources/WindowServer"
+     }
+    ],
+    "busy_non_browser": [],
+    "ps_error": null,
+    "exclusive_now": true
+   },
+   "stderr_tail": [
+    "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/pipeline_demand.py:313: RuntimeWarning: divide by zero encountered in log",
+    "  np.log(one_minus)",
+    "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/radiation/engine.py:1696: RuntimeWarning: invalid value encountered in divide",
+    "  return np.divide(a, b)"
+   ],
+   "stages_s": {
+    "walls_aspect": 4.9795,
+    "svf_geometry_total": 2.0943,
+    "simulation_total_wall": 136.1233,
+    "simulation_in_process_loop": 136.1169,
+    "jobs_total": 1,
+    "jobs_selected": 1
+   },
+   "native_mask": 4,
+   "set_num_threads_error": null,
+   "route_counts": {
+    "gvf_prepared_step": 14
+   },
+   "output_digest": "c1725d13a18a70df",
+   "module_origin": "/Users/alansynn/Workspace/solweig-light-claude-v5/src/solweig_light/__init__.py",
+   "math_profile_id": null
+  }
+ ]
+}

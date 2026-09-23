@@ -1,0 +1,354 @@
+{
+  "record": "N8-43 campaign-cell freeze: CONCRETE cell instantiation for the N8-42/43 installed-default qualification campaign, written BEFORE any tier-B (B=1024) A/B/C comparison record exists",
+  "recorded_utc": "2026-09-23T02:26Z",
+  "repo_state": {
+    "worktree": "/Users/alansynn/Workspace/solweig-v8-native",
+    "branch": "perf/native-optimization",
+    "head": "3079d69a2142d2967553c8561395c30d0505d9cc",
+    "tree_clean_at_freeze": true
+  },
+  "pre_results_declaration": {
+    "declared_at_utc": "2026-09-23T02:26Z",
+    "statement": "At this timestamp, zero tier-B (B=1024) A/B/C comparison records exist anywhere in the repository. The only timed comparison under N8-31 is the tier-A, B=128, harness-level, ambient-tier transcription (trials/n8_31_tierA_record.json), which is explicitly labelled INFORMATIONAL / NON-PROMOTION and cannot alone support N8-32 selection or any default-enablement. experiments/optimization_v8/native/evidence/ holds abc_quiet_window_check_* parity smokes (tag=check) and the single tier-A timed archive; no B=1024 timed or untimed A/B/C record exists. This freeze therefore precedes every campaign result it governs.",
+    "freeze_rule": "Once the campaign starts, cells CANNOT be added, removed, or relaxed. A failing or degraded cell is removed from AUTO ELIGIBILITY only with explicit guard coverage per PROMOTION_POLICY ('A new degraded or noisy cell is removed from auto eligibility only with explicit guard coverage and prior workload-domain policy, not erased from reports'), and every removal stays visible in reports. Gate thresholds are not editable post-hoc; 'no gate/tolerance relaxation after new failures' (VALIDATION_POLICY). Cells whose scene reference outputs are absent are frozen as 'unverified, not passed' and can never be reported as reference-verified passes by this campaign.",
+    "what_exists_so_far": [
+      "tier-A ONLY: B=128 harness-level A/B/C cells under the amended ambient gate (trials/n8_31_tierA_record.json; INFORMATIONAL/NON-PROMOTION)",
+      "N8-31 frozen-cell addendum with both adopted obligations (N6 envelope statement; N7 per-call selector-read fairness) and the two-tier quiet-window structure with the corrected tier-B memory floor (trials/n8_31_frozen_cells_addendum.json)",
+      "N8-32 selection SKELETON with tier-B placeholder PENDING (selection/n8_32_selection_skeleton.json)",
+      "shipped qualification registry EMPTY (src/solweig_light/_native_dispatch/qualification_registry.json: records: []) -- every non-legacy row disabled; auto provably resolves to row A today"
+    ]
+  },
+  "authoritative_inputs": [
+    "optimization_v8_native_default/PROMOTION_POLICY.md (frozen gates; Baselines; Default and resource cells; Certificates; Outcome labels)",
+    "optimization_v8_native_default/BENCHMARK_PROTOCOL.md (freeze-before-evaluating, timing boundaries, controls, small evaluation matrix, native execution proof, memory and IO, scale budget)",
+    "optimization_v8_native_default/VALIDATION_POLICY.md (tiers L2/L3, default test boundary, reviews/budget, no relaxation)",
+    "optimization_v8_native_default/evidence/trials/n8_31_frozen_cells_addendum.json (N6 envelope obligation; N7 fairness obligation; two-tier quiet-window amendments incl. tier-B floor correction 4.4 GB -> 1.5 GB)",
+    "optimization_v8_native_default/evidence/selection/n8_32_selection_skeleton.json (what selection does and does not decide; driver-level accounting belongs to these qualification cells)",
+    "optimization_v8_native_default/evidence/installed/host_quiet_window_note.json (memory view definition: free+inactive; N8-23 installed-gate floor remains separate at 4.33 GB)"
+  ],
+  "scene_inventory_at_freeze": {
+    "census_method": "find over tests/reference for scene dirs (Building_DSM.tif + met.txt) plus manifests; GDAL read-back for pixel sizes; every end-to-end scene fixture is listed",
+    "scenes": [
+      {
+        "path": "tests/reference/small_original_cpu/scene/",
+        "fixture_id": "isolated_block_sparse_trees_32x35",
+        "pixels": "32x35 = 1120 (float32, EPSG:32618)",
+        "class": "vegetation (sparse Trees.tif, tree_semantics 'height above terrain')",
+        "met_records": 24,
+        "manifest": "scene/manifest.json (fixture_sha256 475eff90...; GDAL-validated)",
+        "reference_outputs": "PRESENT: scene/output_folder/0_0/ (Kdown/Kup/Ldown/Lup/Shadow/Ta/TMRT/UTCI/WBGT/Wind _0_0.tif)",
+        "prepared_inputs": "scene/processed_inputs/ (aspect, Building_DSM, DEM, metfiles, SVF, Trees, walls)"
+      },
+      {
+        "path": "tests/reference/state_sequence_original_cpu/scene/",
+        "fixture_id": "isolated_block_sparse_trees_32x35 (IDENTICAL duplicate of small_original_cpu scene; same 32x35, 24 records)",
+        "class": "vegetation",
+        "reference_outputs": "PRESENT",
+        "note": "duplicate scene identity -- NOT a distinct cell; only one of the two is declared (small_original_cpu) to avoid double-counting one scene as two cells"
+      },
+      {
+        "path": "tests/reference/public_roughness_original_cpu/scene/",
+        "pixels": "48x32 = 1536 (GDAL read-back)",
+        "class": "vegetation (Trees.tif present; roughness harness files WindCoeff_dir*/Buildings.tif)",
+        "met_records": 24,
+        "manifest": "ABSENT (no manifest.json; provenance not sha-pinned)",
+        "reference_outputs": "PRESENT: scene/output_folder/0_0/",
+        "note": "available but NOT declared: missing manifest makes provenance unpinnable for a predeclared cell"
+      },
+      {
+        "path": "benchmarks/fixtures/optimization_v8/scenes/scene_128_dense/",
+        "fixture_id": "N8-03 held-out (sw8-n8-03-scenes-v1), label 'SYNTHETIC-DEVELOPMENT held-out fixture (N8-03); NOT the actual 24-tile corpus'",
+        "pixels": "128x128 = 16384",
+        "class": "dense (dense_urban 32-pixel motif, no vegetation additions)",
+        "met_records": 24,
+        "manifest": "scene_manifest.json + top-level n8_03_scene_manifests.json (generator_sha256 c272575d...; per-file sha256)",
+        "reference_outputs": "ABSENT -> cells on this scene are 'reference: absent -> unverified, not passed'",
+        "prepared_inputs": "processed_inputs/ (Building_DSM, DEM, metfiles, Trees)"
+      },
+      {
+        "path": "benchmarks/fixtures/optimization_v8/scenes/scene_128_veg/",
+        "pixels": "128x128 = 16384",
+        "class": "vegetation (canopy additions dem+6/dem+5 blocks)",
+        "met_records": 24,
+        "manifest": "PRESENT (same generator lineage)",
+        "reference_outputs": "ABSENT -> 'reference: absent -> unverified, not passed'"
+      },
+      {
+        "path": "benchmarks/fixtures/optimization_v8/scenes/scene_256_dense/",
+        "pixels": "256x256 = 65536",
+        "class": "dense",
+        "met_records": 24,
+        "reference_outputs": "ABSENT",
+        "note": "available fixture deliberately NOT declared as a cell (one-campaign budget discipline; 128-square already covers the dense class at both configurations)"
+      },
+      {
+        "path": "benchmarks/fixtures/optimization_v8/scenes/scene_256_veg/",
+        "pixels": "256x256 = 65536",
+        "class": "vegetation",
+        "met_records": 24,
+        "reference_outputs": "ABSENT -> 'reference: absent -> unverified, not passed'"
+      }
+    ],
+    "census_gaps": [
+      "NO dense scene exists under tests/reference/ (largest real scenes there are 32x35 and 48x32, both with trees); dense-class coverage therefore rests on the N8-03 synthetic-development held-outs, which carry no captured reference outputs",
+      "NO 48-record fixture exists (every named scene has exactly 24 met records); no 48-step cell is declared -- a 48-step cell would require a fixture that does not exist",
+      "NO 128/256-square scene exists under tests/reference/ (n8-02 census concurs: 'no 128/256-square real fixture exists in tests/reference'); the N8-03 fixtures under benchmarks/fixtures/ are the protocol-designated held-out assets"
+    ]
+  },
+  "structural_wiring_facts_verified_at_head": {
+    "purpose": "These code facts (verified read-only at HEAD 3079d69a) determine which cells can carry native coverage and what each cell's policy role is. They are recorded, not changed.",
+    "driver_entry": "solweig_light.radiation.cylinder_longwave.define_patch_characteristics_primary(*args, block_pixels=128, parallel=True) -- driver's OWN exact defaults: block_pixels=128, parallel=True (cylinder_longwave.py:356). The routing seam fires 'only when parallel and rows*cols' (n8_40_integration_record wiring_design), BEFORE the legacy block loop (cylinder_longwave.py:401-404).",
+    "h_meaning_and_support": "H = RuntimeOptions.threads_per_worker (the project's H=1/H=4 concurrency level; dossier 03_region_multicore.md 'H copies and simultaneous producers'; C6-01 paired_timing 'child-isolated H=1 vs H=4'). SUPPORTED: RuntimeOptions defaults threads_per_worker=1 (runtime.py:315-327), validated 1 <= H <= cpu_budget <= cpus (runtime.py:355-366); H=4 requires cpu_budget>=4. Materialized (a) for tile-worker children via _child_environment thread caps OMP/OPENBLAS/MKL/NUMEXPR/VECLIB/BLIS/NUMBA_NUM_THREADS + GDAL_CACHEMAX set before first import (runtime.py:663-684), and (b) for the in-process region pool via resolve_budget() reading get_runtime_options().threads_per_worker (region_pool.py:766-784). Per BENCHMARK_PROTOCOL, all H changes run in independent fresh child processes; actual pool sizes are verified inside the child, not assumed from env strings.",
+    "pipeline_boundary_h1_gate": "The public pipeline radiation wrappers pass parallel=(threads_per_worker > 1) and block_pixels=get_runtime_options().block_pixels (engine.py:1655, 1767, 1770, 1778). At the PUBLIC pipeline boundary with default options (H=1), parallel=False, the routing seam NEVER fires, resolve_lw_backend() is NOT consulted, and every arm executes the identical legacy serial kernel. Consequence recorded for the operator: under the wiring frozen at this HEAD, no registry content can make the no-env public default execute native at H=1; default-objective evidence ('ordinary wheel install/call ... native execution really occurs') cannot be produced through the pipeline wrappers without a separately reviewed code change. PROMOTION_POLICY's own fallback applies: if only tuned cells route native, report native opt-in success and default objective incomplete. This freeze changes nothing; cell n843-p1 measures and archives the fact empirically.",
+    "registry_mechanics": "resolve_lw_backend() (lw_default_policy.py:585) maps legacy env -> installed-artifact state -> qualification records onto rows: A legacy Numba dense kernels (cylinder_longwave._longwave_primary/_serial), B Numba AoSoA consumer (lw_b_control.lw_primary_b), C native AoSoA consumer (lw_native_aosoa.primary_aosoa). Rows B/C activate ONLY on a sw8-lw-default-row-record-v1 'qualified' record whose evidence still validates at resolve time; every absent/stale/malformed path fails CLOSED to row A. resolve_lw_backend() with no registry argument re-reads the shipped registry file on EVERY call -- the shipped state pays one small JSON stat+read per routed-eligible driver call in EVERY arm (row A pays it and declines). N7 fairness follows: the read exists in both arms and disappears only if an N8-41 caching variant is ever proposed. The expert env SOLWEIG_LIGHT_LW_BACKEND bypasses the selector entirely (served by the legacy B7-32 route in _lw_region_route); it must be UNSET in all three arms and its absence recorded per run."
+  },
+  "arm_definitions": {
+    "boundary": "Driver boundary: one observation = one fresh child process executing ONE full 24-record pass of define_patch_characteristics_primary over the cell's prepared unchanged geometry (processed_inputs), publishing outputs durably. The public-pipeline boundary is used only by protected cell n843-p1 (see cells). Fresh child per observation satisfies 'Run in independent processes for H changes' universally, not only for H=4 cells.",
+    "A0_current_default": "Row A: shipped state at HEAD 3079d69a -- qualification registry absent/empty, SOLWEIG_LIGHT_LW_BACKEND unset. Execution: the driver's trusted legacy block loop with _lw_kernel(parallel) Numba kernels; the selector IS consulted (one resolve_lw_backend() per driver call, resolves [absent] -> row A -> None) and its cost stays IN the A0 arm (N7). This is the frozen current accepted Numba; it is never renamed as upstream.",
+    "B1_strongest_equivalent_layout_numba": "Row B via a benchmark-harness-only qualification record {schema sw8-lw-default-row-record-v1, status qualified, row B, ...} written into the shipped registry file (backup -> write -> restore around the run; NEVER via env, which would bypass the selector). Exact module/route: solweig_light._native_dispatch.region.consumers.AosoaBConsumer (mode SELF_PARALLEL -- the kernel's prange owns the granted budget) executing solweig_light._native_dispatch.lw_b_control.lw_primary_b over whole-scene direct_aosoa.produce_blocks_aosoa + classify_block_aosoa output, dispatched through region_pool.execute_regions.",
+    "auto_installed_no_env_default": "Row C via the candidate qualified-C record in the shipped registry file (same backup/restore discipline; env unset in every arm -- this is the arm whose registry content the campaign qualifies). Route: AosoaNativeCConsumer (mode BLOCK_FANOUT; per-block note-N6 float32 views of the raw uint32 producer feed) executing the N8-13 ISPC entry solweig_light._native_dispatch.lw_native_aosoa.primary_aosoa via the installed artifact loader; parallelism from the region owner at block level (the ISPC entry is single-threaded per call). Final env-unset candidate runs must use the packaged allow-list and cannot be a forced-native benchmark disguised as user default.",
+    "accounting_rules": {
+      "N7_selector_read": "One resolve_lw_backend() per routed-eligible driver call in BOTH (all three) arms; included in every arm's cost. Recorded per cell: the registry file path, its size, and the fact that row A pays the identical read.",
+      "included_in_every_timed_observation": "preparation (_class_coefficients prepared coefficients and geometry finalization), producer conversion (whole-scene produce_blocks_aosoa + classify_block_aosoa in arms B1/auto), policy checks, owner leases/scratch slots, decode, pool dispatch, both sweeps, synchronization (measured as completion, never enqueue time), output placement/reshape and durable output publication (I/O included; post-run output hashing performed OUTSIDE the timer as independent evidence analysis)",
+      "excluded_and_labelled": "harness/parent overhead, process spawn, and post-run hashing are outside the declared application boundary and are recorded as such",
+      "actual_thread_counts_recorded_not_assumed": "each child records numba.get_num_threads() after setup, the region pool's resolved budget (resolve_budget result / pool stats worker count), and the region pool ExecutionMode; the harness archives these per observation and a cell whose recorded threads contradict its declared H is CENSORED (unmatched resource), not relabelled",
+      "instrumentation_separation": "in-child time.perf_counter aggregates only; detailed per-call timers and Path-method spys stay in separate diagnostic runs (never in timed observations)"
+    }
+  },
+  "campaign_cells": [
+    {
+      "id": "n843-c1",
+      "scene": "benchmarks/fixtures/optimization_v8/scenes/scene_128_dense (128x128 = 16384 px, dense, 24 records, generator_sha256 c272575d...)",
+      "class": "dense",
+      "steps": 24,
+      "block_pixels_B": 128,
+      "H_threads_per_worker": 1,
+      "env_and_options": "driver-default no-env: driver's own block_pixels=128 and parallel=True; NO RuntimeOptions change; NO backend env; H=1 is the unmodified default",
+      "gate_role": "primary native-eligible (ordinary defaults, dense class); routing fires at the driver boundary with pool budget 1",
+      "reference": "absent -> unverified, not passed (exactness rests on the mandatory arm-parity gate only; never reportable as reference-verified)"
+    },
+    {
+      "id": "n843-c2",
+      "scene": "benchmarks/fixtures/optimization_v8/scenes/scene_128_veg (128x128 = 16384 px, vegetation, 24 records)",
+      "class": "vegetation",
+      "steps": 24,
+      "block_pixels_B": 128,
+      "H_threads_per_worker": 1,
+      "env_and_options": "driver-default no-env (identical discipline to c1)",
+      "gate_role": "primary native-eligible (ordinary defaults, vegetation class)",
+      "reference": "absent -> unverified, not passed"
+    },
+    {
+      "id": "n843-c3",
+      "scene": "benchmarks/fixtures/optimization_v8/scenes/scene_128_dense (16384 px, dense, 24 records)",
+      "class": "dense",
+      "steps": 24,
+      "block_pixels_B": 1024,
+      "H_threads_per_worker": 4,
+      "env_and_options": "production pin: RuntimeOptions(threads_per_worker=4, cpu_budget>=4, block_pixels=1024) materialized in a FRESH child process (thread caps set before first import; verified in-child); no backend env",
+      "gate_role": "primary native-eligible (production H/B, dense class); 16 blocks of 1024",
+      "reference": "absent -> unverified, not passed"
+    },
+    {
+      "id": "n843-c4",
+      "scene": "benchmarks/fixtures/optimization_v8/scenes/scene_128_veg (16384 px, vegetation, 24 records)",
+      "class": "vegetation",
+      "steps": 24,
+      "block_pixels_B": 1024,
+      "H_threads_per_worker": 4,
+      "env_and_options": "production pin (identical discipline to c3)",
+      "gate_role": "primary native-eligible (production H/B, vegetation class)",
+      "reference": "absent -> unverified, not passed"
+    },
+    {
+      "id": "n843-c5",
+      "scene": "benchmarks/fixtures/optimization_v8/scenes/scene_256_veg (256x256 = 65536 px, vegetation, 24 records)",
+      "class": "vegetation",
+      "steps": 24,
+      "block_pixels_B": 1024,
+      "H_threads_per_worker": 4,
+      "env_and_options": "production pin (identical discipline to c3/c4)",
+      "gate_role": "primary native-eligible (production H/B, largest declared scene; 64 blocks of 1024)",
+      "reference": "absent -> unverified, not passed",
+      "note": "smallest memory headroom of the declared cells -- see per-cell arithmetic in quiet_window_and_censor_rules"
+    },
+    {
+      "id": "n843-c6",
+      "scene": "tests/reference/small_original_cpu/scene (isolated_block_sparse_trees_32x35, 32x35 = 1120 px, vegetation, 24 records, fixture_sha256 475eff90...)",
+      "class": "vegetation",
+      "steps": 24,
+      "block_pixels_B": 128,
+      "H_threads_per_worker": 1,
+      "env_and_options": "driver-default no-env (identical discipline to c1/c2); 9 blocks (8x128 + 96-tail, lane-aligned)",
+      "gate_role": "primary native-eligible AND the campaign's reference-anchored cell: the only native-eligible cell whose outputs can be compared to captured upstream reference outputs",
+      "reference": "PRESENT: tests/reference/small_original_cpu/scene/output_folder/0_0/ (10 output TIFFs) under scene/manifest.json sha pins; comparison is a REQUIRED cell check, in addition to arm-parity"
+    },
+    {
+      "id": "n843-p1",
+      "scene": "tests/reference/small_original_cpu/scene (1120 px, vegetation, 24 records)",
+      "class": "vegetation",
+      "steps": 24,
+      "block_pixels_B": 128,
+      "H_threads_per_worker": 1,
+      "env_and_options": "PUBLIC PIPELINE boundary, ordinary main-compatible call: engine radiation wrapper (engine.py:1767) with untouched RuntimeOptions defaults (workers=1, threads_per_worker=1, block_pixels=128) and no backend env -- exactly the README-style invocation path over prepared unchanged geometry",
+      "gate_role": "PROTECTED default/fallback cell: the <=3% paired median regression bound applies here; per the recorded wiring fact, parallel=False at H=1 means no routing and no selector consultation in ANY arm, so this cell is also the wiring canary -- it empirically archives the fail-closed no-routing behavior of the shipped public default, and ANY measured arm delta in it is treated as an unintended change (investigate via small repro before any rerun; the cell cannot be 'passed' by explaining the delta away)",
+      "reference": "PRESENT (same output_folder/0_0 oracle as c6)"
+    }
+  ],
+  "cell_count_note": "6 primary cells (c1-c6) + 1 protected cell (p1) >= the required 4. Dense coverage: c1, c3. Vegetation coverage: c2, c4, c5, c6. Ordinary defaults: c1, c2, c6 (+ protected p1). Production H/B: c3, c4, c5. scene_256_dense deliberately undeclared (budget discipline). Campaign child-run budget: 7 cells x 3 arms x (1 warm + 3 paired) = 84 fresh-child runs of <=256^2 scenes; no 1024^2 workload is declared anywhere in this campaign -- the ONE final large workload remains governed by BENCHMARK_PROTOCOL scale-budget rules (one candidate run, zero new large baselines when valid matched evidence exists, at most one justified fresh A/Baseline run, at most one causal retry).",
+  "timing_boundaries": {
+    "primary_gate_timer": "workflow_warm (BENCHMARK_PROTOCOL boundary 3): child wall time around the full 24-record driver pass over prepared unchanged geometry, all output/checkpoint work and durable publication included, native artifacts/JIT already warm; residual startup recorded and reported, never subtracted",
+    "required_secondary_timer": "region_total (boundary 2): sum of the 24 per-driver-call perf_counter intervals in-child (checks, selector read, producer conversion, owner leases, decode, classifier, layout, pool dispatch, both sweeps, synchronization, output placement); reported for attribution, NEVER substituted for the primary timer",
+    "cold_entry_diagnostic": "workflow_first_use style cold-entry diagnostic declared ONCE per arm on cell c6 (non-primary, separate labelled dev/deployment cases; release wheel built before this timer when the installed deployment is measured); 'no build/download at first use' is asserted here; the cold full-entry 3% paired bound is evaluated only where valid paired data exists -- unresolved host noise means insufficient evidence, not passed"
+  },
+  "memory_measurement_method": {
+    "process_tree_peak_tool": "RSSTreeSampler (existing in-repo method, tools/optimization_v8/n8_02_run.py:82): a daemon thread sampling every 0.15 s one 'ps -eo pid,ppid,rss,comm' snapshot (macOS rss KB x 1024 = bytes), walking the tree from the driver child's root PID down through all descendants via ppid, recording per-sample n_proc and sum_rss_bytes; reports peak_sum_rss_bytes (max over samples), mean_sum_rss_bytes, and per_pid_peak_rss_bytes. Parent ru_maxrss alone never qualifies memory; per-child ru_maxrss via wait4 is archived as corroborating per-member peaks.",
+    "double_count_discipline": "tree SUMS double-count shared pages (macOS ps has no PSS); peak_sum_rss_bytes is reported as an UPPER BOUND and is never an admission number -- the separate per-PID peaks and the n_proc count are archived so shared-page double-counting can be assessed independently (BENCHMARK_PROTOCOL memory/IO rule)",
+    "per_cell_allocation_arithmetic": {
+      "model": "whole-scene routed-call allocations scale with pixels (P=153 patches, W=8 lanes, G=ceil(pixels/8)): AoSoA visibility 3 x uint32 [G,P,W] = pixels_8 x 1836 B; sun/shade 2 x bool [G,P,W] = pixels_8 x 306 B; output stack 7 x float32 = pixels x 28 B; legacy-duplicate upper bound (packed channels at uint32 worst case) = pixels x 1836 B",
+      "n843-c1/c2/c3/c4 (16384 px)": "new per-call ~33.9 MiB; peak with duplicates ~62.6 MiB",
+      "n843-c5 (65536 px)": "new per-call ~135.7 MiB; peak with duplicates ~250.5 MiB",
+      "n843-c6/p1 (1120 px)": "new per-call ~2.3 MiB; peak with duplicates ~4.3 MiB",
+      "N6_envelope_statement_obligation": "RESTATED per the N8-31 addendum: approximately 2.25 GB routed-call overhead at 1024^2 and approximately 9 GB at 2048^2, P=153 (whole-scene uint32 AoSoA x3 + bool sun/shade x2 plus the legacy-loop inputs they duplicate); the qualification record that eventually carries measured results must state this envelope explicitly with whole-process-peak accounting covering the whole-scene producer allocations"
+    }
+  },
+  "quiet_window_and_censor_rules": {
+    "status": "PROPOSED-FOR-OPERATOR-CONFIRMATION -- the operator ratifies the gates; this freeze does not ratify them alone. Structure is transcribed from the N8-31 amendments (unchanged in substance; applied to driver/pipeline cells instead of harness block cells).",
+    "tier_ambient_B128": {
+      "cells": [
+        "n843-c1",
+        "n843-c2",
+        "n843-c6",
+        "n843-p1"
+      ],
+      "gate": "proceed at recorded ambient if loadavg <= 8.0 at observation start AND memory view >= 1.5 GB (free+inactive per host_quiet_window_note.json); per-observation loadavg recorded; any observation whose window loadavg exceeds 12 is CENSORED",
+      "label": "ambient-host tier for these driver cells; the tier-A INFORMATIONAL/NON-PROMOTION label applies to the tier, not to these cells' gate arithmetic -- c1/c2/c6 are PRIMARY cells whose gates are evaluated normally once their windows opened; the label carried over governs nothing here and is recorded only for lineage"
+    },
+    "tier_strict_B1024": {
+      "cells": [
+        "n843-c3",
+        "n843-c4",
+        "n843-c5"
+      ],
+      "gate": "loadavg < 2.0 at observation start AND memory view >= 1.5 GB (the corrected tier-B floor: >= 100x the harness block-cell need, retained unchanged; for these driver cells the binding constraint is the loadavg gate -- see headroom below)",
+      "headroom_record": "the 1.5 GB view floor is >= 3x the expected process-tree peak-sum upper bound even for the largest declared cell (c5: ~250 MiB routed-call peak + ~0.3 GiB interpreter/GDAL/Numba baseline vs 1.5 GB view); the arithmetic is archived here so the operator can confirm or raise the floor",
+      "unchanged_separate": "N8-23's installed-gates memory admission (view >= 4.33 GB) remains separate and is not relaxed by this campaign"
+    },
+    "censor_rules": {
+      "memory_pressure_kill": "a memory-pressure kill is a failed/CENSORED run; a retry does not erase it; censored runs are preserved in the record with cause",
+      "single_retry": "at most ONE rerun per censored observation, permitted only after a stated cause and a small repro/inspection; a second censor closes that cell for the campaign (reported, not erased)",
+      "invalidating_conditions": "noisy host, unmatched layout/profile/resource (incl. recorded thread counts contradicting declared H), missing completed pair, or synthetic-only default extrapolation invalidates promotion evidence for the affected cell; unresolved host noise is insufficient evidence, never a pass",
+      "quiet_host_monitoring": "read-only; may not terminate unrelated user applications; delay or mark uncertainty rather than consuming unlimited runs",
+      "parity_gate": "per cell, the three arms' warm-pass outputs are compared bitwise (all 7 fields + metadata, exact finite bits, NaN/Inf masks separate) BEFORE any timed observation is credited; a parity failure closes the cell for the campaign (investigate via small repro; at most one rerun)"
+    }
+  },
+  "pairing_and_order_schedule": {
+    "structure": "3 alternating paired observations per cell (finalist count per BENCHMARK_PROTOCOL); each pair is one observation of EACH arm in a frozen order, giving 3 paired A0-vs-auto and 3 paired B1-vs-auto observations per cell",
+    "frozen_schedule_per_cell": {
+      "pair_0": [
+        "A0",
+        "B1",
+        "auto"
+      ],
+      "pair_1": [
+        "auto",
+        "B1",
+        "A0"
+      ],
+      "pair_2": [
+        "A0",
+        "B1",
+        "auto"
+      ]
+    },
+    "schedule_properties": "explicit alternating A/C-style order (no randomness to argue about post-hoc); B1 sits mid-triple in every pair so neither A0 nor auto systematically inherits the fresher cache state; identical schedule for every cell, declared before any run",
+    "warmup_policy": "ONE untimed warm pass per arm per cell (identical fresh-child discipline, full 24-record pass) before pair 0; its outputs feed the parity gate; warm-pass raw data is archived but excluded from timed statistics; declared identical across arms",
+    "statistics": "per-cell paired median ratios A0/auto and B1/auto over the 3 pairs; cross-cell geometric mean of A0/auto over native-eligible primary cells; all ratios labelled observed small-sample summaries, not significance claims",
+    "raw_data_preservation": "every observation (warm or timed, clean or censored) is archived as an immutable JSON record: cell id, arm, schedule slot, child argv, deployment label (installed wheel vs labelled source-state), UTC start/end, loadavg start/end, memory-view at start, RSSTreeSampler archives, recorded thread counts and pool stats, coverage counters, output sha256 digests, censor cause if any; no record is ever overwritten or deleted"
+  },
+  "native_coverage_proof": {
+    "unit": "one completed pixel-row of the LW primary reduction per (record, pixel); required output computed by ACTUAL native region (primary_aosoa entry) for >= 80% of PREDECLARED eligible pixel-patch work in a primary cell = >= 80% of pixels x 24 records",
+    "counters": "counters incremented at actual C entry for COMPLETED pixel-patch work plus call counts, scalar/layout/profile and artifact generation stamp; build stamps or a loaded module alone do not prove execution; pre-launch fallbacks and errors counted separately; low-overhead aggregated counters in timed runs, detailed per-call timers only in separate diagnostic runs; mask/mixed regions counted once under the defined non-double-counted row unit",
+    "deployment": "native wheel host must execute meaningful native work; pure-source/no-native fallback runs correctly and is labelled fallback; the two are never interchanged (VALIDATION_POLICY default test boundary)"
+  },
+  "compliance_matrix": {
+    "source": "PROMOTION_POLICY.md gate sentences, sentence by sentence",
+    "rows": [
+      {
+        "gate_sentence": "Primary evaluation has at least four predeclared workload/configuration cells covering dense and vegetation scenes plus ordinary defaults and production H/B; use tuning cases only to choose variants",
+        "satisfaction": "6 predeclared primary cells frozen above BEFORE any tier-B result: dense (c1, c3) + vegetation (c2, c4, c5, c6); ordinary defaults (c1, c2, c6 at driver-default B=128 H=1 no-env) + production H/B (c3, c4, c5 at B=1024 H=4); no tuning case appears in the primary table; census gaps recorded honestly (no dense scene under tests/reference/, no 48-record fixture)"
+      },
+      {
+        "gate_sentence": "Installed auto default must yield geometric mean A0_time / auto_time >= 1.10 across the declared primary native-eligible cells",
+        "satisfaction": "native-eligible membership is predeclared (c1-c6, routing fires at the driver boundary in all of them) and verified per cell by coverage counters; a cell whose routing declines at run time is reported as ineligible-by-observation (guard-covered removal from eligibility), never silently dropped from the table; geomean computed over the surviving eligible cells on the primary workflow_warm timer"
+      },
+      {
+        "gate_sentence": "Each primary cell used in the auto-native allow-list must have paired median A0/auto >= 1.05; every such cell must have paired median B1/auto >= 1.05 at the installed region/pipeline boundary; native-specific value cannot be credited solely to B1's layout",
+        "satisfaction": "3 alternating triples per cell give both paired medians from the same observations; arms share producer/layout boundary (AosoaBConsumer vs AosoaNativeCConsumer over identical AoSoA production) so native-specific value is isolated from layout value"
+      },
+      {
+        "gate_sentence": "No more than 3% paired median regression in a predeclared protected default/fallback cell; removal from eligibility only with explicit guard coverage; never shrink the workload to hide a failure",
+        "satisfaction": "n843-p1 predeclared protected (ordinary public-default path, fail-closed, reference-verified); 3% bound on its paired median; any failing/degraded cell leaves the TABLE only by being reported as removed from eligibility with guard coverage; workload definitions are frozen above and not editable"
+      },
+      {
+        "gate_sentence": "Meaningful native coverage: >= 80% of PREDECLARED eligible pixel-patch work in a primary cell computed by actual native region; counters prove actual C execution, not initialization; non-double-counted work unit",
+        "satisfaction": "native_coverage_proof section above: entry-time counters, completed-row unit, per-cell predeclared denominators (pixels x 24 records), fallbacks/errors separate"
+      },
+      {
+        "gate_sentence": "First-use native library initialization performs no build/download; cold full-entry guard within the predeclared 3% paired bound where valid paired data exists; unresolved host noise is insufficient evidence, not passed",
+        "satisfaction": "cold_entry_diagnostic declared (once per arm on c6; no-build/no-download assertion; labelled dev vs release-wheel cases; 3% bound only where valid paired data exists)"
+      },
+      {
+        "gate_sentence": "A noisy host, memory-pressure interruption, unmatched layout/profile/resource, missing completed pair or synthetic-only default extrapolation invalidates promotion evidence for the affected cell; preserve censored runs and investigate via small repro before at most one permitted rerun",
+        "satisfaction": "quiet_window_and_censor_rules.censor_rules (two-tier windows, memory-pressure kills censored, single retry, preservation, small repro first)"
+      },
+      {
+        "gate_sentence": "At least one cell executes an ordinary main-compatible call without changing RuntimeOptions or backend env, including default block=128; other cells explicitly pin memory and H/B to matched production budgets, including B=1024 and H=4 if supported; native planning must fit existing defaults, not change them",
+        "satisfaction": "p1 (public pipeline, untouched defaults, block=128) + c1/c2/c6 (driver defaults, no options, no env); c3/c4/c5 pin B=1024 H=4 (supported, verified: H=threads_per_worker, H=4 needs cpu_budget>=4); defaults recorded from source at HEAD (RuntimeOptions defaults runtime.py:315-327; driver defaults cylinder_longwave.py:356); nothing in this freeze changes a default; the H=1 pipeline routing gate is recorded as a finding, not edited"
+      },
+      {
+        "gate_sentence": "Memory: sample the process tree with correct OS units and descendants; parent ru_maxrss alone cannot qualify memory; report RSS double-counting separately",
+        "satisfaction": "memory_measurement_method (RSSTreeSampler, tree-walk, upper-bound labelling, per-PID peaks, double-count note; no worker configuration admitted from a parent-only record)"
+      },
+      {
+        "gate_sentence": "No worker runs 1024 per edit; ONE final large workload after local candidate freeze; default budget: one candidate run, zero new large baselines when valid matched evidence exists",
+        "satisfaction": "this campaign declares NO large workload (largest cell 256^2); the final large-workload decision stays a separate, later, protocol-governed event; one-campaign budget of 84 small fresh-child runs predeclared"
+      },
+      {
+        "gate_sentence": "N6/N8-31: first qualified record states the scene-size envelope (~2.25 GB @1024^2, ~9 GB @2048^2, P=153) with whole-process-peak accounting",
+        "satisfaction": "envelope restated in memory_measurement_method.per_cell_allocation_arithmetic.N6_envelope_statement_obligation and carried onto the future qualification record"
+      },
+      {
+        "gate_sentence": "N7/N8-31: one resolve_lw_backend() per driver call in BOTH arms at the pipeline boundary",
+        "satisfaction": "arm_definitions.accounting_rules.N7_selector_read (all three arms pay the identical per-call registry read; recorded per cell)"
+      },
+      {
+        "gate_sentence": "Outcome labels are decided by results, not by this freeze",
+        "satisfaction": "no outcome label is claimed or predicted here; the cells are row-agnostic; the label branches stay in n8_32_selection_skeleton.json"
+      }
+    ]
+  },
+  "bindings": [
+    "cells cannot be added/removed/relaxed after campaign start (pre_results_declaration.freeze_rule)",
+    "B=128 and B=1024 both remain REQUIRED (tier-A addendum unchanged_freezes) -- covered by c1/c2/c6 and c3/c4/c5",
+    "all three arms A/B/C remain required with parity before timing (tier-A addendum unchanged_freezes) -- covered by arm_definitions and censor_rules.parity_gate",
+    "min-of-N is NOT re-introduced here: the finalist cells use 3 alternating pairs with paired medians per BENCHMARK_PROTOCOL triage/finalist structure; if the operator prefers min-of-N reconciliation with the tier-A harness, that is an operator decision to record BEFORE the campaign starts, not a post-hoc edit",
+    "INFORMATIONAL/NON-PROMOTION status of the tier-A comparison unchanged; this freeze creates no result of any kind",
+    "no commits, no runs, no timed work were performed by this freeze; the record is predeclaration only"
+  ],
+  "amendment_2026-09-23T0245Z_review_R1": {
+    "title": "Census corrections (review R1, REQUIRED) + operator ratification of the 48-record exclusion",
+    "trigger": "independent review n8-rev-n8-41 APPROVE-WITH-NOTES (evidence/reviews/n8_30_review_n8_43_cells_frozen.json); both false census statements verified by coordinator against the tree",
+    "corrections": [
+      "state_sequence_original_cpu is NOT an identical duplicate: rasters byte-identical to small_original_cpu, but scene/met.txt has 49 lines (48 records) vs 25 (24 records); processed_inputs and reference outputs (boundaries/*.npz) differ. It is a DISTINCT 48-record forcing on the same geometry WITH present reference outputs.",
+      "census_gaps statement 'no 48-record fixture exists' is FALSE and retracted; the census's own enumeration contained one."
+    ],
+    "operator_ratification": "48-record exclusion RATIFIED with corrected facts: no PROMOTION_POLICY sentence requires a 48-step cell; c6 (24-record, reference-anchored) already anchors chronology at the reference scene; adding a 48-record cell on identical geometry adds no gate coverage the policy names, and BENCHMARK_PROTOCOL's one-campaign/no-habitual-grid rule favors the 7-cell table as frozen. state_sequence_original_cpu remains declared AVAILABLE as a development/causal-retry fixture (not a campaign cell).",
+    "also_applied": {
+      "R2": "line-cite slips corrected: public wrapper gate sites are engine.py 1655/1762/1770/1778; driver seam guard 386-390",
+      "R3": "c5 memory headroom restated ~2.6-2.8x by the record's own figures (1.5 GB view floor unchanged)",
+      "R4": "noted: check-vs-timed archives distinguished by filename convention, no literal tag field"
+    },
+    "campaign_start_condition": "cells frozen as table stands (7 cells); start additionally requires the PROPOSED quiet-window gates to be ratified and N8-41/42 prerequisites met"
+  }
+}

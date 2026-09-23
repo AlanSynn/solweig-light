@@ -1,0 +1,461 @@
+{
+ "schema": "sw6-portfolio-child-v1",
+ "requested": {
+  "temp": "cold",
+  "workers": 1,
+  "threads": 2,
+  "cpu_budget": 4,
+  "memory_budget_bytes": 12884901888,
+  "block_pixels": 1024,
+  "site": "/Users/alansynn/Workspace/solweig-light-v6-base-l2/src",
+  "scene_src": "/Users/alansynn/Workspace/solweig-light-claude-v5/optimization_v6_continue/evidence/portfolio/scenes/scene_t256"
+ },
+ "env": {
+  "threads_at_numerical_import": {
+   "BLIS_NUM_THREADS": "2",
+   "MKL_NUM_THREADS": "2",
+   "NUMBA_NUM_THREADS": "2",
+   "NUMEXPR_NUM_THREADS": "2",
+   "OMP_NUM_THREADS": "2",
+   "OPENBLAS_NUM_THREADS": "2",
+   "VECLIB_MAXIMUM_THREADS": "2"
+  },
+  "gdal_cachemax_env": null,
+  "numba_cache_dir": "/Users/alansynn/Workspace/solweig-light-claude-v5/optimization_v6_continue/evidence/portfolio/runs/t256_T2/base/numba_cache"
+ },
+ "numba": {
+  "config_NUMBA_NUM_THREADS": 2,
+  "set_num_threads_error": null,
+  "final_get_num_threads": 2,
+  "threading_layer": "workqueue",
+  "version": "0.67.0"
+ },
+ "route": {
+  "observed_events": [],
+  "observed_counts": {},
+  "first_kernel_entry": {},
+  "observation_point": "ground_view leaf wrappers (C6-01 pattern, call-through)"
+ },
+ "admission": {
+  "plan_active_workers": 1,
+  "plan_native_threads": 2,
+  "requested_native_threads": 2
+ },
+ "options": {
+  "cache_dir": null,
+  "legacy_cache_policy": "recompute",
+  "cache_enabled": true,
+  "memory_budget_bytes": 12884901888,
+  "cpu_budget": 4,
+  "workers": 1,
+  "threads_per_worker": 2,
+  "block_pixels": 1024,
+  "checkpoint_interval": 1,
+  "resume": false
+ },
+ "module_origin": {
+  "solweig_light": "/Users/alansynn/Workspace/solweig-light-v6-base-l2/src/solweig_light/__init__.py",
+  "pipeline": "/Users/alansynn/Workspace/solweig-light-v6-base-l2/src/solweig_light/pipeline.py",
+  "runtime_phases_present": false,
+  "pythonpath_env": "/Users/alansynn/Workspace/solweig-light-v6-base-l2/src"
+ },
+ "math_profile": {
+  "id": "solweig-portable-sleef-5a1d179d-v1",
+  "fingerprint": "8e4d38460b61b0299e7c1d525c8499750dcd219ef01cc785d7496dbe1dcbef30",
+  "implementation": {
+   "profile_id": "solweig-portable-sleef-5a1d179d-v1",
+   "sleef_commit": "5a1d179df9cf652951b59010a2d2075372d67f68",
+   "coefficient_policy": "numpy-float64-cos-tan-scalar-v1",
+   "tan_domain_policy": "sleef-u10-fast-abs-lt-125;explicit-legacy-numpy-otherwise-v1",
+   "source_sha256": {
+    "_sleef_acos.py": "9c7aff0c880a10db81cc6f96c314a7600ef77cb0008cbcd5ff344fa156511263",
+    "_sleef_classifier.py": "444e27eb3e887145b0f9fc2447b9e6aafba3185c4f7cab0835bf862ae60447ec",
+    "_math_profile.py": "7921432908b43aec6b99ac5c70df0f1f7e6566787c4e84cd741cbfa5b64e3ef7",
+    "_jit_cache.py": "93cafde414ff020fa6810f5bb5a904e199ba22b0ebd780a9291a1257903b85ab",
+    "SLEEF_LICENSE.txt": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566"
+   }
+  },
+  "runtime": {
+   "python": "CPython-3.11.16",
+   "numpy": "2.4.6",
+   "numba": "0.67.0",
+   "llvmlite": "0.49.0",
+   "machine": "arm64",
+   "system": "Darwin",
+   "byteorder": "little",
+   "float_rounds": 1,
+   "fastmath": false,
+   "fma": "explicit-llvm.fma.f32"
+  }
+ },
+ "workload": {
+  "tiles": [
+   "0_0",
+   "1_0"
+  ],
+  "tile_shapes": [
+   {
+    "tile": "0_0",
+    "rows": 256,
+    "cols": 256
+   },
+   {
+    "tile": "1_0",
+    "rows": 256,
+    "cols": 256
+   }
+  ],
+  "date": "2020-07-18",
+  "timesteps_per_tile": 24,
+  "flags": [
+   "save_kdown",
+   "save_kup",
+   "save_ldown",
+   "save_lup",
+   "save_shadow",
+   "save_svf",
+   "save_ta",
+   "save_tmrt",
+   "save_wbgt",
+   "save_wind"
+  ],
+  "scene_manifest": {
+   "schema": "sw6-portfolio-scene-v1",
+   "dir": "/Users/alansynn/Workspace/solweig-light-claude-v5/optimization_v6_continue/evidence/portfolio/scenes/scene_t256",
+   "tile_size": [
+    256,
+    256
+   ],
+   "tiles": [
+    "0_0",
+    "1_0"
+   ],
+   "tile_distinction": "motif height/tree shift by tile index (deterministic, no RNG)",
+   "motif": "dense_urban 32-pixel motif (pinned p7 generator lineage), no RNG",
+   "met_source": "/Users/alansynn/Workspace/solweig-light-claude-v5/optimization_v5_claude/evidence/census/scene_dense256/processed_inputs/metfiles/metfile_0_0.txt",
+   "met_records_including_header": 25,
+   "epsg": 32618,
+   "sha256": {
+    "processed_inputs/DEM/DEM_0_0.tif": "85ab26fcec6fa193ca5d5d116eb1560c03b44d9f87c32dce0988b0d3ef29334e",
+    "processed_inputs/Building_DSM/Building_DSM_0_0.tif": "687655ed2122002eebc16214fa506537a433aec5ca12ef198572c8dc0bee430f",
+    "processed_inputs/Trees/Trees_0_0.tif": "30f9e56852cc59aa196df9ce281666612a63608ee14cef76ee698227128ccdfa",
+    "processed_inputs/metfiles/metfile_0_0.txt": "bc8ee6361071dd109649857127d6b777571e868bdb06db0e47968b39e99189e4",
+    "processed_inputs/DEM/DEM_1_0.tif": "5b07f1925a0034eac84b31c140c4a0ba3e756aaaa1fb443e00bdbe864c05a628",
+    "processed_inputs/Building_DSM/Building_DSM_1_0.tif": "737d8f8245cfa808c403417f6db2a3f6cfb9b62b599613c94825e471279f6e37",
+    "processed_inputs/Trees/Trees_1_0.tif": "f28cbe437a19f7912de9fd3292b6336620b90e91ec43738bfe6073b67358dff6",
+    "processed_inputs/metfiles/metfile_1_0.txt": "bc8ee6361071dd109649857127d6b777571e868bdb06db0e47968b39e99189e4"
+   },
+   "layout": "processed_inputs/{Building_DSM,DEM,Trees,metfiles}; walls/aspect/SVF/cache are produced INSIDE the measured stages, pristine scene has none"
+  },
+  "run_dir_fresh_this_run": true
+ },
+ "stage_splits_s": {
+  "walls_aspect": 0.6291,
+  "svf_geometry_total": 10.438,
+  "svf_phase_wall": 0,
+  "svf_phase_calls": 0,
+  "svf_store_production": 5.91,
+  "svf_export_calls_total": 10.4375,
+  "svf_export_calls_count": 2,
+  "simulation_total": 36.4486,
+  "simulation_store_calls": 0,
+  "simulation_store_production": 0,
+  "simulation_store_hits": 0,
+  "simulation_export_calls": 0,
+  "total_measured": 47.5157
+ },
+ "store_calls": [
+  {
+   "key": {
+    "keys": [
+     "construction",
+     "dependencies",
+     "implementation",
+     "inputs",
+     "math_profile",
+     "normalization",
+     "patch_arrays",
+     "patch_option",
+     "policy",
+     "standalone_implementation",
+     "upstream_commit"
+    ],
+    "has_standalone_implementation": true,
+    "has_construction": true,
+    "digest": "48be61e7ad53bf7a"
+   },
+   "total_s": 3.1757,
+   "production_s": 3.126,
+   "production_calls": 1,
+   "hit": false
+  },
+  {
+   "key": {
+    "keys": [
+     "construction",
+     "dependencies",
+     "implementation",
+     "inputs",
+     "math_profile",
+     "normalization",
+     "patch_arrays",
+     "patch_option",
+     "policy",
+     "standalone_implementation",
+     "upstream_commit"
+    ],
+    "has_standalone_implementation": true,
+    "has_construction": true,
+    "digest": "742b60aa844d37e3"
+   },
+   "total_s": 2.8284,
+   "production_s": 2.784,
+   "production_calls": 1,
+   "hit": false
+  }
+ ],
+ "export_calls": [
+  {
+   "tile": "0_0",
+   "s": 5.4634
+  },
+  {
+   "tile": "1_0",
+   "s": 4.9741
+  }
+ ],
+ "phase_calls": [],
+ "cache_census_after_run": {
+  "cache_entry_count": 4,
+  "cache_entries": [
+   "1c42356d1ae7e6a960febe507187373442e8ff4cd9e53a10bf391ce3111e3d7e",
+   "3ae1dc266124e6053a0c1b4edc4b701f524bac6fe10a53cb5ea5c5bd1d42e3f4",
+   "c4a4f5db562f36bb376c4f22aaa454fbbd727c0465742764ee83816e5e0ed9b5",
+   "c63f680cd66e70809f73b4902595e3d26cc1bf7375340d64fa44e388adf05652"
+  ],
+  "phase_publication_files": [],
+  "phase_route_fired": false
+ },
+ "output_manifest": {
+  "file_count": 39,
+  "total_bytes": 132712685,
+  "digest": "8edbcce569ca4e95",
+  "simulation_tiff_count": 20,
+  "simulation_tiff_digest": "6088d728800eeb22",
+  "files": [
+   {
+    "path": "output_folder/0_0/Kdown_0_0.tif",
+    "size": 6361582,
+    "sha256": "d5bb0e0ac7bca1434982d2380b7dafe4636bc2c507a261dc27b1fd56c34fa839"
+   },
+   {
+    "path": "output_folder/0_0/Kup_0_0.tif",
+    "size": 6361582,
+    "sha256": "c5abb1a74a836107a146a976acd145c53b94ad0d07cf54988343d7df13b7d77b"
+   },
+   {
+    "path": "output_folder/0_0/Ldown_0_0.tif",
+    "size": 6361582,
+    "sha256": "95fe916267f12c93e6ab946ebe1effad857d52b23472d94a4d7ac0e247417367"
+   },
+   {
+    "path": "output_folder/0_0/Lup_0_0.tif",
+    "size": 6361582,
+    "sha256": "a19c09c0fe156fa4ca163c6d7a1750dbef06e81dba652f7d8b009fd1486e6e52"
+   },
+   {
+    "path": "output_folder/0_0/Shadow_0_0.tif",
+    "size": 6361582,
+    "sha256": "46d8fedeeda2f45680a9d5fa01f4f16390c405d3f518f1e2f3046f2c252ad41d"
+   },
+   {
+    "path": "output_folder/0_0/TMRT_0_0.tif",
+    "size": 6361582,
+    "sha256": "2640d6e56dd409bb16d9491fddb4ed69ebe698cae10143ac1b0abba2d4fa3e71"
+   },
+   {
+    "path": "output_folder/0_0/Ta_0_0.tif",
+    "size": 6361582,
+    "sha256": "f180aa7653f665aa8b26a9011c918c40c9c8c0c3666a87a5497cf4d26b3f1abe"
+   },
+   {
+    "path": "output_folder/0_0/UTCI_0_0.tif",
+    "size": 6361582,
+    "sha256": "e8b03bc6a8f78a681e898f58cc7011bffdaabd4ce2273f680a533d9ff885c063"
+   },
+   {
+    "path": "output_folder/0_0/WBGT_0_0.tif",
+    "size": 6361582,
+    "sha256": "ee71350e412cfd47ea322b6e9e33a75d85bb31847827c777b7c43b340d6c0fb2"
+   },
+   {
+    "path": "output_folder/0_0/Wind_0_0.tif",
+    "size": 6361582,
+    "sha256": "6f58de0baddc9d317b78e0af1d819307bbf766d81e86d169954ce26b78e015af"
+   },
+   {
+    "path": "output_folder/1_0/Kdown_1_0.tif",
+    "size": 6361582,
+    "sha256": "92465ec6bc9ee6cb57d3b16f5ca5fdb1361b99df2c6e9340e4d1a684a110cb28"
+   },
+   {
+    "path": "output_folder/1_0/Kup_1_0.tif",
+    "size": 6361582,
+    "sha256": "37e11553402bb1dfc915ae7e8de3c742f4154a4dd189df39f4116ab1d83a126e"
+   },
+   {
+    "path": "output_folder/1_0/Ldown_1_0.tif",
+    "size": 6361582,
+    "sha256": "e54f5c1486835457aee5f7a1ec64d74ae32d4da329cc12b6f1f656020a7cf7a2"
+   },
+   {
+    "path": "output_folder/1_0/Lup_1_0.tif",
+    "size": 6361582,
+    "sha256": "ccf10e15c48752ea72a33c0f3a55a510a1c266eb471566693edb1263e7797d5c"
+   },
+   {
+    "path": "output_folder/1_0/Shadow_1_0.tif",
+    "size": 6361582,
+    "sha256": "91f570eb2d507be801b08dae1f7b4d6d85da4e548a3b5c5e3a631ceec69186df"
+   },
+   {
+    "path": "output_folder/1_0/TMRT_1_0.tif",
+    "size": 6361582,
+    "sha256": "ebc063522a8f1f1fda6c387e34c33ce7ed95b62859af7d689e9cb40f44a77b4d"
+   },
+   {
+    "path": "output_folder/1_0/Ta_1_0.tif",
+    "size": 6361582,
+    "sha256": "367b88ed3d5ee563dcc204664cacc9c45f621b067ec1900b53a3d3ff6551529b"
+   },
+   {
+    "path": "output_folder/1_0/UTCI_1_0.tif",
+    "size": 6361582,
+    "sha256": "e01a4686999094f8492d1ed76810b74e6d6777535c874176575fd5e86efbb5c7"
+   },
+   {
+    "path": "output_folder/1_0/WBGT_1_0.tif",
+    "size": 6361582,
+    "sha256": "86f54303d4b88e443ad0bd84b05eab64b82cd5f7112962a4e01c95745921350e"
+   },
+   {
+    "path": "output_folder/1_0/Wind_1_0.tif",
+    "size": 6361582,
+    "sha256": "f2eb572d7da50fbee9108679e1ba49e546f325fb1711f8a4da5d9e65e5023ec5"
+   },
+   {
+    "path": "processed_inputs/Building_DSM/Building_DSM_0_0.tif",
+    "size": 262696,
+    "sha256": "687655ed2122002eebc16214fa506537a433aec5ca12ef198572c8dc0bee430f"
+   },
+   {
+    "path": "processed_inputs/Building_DSM/Building_DSM_1_0.tif",
+    "size": 262696,
+    "sha256": "737d8f8245cfa808c403417f6db2a3f6cfb9b62b599613c94825e471279f6e37"
+   },
+   {
+    "path": "processed_inputs/DEM/DEM_0_0.tif",
+    "size": 262696,
+    "sha256": "85ab26fcec6fa193ca5d5d116eb1560c03b44d9f87c32dce0988b0d3ef29334e"
+   },
+   {
+    "path": "processed_inputs/DEM/DEM_1_0.tif",
+    "size": 262696,
+    "sha256": "5b07f1925a0034eac84b31c140c4a0ba3e756aaaa1fb443e00bdbe864c05a628"
+   },
+   {
+    "path": "processed_inputs/SVF/SkyViewFactor_0_0.tif",
+    "size": 262696,
+    "sha256": "e5b1ae5194ca263e33b7a3b4368d0ee51999224386627174efe0b7e5a82659da"
+   },
+   {
+    "path": "processed_inputs/SVF/SkyViewFactor_1_0.tif",
+    "size": 262696,
+    "sha256": "8843ae69d72d01a498044c7c583b3124608804671d706f87373810cd22b585b4"
+   },
+   {
+    "path": "processed_inputs/SVF/shadowmats_0_0.npz",
+    "size": 884221,
+    "sha256": "6df9dc3ec6245e2383b8ef0cd1673eea1620c010bb5f4ca53bcc58f9dcfbc88f"
+   },
+   {
+    "path": "processed_inputs/SVF/shadowmats_1_0.npz",
+    "size": 876682,
+    "sha256": "e53540ae9c03d5bb07d6dc64f405564cafed722ffdf3b7ccd8e01d4f6d8de4ba"
+   },
+   {
+    "path": "processed_inputs/SVF/svfs_0_0.zip",
+    "size": 282867,
+    "sha256": "9c4064806fcff303f1be5d16efdac4a80c9ad51868cd04750e071807f71f1f95"
+   },
+   {
+    "path": "processed_inputs/SVF/svfs_1_0.zip",
+    "size": 268095,
+    "sha256": "7608c90be8a88f6f07c03c0ec63703be1004818d5f78e5ce8aa0876f2beaef95"
+   },
+   {
+    "path": "processed_inputs/Trees/Trees_0_0.tif",
+    "size": 262696,
+    "sha256": "30f9e56852cc59aa196df9ce281666612a63608ee14cef76ee698227128ccdfa"
+   },
+   {
+    "path": "processed_inputs/Trees/Trees_1_0.tif",
+    "size": 262696,
+    "sha256": "f28cbe437a19f7912de9fd3292b6336620b90e91ec43738bfe6073b67358dff6"
+   },
+   {
+    "path": "processed_inputs/aspect/aspect_0_0.tif",
+    "size": 262696,
+    "sha256": "7badaeee79cb4f490f149faf4196a57388bb4a971d747d3786a0289b661c57b7"
+   },
+   {
+    "path": "processed_inputs/aspect/aspect_1_0.tif",
+    "size": 262696,
+    "sha256": "70fc3a87c9320319f8edccf22b860ea54f9f166aa32fe3f31d0a80cf7fc4231a"
+   },
+   {
+    "path": "processed_inputs/metfiles/metfile_0_0.txt",
+    "size": 7569,
+    "sha256": "bc8ee6361071dd109649857127d6b777571e868bdb06db0e47968b39e99189e4"
+   },
+   {
+    "path": "processed_inputs/metfiles/metfile_1_0.txt",
+    "size": 7569,
+    "sha256": "bc8ee6361071dd109649857127d6b777571e868bdb06db0e47968b39e99189e4"
+   },
+   {
+    "path": "processed_inputs/walls/walls_0_0.tif",
+    "size": 262696,
+    "sha256": "7bec6a080f51bb942b91a7d8af0466f5668aca8fbe205d77aecc1b1b786ff48f"
+   },
+   {
+    "path": "processed_inputs/walls/walls_1_0.tif",
+    "size": 262696,
+    "sha256": "d59d40c26af885fbdfc7f72e9bade921c014b3201c50b38825764c38a67dea67"
+   },
+   {
+    "path": "scene_manifest.json",
+    "size": 1690,
+    "sha256": "cb39218fa878326e969fc3f10bf3af45649bd712b9fced0f4bb09e7e782ab854"
+   }
+  ]
+ },
+ "versions": {
+  "python": "3.11.16",
+  "numpy": "2.4.6",
+  "numba": "0.67.0",
+  "llvmlite": "0.49.0",
+  "machine": "arm64",
+  "system": "Darwin"
+ },
+ "timing_s": {
+  "numpy_numba_import": 0.336,
+  "solweig_import": 1.108,
+  "child_total": 49.098
+ },
+ "peak_rss_bytes": 257310720,
+ "peak_rss_note": "macOS ru_maxrss is bytes; parent only (worker children not summed)",
+ "process": {
+  "pid": 97084
+ }
+}

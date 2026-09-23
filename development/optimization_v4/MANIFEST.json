@@ -1,0 +1,208 @@
+{
+  "schema": 1,
+  "packet": "solweig-optimization-v4-lean-handoff",
+  "kind": "planning_artifact_not_repository_implementation",
+  "source_packet_sha256": "6dfefb266459eded3bfae4d242423b42f060156f3ff4befb837fc158581e1bec",
+  "files": [
+    {
+      "path": "AGENTS_OPTIMIZATION.md",
+      "bytes": 3437,
+      "sha256": "f45c2171467d5a190734dd71248c11d3802afc2767e34b6893e906868e0d4fa8"
+    },
+    {
+      "path": "ASTRA_EXECUTION_PROMPT.md",
+      "bytes": 8141,
+      "sha256": "e3b78552fb1fda856ef52a01c1d653a550cc2d517f0e4e9cdb49c0a7d66fb836"
+    },
+    {
+      "path": "BRANCH_AND_CI.md",
+      "bytes": 5996,
+      "sha256": "afce203737b5ce056ce8a9b6bba89477d720c3b04e61b9a84bf8e2b14f6fc517"
+    },
+    {
+      "path": "CHANGELOG_V4.md",
+      "bytes": 1187,
+      "sha256": "e337654d92b859f8d6f8cb89b996fd890739613d5273b0b8431e350c88f3e46c"
+    },
+    {
+      "path": "DELEGATION.md",
+      "bytes": 4906,
+      "sha256": "e75dceedd34cd83e77f885b8718c3178966daec804c3180b0ed9f01fb3099446"
+    },
+    {
+      "path": "GOAL.txt",
+      "bytes": 3931,
+      "sha256": "75aa385cf387d67b6ab3c582119dc1a47b93a01f7debdffc595bfd2b39a0072a"
+    },
+    {
+      "path": "MATH_AND_PROOFS.md",
+      "bytes": 18813,
+      "sha256": "05d5631e45c54da2ba4d9a65601439ff7c982f1859d2bf9a7f4148f898ea9c68"
+    },
+    {
+      "path": "PLAN.md",
+      "bytes": 11433,
+      "sha256": "81f57f258143709cfb5171559f2892e7f3a5b75217c862a4cfd746004119dcd4"
+    },
+    {
+      "path": "README.md",
+      "bytes": 4585,
+      "sha256": "b40e9a8ad7b7e8db03d864a18abf54de612c610910bf5792323d162c98fa9c56"
+    },
+    {
+      "path": "SOURCES.md",
+      "bytes": 6154,
+      "sha256": "3c4a752e2db5d4016e0bb5d318c2cb753812c1bea5355133b27737874210275a"
+    },
+    {
+      "path": "STRATEGIES.json",
+      "bytes": 59897,
+      "sha256": "80f6c4e31793c8f1388516f92f4c63c14ff44c9597f965f88e0eac3357ec56ee"
+    },
+    {
+      "path": "STRATEGY_CATALOG.md",
+      "bytes": 58300,
+      "sha256": "cded7e06b8efce25a119cc271dc4d8b7953232e84be99597d4e7ae66633d30cd"
+    },
+    {
+      "path": "TASKS_OPTIMIZATION.yaml",
+      "bytes": 13521,
+      "sha256": "4f3a1f07d17e62d60b9cdd4012a953ebeafe24646b09b8638acd92c79bf616db"
+    },
+    {
+      "path": "THROUGHPUT.md",
+      "bytes": 14979,
+      "sha256": "2ce08d436e14c60811ecf7e37c1c3813961909ae693ea54293702d18c5f3c1ce"
+    },
+    {
+      "path": "VALIDATION_POLICY.md",
+      "bytes": 8958,
+      "sha256": "22aa5d5c03ebf8d96114a15f96e502d888b2a834c8bcd24312894622c658f381"
+    },
+    {
+      "path": "analysis_requirements.txt",
+      "bytes": 91,
+      "sha256": "8e881a2a587d1e0e8121cfffbd65898011867582fd70af5469ea211a98ebf04e"
+    },
+    {
+      "path": "dossiers/F.md",
+      "bytes": 5748,
+      "sha256": "0490731874b7e8d6313e59d98f757c884816db397bab23e8ef948f239ae7826f"
+    },
+    {
+      "path": "dossiers/G.md",
+      "bytes": 6822,
+      "sha256": "1b51dff9d65a00f5bf69ac6f02626a7e1c1aa9d9f829c0fd01305e56abc5cb1b"
+    },
+    {
+      "path": "dossiers/P.md",
+      "bytes": 10261,
+      "sha256": "bd2621fad28f0a8ead897333cf989ea2e71705b91e590a4a080e44589f9847d5"
+    },
+    {
+      "path": "dossiers/R.md",
+      "bytes": 8413,
+      "sha256": "7b7743aedd40376d6b355d0a9e75bc72f63000f8f6e2028a16ab65297f30f2ac"
+    },
+    {
+      "path": "dossiers/S.md",
+      "bytes": 10590,
+      "sha256": "3379929075b9f2a9d34ca30faeef171128fa3d958292163ff0efbb16e0239186"
+    },
+    {
+      "path": "dossiers/V.md",
+      "bytes": 5946,
+      "sha256": "0647ee1a46d00be6bd3ef8dce6201814f67ff4379f439f5d4a9b2b381d13b5b4"
+    },
+    {
+      "path": "dossiers/X.md",
+      "bytes": 6083,
+      "sha256": "93e7cf354fff9e6779bf0fcdde3bafd74fe02307295eae5f61e7a3ee39aa02d6"
+    },
+    {
+      "path": "evidence/inherited_v3/analysis_selftests.json",
+      "bytes": 2797,
+      "sha256": "2c5418ee13fdadc2959b0ad0dd7b64dc1d8c66665ac3302083d245739c1bf4ab"
+    },
+    {
+      "path": "evidence/inherited_v3/prior_artifact_hashes.json",
+      "bytes": 1445,
+      "sha256": "e901d6c0431b97d35088b2337de9af02c61aecb4296b91eee67475dc09dfaf60"
+    },
+    {
+      "path": "evidence/inherited_v3/source_access.json",
+      "bytes": 615,
+      "sha256": "a5eb6fa506121d12c36a10b05b7e279fab7b55e61f759b724b8299bfd95ced55"
+    },
+    {
+      "path": "evidence/inherited_v3/throughput_scenarios.json",
+      "bytes": 50965,
+      "sha256": "640e7c5394ac08ebcf52f0b5dcbaa466eaf51407428069b4446bbc45e34b19ef"
+    },
+    {
+      "path": "evidence/v4_packet_checks.json",
+      "bytes": 2024,
+      "sha256": "4febadfb8483960eb6fa7fa140dbf351f625ef899263ffdc9b4d7a90ce8f8dfc"
+    },
+    {
+      "path": "templates/BATCH_PROTOCOL.json",
+      "bytes": 2623,
+      "sha256": "f9b41ab07c910e32662cb8fd627f691d7f7047587501162ca31f468811811c4f"
+    },
+    {
+      "path": "templates/MERGE_REVIEW.md",
+      "bytes": 822,
+      "sha256": "5ac01d0ab76c0a0e271cd33e6e01c9d02520c34d5a02f6ee5f003e53590b1269"
+    },
+    {
+      "path": "templates/PROOF_RECORD.md",
+      "bytes": 1997,
+      "sha256": "18954e267feeda55ca9a11c847eaf3e2480e2ae57a3e6f6eca9e9137787cef0e"
+    },
+    {
+      "path": "templates/TASK_PACKET.yaml",
+      "bytes": 1337,
+      "sha256": "68f9f34775e0e78056592d8390c50f241423fe4419b990f113a111ce9914741c"
+    },
+    {
+      "path": "templates/VALIDATION_LEDGER.json",
+      "bytes": 797,
+      "sha256": "aca43d8343a0266672b22f4e82c53112df940f9bbaae7d1760faa2fe781d0175"
+    },
+    {
+      "path": "templates/WORKER_RESULT.json",
+      "bytes": 893,
+      "sha256": "18e02a0ba88cde5bd20b889caa0fa1bd5b821002ddd100771eabec2263f89cfc"
+    },
+    {
+      "path": "throughput_inputs.json",
+      "bytes": 1655,
+      "sha256": "167998f2082ab5ca7f0d92472da384ee68b99bf9ebd9d918bbffe5aa8c993472"
+    },
+    {
+      "path": "tools/check_packet.py",
+      "bytes": 7098,
+      "sha256": "50cb6770f3c21a140df08695d2e2e21b17d439ded80cba291bb97637073ffe21"
+    },
+    {
+      "path": "tools/self_check.py",
+      "bytes": 10820,
+      "sha256": "0220187f2d923dec970686d05a4750ca58e4347a4429b005e04d5a0e68ad0c50"
+    },
+    {
+      "path": "tools/throughput_model.py",
+      "bytes": 7058,
+      "sha256": "29386db2abc8ea5bf40ba8c4bbeff1ff4d6ed54b8ae0f69fd07719e82b2444c6"
+    },
+    {
+      "path": "validation_policy.json",
+      "bytes": 2764,
+      "sha256": "03552c8565d145ebb3d0735879b61b919cd8e01739cda7e89e60fdb772bbc08d"
+    }
+  ],
+  "new_evidence": "evidence/v4_packet_checks.json",
+  "inherited_evidence_directory": "evidence/inherited_v3",
+  "repository_branch_created": false,
+  "github_settings_changed": false,
+  "production_solweig_executed": false
+}

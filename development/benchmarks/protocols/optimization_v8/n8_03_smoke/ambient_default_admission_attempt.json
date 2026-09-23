@@ -1,0 +1,13 @@
+{
+ "schema": "sw8-n8-03-ambient-admission-note-v1",
+ "what": "first smoke attempt of scene_128_dense with PURE ambient defaults (no --memory-budget-gib), 2026-09-22 ~15:44 local",
+ "result": "ResourceAdmissionError before any simulation work; scene itself is valid (completed with pinned admission, see 128_dense.json)",
+ "error": "simulation job 0_0 (128x128, patches=153) needs about 1,781,748,531 B but only 1,415,022,182 B of the 1,844,518,912 B budget remains after parent (429,496,730 B) and writer queue (0 B); queueing cannot make this phase fit",
+ "cause": "default_memory_budget_bytes() = 0.50 x min(physical, CURRENTLY AVAILABLE host memory) (src/solweig_light/runtime.py); under 2026-09-22 teammate load the available-memory view was ~3.6-3.7 GiB, so ambient admission resolved to ~1.65-1.72 GiB (recorded per smoke run in the admission fields)",
+ "protocol_consequence": [
+  "the ordinary default cells (P1/P3-default configuration) require a QUIET host: ambient available memory must satisfy 0.50*available >= simulation estimate + parent reserve; for 128x128 x 24 that is available >= ~4.5 GiB",
+  "256x256 x 24 reserves ~7.1 GiB by the same estimator: ambient admission on this 16 GiB host is marginal-to-impossible even when quiet, so the 256 default-configuration cells pin memory_budget_bytes=12 GiB (B7-60 production budget) as a recorded deviation; block_pixels stays default 128 and no backend/env change is involved",
+  "admission failures under load are recorded as environment-blocked attempts, never as candidate defects and never retried silently"
+ ],
+ "host_context_at_smokes": "load averages 5.00/9.38/14.00; PhysMem 15G used, 364M unused (12 teammate agents active); smoke runs used the pinned 12 GiB admission recorded in each n8_03_smoke/*.json"
+}

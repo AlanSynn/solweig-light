@@ -1,0 +1,31 @@
+{
+  "abort_reason": null,
+  "aborted": false,
+  "available_disk_after_bytes": 140611313664,
+  "available_disk_before_bytes": 142135181312,
+  "case": "dense1024",
+  "command": [
+    "/Users/alansynn/Workspace/solweig-light/.venv-light/bin/python",
+    "/Users/alansynn/Workspace/solweig-light-claude-v5/optimization_v5_claude/evidence/final_batch/run_final_large.py",
+    "--child",
+    "--case",
+    "dense1024",
+    "--run",
+    "/Users/alansynn/Workspace/solweig-light-claude-v5/optimization_v5_claude/evidence/final_batch/runs_v1/dense1024",
+    "--fixture",
+    "reports/characterization/local_cpu_optimization_v1/qualification/final_combined_v1/large_harness/fixtures/dense1024",
+    "--kwargs",
+    "optimization_v5_claude/evidence/final_batch/run_kwargs_frozen.json",
+    "--site",
+    "optimization_v5_claude/evidence/freeze/site-packages"
+  ],
+  "disk_reserve_bytes": 10737418240,
+  "elapsed_seconds": 293.6059621659806,
+  "exit_code": 0,
+  "limit_bytes": 12884901888,
+  "peak_summed_process_tree_rss_bytes": 1151434752,
+  "performance_claim": false,
+  "positive_rss_samples": 5360,
+  "sample_interval_seconds": 0.02,
+  "schema": "claude-v5-final-batch-large-monitor.v1"
+}

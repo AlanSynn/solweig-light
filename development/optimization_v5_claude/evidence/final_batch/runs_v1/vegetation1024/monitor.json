@@ -1,0 +1,31 @@
+{
+  "abort_reason": null,
+  "aborted": false,
+  "available_disk_after_bytes": 139027021824,
+  "available_disk_before_bytes": 140609830912,
+  "case": "vegetation1024",
+  "command": [
+    "/Users/alansynn/Workspace/solweig-light/.venv-light/bin/python",
+    "/Users/alansynn/Workspace/solweig-light-claude-v5/optimization_v5_claude/evidence/final_batch/run_final_large.py",
+    "--child",
+    "--case",
+    "vegetation1024",
+    "--run",
+    "/Users/alansynn/Workspace/solweig-light-claude-v5/optimization_v5_claude/evidence/final_batch/runs_v1/vegetation1024",
+    "--fixture",
+    "reports/characterization/local_cpu_optimization_v1/qualification/final_combined_v1/large_harness/fixtures/vegetation1024",
+    "--kwargs",
+    "optimization_v5_claude/evidence/final_batch/run_kwargs_frozen.json",
+    "--site",
+    "optimization_v5_claude/evidence/freeze/site-packages"
+  ],
+  "disk_reserve_bytes": 10737418240,
+  "elapsed_seconds": 305.30711475003045,
+  "exit_code": 0,
+  "limit_bytes": 12884901888,
+  "peak_summed_process_tree_rss_bytes": 1213480960,
+  "performance_claim": false,
+  "positive_rss_samples": 5527,
+  "sample_interval_seconds": 0.02,
+  "schema": "claude-v5-final-batch-large-monitor.v1"
+}

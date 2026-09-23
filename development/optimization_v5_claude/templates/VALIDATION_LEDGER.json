@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "status": "empty_template",
+  "entries": [],
+  "entry_fields": [
+    "task",
+    "branch",
+    "runtime_tree_hash",
+    "validation_tier",
+    "test_selector",
+    "dependency_identity_sha256",
+    "status",
+    "command",
+    "environment",
+    "fixture_reference_hashes",
+    "evidence_path",
+    "reused_from",
+    "invalidation_reason",
+    "elapsed_seconds",
+    "peak_memory",
+    "large_run_attempt_id"
+  ],
+  "allowed_statuses": [
+    "passed",
+    "failed",
+    "timeout",
+    "reused",
+    "not_selected",
+    "deferred",
+    "blocked"
+  ],
+  "totals": {
+    "validation_wall_seconds": null,
+    "validation_cpu_seconds": null,
+    "setup_jit_seconds": null,
+    "large_candidate_attempts": 0,
+    "new_large_baseline_attempts": 0,
+    "hosted_ci_minutes": null
+  }
+}

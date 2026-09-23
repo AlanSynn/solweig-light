@@ -1,0 +1,155 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.11.16, pytest-9.1.1, pluggy-1.6.0
+rootdir: /Users/alansynn/Workspace/solweig-light-claude-v5
+configfile: pyproject.toml
+collected 1 item
+
+tests/differential/test_pipeline_reference.py F                          [100%]
+
+=================================== FAILURES ===================================
+__________________ test_chronological_tiff_pipeline[raw-True] __________________
+
+tmp_path = PosixPath('/private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-542/test_chronological_tiff_pipeli0')
+case = 'raw', cold = True
+
+    @pytest.mark.parametrize('case,cold', [('small', False), ('small', True), ('raw', True)] +
+                             [(name, False) for name in ('base', 'uhi', 'landcover',
+                              'landcover_normalized', 'directional', 'legacy_wrapper')])
+    def test_chronological_tiff_pipeline(tmp_path, case, cold):
+        assert importlib.util.find_spec('torch') is None, 'Run candidate checks in the isolated CPU environment'
+        reference = REFERENCE if case in ('small', 'raw') else ROOT / 'tests/reference/optional_original_cpu' / case
+        prepared = tmp_path / 'processed_inputs'
+        shutil.copytree(reference / 'processed_inputs', prepared)
+        if cold:
+            shutil.rmtree(prepared / 'SVF')
+        paths = {name: files_by_key(prepared / name)['0_0'] for name in
+                 ('Building_DSM', 'Trees', 'DEM', 'walls', 'aspect', 'metfiles')}
+        if (prepared / 'Landcover').is_dir():
+            paths['Landcover'] = files_by_key(prepared / 'Landcover')['0_0']
+        flags = {f'save_{name}': True for name in
+                 ('tmrt', 'svf', 'kup', 'kdown', 'lup', 'ldown', 'shadow', 'wbgt', 'ta', 'wind')}
+        if case == 'raw':
+            from solweig_light import thermal_comfort
+            shutil.rmtree(prepared)
+            for filename in ('Building_DSM.tif', 'Trees.tif', 'DEM.tif', 'met.txt'):
+                shutil.copy2(reference / filename, tmp_path / filename)
+>           assert thermal_comfort(str(tmp_path), '2020-07-18', own_met_file=str(tmp_path / 'met.txt'),
+                                   tile_size=64, overlap=0, ERA_5_z0_find=False, **flags) is None
+
+tests/differential/test_pipeline_reference.py:39: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/solweig_light/api.py:293: in thermal_comfort
+    run_utci_tiles(base_path=base_path, preprocess_dir=preprocess_dir, selected_date_str=selected_date_str,
+src/solweig_light/api.py:228: in run_utci_tiles
+    plan_phase_admission(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+jobs = (PhaseJob(phase='simulation', rows=32, cols=35, patches=153, windchannels=12, block_pixels=128, visibility_mode='unknown_cold', dense_fallback=False, export_overlap=True, tile='0_0'),)
+budget_bytes = 1736769536, active_workers = 1
+parent_footprint_bytes = 429496730, writer_queue_bytes = 0
+gdal_cache_bytes = 858993459, native_bytes = None, threads_per_worker = 1
+policy = 'reject'
+
+    def plan_phase_admission(
+        jobs: Sequence[PhaseJob],
+        *,
+        budget_bytes: int,
+        active_workers: int | None = None,
+        parent_footprint_bytes: int = DEFAULT_PARENT_FOOTPRINT_BYTES,
+        writer_queue_bytes: int = 0,
+        gdal_cache_bytes: int | None = None,
+        native_bytes: int | None = None,
+        threads_per_worker: int = 1,
+        policy: str = "reject",
+    ) -> PhaseAdmissionPlan:
+        """Admit phase jobs against the process-tree memory budget.
+    
+        ``M_total = parent_footprint + sum(active reservations) + writer_queue``
+        (D04 phase-aware resource model) must stay within ``budget_bytes``.
+        Per-phase reservations come from the M1-derived lifetime inventory, so a
+        preprocess job no longer pays the simulation estimate (M2 §6g) while the
+        GDAL cache, float64 reserve, write pulses, export streams, mapped pages
+        and parent footprint are all charged (M2 §6a-f).
+    
+        Raises ``ResourceAdmissionError`` (in-process only; see module docstring)
+        when ``policy="reject"`` and the requested concurrency does not fit, and
+        in both policies when a single job can never fit or the tree overheads
+        already exhaust the budget.  Never performs negative-budget arithmetic.
+        """
+        _positive_int(budget_bytes, "budget_bytes")
+        _non_negative_int(parent_footprint_bytes, "parent_footprint_bytes")
+        _non_negative_int(writer_queue_bytes, "writer_queue_bytes")
+        _positive_int(threads_per_worker, "threads_per_worker")
+        if policy not in ("reject", "queue"):
+            raise ValueError(f"policy must be 'reject' or 'queue'; got {policy!r}")
+        jobs = tuple(jobs)
+        if not jobs:
+            raise ValueError("plan_phase_admission requires at least one job")
+    
+        base = budget_bytes - parent_footprint_bytes - writer_queue_bytes
+        if base <= 0:
+            raise ResourceAdmissionError(
+                f"process-tree overhead (parent {parent_footprint_bytes:,} B + writer "
+                f"queue {writer_queue_bytes:,} B) already exhausts the {budget_bytes:,} B "
+                "budget before any phase reservation"
+            )
+    
+        reservations = []
+        for job in jobs:
+            builder = _RESERVATION_BY_PHASE[job.phase]
+            kwargs: dict[str, Any] = {
+                "gdal_cache_bytes": gdal_cache_bytes,
+                "native_bytes": native_bytes,
+            }
+            if job.phase == PHASE_PREPROCESS:
+                if job.visibility_mode != VISIBILITY_UNKNOWN_COLD or not job.export_overlap:
+                    raise ValueError(
+                        f"{_describe(job)}: preprocess has no visibility payload and "
+                        "no publication window; visibility_mode/export_overlap do "
+                        "not apply to preprocess jobs"
+                    )
+            else:
+                kwargs["visibility_mode"] = job.visibility_mode
+                kwargs["export_overlap"] = job.export_overlap
+            if job.phase == PHASE_GEOMETRY:
+                kwargs["dense_fallback"] = job.dense_fallback
+            elif job.dense_fallback:
+                raise DenseCubeFallbackNotChargedError(
+                    f"{_describe(job)}: dense_fallback is a geometry-phase descriptor"
+                )
+            reservations.append(builder(job.shape, **kwargs))
+    
+        infeasible = [
+            (job, reservation)
+            for job, reservation in zip(jobs, reservations)
+            if reservation.total_bytes > base
+        ]
+        if infeasible:
+            job, reservation = infeasible[0]
+>           raise ResourceAdmissionError(
+                f"{_describe(job)} needs about {reservation.total_bytes:,} B but only "
+                f"{base:,} B of the {budget_bytes:,} B budget remains after parent "
+                f"({parent_footprint_bytes:,} B) and writer queue ({writer_queue_bytes:,} B); "
+                "queueing cannot make this phase fit. Reduce the tile shape, cap "
+                "GDAL_CACHEMAX, or use supported disk-backed execution with an explicit "
+                "live-array inventory"
+            )
+E           solweig_light.runtime.ResourceAdmissionError: simulation job 0_0 (32x35, patches=153) needs about 1,736,017,587 B but only 1,307,272,806 B of the 1,736,769,536 B budget remains after parent (429,496,730 B) and writer queue (0 B); queueing cannot make this phase fit. Reduce the tile shape, cap GDAL_CACHEMAX, or use supported disk-backed execution with an explicit live-array inventory
+
+src/solweig_light/runtime_memory.py:919: ResourceAdmissionError
+----------------------------- Captured stdout call -----------------------------
+Creating tiles for Building_DSM...
+Created single tile: /private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-542/test_chronological_tiff_pipeli0/processed_inputs/Building_DSM/Building_DSM_0_0.tif
+Creating tiles for DEM...
+Created single tile: /private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-542/test_chronological_tiff_pipeli0/processed_inputs/DEM/DEM_0_0.tif
+Creating tiles for Trees...
+Created single tile: /private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-542/test_chronological_tiff_pipeli0/processed_inputs/Trees/Trees_0_0.tif
+Wind coefficient not used; skipping WindCoeff tiles.
+Copied to /private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-542/test_chronological_tiff_pipeli0/processed_inputs/metfiles/metfile_0_0.txt
+[INFO] Found 1 matching SVF tiles.
+[INFO] Writing outputs to: /private/var/folders/3d/cclyxf1x3bjf_y3pf071s1r00000gr/T/pytest-of-alansynn/pytest-542/test_chronological_tiff_pipeli0/processed_inputs/SVF
+[INFO] Standalone SVF calculation complete.
+Running Solweig ...
+=========================== short test summary info ============================
+FAILED tests/differential/test_pipeline_reference.py::test_chronological_tiff_pipeline[raw-True]
+============================== 1 failed in 2.06s ===============================

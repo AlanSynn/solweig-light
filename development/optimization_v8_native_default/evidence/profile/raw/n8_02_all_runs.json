@@ -1,0 +1,4513 @@
+{
+ "warmup": {
+  "tag": "warmup_default_b128",
+  "backend": "default",
+  "block": 128,
+  "instrument": false,
+  "entry": "runtile",
+  "returncode": 0,
+  "parent_wall_s": 3.217,
+  "ambient_before": {
+   "loadavg": [
+    9.02,
+    18.59,
+    17.65
+   ],
+   "busy_non_browser": [],
+   "quiet": true
+  },
+  "ambient_after": {
+   "loadavg": [
+    8.78,
+    18.39,
+    17.59
+   ],
+   "busy_non_browser": [],
+   "quiet": true
+  },
+  "rss_tree": {
+   "sample_count": 16,
+   "errors": 0,
+   "peak_sum_rss_bytes": 203620352,
+   "mean_sum_rss_bytes": 151188480,
+   "per_pid_peak_rss_bytes": {
+    "24875": 203620352
+   },
+   "unit": "bytes (macOS ps rss KB * 1024)",
+   "double_count_note": "sum over the process tree counts shared pages once per process; peak_sum is an upper bound, never an admission number"
+  },
+  "native_cache_used": "default-user-cache",
+  "stdout_tail": "{\"out\": \"/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/raw/n8_02_warmup_default_b128.json\", \"run_wall_s\": 1.4897, \"digest\": \"7aa97c69a83d24d0\"}\n",
+  "stderr_tail": "Trusted legacy geometry without dependency identity: {'svfs': {'size_bytes': 17579, 'sha256': '104a00b985f1fc16df9ee4d575c964c68d4eed8a585d6b557d13678186d2f15a'}, 'shadowmats': {'size_bytes': 18846, 'sha256': '7b35f89104798a045cffa2ecd880b7d86e70c262f2e83659b3928ad8b39b565b'}, 'svftotal': {'size_bytes': 4840, 'sha256': '0f10eba06cba04e7abb8030dc0f0b1b08921cae410ba171ed1df4d3e089290cc'}}\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/pipeline_demand.py:313: RuntimeWarning: divide by zero encountered in log\n  np.log(one_minus)\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/engine.py:1696: RuntimeWarning: invalid value encountered in divide\n  return np.divide(a, b)\n",
+  "child": {
+   "schema": "sw8-n8-02-child-v1",
+   "requested": {
+    "backend": "default",
+    "block_pixels": 128,
+    "threads": 4,
+    "cpu_budget": 4,
+    "instrument": false,
+    "entry": "runtile"
+   },
+   "env": {
+    "threads_at_import": {
+     "BLIS_NUM_THREADS": "4",
+     "MKL_NUM_THREADS": "4",
+     "NUMBA_NUM_THREADS": "4",
+     "NUMEXPR_NUM_THREADS": "4",
+     "OMP_NUM_THREADS": "4",
+     "OPENBLAS_NUM_THREADS": "4",
+     "VECLIB_MAXIMUM_THREADS": "4"
+    },
+    "lw_backend": "",
+    "native_cache": "",
+    "numba_cache_dir": "/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/work/numba_cache"
+   },
+   "numba": {
+    "config_NUMBA_NUM_THREADS": 4,
+    "thread_set_ok": true,
+    "final_get_num_threads": 4,
+    "threading_layer": "workqueue",
+    "version": "0.67.0"
+   },
+   "options": {
+    "cache_dir": null,
+    "legacy_cache_policy": "trust",
+    "cache_enabled": true,
+    "memory_budget_bytes": 12884901888,
+    "cpu_budget": 4,
+    "workers": 1,
+    "threads_per_worker": 4,
+    "block_pixels": 128,
+    "checkpoint_interval": 1,
+    "resume": false
+   },
+   "module_origin": {
+    "solweig_light": "/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/__init__.py"
+   },
+   "run_wall_s": 1.4897,
+   "import_s": 1.21,
+   "child_total_s": 3.052,
+   "peak_rss_self_bytes": 205635584,
+   "peak_rss_children_bytes": 1212416,
+   "counters_path": null,
+   "output_manifest": {
+    "file_count": 10,
+    "digest": "7aa97c69a83d24d0",
+    "files": [
+     {
+      "path": "output_folder/0_0/Kdown_0_0.tif",
+      "size": 328366,
+      "sha256": "d091ab73f4b85a32b89be1151439e38f13dccf2b3351bfce79a6d30d158adbee"
+     },
+     {
+      "path": "output_folder/0_0/Kup_0_0.tif",
+      "size": 328366,
+      "sha256": "52a03e315a9ecbae7d25a7cb042b95d0f73aa097e5c46c35bf0d5b43b0a8e528"
+     },
+     {
+      "path": "output_folder/0_0/Ldown_0_0.tif",
+      "size": 328366,
+      "sha256": "3cce8f2cd7f5d50fdef3de0efe90eaf70fdc7169b54acf4f63abc7ad769b2539"
+     },
+     {
+      "path": "output_folder/0_0/Lup_0_0.tif",
+      "size": 328366,
+      "sha256": "322018b6b802e723d99a0a67b32edb8e0abdc76ef925c1478c518a62578e8cd7"
+     },
+     {
+      "path": "output_folder/0_0/Shadow_0_0.tif",
+      "size": 328366,
+      "sha256": "1937ede07da38a9e8820c9f305871c536311052114c7c116a9752732aba79d33"
+     },
+     {
+      "path": "output_folder/0_0/TMRT_0_0.tif",
+      "size": 328366,
+      "sha256": "9aa8f8d9c31e5c3c65fb058778994110dc4f4b544f60107e8010baecb6da98c6"
+     },
+     {
+      "path": "output_folder/0_0/Ta_0_0.tif",
+      "size": 328366,
+      "sha256": "543115f078f18e068c97d8256bc388fac7bdf923a19989cafb5f63319bcd40a6"
+     },
+     {
+      "path": "output_folder/0_0/UTCI_0_0.tif",
+      "size": 328366,
+      "sha256": "f9f6e7cd7b0007b26b76585dda76eea8a9a2b04a2a093588d53fb06a775f5cd1"
+     },
+     {
+      "path": "output_folder/0_0/WBGT_0_0.tif",
+      "size": 328366,
+      "sha256": "8c852a9ac076ca64960b9a5051012b4e5c8f9d0872f013bf7a8cdcac28d48f2d"
+     },
+     {
+      "path": "output_folder/0_0/Wind_0_0.tif",
+      "size": 328366,
+      "sha256": "15b659c0a8c4d6e55fdcd258052516b850c723b3fff8308071dc596ce23ec1be"
+     }
+    ]
+   },
+   "versions": {
+    "python": "3.12.13",
+    "numpy": "2.4.6",
+    "numba": "0.67.0",
+    "machine": "arm64"
+   },
+   "pid": 24875
+  }
+ },
+ "first_use": {
+  "tag": "firstuse_native_b128",
+  "backend": "native",
+  "block": 128,
+  "instrument": true,
+  "entry": "runtile",
+  "returncode": 0,
+  "parent_wall_s": 5.285,
+  "ambient_before": {
+   "loadavg": [
+    8.78,
+    18.39,
+    17.59
+   ],
+   "busy_non_browser": [
+    {
+     "pcpu": 51.0,
+     "comm": "/System/Library/CoreServices/ControlCenter.app/Contents/MacO"
+    }
+   ],
+   "quiet": false
+  },
+  "ambient_after": {
+   "loadavg": [
+    8.79,
+    18.23,
+    17.54
+   ],
+   "busy_non_browser": [],
+   "quiet": true
+  },
+  "rss_tree": {
+   "sample_count": 27,
+   "errors": 0,
+   "peak_sum_rss_bytes": 262291456,
+   "mean_sum_rss_bytes": 184428013,
+   "per_pid_peak_rss_bytes": {
+    "24959": 197017600,
+    "24987": 2654208,
+    "24989": 67108864,
+    "24993": 68517888,
+    "25005": 16793600,
+    "25007": 2506752,
+    "25009": 69206016,
+    "25021": 74432512,
+    "25029": 720896
+   },
+   "unit": "bytes (macOS ps rss KB * 1024)",
+   "double_count_note": "sum over the process tree counts shared pages once per process; peak_sum is an upper bound, never an admission number"
+  },
+  "native_cache_used": "/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/work/native_cache_firstuse",
+  "stdout_tail": "{\"out\": \"/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/raw/n8_02_firstuse_native_b128.json\", \"run_wall_s\": 1.416, \"digest\": \"7aa97c69a83d24d0\"}\n",
+  "stderr_tail": "Trusted legacy geometry without dependency identity: {'svfs': {'size_bytes': 17579, 'sha256': '104a00b985f1fc16df9ee4d575c964c68d4eed8a585d6b557d13678186d2f15a'}, 'shadowmats': {'size_bytes': 18846, 'sha256': '7b35f89104798a045cffa2ecd880b7d86e70c262f2e83659b3928ad8b39b565b'}, 'svftotal': {'size_bytes': 4840, 'sha256': '0f10eba06cba04e7abb8030dc0f0b1b08921cae410ba171ed1df4d3e089290cc'}}\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/pipeline_demand.py:313: RuntimeWarning: divide by zero encountered in log\n  np.log(one_minus)\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/engine.py:1696: RuntimeWarning: invalid value encountered in divide\n  return np.divide(a, b)\n",
+  "child": {
+   "schema": "sw8-n8-02-child-v1",
+   "requested": {
+    "backend": "native",
+    "block_pixels": 128,
+    "threads": 4,
+    "cpu_budget": 4,
+    "instrument": true,
+    "entry": "runtile"
+   },
+   "env": {
+    "threads_at_import": {
+     "BLIS_NUM_THREADS": "4",
+     "MKL_NUM_THREADS": "4",
+     "NUMBA_NUM_THREADS": "4",
+     "NUMEXPR_NUM_THREADS": "4",
+     "OMP_NUM_THREADS": "4",
+     "OPENBLAS_NUM_THREADS": "4",
+     "VECLIB_MAXIMUM_THREADS": "4"
+    },
+    "lw_backend": "native",
+    "native_cache": "/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/work/native_cache_firstuse",
+    "numba_cache_dir": "/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/work/numba_cache"
+   },
+   "numba": {
+    "config_NUMBA_NUM_THREADS": 4,
+    "thread_set_ok": true,
+    "final_get_num_threads": 4,
+    "threading_layer": "workqueue",
+    "version": "0.67.0"
+   },
+   "options": {
+    "cache_dir": null,
+    "legacy_cache_policy": "trust",
+    "cache_enabled": true,
+    "memory_budget_bytes": 12884901888,
+    "cpu_budget": 4,
+    "workers": 1,
+    "threads_per_worker": 4,
+    "block_pixels": 128,
+    "checkpoint_interval": 1,
+    "resume": false
+   },
+   "module_origin": {
+    "solweig_light": "/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/__init__.py"
+   },
+   "run_wall_s": 1.416,
+   "import_s": 0.956,
+   "child_total_s": 5.132,
+   "peak_rss_self_bytes": 197705728,
+   "peak_rss_children_bytes": 81281024,
+   "counters_path": "/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/raw/n8_02_firstuse_native_b128.counters.json",
+   "output_manifest": {
+    "file_count": 10,
+    "digest": "7aa97c69a83d24d0",
+    "files": [
+     {
+      "path": "output_folder/0_0/Kdown_0_0.tif",
+      "size": 328366,
+      "sha256": "d091ab73f4b85a32b89be1151439e38f13dccf2b3351bfce79a6d30d158adbee"
+     },
+     {
+      "path": "output_folder/0_0/Kup_0_0.tif",
+      "size": 328366,
+      "sha256": "52a03e315a9ecbae7d25a7cb042b95d0f73aa097e5c46c35bf0d5b43b0a8e528"
+     },
+     {
+      "path": "output_folder/0_0/Ldown_0_0.tif",
+      "size": 328366,
+      "sha256": "3cce8f2cd7f5d50fdef3de0efe90eaf70fdc7169b54acf4f63abc7ad769b2539"
+     },
+     {
+      "path": "output_folder/0_0/Lup_0_0.tif",
+      "size": 328366,
+      "sha256": "322018b6b802e723d99a0a67b32edb8e0abdc76ef925c1478c518a62578e8cd7"
+     },
+     {
+      "path": "output_folder/0_0/Shadow_0_0.tif",
+      "size": 328366,
+      "sha256": "1937ede07da38a9e8820c9f305871c536311052114c7c116a9752732aba79d33"
+     },
+     {
+      "path": "output_folder/0_0/TMRT_0_0.tif",
+      "size": 328366,
+      "sha256": "9aa8f8d9c31e5c3c65fb058778994110dc4f4b544f60107e8010baecb6da98c6"
+     },
+     {
+      "path": "output_folder/0_0/Ta_0_0.tif",
+      "size": 328366,
+      "sha256": "543115f078f18e068c97d8256bc388fac7bdf923a19989cafb5f63319bcd40a6"
+     },
+     {
+      "path": "output_folder/0_0/UTCI_0_0.tif",
+      "size": 328366,
+      "sha256": "f9f6e7cd7b0007b26b76585dda76eea8a9a2b04a2a093588d53fb06a775f5cd1"
+     },
+     {
+      "path": "output_folder/0_0/WBGT_0_0.tif",
+      "size": 328366,
+      "sha256": "8c852a9ac076ca64960b9a5051012b4e5c8f9d0872f013bf7a8cdcac28d48f2d"
+     },
+     {
+      "path": "output_folder/0_0/Wind_0_0.tif",
+      "size": 328366,
+      "sha256": "15b659c0a8c4d6e55fdcd258052516b850c723b3fff8308071dc596ce23ec1be"
+     }
+    ]
+   },
+   "versions": {
+    "python": "3.12.13",
+    "numpy": "2.4.6",
+    "numba": "0.67.0",
+    "machine": "arm64"
+   },
+   "pid": 24959
+  },
+  "counters": {
+   "counts": {
+    "native_adapter.admitted": 432,
+    "native_adapter.lw_native_primary": 432,
+    "native_c_entry.f64": 432,
+    "native_prep.build": 1,
+    "native_prep.build_needed": 433,
+    "native_prep.cache_dir": 433,
+    "native_prep.ensure_loaded_total": 433,
+    "native_prep.first_load_at_install": 1,
+    "native_prep.fs.exists": 869,
+    "native_prep.fs.mkdir": 434,
+    "native_prep.fs.read_bytes": 433,
+    "native_prep.fs.read_text": 432,
+    "native_prep.json_loads": 432,
+    "native_prep.kernel_digest": 433,
+    "stage.classifier_classes": 684,
+    "stage.coefficients_prepared": 76,
+    "stage.decode_block_x3": 2052,
+    "stage.dpc_primary": 48,
+    "stage.geometry_legacy_load": 1,
+    "stage.lcyl_by_demand": 48,
+    "stage.output_checkpoint": 48,
+    "stage.output_write": 48,
+    "stage.patch_geometry": 152,
+    "stage.read_raster_pipeline": 5,
+    "stage.solweig_calc": 48,
+    "stage.utci": 48
+   },
+   "env_lw_backend": "native",
+   "fallback_reasons": {},
+   "first_call_s": {
+    "native_adapter.admitted": 0.000747,
+    "native_adapter.lw_native_primary": 0.00015,
+    "native_c_entry.f64": 8.5e-05,
+    "native_prep.build": 2.173652,
+    "native_prep.build_needed": 1.8e-05,
+    "native_prep.cache_dir": 8.4e-05,
+    "native_prep.ensure_loaded_total": 2.477637,
+    "native_prep.first_load_at_install": 2.477646,
+    "native_prep.fs.exists": 1.3e-05,
+    "native_prep.fs.mkdir": 7.4e-05,
+    "native_prep.fs.read_bytes": 0.0002,
+    "native_prep.fs.read_text": 0.000266,
+    "native_prep.json_loads": 8e-06,
+    "native_prep.kernel_digest": 0.000231,
+    "stage.classifier_classes": 1.3e-05,
+    "stage.coefficients_prepared": 1.8e-05,
+    "stage.decode_block_x3": 0.112092,
+    "stage.dpc_primary": 0.116626,
+    "stage.geometry_legacy_load": 0.052416,
+    "stage.lcyl_by_demand": 0.119666,
+    "stage.output_checkpoint": 0.004852,
+    "stage.output_write": 0.001769,
+    "stage.patch_geometry": 0.002801,
+    "stage.read_raster_pipeline": 0.01816,
+    "stage.solweig_calc": 0.121926,
+    "stage.utci": 0.003701
+   },
+   "install_perf_counter": 2.491033707978204,
+   "max_s": {
+    "native_adapter.admitted": 0.000747,
+    "native_adapter.lw_native_primary": 0.00017,
+    "native_c_entry.f64": 0.000133,
+    "native_prep.build": 2.173652,
+    "native_prep.build_needed": 0.00053,
+    "native_prep.cache_dir": 8.4e-05,
+    "native_prep.ensure_loaded_total": 2.477637,
+    "native_prep.first_load_at_install": 2.477646,
+    "native_prep.fs.exists": 0.000144,
+    "native_prep.fs.mkdir": 7.4e-05,
+    "native_prep.fs.read_bytes": 0.000252,
+    "native_prep.fs.read_text": 0.000266,
+    "native_prep.json_loads": 1.2e-05,
+    "native_prep.kernel_digest": 0.00026,
+    "stage.classifier_classes": 0.004765,
+    "stage.coefficients_prepared": 0.001403,
+    "stage.decode_block_x3": 0.112092,
+    "stage.dpc_primary": 0.116626,
+    "stage.geometry_legacy_load": 0.052416,
+    "stage.lcyl_by_demand": 0.119666,
+    "stage.output_checkpoint": 0.009725,
+    "stage.output_write": 0.009023,
+    "stage.patch_geometry": 0.002843,
+    "stage.read_raster_pipeline": 0.01816,
+    "stage.solweig_calc": 0.121926,
+    "stage.utci": 0.003701
+   },
+   "mean_us": {
+    "native_adapter.admitted": 208.864,
+    "native_adapter.lw_native_primary": 87.084,
+    "native_c_entry.f64": 61.298,
+    "native_prep.build": 2173651.5,
+    "native_prep.build_needed": 99.604,
+    "native_prep.cache_dir": 18.037,
+    "native_prep.ensure_loaded_total": 5842.414,
+    "native_prep.first_load_at_install": 2477646.208,
+    "native_prep.fs.exists": 6.814,
+    "native_prep.fs.mkdir": 14.652,
+    "native_prep.fs.read_bytes": 30.615,
+    "native_prep.fs.read_text": 39.984,
+    "native_prep.json_loads": 2.644,
+    "native_prep.kernel_digest": 37.335,
+    "stage.classifier_classes": 74.357,
+    "stage.coefficients_prepared": 715.792,
+    "stage.decode_block_x3": 90.474,
+    "stage.dpc_primary": 6237.502,
+    "stage.geometry_legacy_load": 52415.833,
+    "stage.lcyl_by_demand": 6517.442,
+    "stage.output_checkpoint": 6263.706,
+    "stage.output_write": 3389.193,
+    "stage.patch_geometry": 41.149,
+    "stage.read_raster_pipeline": 4015.633,
+    "stage.solweig_calc": 15768.242,
+    "stage.utci": 251.993
+   },
+   "native_cache_env": "/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/work/native_cache_firstuse",
+   "native_entry_specs": {
+    "f64": 432
+   },
+   "notes": [
+    "wrapper overhead self-test: bare=27.9ns wrapped=181.4ns delta=153.5ns per call (timed-wrapper style used everywhere here)",
+    "ctypes entry pointers wrapped after first load (gang=8); counts are completed C invocations"
+   ],
+   "pid": 24959,
+   "sys_modules_native": {
+    "solweig_light.backends.native.lw_native": true,
+    "solweig_light.backends.native_lw": true
+   },
+   "total_s": {
+    "native_adapter.admitted": 0.090229,
+    "native_adapter.lw_native_primary": 0.03762,
+    "native_c_entry.f64": 0.026481,
+    "native_prep.build": 2.173652,
+    "native_prep.build_needed": 0.043129,
+    "native_prep.cache_dir": 0.00781,
+    "native_prep.ensure_loaded_total": 2.529765,
+    "native_prep.first_load_at_install": 2.477646,
+    "native_prep.fs.exists": 0.005921,
+    "native_prep.fs.mkdir": 0.006359,
+    "native_prep.fs.read_bytes": 0.013256,
+    "native_prep.fs.read_text": 0.017273,
+    "native_prep.json_loads": 0.001142,
+    "native_prep.kernel_digest": 0.016166,
+    "stage.classifier_classes": 0.05086,
+    "stage.coefficients_prepared": 0.0544,
+    "stage.decode_block_x3": 0.185652,
+    "stage.dpc_primary": 0.2994,
+    "stage.geometry_legacy_load": 0.052416,
+    "stage.lcyl_by_demand": 0.312837,
+    "stage.output_checkpoint": 0.300658,
+    "stage.output_write": 0.162681,
+    "stage.patch_geometry": 0.006255,
+    "stage.read_raster_pipeline": 0.020078,
+    "stage.solweig_calc": 0.756876,
+    "stage.utci": 0.012096
+   }
+  },
+  "scratch_cache_after": {
+   "exists": true,
+   "dylibs": [
+    "liblw_native_g4.dylib",
+    "liblw_native_g8.dylib"
+   ],
+   "build_stamp": {
+    "kernel_sha256": "52652a598cd85ead04747a83a52b1184035c880aa0b32cf518efef06b961663c",
+    "ispc": "/opt/homebrew/bin/ispc",
+    "built_utc": "2026-09-22T19:31:57Z"
+   }
+  }
+ },
+ "instrumented": {
+  "instr_default_b128": {
+   "tag": "instr_default_b128",
+   "backend": "default",
+   "block": 128,
+   "instrument": true,
+   "entry": "runtile",
+   "returncode": 0,
+   "parent_wall_s": 2.825,
+   "ambient_before": {
+    "loadavg": [
+     8.79,
+     18.23,
+     17.54
+    ],
+    "busy_non_browser": [],
+    "quiet": true
+   },
+   "ambient_after": {
+    "loadavg": [
+     8.79,
+     18.23,
+     17.54
+    ],
+    "busy_non_browser": [],
+    "quiet": true
+   },
+   "rss_tree": {
+    "sample_count": 15,
+    "errors": 0,
+    "peak_sum_rss_bytes": 209879040,
+    "mean_sum_rss_bytes": 162343595,
+    "per_pid_peak_rss_bytes": {
+     "25082": 209879040
+    },
+    "unit": "bytes (macOS ps rss KB * 1024)",
+    "double_count_note": "sum over the process tree counts shared pages once per process; peak_sum is an upper bound, never an admission number"
+   },
+   "native_cache_used": "default-user-cache",
+   "stdout_tail": "{\"out\": \"/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/raw/n8_02_instr_default_b128.json\", \"run_wall_s\": 1.4124, \"digest\": \"7aa97c69a83d24d0\"}\n",
+   "stderr_tail": "Trusted legacy geometry without dependency identity: {'svfs': {'size_bytes': 17579, 'sha256': '104a00b985f1fc16df9ee4d575c964c68d4eed8a585d6b557d13678186d2f15a'}, 'shadowmats': {'size_bytes': 18846, 'sha256': '7b35f89104798a045cffa2ecd880b7d86e70c262f2e83659b3928ad8b39b565b'}, 'svftotal': {'size_bytes': 4840, 'sha256': '0f10eba06cba04e7abb8030dc0f0b1b08921cae410ba171ed1df4d3e089290cc'}}\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/pipeline_demand.py:313: RuntimeWarning: divide by zero encountered in log\n  np.log(one_minus)\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/engine.py:1696: RuntimeWarning: invalid value encountered in divide\n  return np.divide(a, b)\n",
+   "child": {
+    "schema": "sw8-n8-02-child-v1",
+    "requested": {
+     "backend": "default",
+     "block_pixels": 128,
+     "threads": 4,
+     "cpu_budget": 4,
+     "instrument": true,
+     "entry": "runtile"
+    },
+    "env": {
+     "threads_at_import": {
+      "BLIS_NUM_THREADS": "4",
+      "MKL_NUM_THREADS": "4",
+      "NUMBA_NUM_THREADS": "4",
+      "NUMEXPR_NUM_THREADS": "4",
+      "OMP_NUM_THREADS": "4",
+      "OPENBLAS_NUM_THREADS": "4",
+      "VECLIB_MAXIMUM_THREADS": "4"
+     },
+     "lw_backend": "",
+     "native_cache": "",
+     "numba_cache_dir": "/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/work/numba_cache"
+    },
+    "numba": {
+     "config_NUMBA_NUM_THREADS": 4,
+     "thread_set_ok": true,
+     "final_get_num_threads": 4,
+     "threading_layer": "workqueue",
+     "version": "0.67.0"
+    },
+    "options": {
+     "cache_dir": null,
+     "legacy_cache_policy": "trust",
+     "cache_enabled": true,
+     "memory_budget_bytes": 12884901888,
+     "cpu_budget": 4,
+     "workers": 1,
+     "threads_per_worker": 4,
+     "block_pixels": 128,
+     "checkpoint_interval": 1,
+     "resume": false
+    },
+    "module_origin": {
+     "solweig_light": "/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/__init__.py"
+    },
+    "run_wall_s": 1.4124,
+    "import_s": 1.021,
+    "child_total_s": 2.676,
+    "peak_rss_self_bytes": 209862656,
+    "peak_rss_children_bytes": 1212416,
+    "counters_path": "/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/raw/n8_02_instr_default_b128.counters.json",
+    "output_manifest": {
+     "file_count": 10,
+     "digest": "7aa97c69a83d24d0",
+     "files": [
+      {
+       "path": "output_folder/0_0/Kdown_0_0.tif",
+       "size": 328366,
+       "sha256": "d091ab73f4b85a32b89be1151439e38f13dccf2b3351bfce79a6d30d158adbee"
+      },
+      {
+       "path": "output_folder/0_0/Kup_0_0.tif",
+       "size": 328366,
+       "sha256": "52a03e315a9ecbae7d25a7cb042b95d0f73aa097e5c46c35bf0d5b43b0a8e528"
+      },
+      {
+       "path": "output_folder/0_0/Ldown_0_0.tif",
+       "size": 328366,
+       "sha256": "3cce8f2cd7f5d50fdef3de0efe90eaf70fdc7169b54acf4f63abc7ad769b2539"
+      },
+      {
+       "path": "output_folder/0_0/Lup_0_0.tif",
+       "size": 328366,
+       "sha256": "322018b6b802e723d99a0a67b32edb8e0abdc76ef925c1478c518a62578e8cd7"
+      },
+      {
+       "path": "output_folder/0_0/Shadow_0_0.tif",
+       "size": 328366,
+       "sha256": "1937ede07da38a9e8820c9f305871c536311052114c7c116a9752732aba79d33"
+      },
+      {
+       "path": "output_folder/0_0/TMRT_0_0.tif",
+       "size": 328366,
+       "sha256": "9aa8f8d9c31e5c3c65fb058778994110dc4f4b544f60107e8010baecb6da98c6"
+      },
+      {
+       "path": "output_folder/0_0/Ta_0_0.tif",
+       "size": 328366,
+       "sha256": "543115f078f18e068c97d8256bc388fac7bdf923a19989cafb5f63319bcd40a6"
+      },
+      {
+       "path": "output_folder/0_0/UTCI_0_0.tif",
+       "size": 328366,
+       "sha256": "f9f6e7cd7b0007b26b76585dda76eea8a9a2b04a2a093588d53fb06a775f5cd1"
+      },
+      {
+       "path": "output_folder/0_0/WBGT_0_0.tif",
+       "size": 328366,
+       "sha256": "8c852a9ac076ca64960b9a5051012b4e5c8f9d0872f013bf7a8cdcac28d48f2d"
+      },
+      {
+       "path": "output_folder/0_0/Wind_0_0.tif",
+       "size": 328366,
+       "sha256": "15b659c0a8c4d6e55fdcd258052516b850c723b3fff8308071dc596ce23ec1be"
+      }
+     ]
+    },
+    "versions": {
+     "python": "3.12.13",
+     "numpy": "2.4.6",
+     "numba": "0.67.0",
+     "machine": "arm64"
+    },
+    "pid": 25082
+   },
+   "counters": {
+    "counts": {
+     "island.numba_lw_primary": 432,
+     "stage.classifier_classes": 684,
+     "stage.coefficients_prepared": 76,
+     "stage.decode_block_x3": 2052,
+     "stage.dpc_primary": 48,
+     "stage.geometry_legacy_load": 1,
+     "stage.lcyl_by_demand": 48,
+     "stage.output_checkpoint": 48,
+     "stage.output_write": 48,
+     "stage.patch_geometry": 152,
+     "stage.read_raster_pipeline": 5,
+     "stage.solweig_calc": 48,
+     "stage.utci": 48
+    },
+    "env_lw_backend": "",
+    "fallback_reasons": {},
+    "first_call_s": {
+     "island.numba_lw_primary": 0.003887,
+     "stage.classifier_classes": 9e-06,
+     "stage.coefficients_prepared": 2e-05,
+     "stage.decode_block_x3": 0.115891,
+     "stage.dpc_primary": 0.123044,
+     "stage.geometry_legacy_load": 0.050407,
+     "stage.lcyl_by_demand": 0.126184,
+     "stage.output_checkpoint": 0.005534,
+     "stage.output_write": 0.00177,
+     "stage.patch_geometry": 0.0029,
+     "stage.read_raster_pipeline": 0.017488,
+     "stage.solweig_calc": 0.128413,
+     "stage.utci": 0.003555
+    },
+    "install_perf_counter": 0.013912874972447753,
+    "max_s": {
+     "island.numba_lw_primary": 0.003887,
+     "stage.classifier_classes": 0.004111,
+     "stage.coefficients_prepared": 0.001425,
+     "stage.decode_block_x3": 0.115891,
+     "stage.dpc_primary": 0.123044,
+     "stage.geometry_legacy_load": 0.050407,
+     "stage.lcyl_by_demand": 0.126184,
+     "stage.output_checkpoint": 0.009788,
+     "stage.output_write": 0.005718,
+     "stage.patch_geometry": 0.002953,
+     "stage.read_raster_pipeline": 0.017488,
+     "stage.solweig_calc": 0.128413,
+     "stage.utci": 0.003555
+    },
+    "mean_us": {
+     "island.numba_lw_primary": 145.962,
+     "stage.classifier_classes": 79.416,
+     "stage.coefficients_prepared": 725.691,
+     "stage.decode_block_x3": 94.785,
+     "stage.dpc_primary": 5961.457,
+     "stage.geometry_legacy_load": 50407.167,
+     "stage.lcyl_by_demand": 6253.846,
+     "stage.output_checkpoint": 6445.124,
+     "stage.output_write": 3322.659,
+     "stage.patch_geometry": 42.664,
+     "stage.read_raster_pipeline": 3845.85,
+     "stage.solweig_calc": 15638.652,
+     "stage.utci": 253.351
+    },
+    "native_cache_env": "",
+    "native_entry_specs": {},
+    "notes": [
+     "wrapper overhead self-test: bare=27.0ns wrapped=178.5ns delta=151.5ns per call (timed-wrapper style used everywhere here)",
+     "default arm: native modules pre-imported by the instrument itself (not by the pipeline); counts below isolate pipeline-initiated calls. sys.modules evidence distinguishes the two.",
+     "native_lw already imported before install: False"
+    ],
+    "pid": 25082,
+    "sys_modules_native": {
+     "solweig_light.backends.native.lw_native": true,
+     "solweig_light.backends.native_lw": true
+    },
+    "total_s": {
+     "island.numba_lw_primary": 0.063056,
+     "stage.classifier_classes": 0.05432,
+     "stage.coefficients_prepared": 0.055153,
+     "stage.decode_block_x3": 0.194498,
+     "stage.dpc_primary": 0.28615,
+     "stage.geometry_legacy_load": 0.050407,
+     "stage.lcyl_by_demand": 0.300185,
+     "stage.output_checkpoint": 0.309366,
+     "stage.output_write": 0.159488,
+     "stage.patch_geometry": 0.006485,
+     "stage.read_raster_pipeline": 0.019229,
+     "stage.solweig_calc": 0.750655,
+     "stage.utci": 0.012161
+    }
+   }
+  },
+  "instr_default_b1024": {
+   "tag": "instr_default_b1024",
+   "backend": "default",
+   "block": 1024,
+   "instrument": true,
+   "entry": "runtile",
+   "returncode": 0,
+   "parent_wall_s": 3.026,
+   "ambient_before": {
+    "loadavg": [
+     8.79,
+     18.23,
+     17.54
+    ],
+    "busy_non_browser": [],
+    "quiet": true
+   },
+   "ambient_after": {
+    "loadavg": [
+     8.81,
+     18.08,
+     17.49
+    ],
+    "busy_non_browser": [],
+    "quiet": true
+   },
+   "rss_tree": {
+    "sample_count": 15,
+    "errors": 0,
+    "peak_sum_rss_bytes": 213057536,
+    "mean_sum_rss_bytes": 153731072,
+    "per_pid_peak_rss_bytes": {
+     "25343": 213057536
+    },
+    "unit": "bytes (macOS ps rss KB * 1024)",
+    "double_count_note": "sum over the process tree counts shared pages once per process; peak_sum is an upper bound, never an admission number"
+   },
+   "native_cache_used": "default-user-cache",
+   "stdout_tail": "{\"out\": \"/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/raw/n8_02_instr_default_b1024.json\", \"run_wall_s\": 1.3474, \"digest\": \"7aa97c69a83d24d0\"}\n",
+   "stderr_tail": "Trusted legacy geometry without dependency identity: {'svfs': {'size_bytes': 17579, 'sha256': '104a00b985f1fc16df9ee4d575c964c68d4eed8a585d6b557d13678186d2f15a'}, 'shadowmats': {'size_bytes': 18846, 'sha256': '7b35f89104798a045cffa2ecd880b7d86e70c262f2e83659b3928ad8b39b565b'}, 'svftotal': {'size_bytes': 4840, 'sha256': '0f10eba06cba04e7abb8030dc0f0b1b08921cae410ba171ed1df4d3e089290cc'}}\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/pipeline_demand.py:313: RuntimeWarning: divide by zero encountered in log\n  np.log(one_minus)\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/engine.py:1696: RuntimeWarning: invalid value encountered in divide\n  return np.divide(a, b)\n",
+   "child": {
+    "schema": "sw8-n8-02-child-v1",
+    "requested": {
+     "backend": "default",
+     "block_pixels": 1024,
+     "threads": 4,
+     "cpu_budget": 4,
+     "instrument": true,
+     "entry": "runtile"
+    },
+    "env": {
+     "threads_at_import": {
+      "BLIS_NUM_THREADS": "4",
+      "MKL_NUM_THREADS": "4",
+      "NUMBA_NUM_THREADS": "4",
+      "NUMEXPR_NUM_THREADS": "4",
+      "OMP_NUM_THREADS": "4",
+      "OPENBLAS_NUM_THREADS": "4",
+      "VECLIB_MAXIMUM_THREADS": "4"
+     },
+     "lw_backend": "",
+     "native_cache": "",
+     "numba_cache_dir": "/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/work/numba_cache"
+    },
+    "numba": {
+     "config_NUMBA_NUM_THREADS": 4,
+     "thread_set_ok": true,
+     "final_get_num_threads": 4,
+     "threading_layer": "workqueue",
+     "version": "0.67.0"
+    },
+    "options": {
+     "cache_dir": null,
+     "legacy_cache_policy": "trust",
+     "cache_enabled": true,
+     "memory_budget_bytes": 12884901888,
+     "cpu_budget": 4,
+     "workers": 1,
+     "threads_per_worker": 4,
+     "block_pixels": 1024,
+     "checkpoint_interval": 1,
+     "resume": false
+    },
+    "module_origin": {
+     "solweig_light": "/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/__init__.py"
+    },
+    "run_wall_s": 1.3474,
+    "import_s": 1.289,
+    "child_total_s": 2.887,
+    "peak_rss_self_bytes": 213123072,
+    "peak_rss_children_bytes": 1212416,
+    "counters_path": "/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/raw/n8_02_instr_default_b1024.counters.json",
+    "output_manifest": {
+     "file_count": 10,
+     "digest": "7aa97c69a83d24d0",
+     "files": [
+      {
+       "path": "output_folder/0_0/Kdown_0_0.tif",
+       "size": 328366,
+       "sha256": "d091ab73f4b85a32b89be1151439e38f13dccf2b3351bfce79a6d30d158adbee"
+      },
+      {
+       "path": "output_folder/0_0/Kup_0_0.tif",
+       "size": 328366,
+       "sha256": "52a03e315a9ecbae7d25a7cb042b95d0f73aa097e5c46c35bf0d5b43b0a8e528"
+      },
+      {
+       "path": "output_folder/0_0/Ldown_0_0.tif",
+       "size": 328366,
+       "sha256": "3cce8f2cd7f5d50fdef3de0efe90eaf70fdc7169b54acf4f63abc7ad769b2539"
+      },
+      {
+       "path": "output_folder/0_0/Lup_0_0.tif",
+       "size": 328366,
+       "sha256": "322018b6b802e723d99a0a67b32edb8e0abdc76ef925c1478c518a62578e8cd7"
+      },
+      {
+       "path": "output_folder/0_0/Shadow_0_0.tif",
+       "size": 328366,
+       "sha256": "1937ede07da38a9e8820c9f305871c536311052114c7c116a9752732aba79d33"
+      },
+      {
+       "path": "output_folder/0_0/TMRT_0_0.tif",
+       "size": 328366,
+       "sha256": "9aa8f8d9c31e5c3c65fb058778994110dc4f4b544f60107e8010baecb6da98c6"
+      },
+      {
+       "path": "output_folder/0_0/Ta_0_0.tif",
+       "size": 328366,
+       "sha256": "543115f078f18e068c97d8256bc388fac7bdf923a19989cafb5f63319bcd40a6"
+      },
+      {
+       "path": "output_folder/0_0/UTCI_0_0.tif",
+       "size": 328366,
+       "sha256": "f9f6e7cd7b0007b26b76585dda76eea8a9a2b04a2a093588d53fb06a775f5cd1"
+      },
+      {
+       "path": "output_folder/0_0/WBGT_0_0.tif",
+       "size": 328366,
+       "sha256": "8c852a9ac076ca64960b9a5051012b4e5c8f9d0872f013bf7a8cdcac28d48f2d"
+      },
+      {
+       "path": "output_folder/0_0/Wind_0_0.tif",
+       "size": 328366,
+       "sha256": "15b659c0a8c4d6e55fdcd258052516b850c723b3fff8308071dc596ce23ec1be"
+      }
+     ]
+    },
+    "versions": {
+     "python": "3.12.13",
+     "numpy": "2.4.6",
+     "numba": "0.67.0",
+     "machine": "arm64"
+    },
+    "pid": 25343
+   },
+   "counters": {
+    "counts": {
+     "island.numba_lw_primary": 96,
+     "stage.classifier_classes": 152,
+     "stage.coefficients_prepared": 76,
+     "stage.decode_block_x3": 456,
+     "stage.dpc_primary": 48,
+     "stage.geometry_legacy_load": 1,
+     "stage.lcyl_by_demand": 48,
+     "stage.output_checkpoint": 48,
+     "stage.output_write": 48,
+     "stage.patch_geometry": 152,
+     "stage.read_raster_pipeline": 5,
+     "stage.solweig_calc": 48,
+     "stage.utci": 48
+    },
+    "env_lw_backend": "",
+    "fallback_reasons": {},
+    "first_call_s": {
+     "island.numba_lw_primary": 0.004102,
+     "stage.classifier_classes": 1.3e-05,
+     "stage.coefficients_prepared": 1.9e-05,
+     "stage.decode_block_x3": 0.121969,
+     "stage.dpc_primary": 0.127944,
+     "stage.geometry_legacy_load": 0.053724,
+     "stage.lcyl_by_demand": 0.131173,
+     "stage.output_checkpoint": 0.005038,
+     "stage.output_write": 0.001573,
+     "stage.patch_geometry": 0.002978,
+     "stage.read_raster_pipeline": 0.017894,
+     "stage.solweig_calc": 0.133447,
+     "stage.utci": 0.003596
+    },
+    "install_perf_counter": 0.013693958055227995,
+    "max_s": {
+     "island.numba_lw_primary": 0.004102,
+     "stage.classifier_classes": 0.004837,
+     "stage.coefficients_prepared": 0.001439,
+     "stage.decode_block_x3": 0.121969,
+     "stage.dpc_primary": 0.127944,
+     "stage.geometry_legacy_load": 0.053724,
+     "stage.lcyl_by_demand": 0.131173,
+     "stage.output_checkpoint": 0.010223,
+     "stage.output_write": 0.008345,
+     "stage.patch_geometry": 0.002978,
+     "stage.read_raster_pipeline": 0.017894,
+     "stage.solweig_calc": 0.133447,
+     "stage.utci": 0.003596
+    },
+    "mean_us": {
+     "island.numba_lw_primary": 286.606,
+     "stage.classifier_classes": 306.844,
+     "stage.coefficients_prepared": 721.792,
+     "stage.decode_block_x3": 407.593,
+     "stage.dpc_primary": 4946.466,
+     "stage.geometry_legacy_load": 53724.041,
+     "stage.lcyl_by_demand": 5235.402,
+     "stage.output_checkpoint": 6378.442,
+     "stage.output_write": 3518.103,
+     "stage.patch_geometry": 41.954,
+     "stage.read_raster_pipeline": 3952.9,
+     "stage.solweig_calc": 13943.059,
+     "stage.utci": 253.654
+    },
+    "native_cache_env": "",
+    "native_entry_specs": {},
+    "notes": [
+     "wrapper overhead self-test: bare=28.6ns wrapped=183.6ns delta=155.0ns per call (timed-wrapper style used everywhere here)",
+     "default arm: native modules pre-imported by the instrument itself (not by the pipeline); counts below isolate pipeline-initiated calls. sys.modules evidence distinguishes the two.",
+     "native_lw already imported before install: False"
+    ],
+    "pid": 25343,
+    "sys_modules_native": {
+     "solweig_light.backends.native.lw_native": true,
+     "solweig_light.backends.native_lw": true
+    },
+    "total_s": {
+     "island.numba_lw_primary": 0.027514,
+     "stage.classifier_classes": 0.04664,
+     "stage.coefficients_prepared": 0.054856,
+     "stage.decode_block_x3": 0.185863,
+     "stage.dpc_primary": 0.23743,
+     "stage.geometry_legacy_load": 0.053724,
+     "stage.lcyl_by_demand": 0.251299,
+     "stage.output_checkpoint": 0.306165,
+     "stage.output_write": 0.168869,
+     "stage.patch_geometry": 0.006377,
+     "stage.read_raster_pipeline": 0.019764,
+     "stage.solweig_calc": 0.669267,
+     "stage.utci": 0.012175
+    }
+   }
+  },
+  "instr_native_b128": {
+   "tag": "instr_native_b128",
+   "backend": "native",
+   "block": 128,
+   "instrument": true,
+   "entry": "runtile",
+   "returncode": 0,
+   "parent_wall_s": 2.798,
+   "ambient_before": {
+    "loadavg": [
+     8.81,
+     18.08,
+     17.49
+    ],
+    "busy_non_browser": [],
+    "quiet": true
+   },
+   "ambient_after": {
+    "loadavg": [
+     8.81,
+     18.08,
+     17.49
+    ],
+    "busy_non_browser": [],
+    "quiet": true
+   },
+   "rss_tree": {
+    "sample_count": 14,
+    "errors": 0,
+    "peak_sum_rss_bytes": 209649664,
+    "mean_sum_rss_bytes": 159230245,
+    "per_pid_peak_rss_bytes": {
+     "25720": 209649664
+    },
+    "unit": "bytes (macOS ps rss KB * 1024)",
+    "double_count_note": "sum over the process tree counts shared pages once per process; peak_sum is an upper bound, never an admission number"
+   },
+   "native_cache_used": "default-user-cache",
+   "stdout_tail": "{\"out\": \"/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/raw/n8_02_instr_native_b128.json\", \"run_wall_s\": 1.4298, \"digest\": \"7aa97c69a83d24d0\"}\n",
+   "stderr_tail": "Trusted legacy geometry without dependency identity: {'svfs': {'size_bytes': 17579, 'sha256': '104a00b985f1fc16df9ee4d575c964c68d4eed8a585d6b557d13678186d2f15a'}, 'shadowmats': {'size_bytes': 18846, 'sha256': '7b35f89104798a045cffa2ecd880b7d86e70c262f2e83659b3928ad8b39b565b'}, 'svftotal': {'size_bytes': 4840, 'sha256': '0f10eba06cba04e7abb8030dc0f0b1b08921cae410ba171ed1df4d3e089290cc'}}\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/pipeline_demand.py:313: RuntimeWarning: divide by zero encountered in log\n  np.log(one_minus)\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/engine.py:1696: RuntimeWarning: invalid value encountered in divide\n  return np.divide(a, b)\n",
+   "child": {
+    "schema": "sw8-n8-02-child-v1",
+    "requested": {
+     "backend": "native",
+     "block_pixels": 128,
+     "threads": 4,
+     "cpu_budget": 4,
+     "instrument": true,
+     "entry": "runtile"
+    },
+    "env": {
+     "threads_at_import": {
+      "BLIS_NUM_THREADS": "4",
+      "MKL_NUM_THREADS": "4",
+      "NUMBA_NUM_THREADS": "4",
+      "NUMEXPR_NUM_THREADS": "4",
+      "OMP_NUM_THREADS": "4",
+      "OPENBLAS_NUM_THREADS": "4",
+      "VECLIB_MAXIMUM_THREADS": "4"
+     },
+     "lw_backend": "native",
+     "native_cache": "",
+     "numba_cache_dir": "/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/work/numba_cache"
+    },
+    "numba": {
+     "config_NUMBA_NUM_THREADS": 4,
+     "thread_set_ok": true,
+     "final_get_num_threads": 4,
+     "threading_layer": "workqueue",
+     "version": "0.67.0"
+    },
+    "options": {
+     "cache_dir": null,
+     "legacy_cache_policy": "trust",
+     "cache_enabled": true,
+     "memory_budget_bytes": 12884901888,
+     "cpu_budget": 4,
+     "workers": 1,
+     "threads_per_worker": 4,
+     "block_pixels": 128,
+     "checkpoint_interval": 1,
+     "resume": false
+    },
+    "module_origin": {
+     "solweig_light": "/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/__init__.py"
+    },
+    "run_wall_s": 1.4298,
+    "import_s": 0.945,
+    "child_total_s": 2.664,
+    "peak_rss_self_bytes": 209731584,
+    "peak_rss_children_bytes": 1212416,
+    "counters_path": "/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/raw/n8_02_instr_native_b128.counters.json",
+    "output_manifest": {
+     "file_count": 10,
+     "digest": "7aa97c69a83d24d0",
+     "files": [
+      {
+       "path": "output_folder/0_0/Kdown_0_0.tif",
+       "size": 328366,
+       "sha256": "d091ab73f4b85a32b89be1151439e38f13dccf2b3351bfce79a6d30d158adbee"
+      },
+      {
+       "path": "output_folder/0_0/Kup_0_0.tif",
+       "size": 328366,
+       "sha256": "52a03e315a9ecbae7d25a7cb042b95d0f73aa097e5c46c35bf0d5b43b0a8e528"
+      },
+      {
+       "path": "output_folder/0_0/Ldown_0_0.tif",
+       "size": 328366,
+       "sha256": "3cce8f2cd7f5d50fdef3de0efe90eaf70fdc7169b54acf4f63abc7ad769b2539"
+      },
+      {
+       "path": "output_folder/0_0/Lup_0_0.tif",
+       "size": 328366,
+       "sha256": "322018b6b802e723d99a0a67b32edb8e0abdc76ef925c1478c518a62578e8cd7"
+      },
+      {
+       "path": "output_folder/0_0/Shadow_0_0.tif",
+       "size": 328366,
+       "sha256": "1937ede07da38a9e8820c9f305871c536311052114c7c116a9752732aba79d33"
+      },
+      {
+       "path": "output_folder/0_0/TMRT_0_0.tif",
+       "size": 328366,
+       "sha256": "9aa8f8d9c31e5c3c65fb058778994110dc4f4b544f60107e8010baecb6da98c6"
+      },
+      {
+       "path": "output_folder/0_0/Ta_0_0.tif",
+       "size": 328366,
+       "sha256": "543115f078f18e068c97d8256bc388fac7bdf923a19989cafb5f63319bcd40a6"
+      },
+      {
+       "path": "output_folder/0_0/UTCI_0_0.tif",
+       "size": 328366,
+       "sha256": "f9f6e7cd7b0007b26b76585dda76eea8a9a2b04a2a093588d53fb06a775f5cd1"
+      },
+      {
+       "path": "output_folder/0_0/WBGT_0_0.tif",
+       "size": 328366,
+       "sha256": "8c852a9ac076ca64960b9a5051012b4e5c8f9d0872f013bf7a8cdcac28d48f2d"
+      },
+      {
+       "path": "output_folder/0_0/Wind_0_0.tif",
+       "size": 328366,
+       "sha256": "15b659c0a8c4d6e55fdcd258052516b850c723b3fff8308071dc596ce23ec1be"
+      }
+     ]
+    },
+    "versions": {
+     "python": "3.12.13",
+     "numpy": "2.4.6",
+     "numba": "0.67.0",
+     "machine": "arm64"
+    },
+    "pid": 25720
+   },
+   "counters": {
+    "counts": {
+     "native_adapter.admitted": 432,
+     "native_adapter.lw_native_primary": 432,
+     "native_c_entry.f64": 432,
+     "native_prep.build_needed": 433,
+     "native_prep.cache_dir": 433,
+     "native_prep.ensure_loaded_total": 433,
+     "native_prep.first_load_at_install": 1,
+     "native_prep.fs.exists": 867,
+     "native_prep.fs.mkdir": 433,
+     "native_prep.fs.read_bytes": 433,
+     "native_prep.fs.read_text": 433,
+     "native_prep.json_loads": 433,
+     "native_prep.kernel_digest": 433,
+     "stage.classifier_classes": 684,
+     "stage.coefficients_prepared": 76,
+     "stage.decode_block_x3": 2052,
+     "stage.dpc_primary": 48,
+     "stage.geometry_legacy_load": 1,
+     "stage.lcyl_by_demand": 48,
+     "stage.output_checkpoint": 48,
+     "stage.output_write": 48,
+     "stage.patch_geometry": 152,
+     "stage.read_raster_pipeline": 5,
+     "stage.solweig_calc": 48,
+     "stage.utci": 48
+    },
+    "env_lw_backend": "native",
+    "fallback_reasons": {},
+    "first_call_s": {
+     "native_adapter.admitted": 0.000625,
+     "native_adapter.lw_native_primary": 0.000362,
+     "native_c_entry.f64": 0.000292,
+     "native_prep.build_needed": 0.000313,
+     "native_prep.cache_dir": 4.2e-05,
+     "native_prep.ensure_loaded_total": 0.006498,
+     "native_prep.first_load_at_install": 0.006501,
+     "native_prep.fs.exists": 1e-05,
+     "native_prep.fs.mkdir": 1.5e-05,
+     "native_prep.fs.read_bytes": 4.6e-05,
+     "native_prep.fs.read_text": 0.000213,
+     "native_prep.json_loads": 1.2e-05,
+     "native_prep.kernel_digest": 5.7e-05,
+     "stage.classifier_classes": 1e-05,
+     "stage.coefficients_prepared": 1.7e-05,
+     "stage.decode_block_x3": 0.119542,
+     "stage.dpc_primary": 0.123779,
+     "stage.geometry_legacy_load": 0.05052,
+     "stage.lcyl_by_demand": 0.127084,
+     "stage.output_checkpoint": 0.004638,
+     "stage.output_write": 0.001627,
+     "stage.patch_geometry": 0.003051,
+     "stage.read_raster_pipeline": 0.021284,
+     "stage.solweig_calc": 0.129267,
+     "stage.utci": 0.003545
+    },
+    "install_perf_counter": 0.020415290957316756,
+    "max_s": {
+     "native_adapter.admitted": 0.000625,
+     "native_adapter.lw_native_primary": 0.000362,
+     "native_c_entry.f64": 0.000292,
+     "native_prep.build_needed": 0.00035,
+     "native_prep.cache_dir": 0.000107,
+     "native_prep.ensure_loaded_total": 0.006498,
+     "native_prep.first_load_at_install": 0.006501,
+     "native_prep.fs.exists": 1.8e-05,
+     "native_prep.fs.mkdir": 7.3e-05,
+     "native_prep.fs.read_bytes": 0.000171,
+     "native_prep.fs.read_text": 0.000213,
+     "native_prep.json_loads": 1.2e-05,
+     "native_prep.kernel_digest": 0.000179,
+     "stage.classifier_classes": 0.003959,
+     "stage.coefficients_prepared": 0.001432,
+     "stage.decode_block_x3": 0.119542,
+     "stage.dpc_primary": 0.123779,
+     "stage.geometry_legacy_load": 0.05052,
+     "stage.lcyl_by_demand": 0.127084,
+     "stage.output_checkpoint": 0.008032,
+     "stage.output_write": 0.007053,
+     "stage.patch_geometry": 0.003051,
+     "stage.read_raster_pipeline": 0.021284,
+     "stage.solweig_calc": 0.129267,
+     "stage.utci": 0.003545
+    },
+    "mean_us": {
+     "native_adapter.admitted": 221.178,
+     "native_adapter.lw_native_primary": 88.901,
+     "native_c_entry.f64": 62.436,
+     "native_prep.build_needed": 99.678,
+     "native_prep.cache_dir": 28.696,
+     "native_prep.ensure_loaded_total": 145.666,
+     "native_prep.first_load_at_install": 6500.959,
+     "native_prep.fs.exists": 6.31,
+     "native_prep.fs.mkdir": 13.957,
+     "native_prep.fs.read_bytes": 31.791,
+     "native_prep.fs.read_text": 39.401,
+     "native_prep.json_loads": 2.79,
+     "native_prep.kernel_digest": 38.524,
+     "stage.classifier_classes": 73.517,
+     "stage.coefficients_prepared": 726.8,
+     "stage.decode_block_x3": 94.545,
+     "stage.dpc_primary": 6541.594,
+     "stage.geometry_legacy_load": 50519.583,
+     "stage.lcyl_by_demand": 6831.635,
+     "stage.output_checkpoint": 6142.834,
+     "stage.output_write": 3309.035,
+     "stage.patch_geometry": 43.564,
+     "stage.read_raster_pipeline": 4713.783,
+     "stage.solweig_calc": 16082.248,
+     "stage.utci": 251.434
+    },
+    "native_cache_env": "",
+    "native_entry_specs": {
+     "f64": 432
+    },
+    "notes": [
+     "wrapper overhead self-test: bare=27.1ns wrapped=182.0ns delta=154.9ns per call (timed-wrapper style used everywhere here)",
+     "ctypes entry pointers wrapped after first load (gang=8); counts are completed C invocations"
+    ],
+    "pid": 25720,
+    "sys_modules_native": {
+     "solweig_light.backends.native.lw_native": true,
+     "solweig_light.backends.native_lw": true
+    },
+    "total_s": {
+     "native_adapter.admitted": 0.095549,
+     "native_adapter.lw_native_primary": 0.038405,
+     "native_c_entry.f64": 0.026972,
+     "native_prep.build_needed": 0.043161,
+     "native_prep.cache_dir": 0.012426,
+     "native_prep.ensure_loaded_total": 0.063074,
+     "native_prep.first_load_at_install": 0.006501,
+     "native_prep.fs.exists": 0.005471,
+     "native_prep.fs.mkdir": 0.006043,
+     "native_prep.fs.read_bytes": 0.013766,
+     "native_prep.fs.read_text": 0.017061,
+     "native_prep.json_loads": 0.001208,
+     "native_prep.kernel_digest": 0.016681,
+     "stage.classifier_classes": 0.050285,
+     "stage.coefficients_prepared": 0.055237,
+     "stage.decode_block_x3": 0.194006,
+     "stage.dpc_primary": 0.313996,
+     "stage.geometry_legacy_load": 0.05052,
+     "stage.lcyl_by_demand": 0.327919,
+     "stage.output_checkpoint": 0.294856,
+     "stage.output_write": 0.158834,
+     "stage.patch_geometry": 0.006622,
+     "stage.read_raster_pipeline": 0.023569,
+     "stage.solweig_calc": 0.771948,
+     "stage.utci": 0.012069
+    }
+   }
+  },
+  "instr_native_b1024": {
+   "tag": "instr_native_b1024",
+   "backend": "native",
+   "block": 1024,
+   "instrument": true,
+   "entry": "runtile",
+   "returncode": 0,
+   "parent_wall_s": 2.703,
+   "ambient_before": {
+    "loadavg": [
+     8.81,
+     18.08,
+     17.49
+    ],
+    "busy_non_browser": [],
+    "quiet": true
+   },
+   "ambient_after": {
+    "loadavg": [
+     8.18,
+     17.79,
+     17.39
+    ],
+    "busy_non_browser": [],
+    "quiet": true
+   },
+   "rss_tree": {
+    "sample_count": 14,
+    "errors": 0,
+    "peak_sum_rss_bytes": 212926464,
+    "mean_sum_rss_bytes": 162360759,
+    "per_pid_peak_rss_bytes": {
+     "25856": 212926464
+    },
+    "unit": "bytes (macOS ps rss KB * 1024)",
+    "double_count_note": "sum over the process tree counts shared pages once per process; peak_sum is an upper bound, never an admission number"
+   },
+   "native_cache_used": "default-user-cache",
+   "stdout_tail": "{\"out\": \"/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/raw/n8_02_instr_native_b1024.json\", \"run_wall_s\": 1.3163, \"digest\": \"7aa97c69a83d24d0\"}\n",
+   "stderr_tail": "Trusted legacy geometry without dependency identity: {'svfs': {'size_bytes': 17579, 'sha256': '104a00b985f1fc16df9ee4d575c964c68d4eed8a585d6b557d13678186d2f15a'}, 'shadowmats': {'size_bytes': 18846, 'sha256': '7b35f89104798a045cffa2ecd880b7d86e70c262f2e83659b3928ad8b39b565b'}, 'svftotal': {'size_bytes': 4840, 'sha256': '0f10eba06cba04e7abb8030dc0f0b1b08921cae410ba171ed1df4d3e089290cc'}}\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/pipeline_demand.py:313: RuntimeWarning: divide by zero encountered in log\n  np.log(one_minus)\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/engine.py:1696: RuntimeWarning: invalid value encountered in divide\n  return np.divide(a, b)\n",
+   "child": {
+    "schema": "sw8-n8-02-child-v1",
+    "requested": {
+     "backend": "native",
+     "block_pixels": 1024,
+     "threads": 4,
+     "cpu_budget": 4,
+     "instrument": true,
+     "entry": "runtile"
+    },
+    "env": {
+     "threads_at_import": {
+      "BLIS_NUM_THREADS": "4",
+      "MKL_NUM_THREADS": "4",
+      "NUMBA_NUM_THREADS": "4",
+      "NUMEXPR_NUM_THREADS": "4",
+      "OMP_NUM_THREADS": "4",
+      "OPENBLAS_NUM_THREADS": "4",
+      "VECLIB_MAXIMUM_THREADS": "4"
+     },
+     "lw_backend": "native",
+     "native_cache": "",
+     "numba_cache_dir": "/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/work/numba_cache"
+    },
+    "numba": {
+     "config_NUMBA_NUM_THREADS": 4,
+     "thread_set_ok": true,
+     "final_get_num_threads": 4,
+     "threading_layer": "workqueue",
+     "version": "0.67.0"
+    },
+    "options": {
+     "cache_dir": null,
+     "legacy_cache_policy": "trust",
+     "cache_enabled": true,
+     "memory_budget_bytes": 12884901888,
+     "cpu_budget": 4,
+     "workers": 1,
+     "threads_per_worker": 4,
+     "block_pixels": 1024,
+     "checkpoint_interval": 1,
+     "resume": false
+    },
+    "module_origin": {
+     "solweig_light": "/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/__init__.py"
+    },
+    "run_wall_s": 1.3163,
+    "import_s": 1.01,
+    "child_total_s": 2.558,
+    "peak_rss_self_bytes": 213204992,
+    "peak_rss_children_bytes": 1212416,
+    "counters_path": "/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/raw/n8_02_instr_native_b1024.counters.json",
+    "output_manifest": {
+     "file_count": 10,
+     "digest": "7aa97c69a83d24d0",
+     "files": [
+      {
+       "path": "output_folder/0_0/Kdown_0_0.tif",
+       "size": 328366,
+       "sha256": "d091ab73f4b85a32b89be1151439e38f13dccf2b3351bfce79a6d30d158adbee"
+      },
+      {
+       "path": "output_folder/0_0/Kup_0_0.tif",
+       "size": 328366,
+       "sha256": "52a03e315a9ecbae7d25a7cb042b95d0f73aa097e5c46c35bf0d5b43b0a8e528"
+      },
+      {
+       "path": "output_folder/0_0/Ldown_0_0.tif",
+       "size": 328366,
+       "sha256": "3cce8f2cd7f5d50fdef3de0efe90eaf70fdc7169b54acf4f63abc7ad769b2539"
+      },
+      {
+       "path": "output_folder/0_0/Lup_0_0.tif",
+       "size": 328366,
+       "sha256": "322018b6b802e723d99a0a67b32edb8e0abdc76ef925c1478c518a62578e8cd7"
+      },
+      {
+       "path": "output_folder/0_0/Shadow_0_0.tif",
+       "size": 328366,
+       "sha256": "1937ede07da38a9e8820c9f305871c536311052114c7c116a9752732aba79d33"
+      },
+      {
+       "path": "output_folder/0_0/TMRT_0_0.tif",
+       "size": 328366,
+       "sha256": "9aa8f8d9c31e5c3c65fb058778994110dc4f4b544f60107e8010baecb6da98c6"
+      },
+      {
+       "path": "output_folder/0_0/Ta_0_0.tif",
+       "size": 328366,
+       "sha256": "543115f078f18e068c97d8256bc388fac7bdf923a19989cafb5f63319bcd40a6"
+      },
+      {
+       "path": "output_folder/0_0/UTCI_0_0.tif",
+       "size": 328366,
+       "sha256": "f9f6e7cd7b0007b26b76585dda76eea8a9a2b04a2a093588d53fb06a775f5cd1"
+      },
+      {
+       "path": "output_folder/0_0/WBGT_0_0.tif",
+       "size": 328366,
+       "sha256": "8c852a9ac076ca64960b9a5051012b4e5c8f9d0872f013bf7a8cdcac28d48f2d"
+      },
+      {
+       "path": "output_folder/0_0/Wind_0_0.tif",
+       "size": 328366,
+       "sha256": "15b659c0a8c4d6e55fdcd258052516b850c723b3fff8308071dc596ce23ec1be"
+      }
+     ]
+    },
+    "versions": {
+     "python": "3.12.13",
+     "numpy": "2.4.6",
+     "numba": "0.67.0",
+     "machine": "arm64"
+    },
+    "pid": 25856
+   },
+   "counters": {
+    "counts": {
+     "native_adapter.admitted": 96,
+     "native_adapter.lw_native_primary": 96,
+     "native_c_entry.f64": 96,
+     "native_prep.build_needed": 97,
+     "native_prep.cache_dir": 97,
+     "native_prep.ensure_loaded_total": 97,
+     "native_prep.first_load_at_install": 1,
+     "native_prep.fs.exists": 195,
+     "native_prep.fs.mkdir": 97,
+     "native_prep.fs.read_bytes": 97,
+     "native_prep.fs.read_text": 97,
+     "native_prep.json_loads": 97,
+     "native_prep.kernel_digest": 97,
+     "stage.classifier_classes": 152,
+     "stage.coefficients_prepared": 76,
+     "stage.decode_block_x3": 456,
+     "stage.dpc_primary": 48,
+     "stage.geometry_legacy_load": 1,
+     "stage.lcyl_by_demand": 48,
+     "stage.output_checkpoint": 48,
+     "stage.output_write": 48,
+     "stage.patch_geometry": 152,
+     "stage.read_raster_pipeline": 5,
+     "stage.solweig_calc": 48,
+     "stage.utci": 48
+    },
+    "env_lw_backend": "native",
+    "fallback_reasons": {},
+    "first_call_s": {
+     "native_adapter.admitted": 0.000759,
+     "native_adapter.lw_native_primary": 0.000485,
+     "native_c_entry.f64": 0.000427,
+     "native_prep.build_needed": 0.000181,
+     "native_prep.cache_dir": 4.5e-05,
+     "native_prep.ensure_loaded_total": 0.006567,
+     "native_prep.first_load_at_install": 0.006572,
+     "native_prep.fs.exists": 1e-05,
+     "native_prep.fs.mkdir": 1.6e-05,
+     "native_prep.fs.read_bytes": 5.2e-05,
+     "native_prep.fs.read_text": 7e-05,
+     "native_prep.json_loads": 1.5e-05,
+     "native_prep.kernel_digest": 6.2e-05,
+     "stage.classifier_classes": 1.3e-05,
+     "stage.coefficients_prepared": 1.8e-05,
+     "stage.decode_block_x3": 0.107886,
+     "stage.dpc_primary": 0.110336,
+     "stage.geometry_legacy_load": 0.049383,
+     "stage.lcyl_by_demand": 0.11347,
+     "stage.output_checkpoint": 0.004148,
+     "stage.output_write": 0.001433,
+     "stage.patch_geometry": 0.002905,
+     "stage.read_raster_pipeline": 0.018828,
+     "stage.solweig_calc": 0.115481,
+     "stage.utci": 0.003344
+    },
+    "install_perf_counter": 0.02117799990810454,
+    "max_s": {
+     "native_adapter.admitted": 0.005737,
+     "native_adapter.lw_native_primary": 0.000755,
+     "native_c_entry.f64": 0.000677,
+     "native_prep.build_needed": 0.005566,
+     "native_prep.cache_dir": 9.7e-05,
+     "native_prep.ensure_loaded_total": 0.006567,
+     "native_prep.first_load_at_install": 0.006572,
+     "native_prep.fs.exists": 1.6e-05,
+     "native_prep.fs.mkdir": 6.1e-05,
+     "native_prep.fs.read_bytes": 0.000298,
+     "native_prep.fs.read_text": 0.005427,
+     "native_prep.json_loads": 2.2e-05,
+     "native_prep.kernel_digest": 0.000312,
+     "stage.classifier_classes": 0.00574,
+     "stage.coefficients_prepared": 0.0014,
+     "stage.decode_block_x3": 0.107886,
+     "stage.dpc_primary": 0.110336,
+     "stage.geometry_legacy_load": 0.049383,
+     "stage.lcyl_by_demand": 0.11347,
+     "stage.output_checkpoint": 0.014759,
+     "stage.output_write": 0.006628,
+     "stage.patch_geometry": 0.002905,
+     "stage.read_raster_pipeline": 0.018828,
+     "stage.solweig_calc": 0.115481,
+     "stage.utci": 0.003344
+    },
+    "mean_us": {
+     "native_adapter.admitted": 557.355,
+     "native_adapter.lw_native_primary": 303.925,
+     "native_c_entry.f64": 269.758,
+     "native_prep.build_needed": 199.674,
+     "native_prep.cache_dir": 46.713,
+     "native_prep.ensure_loaded_total": 316.714,
+     "native_prep.first_load_at_install": 6571.958,
+     "native_prep.fs.exists": 7.85,
+     "native_prep.fs.mkdir": 24.329,
+     "native_prep.fs.read_bytes": 43.157,
+     "native_prep.fs.read_text": 118.644,
+     "native_prep.json_loads": 5.342,
+     "native_prep.kernel_digest": 51.688,
+     "stage.classifier_classes": 299.494,
+     "stage.coefficients_prepared": 711.066,
+     "stage.decode_block_x3": 373.79,
+     "stage.dpc_primary": 5132.468,
+     "stage.geometry_legacy_load": 49383.083,
+     "stage.lcyl_by_demand": 5406.868,
+     "stage.output_checkpoint": 6297.652,
+     "stage.output_write": 3196.974,
+     "stage.patch_geometry": 41.319,
+     "stage.read_raster_pipeline": 4151.9,
+     "stage.solweig_calc": 13906.083,
+     "stage.utci": 243.716
+    },
+    "native_cache_env": "",
+    "native_entry_specs": {
+     "f64": 96
+    },
+    "notes": [
+     "wrapper overhead self-test: bare=28.4ns wrapped=185.2ns delta=156.8ns per call (timed-wrapper style used everywhere here)",
+     "ctypes entry pointers wrapped after first load (gang=8); counts are completed C invocations"
+    ],
+    "pid": 25856,
+    "sys_modules_native": {
+     "solweig_light.backends.native.lw_native": true,
+     "solweig_light.backends.native_lw": true
+    },
+    "total_s": {
+     "native_adapter.admitted": 0.053506,
+     "native_adapter.lw_native_primary": 0.029177,
+     "native_c_entry.f64": 0.025897,
+     "native_prep.build_needed": 0.019368,
+     "native_prep.cache_dir": 0.004531,
+     "native_prep.ensure_loaded_total": 0.030721,
+     "native_prep.first_load_at_install": 0.006572,
+     "native_prep.fs.exists": 0.001531,
+     "native_prep.fs.mkdir": 0.00236,
+     "native_prep.fs.read_bytes": 0.004186,
+     "native_prep.fs.read_text": 0.011508,
+     "native_prep.json_loads": 0.000518,
+     "native_prep.kernel_digest": 0.005014,
+     "stage.classifier_classes": 0.045523,
+     "stage.coefficients_prepared": 0.054041,
+     "stage.decode_block_x3": 0.170448,
+     "stage.dpc_primary": 0.246358,
+     "stage.geometry_legacy_load": 0.049383,
+     "stage.lcyl_by_demand": 0.25953,
+     "stage.output_checkpoint": 0.302287,
+     "stage.output_write": 0.153455,
+     "stage.patch_geometry": 0.00628,
+     "stage.read_raster_pipeline": 0.02076,
+     "stage.solweig_calc": 0.667492,
+     "stage.utci": 0.011698
+    }
+   }
+  }
+ },
+ "timing": {
+  "b128": {
+   "default": [
+    {
+     "tag": "time_b128_default_p0",
+     "backend": "default",
+     "block": 128,
+     "instrument": false,
+     "entry": "runtile",
+     "returncode": 0,
+     "parent_wall_s": 2.66,
+     "ambient_before": {
+      "loadavg": [
+       8.18,
+       17.79,
+       17.39
+      ],
+      "busy_non_browser": [],
+      "quiet": true
+     },
+     "ambient_after": {
+      "loadavg": [
+       8.89,
+       17.78,
+       17.39
+      ],
+      "busy_non_browser": [
+       {
+        "pcpu": 51.1,
+        "comm": "/System/Library/CoreServices/ControlCenter.app/Contents/MacO"
+       }
+      ],
+      "quiet": false
+     },
+     "rss_tree": {
+      "sample_count": 14,
+      "errors": 0,
+      "peak_sum_rss_bytes": 209813504,
+      "mean_sum_rss_bytes": 165477230,
+      "per_pid_peak_rss_bytes": {
+       "25898": 209813504
+      },
+      "unit": "bytes (macOS ps rss KB * 1024)",
+      "double_count_note": "sum over the process tree counts shared pages once per process; peak_sum is an upper bound, never an admission number"
+     },
+     "native_cache_used": "default-user-cache",
+     "stdout_tail": "{\"out\": \"/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/raw/n8_02_time_b128_default_p0.json\", \"run_wall_s\": 1.4057, \"digest\": \"7aa97c69a83d24d0\"}\n",
+     "stderr_tail": "Trusted legacy geometry without dependency identity: {'svfs': {'size_bytes': 17579, 'sha256': '104a00b985f1fc16df9ee4d575c964c68d4eed8a585d6b557d13678186d2f15a'}, 'shadowmats': {'size_bytes': 18846, 'sha256': '7b35f89104798a045cffa2ecd880b7d86e70c262f2e83659b3928ad8b39b565b'}, 'svftotal': {'size_bytes': 4840, 'sha256': '0f10eba06cba04e7abb8030dc0f0b1b08921cae410ba171ed1df4d3e089290cc'}}\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/pipeline_demand.py:313: RuntimeWarning: divide by zero encountered in log\n  np.log(one_minus)\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/engine.py:1696: RuntimeWarning: invalid value encountered in divide\n  return np.divide(a, b)\n",
+     "child": {
+      "schema": "sw8-n8-02-child-v1",
+      "requested": {
+       "backend": "default",
+       "block_pixels": 128,
+       "threads": 4,
+       "cpu_budget": 4,
+       "instrument": false,
+       "entry": "runtile"
+      },
+      "env": {
+       "threads_at_import": {
+        "BLIS_NUM_THREADS": "4",
+        "MKL_NUM_THREADS": "4",
+        "NUMBA_NUM_THREADS": "4",
+        "NUMEXPR_NUM_THREADS": "4",
+        "OMP_NUM_THREADS": "4",
+        "OPENBLAS_NUM_THREADS": "4",
+        "VECLIB_MAXIMUM_THREADS": "4"
+       },
+       "lw_backend": "",
+       "native_cache": "",
+       "numba_cache_dir": "/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/work/numba_cache"
+      },
+      "numba": {
+       "config_NUMBA_NUM_THREADS": 4,
+       "thread_set_ok": true,
+       "final_get_num_threads": 4,
+       "threading_layer": "workqueue",
+       "version": "0.67.0"
+      },
+      "options": {
+       "cache_dir": null,
+       "legacy_cache_policy": "trust",
+       "cache_enabled": true,
+       "memory_budget_bytes": 12884901888,
+       "cpu_budget": 4,
+       "workers": 1,
+       "threads_per_worker": 4,
+       "block_pixels": 128,
+       "checkpoint_interval": 1,
+       "resume": false
+      },
+      "module_origin": {
+       "solweig_light": "/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/__init__.py"
+      },
+      "run_wall_s": 1.4057,
+      "import_s": 0.929,
+      "child_total_s": 2.502,
+      "peak_rss_self_bytes": 209813504,
+      "peak_rss_children_bytes": 1212416,
+      "counters_path": null,
+      "output_manifest": {
+       "file_count": 10,
+       "digest": "7aa97c69a83d24d0",
+       "files": [
+        {
+         "path": "output_folder/0_0/Kdown_0_0.tif",
+         "size": 328366,
+         "sha256": "d091ab73f4b85a32b89be1151439e38f13dccf2b3351bfce79a6d30d158adbee"
+        },
+        {
+         "path": "output_folder/0_0/Kup_0_0.tif",
+         "size": 328366,
+         "sha256": "52a03e315a9ecbae7d25a7cb042b95d0f73aa097e5c46c35bf0d5b43b0a8e528"
+        },
+        {
+         "path": "output_folder/0_0/Ldown_0_0.tif",
+         "size": 328366,
+         "sha256": "3cce8f2cd7f5d50fdef3de0efe90eaf70fdc7169b54acf4f63abc7ad769b2539"
+        },
+        {
+         "path": "output_folder/0_0/Lup_0_0.tif",
+         "size": 328366,
+         "sha256": "322018b6b802e723d99a0a67b32edb8e0abdc76ef925c1478c518a62578e8cd7"
+        },
+        {
+         "path": "output_folder/0_0/Shadow_0_0.tif",
+         "size": 328366,
+         "sha256": "1937ede07da38a9e8820c9f305871c536311052114c7c116a9752732aba79d33"
+        },
+        {
+         "path": "output_folder/0_0/TMRT_0_0.tif",
+         "size": 328366,
+         "sha256": "9aa8f8d9c31e5c3c65fb058778994110dc4f4b544f60107e8010baecb6da98c6"
+        },
+        {
+         "path": "output_folder/0_0/Ta_0_0.tif",
+         "size": 328366,
+         "sha256": "543115f078f18e068c97d8256bc388fac7bdf923a19989cafb5f63319bcd40a6"
+        },
+        {
+         "path": "output_folder/0_0/UTCI_0_0.tif",
+         "size": 328366,
+         "sha256": "f9f6e7cd7b0007b26b76585dda76eea8a9a2b04a2a093588d53fb06a775f5cd1"
+        },
+        {
+         "path": "output_folder/0_0/WBGT_0_0.tif",
+         "size": 328366,
+         "sha256": "8c852a9ac076ca64960b9a5051012b4e5c8f9d0872f013bf7a8cdcac28d48f2d"
+        },
+        {
+         "path": "output_folder/0_0/Wind_0_0.tif",
+         "size": 328366,
+         "sha256": "15b659c0a8c4d6e55fdcd258052516b850c723b3fff8308071dc596ce23ec1be"
+        }
+       ]
+      },
+      "versions": {
+       "python": "3.12.13",
+       "numpy": "2.4.6",
+       "numba": "0.67.0",
+       "machine": "arm64"
+      },
+      "pid": 25898
+     }
+    },
+    {
+     "tag": "time_b128_default_p1",
+     "backend": "default",
+     "block": 128,
+     "instrument": false,
+     "entry": "runtile",
+     "returncode": 0,
+     "parent_wall_s": 2.621,
+     "ambient_before": {
+      "loadavg": [
+       8.89,
+       17.78,
+       17.39
+      ],
+      "busy_non_browser": [],
+      "quiet": true
+     },
+     "ambient_after": {
+      "loadavg": [
+       8.58,
+       17.57,
+       17.31
+      ],
+      "busy_non_browser": [],
+      "quiet": true
+     },
+     "rss_tree": {
+      "sample_count": 14,
+      "errors": 0,
+      "peak_sum_rss_bytes": 210206720,
+      "mean_sum_rss_bytes": 151582427,
+      "per_pid_peak_rss_bytes": {
+       "26032": 210206720
+      },
+      "unit": "bytes (macOS ps rss KB * 1024)",
+      "double_count_note": "sum over the process tree counts shared pages once per process; peak_sum is an upper bound, never an admission number"
+     },
+     "native_cache_used": "default-user-cache",
+     "stdout_tail": "{\"out\": \"/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/raw/n8_02_time_b128_default_p1.json\", \"run_wall_s\": 1.4, \"digest\": \"7aa97c69a83d24d0\"}\n",
+     "stderr_tail": "Trusted legacy geometry without dependency identity: {'svfs': {'size_bytes': 17579, 'sha256': '104a00b985f1fc16df9ee4d575c964c68d4eed8a585d6b557d13678186d2f15a'}, 'shadowmats': {'size_bytes': 18846, 'sha256': '7b35f89104798a045cffa2ecd880b7d86e70c262f2e83659b3928ad8b39b565b'}, 'svftotal': {'size_bytes': 4840, 'sha256': '0f10eba06cba04e7abb8030dc0f0b1b08921cae410ba171ed1df4d3e089290cc'}}\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/pipeline_demand.py:313: RuntimeWarning: divide by zero encountered in log\n  np.log(one_minus)\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/engine.py:1696: RuntimeWarning: invalid value encountered in divide\n  return np.divide(a, b)\n",
+     "child": {
+      "schema": "sw8-n8-02-child-v1",
+      "requested": {
+       "backend": "default",
+       "block_pixels": 128,
+       "threads": 4,
+       "cpu_budget": 4,
+       "instrument": false,
+       "entry": "runtile"
+      },
+      "env": {
+       "threads_at_import": {
+        "BLIS_NUM_THREADS": "4",
+        "MKL_NUM_THREADS": "4",
+        "NUMBA_NUM_THREADS": "4",
+        "NUMEXPR_NUM_THREADS": "4",
+        "OMP_NUM_THREADS": "4",
+        "OPENBLAS_NUM_THREADS": "4",
+        "VECLIB_MAXIMUM_THREADS": "4"
+       },
+       "lw_backend": "",
+       "native_cache": "",
+       "numba_cache_dir": "/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/work/numba_cache"
+      },
+      "numba": {
+       "config_NUMBA_NUM_THREADS": 4,
+       "thread_set_ok": true,
+       "final_get_num_threads": 4,
+       "threading_layer": "workqueue",
+       "version": "0.67.0"
+      },
+      "options": {
+       "cache_dir": null,
+       "legacy_cache_policy": "trust",
+       "cache_enabled": true,
+       "memory_budget_bytes": 12884901888,
+       "cpu_budget": 4,
+       "workers": 1,
+       "threads_per_worker": 4,
+       "block_pixels": 128,
+       "checkpoint_interval": 1,
+       "resume": false
+      },
+      "module_origin": {
+       "solweig_light": "/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/__init__.py"
+      },
+      "run_wall_s": 1.4,
+      "import_s": 0.923,
+      "child_total_s": 2.483,
+      "peak_rss_self_bytes": 210288640,
+      "peak_rss_children_bytes": 1212416,
+      "counters_path": null,
+      "output_manifest": {
+       "file_count": 10,
+       "digest": "7aa97c69a83d24d0",
+       "files": [
+        {
+         "path": "output_folder/0_0/Kdown_0_0.tif",
+         "size": 328366,
+         "sha256": "d091ab73f4b85a32b89be1151439e38f13dccf2b3351bfce79a6d30d158adbee"
+        },
+        {
+         "path": "output_folder/0_0/Kup_0_0.tif",
+         "size": 328366,
+         "sha256": "52a03e315a9ecbae7d25a7cb042b95d0f73aa097e5c46c35bf0d5b43b0a8e528"
+        },
+        {
+         "path": "output_folder/0_0/Ldown_0_0.tif",
+         "size": 328366,
+         "sha256": "3cce8f2cd7f5d50fdef3de0efe90eaf70fdc7169b54acf4f63abc7ad769b2539"
+        },
+        {
+         "path": "output_folder/0_0/Lup_0_0.tif",
+         "size": 328366,
+         "sha256": "322018b6b802e723d99a0a67b32edb8e0abdc76ef925c1478c518a62578e8cd7"
+        },
+        {
+         "path": "output_folder/0_0/Shadow_0_0.tif",
+         "size": 328366,
+         "sha256": "1937ede07da38a9e8820c9f305871c536311052114c7c116a9752732aba79d33"
+        },
+        {
+         "path": "output_folder/0_0/TMRT_0_0.tif",
+         "size": 328366,
+         "sha256": "9aa8f8d9c31e5c3c65fb058778994110dc4f4b544f60107e8010baecb6da98c6"
+        },
+        {
+         "path": "output_folder/0_0/Ta_0_0.tif",
+         "size": 328366,
+         "sha256": "543115f078f18e068c97d8256bc388fac7bdf923a19989cafb5f63319bcd40a6"
+        },
+        {
+         "path": "output_folder/0_0/UTCI_0_0.tif",
+         "size": 328366,
+         "sha256": "f9f6e7cd7b0007b26b76585dda76eea8a9a2b04a2a093588d53fb06a775f5cd1"
+        },
+        {
+         "path": "output_folder/0_0/WBGT_0_0.tif",
+         "size": 328366,
+         "sha256": "8c852a9ac076ca64960b9a5051012b4e5c8f9d0872f013bf7a8cdcac28d48f2d"
+        },
+        {
+         "path": "output_folder/0_0/Wind_0_0.tif",
+         "size": 328366,
+         "sha256": "15b659c0a8c4d6e55fdcd258052516b850c723b3fff8308071dc596ce23ec1be"
+        }
+       ]
+      },
+      "versions": {
+       "python": "3.12.13",
+       "numpy": "2.4.6",
+       "numba": "0.67.0",
+       "machine": "arm64"
+      },
+      "pid": 26032
+     }
+    },
+    {
+     "tag": "time_b128_default_p2",
+     "backend": "default",
+     "block": 128,
+     "instrument": false,
+     "entry": "runtile",
+     "returncode": 0,
+     "parent_wall_s": 2.956,
+     "ambient_before": {
+      "loadavg": [
+       8.29,
+       17.36,
+       17.24
+      ],
+      "busy_non_browser": [],
+      "quiet": true
+     },
+     "ambient_after": {
+      "loadavg": [
+       8.29,
+       17.36,
+       17.24
+      ],
+      "busy_non_browser": [],
+      "quiet": true
+     },
+     "rss_tree": {
+      "sample_count": 15,
+      "errors": 0,
+      "peak_sum_rss_bytes": 211304448,
+      "mean_sum_rss_bytes": 161535317,
+      "per_pid_peak_rss_bytes": {
+       "26153": 211304448
+      },
+      "unit": "bytes (macOS ps rss KB * 1024)",
+      "double_count_note": "sum over the process tree counts shared pages once per process; peak_sum is an upper bound, never an admission number"
+     },
+     "native_cache_used": "default-user-cache",
+     "stdout_tail": "{\"out\": \"/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/raw/n8_02_time_b128_default_p2.json\", \"run_wall_s\": 1.3869, \"digest\": \"7aa97c69a83d24d0\"}\n",
+     "stderr_tail": "Trusted legacy geometry without dependency identity: {'svfs': {'size_bytes': 17579, 'sha256': '104a00b985f1fc16df9ee4d575c964c68d4eed8a585d6b557d13678186d2f15a'}, 'shadowmats': {'size_bytes': 18846, 'sha256': '7b35f89104798a045cffa2ecd880b7d86e70c262f2e83659b3928ad8b39b565b'}, 'svftotal': {'size_bytes': 4840, 'sha256': '0f10eba06cba04e7abb8030dc0f0b1b08921cae410ba171ed1df4d3e089290cc'}}\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/pipeline_demand.py:313: RuntimeWarning: divide by zero encountered in log\n  np.log(one_minus)\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/engine.py:1696: RuntimeWarning: invalid value encountered in divide\n  return np.divide(a, b)\n",
+     "child": {
+      "schema": "sw8-n8-02-child-v1",
+      "requested": {
+       "backend": "default",
+       "block_pixels": 128,
+       "threads": 4,
+       "cpu_budget": 4,
+       "instrument": false,
+       "entry": "runtile"
+      },
+      "env": {
+       "threads_at_import": {
+        "BLIS_NUM_THREADS": "4",
+        "MKL_NUM_THREADS": "4",
+        "NUMBA_NUM_THREADS": "4",
+        "NUMEXPR_NUM_THREADS": "4",
+        "OMP_NUM_THREADS": "4",
+        "OPENBLAS_NUM_THREADS": "4",
+        "VECLIB_MAXIMUM_THREADS": "4"
+       },
+       "lw_backend": "",
+       "native_cache": "",
+       "numba_cache_dir": "/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/work/numba_cache"
+      },
+      "numba": {
+       "config_NUMBA_NUM_THREADS": 4,
+       "thread_set_ok": true,
+       "final_get_num_threads": 4,
+       "threading_layer": "workqueue",
+       "version": "0.67.0"
+      },
+      "options": {
+       "cache_dir": null,
+       "legacy_cache_policy": "trust",
+       "cache_enabled": true,
+       "memory_budget_bytes": 12884901888,
+       "cpu_budget": 4,
+       "workers": 1,
+       "threads_per_worker": 4,
+       "block_pixels": 128,
+       "checkpoint_interval": 1,
+       "resume": false
+      },
+      "module_origin": {
+       "solweig_light": "/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/__init__.py"
+      },
+      "run_wall_s": 1.3869,
+      "import_s": 1.241,
+      "child_total_s": 2.816,
+      "peak_rss_self_bytes": 211320832,
+      "peak_rss_children_bytes": 1212416,
+      "counters_path": null,
+      "output_manifest": {
+       "file_count": 10,
+       "digest": "7aa97c69a83d24d0",
+       "files": [
+        {
+         "path": "output_folder/0_0/Kdown_0_0.tif",
+         "size": 328366,
+         "sha256": "d091ab73f4b85a32b89be1151439e38f13dccf2b3351bfce79a6d30d158adbee"
+        },
+        {
+         "path": "output_folder/0_0/Kup_0_0.tif",
+         "size": 328366,
+         "sha256": "52a03e315a9ecbae7d25a7cb042b95d0f73aa097e5c46c35bf0d5b43b0a8e528"
+        },
+        {
+         "path": "output_folder/0_0/Ldown_0_0.tif",
+         "size": 328366,
+         "sha256": "3cce8f2cd7f5d50fdef3de0efe90eaf70fdc7169b54acf4f63abc7ad769b2539"
+        },
+        {
+         "path": "output_folder/0_0/Lup_0_0.tif",
+         "size": 328366,
+         "sha256": "322018b6b802e723d99a0a67b32edb8e0abdc76ef925c1478c518a62578e8cd7"
+        },
+        {
+         "path": "output_folder/0_0/Shadow_0_0.tif",
+         "size": 328366,
+         "sha256": "1937ede07da38a9e8820c9f305871c536311052114c7c116a9752732aba79d33"
+        },
+        {
+         "path": "output_folder/0_0/TMRT_0_0.tif",
+         "size": 328366,
+         "sha256": "9aa8f8d9c31e5c3c65fb058778994110dc4f4b544f60107e8010baecb6da98c6"
+        },
+        {
+         "path": "output_folder/0_0/Ta_0_0.tif",
+         "size": 328366,
+         "sha256": "543115f078f18e068c97d8256bc388fac7bdf923a19989cafb5f63319bcd40a6"
+        },
+        {
+         "path": "output_folder/0_0/UTCI_0_0.tif",
+         "size": 328366,
+         "sha256": "f9f6e7cd7b0007b26b76585dda76eea8a9a2b04a2a093588d53fb06a775f5cd1"
+        },
+        {
+         "path": "output_folder/0_0/WBGT_0_0.tif",
+         "size": 328366,
+         "sha256": "8c852a9ac076ca64960b9a5051012b4e5c8f9d0872f013bf7a8cdcac28d48f2d"
+        },
+        {
+         "path": "output_folder/0_0/Wind_0_0.tif",
+         "size": 328366,
+         "sha256": "15b659c0a8c4d6e55fdcd258052516b850c723b3fff8308071dc596ce23ec1be"
+        }
+       ]
+      },
+      "versions": {
+       "python": "3.12.13",
+       "numpy": "2.4.6",
+       "numba": "0.67.0",
+       "machine": "arm64"
+      },
+      "pid": 26153
+     }
+    },
+    {
+     "tag": "time_b128_default_p3",
+     "backend": "default",
+     "block": 128,
+     "instrument": false,
+     "entry": "runtile",
+     "returncode": 0,
+     "parent_wall_s": 2.689,
+     "ambient_before": {
+      "loadavg": [
+       8.03,
+       17.15,
+       17.17
+      ],
+      "busy_non_browser": [],
+      "quiet": true
+     },
+     "ambient_after": {
+      "loadavg": [
+       9.55,
+       17.31,
+       17.23
+      ],
+      "busy_non_browser": [],
+      "quiet": true
+     },
+     "rss_tree": {
+      "sample_count": 14,
+      "errors": 0,
+      "peak_sum_rss_bytes": 210042880,
+      "mean_sum_rss_bytes": 165951195,
+      "per_pid_peak_rss_bytes": {
+       "26263": 210042880
+      },
+      "unit": "bytes (macOS ps rss KB * 1024)",
+      "double_count_note": "sum over the process tree counts shared pages once per process; peak_sum is an upper bound, never an admission number"
+     },
+     "native_cache_used": "default-user-cache",
+     "stdout_tail": "{\"out\": \"/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/raw/n8_02_time_b128_default_p3.json\", \"run_wall_s\": 1.4346, \"digest\": \"7aa97c69a83d24d0\"}\n",
+     "stderr_tail": "Trusted legacy geometry without dependency identity: {'svfs': {'size_bytes': 17579, 'sha256': '104a00b985f1fc16df9ee4d575c964c68d4eed8a585d6b557d13678186d2f15a'}, 'shadowmats': {'size_bytes': 18846, 'sha256': '7b35f89104798a045cffa2ecd880b7d86e70c262f2e83659b3928ad8b39b565b'}, 'svftotal': {'size_bytes': 4840, 'sha256': '0f10eba06cba04e7abb8030dc0f0b1b08921cae410ba171ed1df4d3e089290cc'}}\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/pipeline_demand.py:313: RuntimeWarning: divide by zero encountered in log\n  np.log(one_minus)\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/engine.py:1696: RuntimeWarning: invalid value encountered in divide\n  return np.divide(a, b)\n",
+     "child": {
+      "schema": "sw8-n8-02-child-v1",
+      "requested": {
+       "backend": "default",
+       "block_pixels": 128,
+       "threads": 4,
+       "cpu_budget": 4,
+       "instrument": false,
+       "entry": "runtile"
+      },
+      "env": {
+       "threads_at_import": {
+        "BLIS_NUM_THREADS": "4",
+        "MKL_NUM_THREADS": "4",
+        "NUMBA_NUM_THREADS": "4",
+        "NUMEXPR_NUM_THREADS": "4",
+        "OMP_NUM_THREADS": "4",
+        "OPENBLAS_NUM_THREADS": "4",
+        "VECLIB_MAXIMUM_THREADS": "4"
+       },
+       "lw_backend": "",
+       "native_cache": "",
+       "numba_cache_dir": "/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/work/numba_cache"
+      },
+      "numba": {
+       "config_NUMBA_NUM_THREADS": 4,
+       "thread_set_ok": true,
+       "final_get_num_threads": 4,
+       "threading_layer": "workqueue",
+       "version": "0.67.0"
+      },
+      "options": {
+       "cache_dir": null,
+       "legacy_cache_policy": "trust",
+       "cache_enabled": true,
+       "memory_budget_bytes": 12884901888,
+       "cpu_budget": 4,
+       "workers": 1,
+       "threads_per_worker": 4,
+       "block_pixels": 128,
+       "checkpoint_interval": 1,
+       "resume": false
+      },
+      "module_origin": {
+       "solweig_light": "/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/__init__.py"
+      },
+      "run_wall_s": 1.4346,
+      "import_s": 0.92,
+      "child_total_s": 2.543,
+      "peak_rss_self_bytes": 210042880,
+      "peak_rss_children_bytes": 1212416,
+      "counters_path": null,
+      "output_manifest": {
+       "file_count": 10,
+       "digest": "7aa97c69a83d24d0",
+       "files": [
+        {
+         "path": "output_folder/0_0/Kdown_0_0.tif",
+         "size": 328366,
+         "sha256": "d091ab73f4b85a32b89be1151439e38f13dccf2b3351bfce79a6d30d158adbee"
+        },
+        {
+         "path": "output_folder/0_0/Kup_0_0.tif",
+         "size": 328366,
+         "sha256": "52a03e315a9ecbae7d25a7cb042b95d0f73aa097e5c46c35bf0d5b43b0a8e528"
+        },
+        {
+         "path": "output_folder/0_0/Ldown_0_0.tif",
+         "size": 328366,
+         "sha256": "3cce8f2cd7f5d50fdef3de0efe90eaf70fdc7169b54acf4f63abc7ad769b2539"
+        },
+        {
+         "path": "output_folder/0_0/Lup_0_0.tif",
+         "size": 328366,
+         "sha256": "322018b6b802e723d99a0a67b32edb8e0abdc76ef925c1478c518a62578e8cd7"
+        },
+        {
+         "path": "output_folder/0_0/Shadow_0_0.tif",
+         "size": 328366,
+         "sha256": "1937ede07da38a9e8820c9f305871c536311052114c7c116a9752732aba79d33"
+        },
+        {
+         "path": "output_folder/0_0/TMRT_0_0.tif",
+         "size": 328366,
+         "sha256": "9aa8f8d9c31e5c3c65fb058778994110dc4f4b544f60107e8010baecb6da98c6"
+        },
+        {
+         "path": "output_folder/0_0/Ta_0_0.tif",
+         "size": 328366,
+         "sha256": "543115f078f18e068c97d8256bc388fac7bdf923a19989cafb5f63319bcd40a6"
+        },
+        {
+         "path": "output_folder/0_0/UTCI_0_0.tif",
+         "size": 328366,
+         "sha256": "f9f6e7cd7b0007b26b76585dda76eea8a9a2b04a2a093588d53fb06a775f5cd1"
+        },
+        {
+         "path": "output_folder/0_0/WBGT_0_0.tif",
+         "size": 328366,
+         "sha256": "8c852a9ac076ca64960b9a5051012b4e5c8f9d0872f013bf7a8cdcac28d48f2d"
+        },
+        {
+         "path": "output_folder/0_0/Wind_0_0.tif",
+         "size": 328366,
+         "sha256": "15b659c0a8c4d6e55fdcd258052516b850c723b3fff8308071dc596ce23ec1be"
+        }
+       ]
+      },
+      "versions": {
+       "python": "3.12.13",
+       "numpy": "2.4.6",
+       "numba": "0.67.0",
+       "machine": "arm64"
+      },
+      "pid": 26263
+     }
+    },
+    {
+     "tag": "time_b128_default_p4",
+     "backend": "default",
+     "block": 128,
+     "instrument": false,
+     "entry": "runtile",
+     "returncode": 0,
+     "parent_wall_s": 2.691,
+     "ambient_before": {
+      "loadavg": [
+       9.55,
+       17.31,
+       17.23
+      ],
+      "busy_non_browser": [],
+      "quiet": true
+     },
+     "ambient_after": {
+      "loadavg": [
+       9.74,
+       17.23,
+       17.2
+      ],
+      "busy_non_browser": [],
+      "quiet": true
+     },
+     "rss_tree": {
+      "sample_count": 14,
+      "errors": 0,
+      "peak_sum_rss_bytes": 209616896,
+      "mean_sum_rss_bytes": 165550958,
+      "per_pid_peak_rss_bytes": {
+       "26365": 209616896
+      },
+      "unit": "bytes (macOS ps rss KB * 1024)",
+      "double_count_note": "sum over the process tree counts shared pages once per process; peak_sum is an upper bound, never an admission number"
+     },
+     "native_cache_used": "default-user-cache",
+     "stdout_tail": "{\"out\": \"/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/raw/n8_02_time_b128_default_p4.json\", \"run_wall_s\": 1.3982, \"digest\": \"7aa97c69a83d24d0\"}\n",
+     "stderr_tail": "Trusted legacy geometry without dependency identity: {'svfs': {'size_bytes': 17579, 'sha256': '104a00b985f1fc16df9ee4d575c964c68d4eed8a585d6b557d13678186d2f15a'}, 'shadowmats': {'size_bytes': 18846, 'sha256': '7b35f89104798a045cffa2ecd880b7d86e70c262f2e83659b3928ad8b39b565b'}, 'svftotal': {'size_bytes': 4840, 'sha256': '0f10eba06cba04e7abb8030dc0f0b1b08921cae410ba171ed1df4d3e089290cc'}}\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/pipeline_demand.py:313: RuntimeWarning: divide by zero encountered in log\n  np.log(one_minus)\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/engine.py:1696: RuntimeWarning: invalid value encountered in divide\n  return np.divide(a, b)\n",
+     "child": {
+      "schema": "sw8-n8-02-child-v1",
+      "requested": {
+       "backend": "default",
+       "block_pixels": 128,
+       "threads": 4,
+       "cpu_budget": 4,
+       "instrument": false,
+       "entry": "runtile"
+      },
+      "env": {
+       "threads_at_import": {
+        "BLIS_NUM_THREADS": "4",
+        "MKL_NUM_THREADS": "4",
+        "NUMBA_NUM_THREADS": "4",
+        "NUMEXPR_NUM_THREADS": "4",
+        "OMP_NUM_THREADS": "4",
+        "OPENBLAS_NUM_THREADS": "4",
+        "VECLIB_MAXIMUM_THREADS": "4"
+       },
+       "lw_backend": "",
+       "native_cache": "",
+       "numba_cache_dir": "/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/work/numba_cache"
+      },
+      "numba": {
+       "config_NUMBA_NUM_THREADS": 4,
+       "thread_set_ok": true,
+       "final_get_num_threads": 4,
+       "threading_layer": "workqueue",
+       "version": "0.67.0"
+      },
+      "options": {
+       "cache_dir": null,
+       "legacy_cache_policy": "trust",
+       "cache_enabled": true,
+       "memory_budget_bytes": 12884901888,
+       "cpu_budget": 4,
+       "workers": 1,
+       "threads_per_worker": 4,
+       "block_pixels": 128,
+       "checkpoint_interval": 1,
+       "resume": false
+      },
+      "module_origin": {
+       "solweig_light": "/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/__init__.py"
+      },
+      "run_wall_s": 1.3982,
+      "import_s": 0.955,
+      "child_total_s": 2.551,
+      "peak_rss_self_bytes": 209616896,
+      "peak_rss_children_bytes": 1212416,
+      "counters_path": null,
+      "output_manifest": {
+       "file_count": 10,
+       "digest": "7aa97c69a83d24d0",
+       "files": [
+        {
+         "path": "output_folder/0_0/Kdown_0_0.tif",
+         "size": 328366,
+         "sha256": "d091ab73f4b85a32b89be1151439e38f13dccf2b3351bfce79a6d30d158adbee"
+        },
+        {
+         "path": "output_folder/0_0/Kup_0_0.tif",
+         "size": 328366,
+         "sha256": "52a03e315a9ecbae7d25a7cb042b95d0f73aa097e5c46c35bf0d5b43b0a8e528"
+        },
+        {
+         "path": "output_folder/0_0/Ldown_0_0.tif",
+         "size": 328366,
+         "sha256": "3cce8f2cd7f5d50fdef3de0efe90eaf70fdc7169b54acf4f63abc7ad769b2539"
+        },
+        {
+         "path": "output_folder/0_0/Lup_0_0.tif",
+         "size": 328366,
+         "sha256": "322018b6b802e723d99a0a67b32edb8e0abdc76ef925c1478c518a62578e8cd7"
+        },
+        {
+         "path": "output_folder/0_0/Shadow_0_0.tif",
+         "size": 328366,
+         "sha256": "1937ede07da38a9e8820c9f305871c536311052114c7c116a9752732aba79d33"
+        },
+        {
+         "path": "output_folder/0_0/TMRT_0_0.tif",
+         "size": 328366,
+         "sha256": "9aa8f8d9c31e5c3c65fb058778994110dc4f4b544f60107e8010baecb6da98c6"
+        },
+        {
+         "path": "output_folder/0_0/Ta_0_0.tif",
+         "size": 328366,
+         "sha256": "543115f078f18e068c97d8256bc388fac7bdf923a19989cafb5f63319bcd40a6"
+        },
+        {
+         "path": "output_folder/0_0/UTCI_0_0.tif",
+         "size": 328366,
+         "sha256": "f9f6e7cd7b0007b26b76585dda76eea8a9a2b04a2a093588d53fb06a775f5cd1"
+        },
+        {
+         "path": "output_folder/0_0/WBGT_0_0.tif",
+         "size": 328366,
+         "sha256": "8c852a9ac076ca64960b9a5051012b4e5c8f9d0872f013bf7a8cdcac28d48f2d"
+        },
+        {
+         "path": "output_folder/0_0/Wind_0_0.tif",
+         "size": 328366,
+         "sha256": "15b659c0a8c4d6e55fdcd258052516b850c723b3fff8308071dc596ce23ec1be"
+        }
+       ]
+      },
+      "versions": {
+       "python": "3.12.13",
+       "numpy": "2.4.6",
+       "numba": "0.67.0",
+       "machine": "arm64"
+      },
+      "pid": 26365
+     }
+    }
+   ],
+   "native": [
+    {
+     "tag": "time_b128_native_p0",
+     "backend": "native",
+     "block": 128,
+     "instrument": false,
+     "entry": "runtile",
+     "returncode": 0,
+     "parent_wall_s": 2.728,
+     "ambient_before": {
+      "loadavg": [
+       8.89,
+       17.78,
+       17.39
+      ],
+      "busy_non_browser": [],
+      "quiet": true
+     },
+     "ambient_after": {
+      "loadavg": [
+       8.89,
+       17.78,
+       17.39
+      ],
+      "busy_non_browser": [],
+      "quiet": true
+     },
+     "rss_tree": {
+      "sample_count": 14,
+      "errors": 0,
+      "peak_sum_rss_bytes": 210780160,
+      "mean_sum_rss_bytes": 165906725,
+      "per_pid_peak_rss_bytes": {
+       "25968": 210780160
+      },
+      "unit": "bytes (macOS ps rss KB * 1024)",
+      "double_count_note": "sum over the process tree counts shared pages once per process; peak_sum is an upper bound, never an admission number"
+     },
+     "native_cache_used": "default-user-cache",
+     "stdout_tail": "{\"out\": \"/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/raw/n8_02_time_b128_native_p0.json\", \"run_wall_s\": 1.4287, \"digest\": \"7aa97c69a83d24d0\"}\n",
+     "stderr_tail": "Trusted legacy geometry without dependency identity: {'svfs': {'size_bytes': 17579, 'sha256': '104a00b985f1fc16df9ee4d575c964c68d4eed8a585d6b557d13678186d2f15a'}, 'shadowmats': {'size_bytes': 18846, 'sha256': '7b35f89104798a045cffa2ecd880b7d86e70c262f2e83659b3928ad8b39b565b'}, 'svftotal': {'size_bytes': 4840, 'sha256': '0f10eba06cba04e7abb8030dc0f0b1b08921cae410ba171ed1df4d3e089290cc'}}\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/pipeline_demand.py:313: RuntimeWarning: divide by zero encountered in log\n  np.log(one_minus)\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/engine.py:1696: RuntimeWarning: invalid value encountered in divide\n  return np.divide(a, b)\n",
+     "child": {
+      "schema": "sw8-n8-02-child-v1",
+      "requested": {
+       "backend": "native",
+       "block_pixels": 128,
+       "threads": 4,
+       "cpu_budget": 4,
+       "instrument": false,
+       "entry": "runtile"
+      },
+      "env": {
+       "threads_at_import": {
+        "BLIS_NUM_THREADS": "4",
+        "MKL_NUM_THREADS": "4",
+        "NUMBA_NUM_THREADS": "4",
+        "NUMEXPR_NUM_THREADS": "4",
+        "OMP_NUM_THREADS": "4",
+        "OPENBLAS_NUM_THREADS": "4",
+        "VECLIB_MAXIMUM_THREADS": "4"
+       },
+       "lw_backend": "native",
+       "native_cache": "",
+       "numba_cache_dir": "/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/work/numba_cache"
+      },
+      "numba": {
+       "config_NUMBA_NUM_THREADS": 4,
+       "thread_set_ok": true,
+       "final_get_num_threads": 4,
+       "threading_layer": "workqueue",
+       "version": "0.67.0"
+      },
+      "options": {
+       "cache_dir": null,
+       "legacy_cache_policy": "trust",
+       "cache_enabled": true,
+       "memory_budget_bytes": 12884901888,
+       "cpu_budget": 4,
+       "workers": 1,
+       "threads_per_worker": 4,
+       "block_pixels": 128,
+       "checkpoint_interval": 1,
+       "resume": false
+      },
+      "module_origin": {
+       "solweig_light": "/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/__init__.py"
+      },
+      "run_wall_s": 1.4287,
+      "import_s": 0.932,
+      "child_total_s": 2.561,
+      "peak_rss_self_bytes": 210763776,
+      "peak_rss_children_bytes": 1212416,
+      "counters_path": null,
+      "output_manifest": {
+       "file_count": 10,
+       "digest": "7aa97c69a83d24d0",
+       "files": [
+        {
+         "path": "output_folder/0_0/Kdown_0_0.tif",
+         "size": 328366,
+         "sha256": "d091ab73f4b85a32b89be1151439e38f13dccf2b3351bfce79a6d30d158adbee"
+        },
+        {
+         "path": "output_folder/0_0/Kup_0_0.tif",
+         "size": 328366,
+         "sha256": "52a03e315a9ecbae7d25a7cb042b95d0f73aa097e5c46c35bf0d5b43b0a8e528"
+        },
+        {
+         "path": "output_folder/0_0/Ldown_0_0.tif",
+         "size": 328366,
+         "sha256": "3cce8f2cd7f5d50fdef3de0efe90eaf70fdc7169b54acf4f63abc7ad769b2539"
+        },
+        {
+         "path": "output_folder/0_0/Lup_0_0.tif",
+         "size": 328366,
+         "sha256": "322018b6b802e723d99a0a67b32edb8e0abdc76ef925c1478c518a62578e8cd7"
+        },
+        {
+         "path": "output_folder/0_0/Shadow_0_0.tif",
+         "size": 328366,
+         "sha256": "1937ede07da38a9e8820c9f305871c536311052114c7c116a9752732aba79d33"
+        },
+        {
+         "path": "output_folder/0_0/TMRT_0_0.tif",
+         "size": 328366,
+         "sha256": "9aa8f8d9c31e5c3c65fb058778994110dc4f4b544f60107e8010baecb6da98c6"
+        },
+        {
+         "path": "output_folder/0_0/Ta_0_0.tif",
+         "size": 328366,
+         "sha256": "543115f078f18e068c97d8256bc388fac7bdf923a19989cafb5f63319bcd40a6"
+        },
+        {
+         "path": "output_folder/0_0/UTCI_0_0.tif",
+         "size": 328366,
+         "sha256": "f9f6e7cd7b0007b26b76585dda76eea8a9a2b04a2a093588d53fb06a775f5cd1"
+        },
+        {
+         "path": "output_folder/0_0/WBGT_0_0.tif",
+         "size": 328366,
+         "sha256": "8c852a9ac076ca64960b9a5051012b4e5c8f9d0872f013bf7a8cdcac28d48f2d"
+        },
+        {
+         "path": "output_folder/0_0/Wind_0_0.tif",
+         "size": 328366,
+         "sha256": "15b659c0a8c4d6e55fdcd258052516b850c723b3fff8308071dc596ce23ec1be"
+        }
+       ]
+      },
+      "versions": {
+       "python": "3.12.13",
+       "numpy": "2.4.6",
+       "numba": "0.67.0",
+       "machine": "arm64"
+      },
+      "pid": 25968
+     }
+    },
+    {
+     "tag": "time_b128_native_p1",
+     "backend": "native",
+     "block": 128,
+     "instrument": false,
+     "entry": "runtile",
+     "returncode": 0,
+     "parent_wall_s": 2.703,
+     "ambient_before": {
+      "loadavg": [
+       8.58,
+       17.57,
+       17.31
+      ],
+      "busy_non_browser": [],
+      "quiet": true
+     },
+     "ambient_after": {
+      "loadavg": [
+       8.29,
+       17.36,
+       17.24
+      ],
+      "busy_non_browser": [],
+      "quiet": true
+     },
+     "rss_tree": {
+      "sample_count": 14,
+      "errors": 0,
+      "peak_sum_rss_bytes": 210042880,
+      "mean_sum_rss_bytes": 151142400,
+      "per_pid_peak_rss_bytes": {
+       "26103": 210042880
+      },
+      "unit": "bytes (macOS ps rss KB * 1024)",
+      "double_count_note": "sum over the process tree counts shared pages once per process; peak_sum is an upper bound, never an admission number"
+     },
+     "native_cache_used": "default-user-cache",
+     "stdout_tail": "{\"out\": \"/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/raw/n8_02_time_b128_native_p1.json\", \"run_wall_s\": 1.4283, \"digest\": \"7aa97c69a83d24d0\"}\n",
+     "stderr_tail": "Trusted legacy geometry without dependency identity: {'svfs': {'size_bytes': 17579, 'sha256': '104a00b985f1fc16df9ee4d575c964c68d4eed8a585d6b557d13678186d2f15a'}, 'shadowmats': {'size_bytes': 18846, 'sha256': '7b35f89104798a045cffa2ecd880b7d86e70c262f2e83659b3928ad8b39b565b'}, 'svftotal': {'size_bytes': 4840, 'sha256': '0f10eba06cba04e7abb8030dc0f0b1b08921cae410ba171ed1df4d3e089290cc'}}\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/pipeline_demand.py:313: RuntimeWarning: divide by zero encountered in log\n  np.log(one_minus)\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/engine.py:1696: RuntimeWarning: invalid value encountered in divide\n  return np.divide(a, b)\n",
+     "child": {
+      "schema": "sw8-n8-02-child-v1",
+      "requested": {
+       "backend": "native",
+       "block_pixels": 128,
+       "threads": 4,
+       "cpu_budget": 4,
+       "instrument": false,
+       "entry": "runtile"
+      },
+      "env": {
+       "threads_at_import": {
+        "BLIS_NUM_THREADS": "4",
+        "MKL_NUM_THREADS": "4",
+        "NUMBA_NUM_THREADS": "4",
+        "NUMEXPR_NUM_THREADS": "4",
+        "OMP_NUM_THREADS": "4",
+        "OPENBLAS_NUM_THREADS": "4",
+        "VECLIB_MAXIMUM_THREADS": "4"
+       },
+       "lw_backend": "native",
+       "native_cache": "",
+       "numba_cache_dir": "/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/work/numba_cache"
+      },
+      "numba": {
+       "config_NUMBA_NUM_THREADS": 4,
+       "thread_set_ok": true,
+       "final_get_num_threads": 4,
+       "threading_layer": "workqueue",
+       "version": "0.67.0"
+      },
+      "options": {
+       "cache_dir": null,
+       "legacy_cache_policy": "trust",
+       "cache_enabled": true,
+       "memory_budget_bytes": 12884901888,
+       "cpu_budget": 4,
+       "workers": 1,
+       "threads_per_worker": 4,
+       "block_pixels": 128,
+       "checkpoint_interval": 1,
+       "resume": false
+      },
+      "module_origin": {
+       "solweig_light": "/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/__init__.py"
+      },
+      "run_wall_s": 1.4283,
+      "import_s": 0.935,
+      "child_total_s": 2.561,
+      "peak_rss_self_bytes": 210108416,
+      "peak_rss_children_bytes": 1212416,
+      "counters_path": null,
+      "output_manifest": {
+       "file_count": 10,
+       "digest": "7aa97c69a83d24d0",
+       "files": [
+        {
+         "path": "output_folder/0_0/Kdown_0_0.tif",
+         "size": 328366,
+         "sha256": "d091ab73f4b85a32b89be1151439e38f13dccf2b3351bfce79a6d30d158adbee"
+        },
+        {
+         "path": "output_folder/0_0/Kup_0_0.tif",
+         "size": 328366,
+         "sha256": "52a03e315a9ecbae7d25a7cb042b95d0f73aa097e5c46c35bf0d5b43b0a8e528"
+        },
+        {
+         "path": "output_folder/0_0/Ldown_0_0.tif",
+         "size": 328366,
+         "sha256": "3cce8f2cd7f5d50fdef3de0efe90eaf70fdc7169b54acf4f63abc7ad769b2539"
+        },
+        {
+         "path": "output_folder/0_0/Lup_0_0.tif",
+         "size": 328366,
+         "sha256": "322018b6b802e723d99a0a67b32edb8e0abdc76ef925c1478c518a62578e8cd7"
+        },
+        {
+         "path": "output_folder/0_0/Shadow_0_0.tif",
+         "size": 328366,
+         "sha256": "1937ede07da38a9e8820c9f305871c536311052114c7c116a9752732aba79d33"
+        },
+        {
+         "path": "output_folder/0_0/TMRT_0_0.tif",
+         "size": 328366,
+         "sha256": "9aa8f8d9c31e5c3c65fb058778994110dc4f4b544f60107e8010baecb6da98c6"
+        },
+        {
+         "path": "output_folder/0_0/Ta_0_0.tif",
+         "size": 328366,
+         "sha256": "543115f078f18e068c97d8256bc388fac7bdf923a19989cafb5f63319bcd40a6"
+        },
+        {
+         "path": "output_folder/0_0/UTCI_0_0.tif",
+         "size": 328366,
+         "sha256": "f9f6e7cd7b0007b26b76585dda76eea8a9a2b04a2a093588d53fb06a775f5cd1"
+        },
+        {
+         "path": "output_folder/0_0/WBGT_0_0.tif",
+         "size": 328366,
+         "sha256": "8c852a9ac076ca64960b9a5051012b4e5c8f9d0872f013bf7a8cdcac28d48f2d"
+        },
+        {
+         "path": "output_folder/0_0/Wind_0_0.tif",
+         "size": 328366,
+         "sha256": "15b659c0a8c4d6e55fdcd258052516b850c723b3fff8308071dc596ce23ec1be"
+        }
+       ]
+      },
+      "versions": {
+       "python": "3.12.13",
+       "numpy": "2.4.6",
+       "numba": "0.67.0",
+       "machine": "arm64"
+      },
+      "pid": 26103
+     }
+    },
+    {
+     "tag": "time_b128_native_p2",
+     "backend": "native",
+     "block": 128,
+     "instrument": false,
+     "entry": "runtile",
+     "returncode": 0,
+     "parent_wall_s": 2.654,
+     "ambient_before": {
+      "loadavg": [
+       8.29,
+       17.36,
+       17.24
+      ],
+      "busy_non_browser": [],
+      "quiet": true
+     },
+     "ambient_after": {
+      "loadavg": [
+       8.03,
+       17.15,
+       17.17
+      ],
+      "busy_non_browser": [],
+      "quiet": true
+     },
+     "rss_tree": {
+      "sample_count": 14,
+      "errors": 0,
+      "peak_sum_rss_bytes": 210714624,
+      "mean_sum_rss_bytes": 165813102,
+      "per_pid_peak_rss_bytes": {
+       "26224": 210714624
+      },
+      "unit": "bytes (macOS ps rss KB * 1024)",
+      "double_count_note": "sum over the process tree counts shared pages once per process; peak_sum is an upper bound, never an admission number"
+     },
+     "native_cache_used": "default-user-cache",
+     "stdout_tail": "{\"out\": \"/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/raw/n8_02_time_b128_native_p2.json\", \"run_wall_s\": 1.4099, \"digest\": \"7aa97c69a83d24d0\"}\n",
+     "stderr_tail": "Trusted legacy geometry without dependency identity: {'svfs': {'size_bytes': 17579, 'sha256': '104a00b985f1fc16df9ee4d575c964c68d4eed8a585d6b557d13678186d2f15a'}, 'shadowmats': {'size_bytes': 18846, 'sha256': '7b35f89104798a045cffa2ecd880b7d86e70c262f2e83659b3928ad8b39b565b'}, 'svftotal': {'size_bytes': 4840, 'sha256': '0f10eba06cba04e7abb8030dc0f0b1b08921cae410ba171ed1df4d3e089290cc'}}\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/pipeline_demand.py:313: RuntimeWarning: divide by zero encountered in log\n  np.log(one_minus)\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/engine.py:1696: RuntimeWarning: invalid value encountered in divide\n  return np.divide(a, b)\n",
+     "child": {
+      "schema": "sw8-n8-02-child-v1",
+      "requested": {
+       "backend": "native",
+       "block_pixels": 128,
+       "threads": 4,
+       "cpu_budget": 4,
+       "instrument": false,
+       "entry": "runtile"
+      },
+      "env": {
+       "threads_at_import": {
+        "BLIS_NUM_THREADS": "4",
+        "MKL_NUM_THREADS": "4",
+        "NUMBA_NUM_THREADS": "4",
+        "NUMEXPR_NUM_THREADS": "4",
+        "OMP_NUM_THREADS": "4",
+        "OPENBLAS_NUM_THREADS": "4",
+        "VECLIB_MAXIMUM_THREADS": "4"
+       },
+       "lw_backend": "native",
+       "native_cache": "",
+       "numba_cache_dir": "/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/work/numba_cache"
+      },
+      "numba": {
+       "config_NUMBA_NUM_THREADS": 4,
+       "thread_set_ok": true,
+       "final_get_num_threads": 4,
+       "threading_layer": "workqueue",
+       "version": "0.67.0"
+      },
+      "options": {
+       "cache_dir": null,
+       "legacy_cache_policy": "trust",
+       "cache_enabled": true,
+       "memory_budget_bytes": 12884901888,
+       "cpu_budget": 4,
+       "workers": 1,
+       "threads_per_worker": 4,
+       "block_pixels": 128,
+       "checkpoint_interval": 1,
+       "resume": false
+      },
+      "module_origin": {
+       "solweig_light": "/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/__init__.py"
+      },
+      "run_wall_s": 1.4099,
+      "import_s": 0.92,
+      "child_total_s": 2.511,
+      "peak_rss_self_bytes": 210714624,
+      "peak_rss_children_bytes": 1212416,
+      "counters_path": null,
+      "output_manifest": {
+       "file_count": 10,
+       "digest": "7aa97c69a83d24d0",
+       "files": [
+        {
+         "path": "output_folder/0_0/Kdown_0_0.tif",
+         "size": 328366,
+         "sha256": "d091ab73f4b85a32b89be1151439e38f13dccf2b3351bfce79a6d30d158adbee"
+        },
+        {
+         "path": "output_folder/0_0/Kup_0_0.tif",
+         "size": 328366,
+         "sha256": "52a03e315a9ecbae7d25a7cb042b95d0f73aa097e5c46c35bf0d5b43b0a8e528"
+        },
+        {
+         "path": "output_folder/0_0/Ldown_0_0.tif",
+         "size": 328366,
+         "sha256": "3cce8f2cd7f5d50fdef3de0efe90eaf70fdc7169b54acf4f63abc7ad769b2539"
+        },
+        {
+         "path": "output_folder/0_0/Lup_0_0.tif",
+         "size": 328366,
+         "sha256": "322018b6b802e723d99a0a67b32edb8e0abdc76ef925c1478c518a62578e8cd7"
+        },
+        {
+         "path": "output_folder/0_0/Shadow_0_0.tif",
+         "size": 328366,
+         "sha256": "1937ede07da38a9e8820c9f305871c536311052114c7c116a9752732aba79d33"
+        },
+        {
+         "path": "output_folder/0_0/TMRT_0_0.tif",
+         "size": 328366,
+         "sha256": "9aa8f8d9c31e5c3c65fb058778994110dc4f4b544f60107e8010baecb6da98c6"
+        },
+        {
+         "path": "output_folder/0_0/Ta_0_0.tif",
+         "size": 328366,
+         "sha256": "543115f078f18e068c97d8256bc388fac7bdf923a19989cafb5f63319bcd40a6"
+        },
+        {
+         "path": "output_folder/0_0/UTCI_0_0.tif",
+         "size": 328366,
+         "sha256": "f9f6e7cd7b0007b26b76585dda76eea8a9a2b04a2a093588d53fb06a775f5cd1"
+        },
+        {
+         "path": "output_folder/0_0/WBGT_0_0.tif",
+         "size": 328366,
+         "sha256": "8c852a9ac076ca64960b9a5051012b4e5c8f9d0872f013bf7a8cdcac28d48f2d"
+        },
+        {
+         "path": "output_folder/0_0/Wind_0_0.tif",
+         "size": 328366,
+         "sha256": "15b659c0a8c4d6e55fdcd258052516b850c723b3fff8308071dc596ce23ec1be"
+        }
+       ]
+      },
+      "versions": {
+       "python": "3.12.13",
+       "numpy": "2.4.6",
+       "numba": "0.67.0",
+       "machine": "arm64"
+      },
+      "pid": 26224
+     }
+    },
+    {
+     "tag": "time_b128_native_p3",
+     "backend": "native",
+     "block": 128,
+     "instrument": false,
+     "entry": "runtile",
+     "returncode": 0,
+     "parent_wall_s": 2.699,
+     "ambient_before": {
+      "loadavg": [
+       9.55,
+       17.31,
+       17.23
+      ],
+      "busy_non_browser": [
+       {
+        "pcpu": 56.9,
+        "comm": "/System/Library/Frameworks/CoreServices.framework/Versions/A"
+       }
+      ],
+      "quiet": false
+     },
+     "ambient_after": {
+      "loadavg": [
+       9.55,
+       17.31,
+       17.23
+      ],
+      "busy_non_browser": [],
+      "quiet": true
+     },
+     "rss_tree": {
+      "sample_count": 14,
+      "errors": 0,
+      "peak_sum_rss_bytes": 209862656,
+      "mean_sum_rss_bytes": 162447360,
+      "per_pid_peak_rss_bytes": {
+       "26316": 209862656
+      },
+      "unit": "bytes (macOS ps rss KB * 1024)",
+      "double_count_note": "sum over the process tree counts shared pages once per process; peak_sum is an upper bound, never an admission number"
+     },
+     "native_cache_used": "default-user-cache",
+     "stdout_tail": "{\"out\": \"/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/raw/n8_02_time_b128_native_p3.json\", \"run_wall_s\": 1.401, \"digest\": \"7aa97c69a83d24d0\"}\n",
+     "stderr_tail": "Trusted legacy geometry without dependency identity: {'svfs': {'size_bytes': 17579, 'sha256': '104a00b985f1fc16df9ee4d575c964c68d4eed8a585d6b557d13678186d2f15a'}, 'shadowmats': {'size_bytes': 18846, 'sha256': '7b35f89104798a045cffa2ecd880b7d86e70c262f2e83659b3928ad8b39b565b'}, 'svftotal': {'size_bytes': 4840, 'sha256': '0f10eba06cba04e7abb8030dc0f0b1b08921cae410ba171ed1df4d3e089290cc'}}\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/pipeline_demand.py:313: RuntimeWarning: divide by zero encountered in log\n  np.log(one_minus)\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/engine.py:1696: RuntimeWarning: invalid value encountered in divide\n  return np.divide(a, b)\n",
+     "child": {
+      "schema": "sw8-n8-02-child-v1",
+      "requested": {
+       "backend": "native",
+       "block_pixels": 128,
+       "threads": 4,
+       "cpu_budget": 4,
+       "instrument": false,
+       "entry": "runtile"
+      },
+      "env": {
+       "threads_at_import": {
+        "BLIS_NUM_THREADS": "4",
+        "MKL_NUM_THREADS": "4",
+        "NUMBA_NUM_THREADS": "4",
+        "NUMEXPR_NUM_THREADS": "4",
+        "OMP_NUM_THREADS": "4",
+        "OPENBLAS_NUM_THREADS": "4",
+        "VECLIB_MAXIMUM_THREADS": "4"
+       },
+       "lw_backend": "native",
+       "native_cache": "",
+       "numba_cache_dir": "/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/work/numba_cache"
+      },
+      "numba": {
+       "config_NUMBA_NUM_THREADS": 4,
+       "thread_set_ok": true,
+       "final_get_num_threads": 4,
+       "threading_layer": "workqueue",
+       "version": "0.67.0"
+      },
+      "options": {
+       "cache_dir": null,
+       "legacy_cache_policy": "trust",
+       "cache_enabled": true,
+       "memory_budget_bytes": 12884901888,
+       "cpu_budget": 4,
+       "workers": 1,
+       "threads_per_worker": 4,
+       "block_pixels": 128,
+       "checkpoint_interval": 1,
+       "resume": false
+      },
+      "module_origin": {
+       "solweig_light": "/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/__init__.py"
+      },
+      "run_wall_s": 1.401,
+      "import_s": 0.961,
+      "child_total_s": 2.552,
+      "peak_rss_self_bytes": 209862656,
+      "peak_rss_children_bytes": 1212416,
+      "counters_path": null,
+      "output_manifest": {
+       "file_count": 10,
+       "digest": "7aa97c69a83d24d0",
+       "files": [
+        {
+         "path": "output_folder/0_0/Kdown_0_0.tif",
+         "size": 328366,
+         "sha256": "d091ab73f4b85a32b89be1151439e38f13dccf2b3351bfce79a6d30d158adbee"
+        },
+        {
+         "path": "output_folder/0_0/Kup_0_0.tif",
+         "size": 328366,
+         "sha256": "52a03e315a9ecbae7d25a7cb042b95d0f73aa097e5c46c35bf0d5b43b0a8e528"
+        },
+        {
+         "path": "output_folder/0_0/Ldown_0_0.tif",
+         "size": 328366,
+         "sha256": "3cce8f2cd7f5d50fdef3de0efe90eaf70fdc7169b54acf4f63abc7ad769b2539"
+        },
+        {
+         "path": "output_folder/0_0/Lup_0_0.tif",
+         "size": 328366,
+         "sha256": "322018b6b802e723d99a0a67b32edb8e0abdc76ef925c1478c518a62578e8cd7"
+        },
+        {
+         "path": "output_folder/0_0/Shadow_0_0.tif",
+         "size": 328366,
+         "sha256": "1937ede07da38a9e8820c9f305871c536311052114c7c116a9752732aba79d33"
+        },
+        {
+         "path": "output_folder/0_0/TMRT_0_0.tif",
+         "size": 328366,
+         "sha256": "9aa8f8d9c31e5c3c65fb058778994110dc4f4b544f60107e8010baecb6da98c6"
+        },
+        {
+         "path": "output_folder/0_0/Ta_0_0.tif",
+         "size": 328366,
+         "sha256": "543115f078f18e068c97d8256bc388fac7bdf923a19989cafb5f63319bcd40a6"
+        },
+        {
+         "path": "output_folder/0_0/UTCI_0_0.tif",
+         "size": 328366,
+         "sha256": "f9f6e7cd7b0007b26b76585dda76eea8a9a2b04a2a093588d53fb06a775f5cd1"
+        },
+        {
+         "path": "output_folder/0_0/WBGT_0_0.tif",
+         "size": 328366,
+         "sha256": "8c852a9ac076ca64960b9a5051012b4e5c8f9d0872f013bf7a8cdcac28d48f2d"
+        },
+        {
+         "path": "output_folder/0_0/Wind_0_0.tif",
+         "size": 328366,
+         "sha256": "15b659c0a8c4d6e55fdcd258052516b850c723b3fff8308071dc596ce23ec1be"
+        }
+       ]
+      },
+      "versions": {
+       "python": "3.12.13",
+       "numpy": "2.4.6",
+       "numba": "0.67.0",
+       "machine": "arm64"
+      },
+      "pid": 26316
+     }
+    },
+    {
+     "tag": "time_b128_native_p4",
+     "backend": "native",
+     "block": 128,
+     "instrument": false,
+     "entry": "runtile",
+     "returncode": 0,
+     "parent_wall_s": 2.622,
+     "ambient_before": {
+      "loadavg": [
+       9.74,
+       17.23,
+       17.2
+      ],
+      "busy_non_browser": [],
+      "quiet": true
+     },
+     "ambient_after": {
+      "loadavg": [
+       9.84,
+       17.12,
+       17.16
+      ],
+      "busy_non_browser": [
+       {
+        "pcpu": 59.3,
+        "comm": "/System/Library/CoreServices/ControlCenter.app/Contents/MacO"
+       }
+      ],
+      "quiet": false
+     },
+     "rss_tree": {
+      "sample_count": 14,
+      "errors": 0,
+      "peak_sum_rss_bytes": 210370560,
+      "mean_sum_rss_bytes": 166180571,
+      "per_pid_peak_rss_bytes": {
+       "26401": 210370560
+      },
+      "unit": "bytes (macOS ps rss KB * 1024)",
+      "double_count_note": "sum over the process tree counts shared pages once per process; peak_sum is an upper bound, never an admission number"
+     },
+     "native_cache_used": "default-user-cache",
+     "stdout_tail": "{\"out\": \"/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/raw/n8_02_time_b128_native_p4.json\", \"run_wall_s\": 1.4023, \"digest\": \"7aa97c69a83d24d0\"}\n",
+     "stderr_tail": "Trusted legacy geometry without dependency identity: {'svfs': {'size_bytes': 17579, 'sha256': '104a00b985f1fc16df9ee4d575c964c68d4eed8a585d6b557d13678186d2f15a'}, 'shadowmats': {'size_bytes': 18846, 'sha256': '7b35f89104798a045cffa2ecd880b7d86e70c262f2e83659b3928ad8b39b565b'}, 'svftotal': {'size_bytes': 4840, 'sha256': '0f10eba06cba04e7abb8030dc0f0b1b08921cae410ba171ed1df4d3e089290cc'}}\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/pipeline_demand.py:313: RuntimeWarning: divide by zero encountered in log\n  np.log(one_minus)\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/engine.py:1696: RuntimeWarning: invalid value encountered in divide\n  return np.divide(a, b)\n",
+     "child": {
+      "schema": "sw8-n8-02-child-v1",
+      "requested": {
+       "backend": "native",
+       "block_pixels": 128,
+       "threads": 4,
+       "cpu_budget": 4,
+       "instrument": false,
+       "entry": "runtile"
+      },
+      "env": {
+       "threads_at_import": {
+        "BLIS_NUM_THREADS": "4",
+        "MKL_NUM_THREADS": "4",
+        "NUMBA_NUM_THREADS": "4",
+        "NUMEXPR_NUM_THREADS": "4",
+        "OMP_NUM_THREADS": "4",
+        "OPENBLAS_NUM_THREADS": "4",
+        "VECLIB_MAXIMUM_THREADS": "4"
+       },
+       "lw_backend": "native",
+       "native_cache": "",
+       "numba_cache_dir": "/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/work/numba_cache"
+      },
+      "numba": {
+       "config_NUMBA_NUM_THREADS": 4,
+       "thread_set_ok": true,
+       "final_get_num_threads": 4,
+       "threading_layer": "workqueue",
+       "version": "0.67.0"
+      },
+      "options": {
+       "cache_dir": null,
+       "legacy_cache_policy": "trust",
+       "cache_enabled": true,
+       "memory_budget_bytes": 12884901888,
+       "cpu_budget": 4,
+       "workers": 1,
+       "threads_per_worker": 4,
+       "block_pixels": 128,
+       "checkpoint_interval": 1,
+       "resume": false
+      },
+      "module_origin": {
+       "solweig_light": "/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/__init__.py"
+      },
+      "run_wall_s": 1.4023,
+      "import_s": 0.88,
+      "child_total_s": 2.47,
+      "peak_rss_self_bytes": 210370560,
+      "peak_rss_children_bytes": 1212416,
+      "counters_path": null,
+      "output_manifest": {
+       "file_count": 10,
+       "digest": "7aa97c69a83d24d0",
+       "files": [
+        {
+         "path": "output_folder/0_0/Kdown_0_0.tif",
+         "size": 328366,
+         "sha256": "d091ab73f4b85a32b89be1151439e38f13dccf2b3351bfce79a6d30d158adbee"
+        },
+        {
+         "path": "output_folder/0_0/Kup_0_0.tif",
+         "size": 328366,
+         "sha256": "52a03e315a9ecbae7d25a7cb042b95d0f73aa097e5c46c35bf0d5b43b0a8e528"
+        },
+        {
+         "path": "output_folder/0_0/Ldown_0_0.tif",
+         "size": 328366,
+         "sha256": "3cce8f2cd7f5d50fdef3de0efe90eaf70fdc7169b54acf4f63abc7ad769b2539"
+        },
+        {
+         "path": "output_folder/0_0/Lup_0_0.tif",
+         "size": 328366,
+         "sha256": "322018b6b802e723d99a0a67b32edb8e0abdc76ef925c1478c518a62578e8cd7"
+        },
+        {
+         "path": "output_folder/0_0/Shadow_0_0.tif",
+         "size": 328366,
+         "sha256": "1937ede07da38a9e8820c9f305871c536311052114c7c116a9752732aba79d33"
+        },
+        {
+         "path": "output_folder/0_0/TMRT_0_0.tif",
+         "size": 328366,
+         "sha256": "9aa8f8d9c31e5c3c65fb058778994110dc4f4b544f60107e8010baecb6da98c6"
+        },
+        {
+         "path": "output_folder/0_0/Ta_0_0.tif",
+         "size": 328366,
+         "sha256": "543115f078f18e068c97d8256bc388fac7bdf923a19989cafb5f63319bcd40a6"
+        },
+        {
+         "path": "output_folder/0_0/UTCI_0_0.tif",
+         "size": 328366,
+         "sha256": "f9f6e7cd7b0007b26b76585dda76eea8a9a2b04a2a093588d53fb06a775f5cd1"
+        },
+        {
+         "path": "output_folder/0_0/WBGT_0_0.tif",
+         "size": 328366,
+         "sha256": "8c852a9ac076ca64960b9a5051012b4e5c8f9d0872f013bf7a8cdcac28d48f2d"
+        },
+        {
+         "path": "output_folder/0_0/Wind_0_0.tif",
+         "size": 328366,
+         "sha256": "15b659c0a8c4d6e55fdcd258052516b850c723b3fff8308071dc596ce23ec1be"
+        }
+       ]
+      },
+      "versions": {
+       "python": "3.12.13",
+       "numpy": "2.4.6",
+       "numba": "0.67.0",
+       "machine": "arm64"
+      },
+      "pid": 26401
+     }
+    }
+   ]
+  },
+  "b1024": {
+   "default": [
+    {
+     "tag": "time_b1024_default_p0",
+     "backend": "default",
+     "block": 1024,
+     "instrument": false,
+     "entry": "runtile",
+     "returncode": 0,
+     "parent_wall_s": 2.522,
+     "ambient_before": {
+      "loadavg": [
+       9.84,
+       17.12,
+       17.16
+      ],
+      "busy_non_browser": [],
+      "quiet": true
+     },
+     "ambient_after": {
+      "loadavg": [
+       9.84,
+       17.12,
+       17.16
+      ],
+      "busy_non_browser": [],
+      "quiet": true
+     },
+     "rss_tree": {
+      "sample_count": 13,
+      "errors": 0,
+      "peak_sum_rss_bytes": 213319680,
+      "mean_sum_rss_bytes": 164095842,
+      "per_pid_peak_rss_bytes": {
+       "26461": 213319680
+      },
+      "unit": "bytes (macOS ps rss KB * 1024)",
+      "double_count_note": "sum over the process tree counts shared pages once per process; peak_sum is an upper bound, never an admission number"
+     },
+     "native_cache_used": "default-user-cache",
+     "stdout_tail": "{\"out\": \"/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/raw/n8_02_time_b1024_default_p0.json\", \"run_wall_s\": 1.3121, \"digest\": \"7aa97c69a83d24d0\"}\n",
+     "stderr_tail": "Trusted legacy geometry without dependency identity: {'svfs': {'size_bytes': 17579, 'sha256': '104a00b985f1fc16df9ee4d575c964c68d4eed8a585d6b557d13678186d2f15a'}, 'shadowmats': {'size_bytes': 18846, 'sha256': '7b35f89104798a045cffa2ecd880b7d86e70c262f2e83659b3928ad8b39b565b'}, 'svftotal': {'size_bytes': 4840, 'sha256': '0f10eba06cba04e7abb8030dc0f0b1b08921cae410ba171ed1df4d3e089290cc'}}\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/pipeline_demand.py:313: RuntimeWarning: divide by zero encountered in log\n  np.log(one_minus)\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/engine.py:1696: RuntimeWarning: invalid value encountered in divide\n  return np.divide(a, b)\n",
+     "child": {
+      "schema": "sw8-n8-02-child-v1",
+      "requested": {
+       "backend": "default",
+       "block_pixels": 1024,
+       "threads": 4,
+       "cpu_budget": 4,
+       "instrument": false,
+       "entry": "runtile"
+      },
+      "env": {
+       "threads_at_import": {
+        "BLIS_NUM_THREADS": "4",
+        "MKL_NUM_THREADS": "4",
+        "NUMBA_NUM_THREADS": "4",
+        "NUMEXPR_NUM_THREADS": "4",
+        "OMP_NUM_THREADS": "4",
+        "OPENBLAS_NUM_THREADS": "4",
+        "VECLIB_MAXIMUM_THREADS": "4"
+       },
+       "lw_backend": "",
+       "native_cache": "",
+       "numba_cache_dir": "/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/work/numba_cache"
+      },
+      "numba": {
+       "config_NUMBA_NUM_THREADS": 4,
+       "thread_set_ok": true,
+       "final_get_num_threads": 4,
+       "threading_layer": "workqueue",
+       "version": "0.67.0"
+      },
+      "options": {
+       "cache_dir": null,
+       "legacy_cache_policy": "trust",
+       "cache_enabled": true,
+       "memory_budget_bytes": 12884901888,
+       "cpu_budget": 4,
+       "workers": 1,
+       "threads_per_worker": 4,
+       "block_pixels": 1024,
+       "checkpoint_interval": 1,
+       "resume": false
+      },
+      "module_origin": {
+       "solweig_light": "/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/__init__.py"
+      },
+      "run_wall_s": 1.3121,
+      "import_s": 0.887,
+      "child_total_s": 2.38,
+      "peak_rss_self_bytes": 213303296,
+      "peak_rss_children_bytes": 1212416,
+      "counters_path": null,
+      "output_manifest": {
+       "file_count": 10,
+       "digest": "7aa97c69a83d24d0",
+       "files": [
+        {
+         "path": "output_folder/0_0/Kdown_0_0.tif",
+         "size": 328366,
+         "sha256": "d091ab73f4b85a32b89be1151439e38f13dccf2b3351bfce79a6d30d158adbee"
+        },
+        {
+         "path": "output_folder/0_0/Kup_0_0.tif",
+         "size": 328366,
+         "sha256": "52a03e315a9ecbae7d25a7cb042b95d0f73aa097e5c46c35bf0d5b43b0a8e528"
+        },
+        {
+         "path": "output_folder/0_0/Ldown_0_0.tif",
+         "size": 328366,
+         "sha256": "3cce8f2cd7f5d50fdef3de0efe90eaf70fdc7169b54acf4f63abc7ad769b2539"
+        },
+        {
+         "path": "output_folder/0_0/Lup_0_0.tif",
+         "size": 328366,
+         "sha256": "322018b6b802e723d99a0a67b32edb8e0abdc76ef925c1478c518a62578e8cd7"
+        },
+        {
+         "path": "output_folder/0_0/Shadow_0_0.tif",
+         "size": 328366,
+         "sha256": "1937ede07da38a9e8820c9f305871c536311052114c7c116a9752732aba79d33"
+        },
+        {
+         "path": "output_folder/0_0/TMRT_0_0.tif",
+         "size": 328366,
+         "sha256": "9aa8f8d9c31e5c3c65fb058778994110dc4f4b544f60107e8010baecb6da98c6"
+        },
+        {
+         "path": "output_folder/0_0/Ta_0_0.tif",
+         "size": 328366,
+         "sha256": "543115f078f18e068c97d8256bc388fac7bdf923a19989cafb5f63319bcd40a6"
+        },
+        {
+         "path": "output_folder/0_0/UTCI_0_0.tif",
+         "size": 328366,
+         "sha256": "f9f6e7cd7b0007b26b76585dda76eea8a9a2b04a2a093588d53fb06a775f5cd1"
+        },
+        {
+         "path": "output_folder/0_0/WBGT_0_0.tif",
+         "size": 328366,
+         "sha256": "8c852a9ac076ca64960b9a5051012b4e5c8f9d0872f013bf7a8cdcac28d48f2d"
+        },
+        {
+         "path": "output_folder/0_0/Wind_0_0.tif",
+         "size": 328366,
+         "sha256": "15b659c0a8c4d6e55fdcd258052516b850c723b3fff8308071dc596ce23ec1be"
+        }
+       ]
+      },
+      "versions": {
+       "python": "3.12.13",
+       "numpy": "2.4.6",
+       "numba": "0.67.0",
+       "machine": "arm64"
+      },
+      "pid": 26461
+     }
+    },
+    {
+     "tag": "time_b1024_default_p1",
+     "backend": "default",
+     "block": 1024,
+     "instrument": false,
+     "entry": "runtile",
+     "returncode": 0,
+     "parent_wall_s": 2.644,
+     "ambient_before": {
+      "loadavg": [
+       9.62,
+       16.95,
+       17.1
+      ],
+      "busy_non_browser": [],
+      "quiet": true
+     },
+     "ambient_after": {
+      "loadavg": [
+       9.01,
+       16.71,
+       17.01
+      ],
+      "busy_non_browser": [],
+      "quiet": true
+     },
+     "rss_tree": {
+      "sample_count": 13,
+      "errors": 0,
+      "peak_sum_rss_bytes": 213221376,
+      "mean_sum_rss_bytes": 157835894,
+      "per_pid_peak_rss_bytes": {
+       "26603": 213221376,
+       "26628": 0
+      },
+      "unit": "bytes (macOS ps rss KB * 1024)",
+      "double_count_note": "sum over the process tree counts shared pages once per process; peak_sum is an upper bound, never an admission number"
+     },
+     "native_cache_used": "default-user-cache",
+     "stdout_tail": "{\"out\": \"/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/raw/n8_02_time_b1024_default_p1.json\", \"run_wall_s\": 1.3079, \"digest\": \"7aa97c69a83d24d0\"}\n",
+     "stderr_tail": "Trusted legacy geometry without dependency identity: {'svfs': {'size_bytes': 17579, 'sha256': '104a00b985f1fc16df9ee4d575c964c68d4eed8a585d6b557d13678186d2f15a'}, 'shadowmats': {'size_bytes': 18846, 'sha256': '7b35f89104798a045cffa2ecd880b7d86e70c262f2e83659b3928ad8b39b565b'}, 'svftotal': {'size_bytes': 4840, 'sha256': '0f10eba06cba04e7abb8030dc0f0b1b08921cae410ba171ed1df4d3e089290cc'}}\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/pipeline_demand.py:313: RuntimeWarning: divide by zero encountered in log\n  np.log(one_minus)\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/engine.py:1696: RuntimeWarning: invalid value encountered in divide\n  return np.divide(a, b)\n",
+     "child": {
+      "schema": "sw8-n8-02-child-v1",
+      "requested": {
+       "backend": "default",
+       "block_pixels": 1024,
+       "threads": 4,
+       "cpu_budget": 4,
+       "instrument": false,
+       "entry": "runtile"
+      },
+      "env": {
+       "threads_at_import": {
+        "BLIS_NUM_THREADS": "4",
+        "MKL_NUM_THREADS": "4",
+        "NUMBA_NUM_THREADS": "4",
+        "NUMEXPR_NUM_THREADS": "4",
+        "OMP_NUM_THREADS": "4",
+        "OPENBLAS_NUM_THREADS": "4",
+        "VECLIB_MAXIMUM_THREADS": "4"
+       },
+       "lw_backend": "",
+       "native_cache": "",
+       "numba_cache_dir": "/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/work/numba_cache"
+      },
+      "numba": {
+       "config_NUMBA_NUM_THREADS": 4,
+       "thread_set_ok": true,
+       "final_get_num_threads": 4,
+       "threading_layer": "workqueue",
+       "version": "0.67.0"
+      },
+      "options": {
+       "cache_dir": null,
+       "legacy_cache_policy": "trust",
+       "cache_enabled": true,
+       "memory_budget_bytes": 12884901888,
+       "cpu_budget": 4,
+       "workers": 1,
+       "threads_per_worker": 4,
+       "block_pixels": 1024,
+       "checkpoint_interval": 1,
+       "resume": false
+      },
+      "module_origin": {
+       "solweig_light": "/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/__init__.py"
+      },
+      "run_wall_s": 1.3079,
+      "import_s": 0.984,
+      "child_total_s": 2.504,
+      "peak_rss_self_bytes": 213319680,
+      "peak_rss_children_bytes": 1212416,
+      "counters_path": null,
+      "output_manifest": {
+       "file_count": 10,
+       "digest": "7aa97c69a83d24d0",
+       "files": [
+        {
+         "path": "output_folder/0_0/Kdown_0_0.tif",
+         "size": 328366,
+         "sha256": "d091ab73f4b85a32b89be1151439e38f13dccf2b3351bfce79a6d30d158adbee"
+        },
+        {
+         "path": "output_folder/0_0/Kup_0_0.tif",
+         "size": 328366,
+         "sha256": "52a03e315a9ecbae7d25a7cb042b95d0f73aa097e5c46c35bf0d5b43b0a8e528"
+        },
+        {
+         "path": "output_folder/0_0/Ldown_0_0.tif",
+         "size": 328366,
+         "sha256": "3cce8f2cd7f5d50fdef3de0efe90eaf70fdc7169b54acf4f63abc7ad769b2539"
+        },
+        {
+         "path": "output_folder/0_0/Lup_0_0.tif",
+         "size": 328366,
+         "sha256": "322018b6b802e723d99a0a67b32edb8e0abdc76ef925c1478c518a62578e8cd7"
+        },
+        {
+         "path": "output_folder/0_0/Shadow_0_0.tif",
+         "size": 328366,
+         "sha256": "1937ede07da38a9e8820c9f305871c536311052114c7c116a9752732aba79d33"
+        },
+        {
+         "path": "output_folder/0_0/TMRT_0_0.tif",
+         "size": 328366,
+         "sha256": "9aa8f8d9c31e5c3c65fb058778994110dc4f4b544f60107e8010baecb6da98c6"
+        },
+        {
+         "path": "output_folder/0_0/Ta_0_0.tif",
+         "size": 328366,
+         "sha256": "543115f078f18e068c97d8256bc388fac7bdf923a19989cafb5f63319bcd40a6"
+        },
+        {
+         "path": "output_folder/0_0/UTCI_0_0.tif",
+         "size": 328366,
+         "sha256": "f9f6e7cd7b0007b26b76585dda76eea8a9a2b04a2a093588d53fb06a775f5cd1"
+        },
+        {
+         "path": "output_folder/0_0/WBGT_0_0.tif",
+         "size": 328366,
+         "sha256": "8c852a9ac076ca64960b9a5051012b4e5c8f9d0872f013bf7a8cdcac28d48f2d"
+        },
+        {
+         "path": "output_folder/0_0/Wind_0_0.tif",
+         "size": 328366,
+         "sha256": "15b659c0a8c4d6e55fdcd258052516b850c723b3fff8308071dc596ce23ec1be"
+        }
+       ]
+      },
+      "versions": {
+       "python": "3.12.13",
+       "numpy": "2.4.6",
+       "numba": "0.67.0",
+       "machine": "arm64"
+      },
+      "pid": 26603
+     }
+    },
+    {
+     "tag": "time_b1024_default_p2",
+     "backend": "default",
+     "block": 1024,
+     "instrument": false,
+     "entry": "runtile",
+     "returncode": 0,
+     "parent_wall_s": 2.628,
+     "ambient_before": {
+      "loadavg": [
+       9.01,
+       16.71,
+       17.01
+      ],
+      "busy_non_browser": [],
+      "quiet": true
+     },
+     "ambient_after": {
+      "loadavg": [
+       8.52,
+       16.48,
+       16.93
+      ],
+      "busy_non_browser": [],
+      "quiet": true
+     },
+     "rss_tree": {
+      "sample_count": 14,
+      "errors": 0,
+      "peak_sum_rss_bytes": 213647360,
+      "mean_sum_rss_bytes": 147329609,
+      "per_pid_peak_rss_bytes": {
+       "26709": 213647360
+      },
+      "unit": "bytes (macOS ps rss KB * 1024)",
+      "double_count_note": "sum over the process tree counts shared pages once per process; peak_sum is an upper bound, never an admission number"
+     },
+     "native_cache_used": "default-user-cache",
+     "stdout_tail": "{\"out\": \"/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/raw/n8_02_time_b1024_default_p2.json\", \"run_wall_s\": 1.3204, \"digest\": \"7aa97c69a83d24d0\"}\n",
+     "stderr_tail": "Trusted legacy geometry without dependency identity: {'svfs': {'size_bytes': 17579, 'sha256': '104a00b985f1fc16df9ee4d575c964c68d4eed8a585d6b557d13678186d2f15a'}, 'shadowmats': {'size_bytes': 18846, 'sha256': '7b35f89104798a045cffa2ecd880b7d86e70c262f2e83659b3928ad8b39b565b'}, 'svftotal': {'size_bytes': 4840, 'sha256': '0f10eba06cba04e7abb8030dc0f0b1b08921cae410ba171ed1df4d3e089290cc'}}\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/pipeline_demand.py:313: RuntimeWarning: divide by zero encountered in log\n  np.log(one_minus)\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/engine.py:1696: RuntimeWarning: invalid value encountered in divide\n  return np.divide(a, b)\n",
+     "child": {
+      "schema": "sw8-n8-02-child-v1",
+      "requested": {
+       "backend": "default",
+       "block_pixels": 1024,
+       "threads": 4,
+       "cpu_budget": 4,
+       "instrument": false,
+       "entry": "runtile"
+      },
+      "env": {
+       "threads_at_import": {
+        "BLIS_NUM_THREADS": "4",
+        "MKL_NUM_THREADS": "4",
+        "NUMBA_NUM_THREADS": "4",
+        "NUMEXPR_NUM_THREADS": "4",
+        "OMP_NUM_THREADS": "4",
+        "OPENBLAS_NUM_THREADS": "4",
+        "VECLIB_MAXIMUM_THREADS": "4"
+       },
+       "lw_backend": "",
+       "native_cache": "",
+       "numba_cache_dir": "/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/work/numba_cache"
+      },
+      "numba": {
+       "config_NUMBA_NUM_THREADS": 4,
+       "thread_set_ok": true,
+       "final_get_num_threads": 4,
+       "threading_layer": "workqueue",
+       "version": "0.67.0"
+      },
+      "options": {
+       "cache_dir": null,
+       "legacy_cache_policy": "trust",
+       "cache_enabled": true,
+       "memory_budget_bytes": 12884901888,
+       "cpu_budget": 4,
+       "workers": 1,
+       "threads_per_worker": 4,
+       "block_pixels": 1024,
+       "checkpoint_interval": 1,
+       "resume": false
+      },
+      "module_origin": {
+       "solweig_light": "/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/__init__.py"
+      },
+      "run_wall_s": 1.3204,
+      "import_s": 0.953,
+      "child_total_s": 2.488,
+      "peak_rss_self_bytes": 213696512,
+      "peak_rss_children_bytes": 1212416,
+      "counters_path": null,
+      "output_manifest": {
+       "file_count": 10,
+       "digest": "7aa97c69a83d24d0",
+       "files": [
+        {
+         "path": "output_folder/0_0/Kdown_0_0.tif",
+         "size": 328366,
+         "sha256": "d091ab73f4b85a32b89be1151439e38f13dccf2b3351bfce79a6d30d158adbee"
+        },
+        {
+         "path": "output_folder/0_0/Kup_0_0.tif",
+         "size": 328366,
+         "sha256": "52a03e315a9ecbae7d25a7cb042b95d0f73aa097e5c46c35bf0d5b43b0a8e528"
+        },
+        {
+         "path": "output_folder/0_0/Ldown_0_0.tif",
+         "size": 328366,
+         "sha256": "3cce8f2cd7f5d50fdef3de0efe90eaf70fdc7169b54acf4f63abc7ad769b2539"
+        },
+        {
+         "path": "output_folder/0_0/Lup_0_0.tif",
+         "size": 328366,
+         "sha256": "322018b6b802e723d99a0a67b32edb8e0abdc76ef925c1478c518a62578e8cd7"
+        },
+        {
+         "path": "output_folder/0_0/Shadow_0_0.tif",
+         "size": 328366,
+         "sha256": "1937ede07da38a9e8820c9f305871c536311052114c7c116a9752732aba79d33"
+        },
+        {
+         "path": "output_folder/0_0/TMRT_0_0.tif",
+         "size": 328366,
+         "sha256": "9aa8f8d9c31e5c3c65fb058778994110dc4f4b544f60107e8010baecb6da98c6"
+        },
+        {
+         "path": "output_folder/0_0/Ta_0_0.tif",
+         "size": 328366,
+         "sha256": "543115f078f18e068c97d8256bc388fac7bdf923a19989cafb5f63319bcd40a6"
+        },
+        {
+         "path": "output_folder/0_0/UTCI_0_0.tif",
+         "size": 328366,
+         "sha256": "f9f6e7cd7b0007b26b76585dda76eea8a9a2b04a2a093588d53fb06a775f5cd1"
+        },
+        {
+         "path": "output_folder/0_0/WBGT_0_0.tif",
+         "size": 328366,
+         "sha256": "8c852a9ac076ca64960b9a5051012b4e5c8f9d0872f013bf7a8cdcac28d48f2d"
+        },
+        {
+         "path": "output_folder/0_0/Wind_0_0.tif",
+         "size": 328366,
+         "sha256": "15b659c0a8c4d6e55fdcd258052516b850c723b3fff8308071dc596ce23ec1be"
+        }
+       ]
+      },
+      "versions": {
+       "python": "3.12.13",
+       "numpy": "2.4.6",
+       "numba": "0.67.0",
+       "machine": "arm64"
+      },
+      "pid": 26709
+     }
+    }
+   ],
+   "native": [
+    {
+     "tag": "time_b1024_native_p0",
+     "backend": "native",
+     "block": 1024,
+     "instrument": false,
+     "entry": "runtile",
+     "returncode": 0,
+     "parent_wall_s": 2.543,
+     "ambient_before": {
+      "loadavg": [
+       9.84,
+       17.12,
+       17.16
+      ],
+      "busy_non_browser": [],
+      "quiet": true
+     },
+     "ambient_after": {
+      "loadavg": [
+       9.62,
+       16.95,
+       17.1
+      ],
+      "busy_non_browser": [],
+      "quiet": true
+     },
+     "rss_tree": {
+      "sample_count": 13,
+      "errors": 0,
+      "peak_sum_rss_bytes": 212795392,
+      "mean_sum_rss_bytes": 161647065,
+      "per_pid_peak_rss_bytes": {
+       "26521": 212795392
+      },
+      "unit": "bytes (macOS ps rss KB * 1024)",
+      "double_count_note": "sum over the process tree counts shared pages once per process; peak_sum is an upper bound, never an admission number"
+     },
+     "native_cache_used": "default-user-cache",
+     "stdout_tail": "{\"out\": \"/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/raw/n8_02_time_b1024_native_p0.json\", \"run_wall_s\": 1.3257, \"digest\": \"7aa97c69a83d24d0\"}\n",
+     "stderr_tail": "Trusted legacy geometry without dependency identity: {'svfs': {'size_bytes': 17579, 'sha256': '104a00b985f1fc16df9ee4d575c964c68d4eed8a585d6b557d13678186d2f15a'}, 'shadowmats': {'size_bytes': 18846, 'sha256': '7b35f89104798a045cffa2ecd880b7d86e70c262f2e83659b3928ad8b39b565b'}, 'svftotal': {'size_bytes': 4840, 'sha256': '0f10eba06cba04e7abb8030dc0f0b1b08921cae410ba171ed1df4d3e089290cc'}}\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/pipeline_demand.py:313: RuntimeWarning: divide by zero encountered in log\n  np.log(one_minus)\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/engine.py:1696: RuntimeWarning: invalid value encountered in divide\n  return np.divide(a, b)\n",
+     "child": {
+      "schema": "sw8-n8-02-child-v1",
+      "requested": {
+       "backend": "native",
+       "block_pixels": 1024,
+       "threads": 4,
+       "cpu_budget": 4,
+       "instrument": false,
+       "entry": "runtile"
+      },
+      "env": {
+       "threads_at_import": {
+        "BLIS_NUM_THREADS": "4",
+        "MKL_NUM_THREADS": "4",
+        "NUMBA_NUM_THREADS": "4",
+        "NUMEXPR_NUM_THREADS": "4",
+        "OMP_NUM_THREADS": "4",
+        "OPENBLAS_NUM_THREADS": "4",
+        "VECLIB_MAXIMUM_THREADS": "4"
+       },
+       "lw_backend": "native",
+       "native_cache": "",
+       "numba_cache_dir": "/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/work/numba_cache"
+      },
+      "numba": {
+       "config_NUMBA_NUM_THREADS": 4,
+       "thread_set_ok": true,
+       "final_get_num_threads": 4,
+       "threading_layer": "workqueue",
+       "version": "0.67.0"
+      },
+      "options": {
+       "cache_dir": null,
+       "legacy_cache_policy": "trust",
+       "cache_enabled": true,
+       "memory_budget_bytes": 12884901888,
+       "cpu_budget": 4,
+       "workers": 1,
+       "threads_per_worker": 4,
+       "block_pixels": 1024,
+       "checkpoint_interval": 1,
+       "resume": false
+      },
+      "module_origin": {
+       "solweig_light": "/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/__init__.py"
+      },
+      "run_wall_s": 1.3257,
+      "import_s": 0.906,
+      "child_total_s": 2.41,
+      "peak_rss_self_bytes": 212893696,
+      "peak_rss_children_bytes": 1212416,
+      "counters_path": null,
+      "output_manifest": {
+       "file_count": 10,
+       "digest": "7aa97c69a83d24d0",
+       "files": [
+        {
+         "path": "output_folder/0_0/Kdown_0_0.tif",
+         "size": 328366,
+         "sha256": "d091ab73f4b85a32b89be1151439e38f13dccf2b3351bfce79a6d30d158adbee"
+        },
+        {
+         "path": "output_folder/0_0/Kup_0_0.tif",
+         "size": 328366,
+         "sha256": "52a03e315a9ecbae7d25a7cb042b95d0f73aa097e5c46c35bf0d5b43b0a8e528"
+        },
+        {
+         "path": "output_folder/0_0/Ldown_0_0.tif",
+         "size": 328366,
+         "sha256": "3cce8f2cd7f5d50fdef3de0efe90eaf70fdc7169b54acf4f63abc7ad769b2539"
+        },
+        {
+         "path": "output_folder/0_0/Lup_0_0.tif",
+         "size": 328366,
+         "sha256": "322018b6b802e723d99a0a67b32edb8e0abdc76ef925c1478c518a62578e8cd7"
+        },
+        {
+         "path": "output_folder/0_0/Shadow_0_0.tif",
+         "size": 328366,
+         "sha256": "1937ede07da38a9e8820c9f305871c536311052114c7c116a9752732aba79d33"
+        },
+        {
+         "path": "output_folder/0_0/TMRT_0_0.tif",
+         "size": 328366,
+         "sha256": "9aa8f8d9c31e5c3c65fb058778994110dc4f4b544f60107e8010baecb6da98c6"
+        },
+        {
+         "path": "output_folder/0_0/Ta_0_0.tif",
+         "size": 328366,
+         "sha256": "543115f078f18e068c97d8256bc388fac7bdf923a19989cafb5f63319bcd40a6"
+        },
+        {
+         "path": "output_folder/0_0/UTCI_0_0.tif",
+         "size": 328366,
+         "sha256": "f9f6e7cd7b0007b26b76585dda76eea8a9a2b04a2a093588d53fb06a775f5cd1"
+        },
+        {
+         "path": "output_folder/0_0/WBGT_0_0.tif",
+         "size": 328366,
+         "sha256": "8c852a9ac076ca64960b9a5051012b4e5c8f9d0872f013bf7a8cdcac28d48f2d"
+        },
+        {
+         "path": "output_folder/0_0/Wind_0_0.tif",
+         "size": 328366,
+         "sha256": "15b659c0a8c4d6e55fdcd258052516b850c723b3fff8308071dc596ce23ec1be"
+        }
+       ]
+      },
+      "versions": {
+       "python": "3.12.13",
+       "numpy": "2.4.6",
+       "numba": "0.67.0",
+       "machine": "arm64"
+      },
+      "pid": 26521
+     }
+    },
+    {
+     "tag": "time_b1024_native_p1",
+     "backend": "native",
+     "block": 1024,
+     "instrument": false,
+     "entry": "runtile",
+     "returncode": 0,
+     "parent_wall_s": 2.628,
+     "ambient_before": {
+      "loadavg": [
+       9.01,
+       16.71,
+       17.01
+      ],
+      "busy_non_browser": [
+       {
+        "pcpu": 51.7,
+        "comm": "/System/Library/CoreServices/ControlCenter.app/Contents/MacO"
+       }
+      ],
+      "quiet": false
+     },
+     "ambient_after": {
+      "loadavg": [
+       9.01,
+       16.71,
+       17.01
+      ],
+      "busy_non_browser": [],
+      "quiet": true
+     },
+     "rss_tree": {
+      "sample_count": 13,
+      "errors": 0,
+      "peak_sum_rss_bytes": 212664320,
+      "mean_sum_rss_bytes": 159185684,
+      "per_pid_peak_rss_bytes": {
+       "26664": 212664320
+      },
+      "unit": "bytes (macOS ps rss KB * 1024)",
+      "double_count_note": "sum over the process tree counts shared pages once per process; peak_sum is an upper bound, never an admission number"
+     },
+     "native_cache_used": "default-user-cache",
+     "stdout_tail": "{\"out\": \"/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/raw/n8_02_time_b1024_native_p1.json\", \"run_wall_s\": 1.3397, \"digest\": \"7aa97c69a83d24d0\"}\n",
+     "stderr_tail": "Trusted legacy geometry without dependency identity: {'svfs': {'size_bytes': 17579, 'sha256': '104a00b985f1fc16df9ee4d575c964c68d4eed8a585d6b557d13678186d2f15a'}, 'shadowmats': {'size_bytes': 18846, 'sha256': '7b35f89104798a045cffa2ecd880b7d86e70c262f2e83659b3928ad8b39b565b'}, 'svftotal': {'size_bytes': 4840, 'sha256': '0f10eba06cba04e7abb8030dc0f0b1b08921cae410ba171ed1df4d3e089290cc'}}\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/pipeline_demand.py:313: RuntimeWarning: divide by zero encountered in log\n  np.log(one_minus)\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/engine.py:1696: RuntimeWarning: invalid value encountered in divide\n  return np.divide(a, b)\n",
+     "child": {
+      "schema": "sw8-n8-02-child-v1",
+      "requested": {
+       "backend": "native",
+       "block_pixels": 1024,
+       "threads": 4,
+       "cpu_budget": 4,
+       "instrument": false,
+       "entry": "runtile"
+      },
+      "env": {
+       "threads_at_import": {
+        "BLIS_NUM_THREADS": "4",
+        "MKL_NUM_THREADS": "4",
+        "NUMBA_NUM_THREADS": "4",
+        "NUMEXPR_NUM_THREADS": "4",
+        "OMP_NUM_THREADS": "4",
+        "OPENBLAS_NUM_THREADS": "4",
+        "VECLIB_MAXIMUM_THREADS": "4"
+       },
+       "lw_backend": "native",
+       "native_cache": "",
+       "numba_cache_dir": "/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/work/numba_cache"
+      },
+      "numba": {
+       "config_NUMBA_NUM_THREADS": 4,
+       "thread_set_ok": true,
+       "final_get_num_threads": 4,
+       "threading_layer": "workqueue",
+       "version": "0.67.0"
+      },
+      "options": {
+       "cache_dir": null,
+       "legacy_cache_policy": "trust",
+       "cache_enabled": true,
+       "memory_budget_bytes": 12884901888,
+       "cpu_budget": 4,
+       "workers": 1,
+       "threads_per_worker": 4,
+       "block_pixels": 1024,
+       "checkpoint_interval": 1,
+       "resume": false
+      },
+      "module_origin": {
+       "solweig_light": "/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/__init__.py"
+      },
+      "run_wall_s": 1.3397,
+      "import_s": 0.922,
+      "child_total_s": 2.481,
+      "peak_rss_self_bytes": 212713472,
+      "peak_rss_children_bytes": 1212416,
+      "counters_path": null,
+      "output_manifest": {
+       "file_count": 10,
+       "digest": "7aa97c69a83d24d0",
+       "files": [
+        {
+         "path": "output_folder/0_0/Kdown_0_0.tif",
+         "size": 328366,
+         "sha256": "d091ab73f4b85a32b89be1151439e38f13dccf2b3351bfce79a6d30d158adbee"
+        },
+        {
+         "path": "output_folder/0_0/Kup_0_0.tif",
+         "size": 328366,
+         "sha256": "52a03e315a9ecbae7d25a7cb042b95d0f73aa097e5c46c35bf0d5b43b0a8e528"
+        },
+        {
+         "path": "output_folder/0_0/Ldown_0_0.tif",
+         "size": 328366,
+         "sha256": "3cce8f2cd7f5d50fdef3de0efe90eaf70fdc7169b54acf4f63abc7ad769b2539"
+        },
+        {
+         "path": "output_folder/0_0/Lup_0_0.tif",
+         "size": 328366,
+         "sha256": "322018b6b802e723d99a0a67b32edb8e0abdc76ef925c1478c518a62578e8cd7"
+        },
+        {
+         "path": "output_folder/0_0/Shadow_0_0.tif",
+         "size": 328366,
+         "sha256": "1937ede07da38a9e8820c9f305871c536311052114c7c116a9752732aba79d33"
+        },
+        {
+         "path": "output_folder/0_0/TMRT_0_0.tif",
+         "size": 328366,
+         "sha256": "9aa8f8d9c31e5c3c65fb058778994110dc4f4b544f60107e8010baecb6da98c6"
+        },
+        {
+         "path": "output_folder/0_0/Ta_0_0.tif",
+         "size": 328366,
+         "sha256": "543115f078f18e068c97d8256bc388fac7bdf923a19989cafb5f63319bcd40a6"
+        },
+        {
+         "path": "output_folder/0_0/UTCI_0_0.tif",
+         "size": 328366,
+         "sha256": "f9f6e7cd7b0007b26b76585dda76eea8a9a2b04a2a093588d53fb06a775f5cd1"
+        },
+        {
+         "path": "output_folder/0_0/WBGT_0_0.tif",
+         "size": 328366,
+         "sha256": "8c852a9ac076ca64960b9a5051012b4e5c8f9d0872f013bf7a8cdcac28d48f2d"
+        },
+        {
+         "path": "output_folder/0_0/Wind_0_0.tif",
+         "size": 328366,
+         "sha256": "15b659c0a8c4d6e55fdcd258052516b850c723b3fff8308071dc596ce23ec1be"
+        }
+       ]
+      },
+      "versions": {
+       "python": "3.12.13",
+       "numpy": "2.4.6",
+       "numba": "0.67.0",
+       "machine": "arm64"
+      },
+      "pid": 26664
+     }
+    },
+    {
+     "tag": "time_b1024_native_p2",
+     "backend": "native",
+     "block": 1024,
+     "instrument": false,
+     "entry": "runtile",
+     "returncode": 0,
+     "parent_wall_s": 2.8,
+     "ambient_before": {
+      "loadavg": [
+       8.52,
+       16.48,
+       16.93
+      ],
+      "busy_non_browser": [],
+      "quiet": true
+     },
+     "ambient_after": {
+      "loadavg": [
+       8.52,
+       16.48,
+       16.93
+      ],
+      "busy_non_browser": [],
+      "quiet": true
+     },
+     "rss_tree": {
+      "sample_count": 14,
+      "errors": 0,
+      "peak_sum_rss_bytes": 213106688,
+      "mean_sum_rss_bytes": 160918967,
+      "per_pid_peak_rss_bytes": {
+       "26775": 213106688
+      },
+      "unit": "bytes (macOS ps rss KB * 1024)",
+      "double_count_note": "sum over the process tree counts shared pages once per process; peak_sum is an upper bound, never an admission number"
+     },
+     "native_cache_used": "default-user-cache",
+     "stdout_tail": "{\"out\": \"/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/raw/n8_02_time_b1024_native_p2.json\", \"run_wall_s\": 1.4332, \"digest\": \"7aa97c69a83d24d0\"}\n",
+     "stderr_tail": "Trusted legacy geometry without dependency identity: {'svfs': {'size_bytes': 17579, 'sha256': '104a00b985f1fc16df9ee4d575c964c68d4eed8a585d6b557d13678186d2f15a'}, 'shadowmats': {'size_bytes': 18846, 'sha256': '7b35f89104798a045cffa2ecd880b7d86e70c262f2e83659b3928ad8b39b565b'}, 'svftotal': {'size_bytes': 4840, 'sha256': '0f10eba06cba04e7abb8030dc0f0b1b08921cae410ba171ed1df4d3e089290cc'}}\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/pipeline_demand.py:313: RuntimeWarning: divide by zero encountered in log\n  np.log(one_minus)\n/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/radiation/engine.py:1696: RuntimeWarning: invalid value encountered in divide\n  return np.divide(a, b)\n",
+     "child": {
+      "schema": "sw8-n8-02-child-v1",
+      "requested": {
+       "backend": "native",
+       "block_pixels": 1024,
+       "threads": 4,
+       "cpu_budget": 4,
+       "instrument": false,
+       "entry": "runtile"
+      },
+      "env": {
+       "threads_at_import": {
+        "BLIS_NUM_THREADS": "4",
+        "MKL_NUM_THREADS": "4",
+        "NUMBA_NUM_THREADS": "4",
+        "NUMEXPR_NUM_THREADS": "4",
+        "OMP_NUM_THREADS": "4",
+        "OPENBLAS_NUM_THREADS": "4",
+        "VECLIB_MAXIMUM_THREADS": "4"
+       },
+       "lw_backend": "native",
+       "native_cache": "",
+       "numba_cache_dir": "/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/work/numba_cache"
+      },
+      "numba": {
+       "config_NUMBA_NUM_THREADS": 4,
+       "thread_set_ok": true,
+       "final_get_num_threads": 4,
+       "threading_layer": "workqueue",
+       "version": "0.67.0"
+      },
+      "options": {
+       "cache_dir": null,
+       "legacy_cache_policy": "trust",
+       "cache_enabled": true,
+       "memory_budget_bytes": 12884901888,
+       "cpu_budget": 4,
+       "workers": 1,
+       "threads_per_worker": 4,
+       "block_pixels": 1024,
+       "checkpoint_interval": 1,
+       "resume": false
+      },
+      "module_origin": {
+       "solweig_light": "/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/__init__.py"
+      },
+      "run_wall_s": 1.4332,
+      "import_s": 1.009,
+      "child_total_s": 2.649,
+      "peak_rss_self_bytes": 213188608,
+      "peak_rss_children_bytes": 1212416,
+      "counters_path": null,
+      "output_manifest": {
+       "file_count": 10,
+       "digest": "7aa97c69a83d24d0",
+       "files": [
+        {
+         "path": "output_folder/0_0/Kdown_0_0.tif",
+         "size": 328366,
+         "sha256": "d091ab73f4b85a32b89be1151439e38f13dccf2b3351bfce79a6d30d158adbee"
+        },
+        {
+         "path": "output_folder/0_0/Kup_0_0.tif",
+         "size": 328366,
+         "sha256": "52a03e315a9ecbae7d25a7cb042b95d0f73aa097e5c46c35bf0d5b43b0a8e528"
+        },
+        {
+         "path": "output_folder/0_0/Ldown_0_0.tif",
+         "size": 328366,
+         "sha256": "3cce8f2cd7f5d50fdef3de0efe90eaf70fdc7169b54acf4f63abc7ad769b2539"
+        },
+        {
+         "path": "output_folder/0_0/Lup_0_0.tif",
+         "size": 328366,
+         "sha256": "322018b6b802e723d99a0a67b32edb8e0abdc76ef925c1478c518a62578e8cd7"
+        },
+        {
+         "path": "output_folder/0_0/Shadow_0_0.tif",
+         "size": 328366,
+         "sha256": "1937ede07da38a9e8820c9f305871c536311052114c7c116a9752732aba79d33"
+        },
+        {
+         "path": "output_folder/0_0/TMRT_0_0.tif",
+         "size": 328366,
+         "sha256": "9aa8f8d9c31e5c3c65fb058778994110dc4f4b544f60107e8010baecb6da98c6"
+        },
+        {
+         "path": "output_folder/0_0/Ta_0_0.tif",
+         "size": 328366,
+         "sha256": "543115f078f18e068c97d8256bc388fac7bdf923a19989cafb5f63319bcd40a6"
+        },
+        {
+         "path": "output_folder/0_0/UTCI_0_0.tif",
+         "size": 328366,
+         "sha256": "f9f6e7cd7b0007b26b76585dda76eea8a9a2b04a2a093588d53fb06a775f5cd1"
+        },
+        {
+         "path": "output_folder/0_0/WBGT_0_0.tif",
+         "size": 328366,
+         "sha256": "8c852a9ac076ca64960b9a5051012b4e5c8f9d0872f013bf7a8cdcac28d48f2d"
+        },
+        {
+         "path": "output_folder/0_0/Wind_0_0.tif",
+         "size": 328366,
+         "sha256": "15b659c0a8c4d6e55fdcd258052516b850c723b3fff8308071dc596ce23ec1be"
+        }
+       ]
+      },
+      "versions": {
+       "python": "3.12.13",
+       "numpy": "2.4.6",
+       "numba": "0.67.0",
+       "machine": "arm64"
+      },
+      "pid": 26775
+     }
+    }
+   ]
+  }
+ },
+ "pool": {
+  "default": {
+   "tag": "pool_default_b128",
+   "backend": "default",
+   "block": 128,
+   "instrument": false,
+   "entry": "pool",
+   "returncode": 0,
+   "parent_wall_s": 5.957,
+   "ambient_before": {
+    "loadavg": [
+     8.8,
+     16.4,
+     16.9
+    ],
+    "busy_non_browser": [
+     {
+      "pcpu": 53.9,
+      "comm": "/Library/Application Support/PaloAltoNetworks/Traps/bin/pmd"
+     }
+    ],
+    "quiet": false
+   },
+   "ambient_after": {
+    "loadavg": [
+     8.74,
+     16.26,
+     16.85
+    ],
+    "busy_non_browser": [],
+    "quiet": true
+   },
+   "rss_tree": {
+    "sample_count": 30,
+    "errors": 0,
+    "peak_sum_rss_bytes": 384630784,
+    "mean_sum_rss_bytes": 289639083,
+    "per_pid_peak_rss_bytes": {
+     "27340": 188350464,
+     "27400": 210665472
+    },
+    "unit": "bytes (macOS ps rss KB * 1024)",
+    "double_count_note": "sum over the process tree counts shared pages once per process; peak_sum is an upper bound, never an admission number"
+   },
+   "native_cache_used": "/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/work/native_cache_pool_default",
+   "stdout_tail": "Running Solweig ...\n{\"out\": \"/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/raw/n8_02_pool_default_b128.json\", \"run_wall_s\": 4.5573, \"digest\": \"c059e7b94574a071\"}\n",
+   "stderr_tail": "",
+   "child": {
+    "schema": "sw8-n8-02-child-v1",
+    "requested": {
+     "backend": "default",
+     "block_pixels": 128,
+     "threads": 4,
+     "cpu_budget": 4,
+     "instrument": false,
+     "entry": "pool"
+    },
+    "env": {
+     "threads_at_import": {
+      "BLIS_NUM_THREADS": "4",
+      "MKL_NUM_THREADS": "4",
+      "NUMBA_NUM_THREADS": "4",
+      "NUMEXPR_NUM_THREADS": "4",
+      "OMP_NUM_THREADS": "4",
+      "OPENBLAS_NUM_THREADS": "4",
+      "VECLIB_MAXIMUM_THREADS": "4"
+     },
+     "lw_backend": "",
+     "native_cache": "/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/work/native_cache_pool_default",
+     "numba_cache_dir": "/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/work/numba_cache"
+    },
+    "numba": {
+     "config_NUMBA_NUM_THREADS": 4,
+     "thread_set_ok": true,
+     "final_get_num_threads": 4,
+     "threading_layer": "workqueue",
+     "version": "0.67.0"
+    },
+    "options": {
+     "cache_dir": null,
+     "legacy_cache_policy": "trust",
+     "cache_enabled": true,
+     "memory_budget_bytes": 12884901888,
+     "cpu_budget": 4,
+     "workers": 1,
+     "threads_per_worker": 4,
+     "block_pixels": 128,
+     "checkpoint_interval": 1,
+     "resume": false
+    },
+    "module_origin": {
+     "solweig_light": "/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/__init__.py"
+    },
+    "run_wall_s": 4.5573,
+    "import_s": 1.043,
+    "child_total_s": 5.826,
+    "peak_rss_self_bytes": 188350464,
+    "peak_rss_children_bytes": 211615744,
+    "counters_path": null,
+    "output_manifest": {
+     "file_count": 10,
+     "digest": "c059e7b94574a071",
+     "files": [
+      {
+       "path": "output_folder/0_0/Kdown_0_0.tif",
+       "size": 328366,
+       "sha256": "d091ab73f4b85a32b89be1151439e38f13dccf2b3351bfce79a6d30d158adbee"
+      },
+      {
+       "path": "output_folder/0_0/Kup_0_0.tif",
+       "size": 328366,
+       "sha256": "742d9382dc191384357694de199dfcdcdbbf765e55faf8c47e3ade1fe758144c"
+      },
+      {
+       "path": "output_folder/0_0/Ldown_0_0.tif",
+       "size": 328366,
+       "sha256": "4f35961831e77c0db7cdfbcd87818cad5d976fe79ceb3a8ed7cb1e7c1d5ac983"
+      },
+      {
+       "path": "output_folder/0_0/Lup_0_0.tif",
+       "size": 328366,
+       "sha256": "728e2ef059f1c1add58366d8acecaf5970c9627d1c353336fc33094b90645605"
+      },
+      {
+       "path": "output_folder/0_0/Shadow_0_0.tif",
+       "size": 328366,
+       "sha256": "1937ede07da38a9e8820c9f305871c536311052114c7c116a9752732aba79d33"
+      },
+      {
+       "path": "output_folder/0_0/TMRT_0_0.tif",
+       "size": 328366,
+       "sha256": "e05d317a66eced838ddcc94a9909a50a267cc4269e5c03ec98dd476ad2728c86"
+      },
+      {
+       "path": "output_folder/0_0/Ta_0_0.tif",
+       "size": 328366,
+       "sha256": "543115f078f18e068c97d8256bc388fac7bdf923a19989cafb5f63319bcd40a6"
+      },
+      {
+       "path": "output_folder/0_0/UTCI_0_0.tif",
+       "size": 328366,
+       "sha256": "6305665d7b2fbbb68d9f2e436b94af3180d2b37b9d04bb9a4e17151300feb86e"
+      },
+      {
+       "path": "output_folder/0_0/WBGT_0_0.tif",
+       "size": 328366,
+       "sha256": "f6c30c55939bde29f8bfde66ebc82afac7211757c44482747e43f4d7348fd1be"
+      },
+      {
+       "path": "output_folder/0_0/Wind_0_0.tif",
+       "size": 328366,
+       "sha256": "15b659c0a8c4d6e55fdcd258052516b850c723b3fff8308071dc596ce23ec1be"
+      }
+     ]
+    },
+    "versions": {
+     "python": "3.12.13",
+     "numpy": "2.4.6",
+     "numba": "0.67.0",
+     "machine": "arm64"
+    },
+    "pid": 27340
+   },
+   "scratch_cache_after": {
+    "exists": false,
+    "dylibs": [],
+    "build_stamp": null
+   }
+  },
+  "native": {
+   "tag": "pool_native_b128",
+   "backend": "native",
+   "block": 128,
+   "instrument": false,
+   "entry": "pool",
+   "returncode": 0,
+   "parent_wall_s": 7.906,
+   "ambient_before": {
+    "loadavg": [
+     8.74,
+     16.26,
+     16.85
+    ],
+    "busy_non_browser": [],
+    "quiet": true
+   },
+   "ambient_after": {
+    "loadavg": [
+     8.52,
+     16.09,
+     16.78
+    ],
+    "busy_non_browser": [],
+    "quiet": true
+   },
+   "rss_tree": {
+    "sample_count": 39,
+    "errors": 0,
+    "peak_sum_rss_bytes": 475217920,
+    "mean_sum_rss_bytes": 309644997,
+    "per_pid_peak_rss_bytes": {
+     "27481": 186466304,
+     "27498": 208961536,
+     "27533": 2654208,
+     "27535": 68894720,
+     "27539": 77152256,
+     "27551": 16842752,
+     "27552": 5668864,
+     "27554": 76103680,
+     "27557": 75907072
+    },
+    "unit": "bytes (macOS ps rss KB * 1024)",
+    "double_count_note": "sum over the process tree counts shared pages once per process; peak_sum is an upper bound, never an admission number"
+   },
+   "native_cache_used": "/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/work/native_cache_pool_native",
+   "stdout_tail": "Running Solweig ...\n{\"out\": \"/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/raw/n8_02_pool_native_b128.json\", \"run_wall_s\": 6.7038, \"digest\": \"c059e7b94574a071\"}\n",
+   "stderr_tail": "",
+   "child": {
+    "schema": "sw8-n8-02-child-v1",
+    "requested": {
+     "backend": "native",
+     "block_pixels": 128,
+     "threads": 4,
+     "cpu_budget": 4,
+     "instrument": false,
+     "entry": "pool"
+    },
+    "env": {
+     "threads_at_import": {
+      "BLIS_NUM_THREADS": "4",
+      "MKL_NUM_THREADS": "4",
+      "NUMBA_NUM_THREADS": "4",
+      "NUMEXPR_NUM_THREADS": "4",
+      "OMP_NUM_THREADS": "4",
+      "OPENBLAS_NUM_THREADS": "4",
+      "VECLIB_MAXIMUM_THREADS": "4"
+     },
+     "lw_backend": "native",
+     "native_cache": "/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/work/native_cache_pool_native",
+     "numba_cache_dir": "/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/work/numba_cache"
+    },
+    "numba": {
+     "config_NUMBA_NUM_THREADS": 4,
+     "thread_set_ok": true,
+     "final_get_num_threads": 4,
+     "threading_layer": "workqueue",
+     "version": "0.67.0"
+    },
+    "options": {
+     "cache_dir": null,
+     "legacy_cache_policy": "trust",
+     "cache_enabled": true,
+     "memory_budget_bytes": 12884901888,
+     "cpu_budget": 4,
+     "workers": 1,
+     "threads_per_worker": 4,
+     "block_pixels": 128,
+     "checkpoint_interval": 1,
+     "resume": false
+    },
+    "module_origin": {
+     "solweig_light": "/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/__init__.py"
+    },
+    "run_wall_s": 6.7038,
+    "import_s": 0.909,
+    "child_total_s": 7.777,
+    "peak_rss_self_bytes": 187203584,
+    "peak_rss_children_bytes": 208961536,
+    "counters_path": null,
+    "output_manifest": {
+     "file_count": 10,
+     "digest": "c059e7b94574a071",
+     "files": [
+      {
+       "path": "output_folder/0_0/Kdown_0_0.tif",
+       "size": 328366,
+       "sha256": "d091ab73f4b85a32b89be1151439e38f13dccf2b3351bfce79a6d30d158adbee"
+      },
+      {
+       "path": "output_folder/0_0/Kup_0_0.tif",
+       "size": 328366,
+       "sha256": "742d9382dc191384357694de199dfcdcdbbf765e55faf8c47e3ade1fe758144c"
+      },
+      {
+       "path": "output_folder/0_0/Ldown_0_0.tif",
+       "size": 328366,
+       "sha256": "4f35961831e77c0db7cdfbcd87818cad5d976fe79ceb3a8ed7cb1e7c1d5ac983"
+      },
+      {
+       "path": "output_folder/0_0/Lup_0_0.tif",
+       "size": 328366,
+       "sha256": "728e2ef059f1c1add58366d8acecaf5970c9627d1c353336fc33094b90645605"
+      },
+      {
+       "path": "output_folder/0_0/Shadow_0_0.tif",
+       "size": 328366,
+       "sha256": "1937ede07da38a9e8820c9f305871c536311052114c7c116a9752732aba79d33"
+      },
+      {
+       "path": "output_folder/0_0/TMRT_0_0.tif",
+       "size": 328366,
+       "sha256": "e05d317a66eced838ddcc94a9909a50a267cc4269e5c03ec98dd476ad2728c86"
+      },
+      {
+       "path": "output_folder/0_0/Ta_0_0.tif",
+       "size": 328366,
+       "sha256": "543115f078f18e068c97d8256bc388fac7bdf923a19989cafb5f63319bcd40a6"
+      },
+      {
+       "path": "output_folder/0_0/UTCI_0_0.tif",
+       "size": 328366,
+       "sha256": "6305665d7b2fbbb68d9f2e436b94af3180d2b37b9d04bb9a4e17151300feb86e"
+      },
+      {
+       "path": "output_folder/0_0/WBGT_0_0.tif",
+       "size": 328366,
+       "sha256": "f6c30c55939bde29f8bfde66ebc82afac7211757c44482747e43f4d7348fd1be"
+      },
+      {
+       "path": "output_folder/0_0/Wind_0_0.tif",
+       "size": 328366,
+       "sha256": "15b659c0a8c4d6e55fdcd258052516b850c723b3fff8308071dc596ce23ec1be"
+      }
+     ]
+    },
+    "versions": {
+     "python": "3.12.13",
+     "numpy": "2.4.6",
+     "numba": "0.67.0",
+     "machine": "arm64"
+    },
+    "pid": 27481
+   },
+   "scratch_cache_after": {
+    "exists": true,
+    "dylibs": [
+     "liblw_native_g4.dylib",
+     "liblw_native_g8.dylib"
+    ],
+    "build_stamp": {
+     "kernel_sha256": "52652a598cd85ead04747a83a52b1184035c880aa0b32cf518efef06b961663c",
+     "ispc": "/opt/homebrew/bin/ispc",
+     "built_utc": "2026-09-22T19:33:15Z"
+    }
+   }
+  }
+ }
+}

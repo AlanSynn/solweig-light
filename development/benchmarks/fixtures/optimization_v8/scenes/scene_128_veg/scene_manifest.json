@@ -1,0 +1,36 @@
+{
+ "label": "SYNTHETIC-DEVELOPMENT held-out fixture (N8-03); NOT the actual 24-tile corpus",
+ "dir": "/Users/alansynn/Workspace/solweig-v8-native/benchmarks/fixtures/optimization_v8/scenes/scene_128_veg",
+ "tile_size": [
+  128,
+  128
+ ],
+ "tiles": [
+  "0_0"
+ ],
+ "variant": "veg",
+ "motif": "dense_urban 32-pixel motif (pinned p7 generator lineage), no RNG",
+ "vegetation_additions": "street canopy dem+6 on block rows 28..31 (cols 8..24) and cols 28..31 (rows 8..24); park courtyards dem+5 on carved courtyards of odd/odd 32-blocks",
+ "canopy_fraction_of_pixels": 0.1484,
+ "met_source": "/Users/alansynn/Workspace/solweig-v8-native/tests/reference/state_sequence_original_cpu/scene/met.txt",
+ "met_derivation": "header + first 24 data records (day 200 = 2020-07-18 hourly cycle, it 0..23); values unmodified",
+ "met_records_including_header": 25,
+ "selected_date": "2020-07-18",
+ "epsg": 32618,
+ "geotransform": [
+  582953.5,
+  1.0,
+  0.0,
+  4507048.0,
+  0.0,
+  -1.0
+ ],
+ "generator": "tools/optimization_v8/n8_03_build_scenes.py",
+ "generator_sha256": "c272575d7ea0f3bb4db46d5790a643dcae2487fff2ebafad665b9b7f55baed99",
+ "sha256": {
+  "processed_inputs/DEM/DEM_0_0.tif": "07e60ecf82e0677128fd732636ea3d528f376fb65e1e1f05603a94b829d1038d",
+  "processed_inputs/Building_DSM/Building_DSM_0_0.tif": "e28b66df31c553a273b27ef12cd407d348291b955891cd4638c9a141f6080797",
+  "processed_inputs/Trees/Trees_0_0.tif": "dad16528e1b35c520633999a61634a2036e0bd93a846f521bb323ce82ee65772",
+  "processed_inputs/metfiles/metfile_0_0.txt": "bc8ee6361071dd109649857127d6b777571e868bdb06db0e47968b39e99189e4"
+ }
+}

@@ -1,0 +1,26 @@
+{
+ "tree": "final",
+ "mode": "check",
+ "cmd": [
+  "/Users/alansynn/Workspace/solweig-v8-native/.venv/bin/python",
+  "/Users/alansynn/Workspace/solweig-v8-native/optimization_n9_final/tools/f6_worker.py",
+  "--tree",
+  "final",
+  "--root",
+  "/Users/alansynn/Workspace/solweig-v8-native/src",
+  "--cache-dir",
+  "/Users/alansynn/Workspace/solweig-v8-native/.numba_cache/f6check/final",
+  "--mode",
+  "check",
+  "--out",
+  "/Users/alansynn/Workspace/solweig-v8-native/optimization_n9_final/evidence/_f6_final_check_20260923T165024Z.json.tmp",
+  "--threads",
+  "4",
+  "--sha",
+  "22876fb6853e6cd10237214bd514b777fe717594"
+ ],
+ "returncode": 1,
+ "stderr": "/Users/alansynn/Workspace/solweig-v8-native/.venv/lib/python3.12/site-packages/osgeo/gdal.py:606: FutureWarning: Neither gdal.UseExceptions() nor gdal.DontUseExceptions() has been explicitly called. In GDAL 4.0, exceptions will be enabled by default.\n  warnings.warn(\nTraceback (most recent call last):\n  File \"/Users/alansynn/Workspace/solweig-v8-native/optimization_n9_final/tools/f6_worker.py\", line 325, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File \"/Users/alansynn/Workspace/solweig-v8-native/optimization_n9_final/tools/f6_worker.py\", line 276, in main\n    record['route_audit'] = audit_routes()\n                            ^^^^^^^^^^^^^^\n  File \"/Users/alansynn/Workspace/solweig-v8-native/optimization_n9_final/tools/f6_worker.py\", line 240, in audit_routes\n    return {f'B={B} {mix}': found[B][i]\n                            ~~~~~^^^\nKeyError: 1024\n",
+ "stdout": "",
+ "utc": "2026-09-23T16:50:29Z"
+}

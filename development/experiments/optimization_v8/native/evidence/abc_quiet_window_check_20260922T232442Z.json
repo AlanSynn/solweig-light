@@ -1,0 +1,21 @@
+{
+  "ambient_loadavg_start": [
+    10.17724609375,
+    6.42138671875,
+    6.15966796875
+  ],
+  "block_sizes": [
+    128
+  ],
+  "gate": "max_loadavg=8.0 exceeded at start",
+  "mixes": [
+    "all-binary",
+    "mix",
+    "all-raw"
+  ],
+  "mode": "check-only (gate refused; no timing)",
+  "patches": 153,
+  "recorded_utc": "2026-09-22T23:24:42Z",
+  "reps": 0,
+  "status": "INFORMATIONAL / NON-PROMOTION (N8-31 owns protocol cells)"
+}

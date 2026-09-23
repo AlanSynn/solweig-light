@@ -1,0 +1,282 @@
+{
+ "schema": "sw6-thread-child-v1",
+ "requested": {
+  "label": "isolated",
+  "threads_per_worker": 4,
+  "workers": 1
+ },
+ "env_threads_at_numerical_import": {
+  "BLIS_NUM_THREADS": "4",
+  "MKL_NUM_THREADS": "4",
+  "NUMBA_NUM_THREADS": "4",
+  "NUMEXPR_NUM_THREADS": "4",
+  "OMP_NUM_THREADS": "4",
+  "OPENBLAS_NUM_THREADS": "4",
+  "VECLIB_MAXIMUM_THREADS": "4"
+ },
+ "numba": {
+  "config_NUMBA_NUM_THREADS": 4,
+  "default_mask_at_import": 4,
+  "set_num_threads_called": true,
+  "set_num_threads_error": null,
+  "final_get_num_threads": 4,
+  "threading_layer": "workqueue",
+  "threading_layer_error": null,
+  "version": "0.67.0"
+ },
+ "route": {
+  "observed_events": [
+   "gvf_fused_g03",
+   "gvf_fused_g03",
+   "gvf_fused_g03",
+   "gvf_fused_g03",
+   "gvf_fused_g03",
+   "gvf_fused_g03",
+   "gvf_fused_g03",
+   "gvf_fused_g03",
+   "gvf_fused_g03",
+   "gvf_fused_g03",
+   "gvf_fused_g03",
+   "gvf_fused_g03",
+   "gvf_fused_g03",
+   "gvf_fused_g03"
+  ],
+  "observed_counts": {
+   "gvf_fused_g03": 14
+  },
+  "observation_point": "ground_view leaf wrappers installed around engine.gvf_2018a dispatch targets (call-through)",
+  "first_kernel_entry": {
+   "tag": "gvf_fused_g03",
+   "numba_get_num_threads": 4,
+   "numba_config_NUMBA_NUM_THREADS": 4,
+   "numba_get_thread_id": 0,
+   "numba_threading_layer": "workqueue",
+   "threading_layer_error": null,
+   "wall_since_start_s": 12.632
+  }
+ },
+ "admission": {
+  "requested_workers": 1,
+  "plan_active_workers": 1,
+  "plan_native_threads": 4,
+  "options_requested_native_threads": 4
+ },
+ "options": {
+  "cache_dir": null,
+  "legacy_cache_policy": "recompute",
+  "cache_enabled": true,
+  "memory_budget_bytes": 12884901888,
+  "cpu_budget": 4,
+  "workers": 1,
+  "threads_per_worker": 4,
+  "block_pixels": 1024,
+  "checkpoint_interval": 1,
+  "resume": false
+ },
+ "runtime_context_inside_run": {
+  "threads_per_worker": 1
+ },
+ "versions": {
+  "python": "3.11.16",
+  "python_implementation": "CPython",
+  "numpy": "2.4.6",
+  "numba": "0.67.0",
+  "llvmlite": "0.49.0",
+  "gdal": "3.13.3",
+  "machine": "arm64",
+  "system": "Darwin"
+ },
+ "math_profile": {
+  "id": "solweig-portable-sleef-5a1d179d-v1",
+  "fingerprint": "8e4d38460b61b0299e7c1d525c8499750dcd219ef01cc785d7496dbe1dcbef30",
+  "implementation": {
+   "profile_id": "solweig-portable-sleef-5a1d179d-v1",
+   "sleef_commit": "5a1d179df9cf652951b59010a2d2075372d67f68",
+   "coefficient_policy": "numpy-float64-cos-tan-scalar-v1",
+   "tan_domain_policy": "sleef-u10-fast-abs-lt-125;explicit-legacy-numpy-otherwise-v1",
+   "source_sha256": {
+    "_sleef_acos.py": "9c7aff0c880a10db81cc6f96c314a7600ef77cb0008cbcd5ff344fa156511263",
+    "_sleef_classifier.py": "444e27eb3e887145b0f9fc2447b9e6aafba3185c4f7cab0835bf862ae60447ec",
+    "_math_profile.py": "7921432908b43aec6b99ac5c70df0f1f7e6566787c4e84cd741cbfa5b64e3ef7",
+    "_jit_cache.py": "93cafde414ff020fa6810f5bb5a904e199ba22b0ebd780a9291a1257903b85ab",
+    "SLEEF_LICENSE.txt": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566"
+   }
+  },
+  "runtime": {
+   "python": "CPython-3.11.16",
+   "numpy": "2.4.6",
+   "numba": "0.67.0",
+   "llvmlite": "0.49.0",
+   "machine": "arm64",
+   "system": "Darwin",
+   "byteorder": "little",
+   "float_rounds": 1,
+   "fastmath": false,
+   "fma": "explicit-llvm.fma.f32"
+  }
+ },
+ "module_origin": {
+  "solweig_light": "/Users/alansynn/Workspace/solweig-light-v6-measure/src/solweig_light/__init__.py",
+  "pipeline": "/Users/alansynn/Workspace/solweig-light-v6-measure/src/solweig_light/pipeline.py",
+  "site_arg": "/Users/alansynn/Workspace/solweig-light-v6-measure/src"
+ },
+ "workload": {
+  "scene_src": "/Users/alansynn/Workspace/solweig-light-claude-v5/optimization_v5_claude/evidence/census/scene_dense256",
+  "tile": "0_0",
+  "actual_shape": [
+   256,
+   256
+  ],
+  "date": "2020-07-18",
+  "timesteps": 24,
+  "flags": [
+   "save_kdown",
+   "save_kup",
+   "save_ldown",
+   "save_lup",
+   "save_shadow",
+   "save_svf",
+   "save_ta",
+   "save_tmrt",
+   "save_wbgt",
+   "save_wind"
+  ],
+  "numba_cache_dir": "/Users/alansynn/Workspace/solweig-light-v6-measure/optimization_v6_continue/evidence/measurement/matrix_runs/h4/numba_cache",
+  "jit_state": "cold_per_child_fresh_NUMBA_CACHE_DIR",
+  "pipeline_cache_state": "cold_fresh_run_dir_legacy_recompute"
+ },
+ "timing_s": {
+  "numpy_numba_import": 0.318,
+  "solweig_import": 1.609,
+  "run_tile_total": 20.677,
+  "child_total": 22.882
+ },
+ "peak_rss_bytes": 328351744,
+ "peak_rss_note": "macOS ru_maxrss is bytes",
+ "process": {
+  "pid": 2701,
+  "parent_pid": 96201
+ },
+ "output_manifest": {
+  "file_count": 23,
+  "files": [
+   {
+    "path": "Building_DSM.tif",
+    "size": 262696,
+    "sha256": "687655ed2122002eebc16214fa506537a433aec5ca12ef198572c8dc0bee430f"
+   },
+   {
+    "path": "DEM.tif",
+    "size": 262696,
+    "sha256": "85ab26fcec6fa193ca5d5d116eb1560c03b44d9f87c32dce0988b0d3ef29334e"
+   },
+   {
+    "path": "Trees.tif",
+    "size": 262696,
+    "sha256": "30f9e56852cc59aa196df9ce281666612a63608ee14cef76ee698227128ccdfa"
+   },
+   {
+    "path": "met.txt",
+    "size": 7569,
+    "sha256": "bc8ee6361071dd109649857127d6b777571e868bdb06db0e47968b39e99189e4"
+   },
+   {
+    "path": "output_folder/0_0/Kdown_0_0.tif",
+    "size": 6361582,
+    "sha256": "d5bb0e0ac7bca1434982d2380b7dafe4636bc2c507a261dc27b1fd56c34fa839"
+   },
+   {
+    "path": "output_folder/0_0/Kup_0_0.tif",
+    "size": 6361582,
+    "sha256": "c5abb1a74a836107a146a976acd145c53b94ad0d07cf54988343d7df13b7d77b"
+   },
+   {
+    "path": "output_folder/0_0/Ldown_0_0.tif",
+    "size": 6361582,
+    "sha256": "95fe916267f12c93e6ab946ebe1effad857d52b23472d94a4d7ac0e247417367"
+   },
+   {
+    "path": "output_folder/0_0/Lup_0_0.tif",
+    "size": 6361582,
+    "sha256": "a19c09c0fe156fa4ca163c6d7a1750dbef06e81dba652f7d8b009fd1486e6e52"
+   },
+   {
+    "path": "output_folder/0_0/Shadow_0_0.tif",
+    "size": 6361582,
+    "sha256": "46d8fedeeda2f45680a9d5fa01f4f16390c405d3f518f1e2f3046f2c252ad41d"
+   },
+   {
+    "path": "output_folder/0_0/TMRT_0_0.tif",
+    "size": 6361582,
+    "sha256": "2640d6e56dd409bb16d9491fddb4ed69ebe698cae10143ac1b0abba2d4fa3e71"
+   },
+   {
+    "path": "output_folder/0_0/Ta_0_0.tif",
+    "size": 6361582,
+    "sha256": "f180aa7653f665aa8b26a9011c918c40c9c8c0c3666a87a5497cf4d26b3f1abe"
+   },
+   {
+    "path": "output_folder/0_0/UTCI_0_0.tif",
+    "size": 6361582,
+    "sha256": "e8b03bc6a8f78a681e898f58cc7011bffdaabd4ce2273f680a533d9ff885c063"
+   },
+   {
+    "path": "output_folder/0_0/WBGT_0_0.tif",
+    "size": 6361582,
+    "sha256": "ee71350e412cfd47ea322b6e9e33a75d85bb31847827c777b7c43b340d6c0fb2"
+   },
+   {
+    "path": "output_folder/0_0/Wind_0_0.tif",
+    "size": 6361582,
+    "sha256": "6f58de0baddc9d317b78e0af1d819307bbf766d81e86d169954ce26b78e015af"
+   },
+   {
+    "path": "processed_inputs/Building_DSM/Building_DSM_0_0.tif",
+    "size": 262696,
+    "sha256": "687655ed2122002eebc16214fa506537a433aec5ca12ef198572c8dc0bee430f"
+   },
+   {
+    "path": "processed_inputs/DEM/DEM_0_0.tif",
+    "size": 262696,
+    "sha256": "85ab26fcec6fa193ca5d5d116eb1560c03b44d9f87c32dce0988b0d3ef29334e"
+   },
+   {
+    "path": "processed_inputs/SVF/SkyViewFactor_0_0.tif",
+    "size": 262696,
+    "sha256": "e5b1ae5194ca263e33b7a3b4368d0ee51999224386627174efe0b7e5a82659da"
+   },
+   {
+    "path": "processed_inputs/SVF/shadowmats_0_0.npz",
+    "size": 884221,
+    "sha256": "6df9dc3ec6245e2383b8ef0cd1673eea1620c010bb5f4ca53bcc58f9dcfbc88f"
+   },
+   {
+    "path": "processed_inputs/SVF/svfs_0_0.zip",
+    "size": 282867,
+    "sha256": "dd38c7b361b47a6dabd1a007f71a40941ff277e1d932986505f232162214978e"
+   },
+   {
+    "path": "processed_inputs/Trees/Trees_0_0.tif",
+    "size": 262696,
+    "sha256": "30f9e56852cc59aa196df9ce281666612a63608ee14cef76ee698227128ccdfa"
+   },
+   {
+    "path": "processed_inputs/aspect/aspect_0_0.tif",
+    "size": 262696,
+    "sha256": "7badaeee79cb4f490f149faf4196a57388bb4a971d747d3786a0289b661c57b7"
+   },
+   {
+    "path": "processed_inputs/metfiles/metfile_0_0.txt",
+    "size": 7569,
+    "sha256": "bc8ee6361071dd109649857127d6b777571e868bdb06db0e47968b39e99189e4"
+   },
+   {
+    "path": "processed_inputs/walls/walls_0_0.tif",
+    "size": 262696,
+    "sha256": "7bec6a080f51bb942b91a7d8af0466f5668aca8fbe205d77aecc1b1b786ff48f"
+   }
+  ]
+ },
+ "stale_output_folder_removed": true,
+ "run_dir_kept": false
+}

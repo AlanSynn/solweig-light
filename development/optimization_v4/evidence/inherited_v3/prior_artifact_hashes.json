@@ -1,0 +1,41 @@
+{
+  "files": [
+    {
+      "name": "SOLWEIG_LIGHT_IMPLEMENTATION_PLAN.md",
+      "bytes": 69898,
+      "sha256": "0f2d1e44de38e219619dfd6e4fe1a02d4f93b4b1c3f2d29577372b352e539aea",
+      "classification": "historical_attachment_not_production_oracle"
+    },
+    {
+      "name": "TASKS.yaml",
+      "bytes": 7713,
+      "sha256": "ae1a28c4957574b6d34ef4af5ce15d747b02fc0350264af2e613d89566b6aef5",
+      "classification": "historical_attachment_not_production_oracle"
+    },
+    {
+      "name": "AGENTS.md",
+      "bytes": 25959,
+      "sha256": "d8dc90309210e963b9175883a40e4ab45bb5b88aeadb20af9bf1028f61706445",
+      "classification": "historical_attachment_not_production_oracle"
+    },
+    {
+      "name": "solweig-theory-review.zip",
+      "bytes": 32298,
+      "sha256": "cc5f33befc8834d74e7bae92b7c544791413e3cf82d68f3d0f91dd1e0185145c",
+      "classification": "historical_attachment_not_production_oracle"
+    },
+    {
+      "name": "solweig-mathematical-optimization.zip",
+      "bytes": 18387,
+      "sha256": "b8028171ce9dc5cd28e9d9921942ab3f42e8893ddb8b630494beb207f2006bea",
+      "classification": "historical_attachment_not_production_oracle"
+    },
+    {
+      "name": "MATHEMATICAL_STRATEGY.md",
+      "bytes": 19133,
+      "sha256": "82d4697caeebd6508de1869865e89b8a9a7eb7cfd3a4722163bcc91f83b9d468",
+      "classification": "historical_attachment_not_production_oracle"
+    }
+  ],
+  "reexecuted_as_production_tests": false
+}

@@ -1,0 +1,132 @@
+{
+  "record": "N8-31 tier-A comparison transcription: B=128 A/B/C cells under the amended ambient-host gate (pre-tier-B; informational)",
+  "recorded_utc": "2026-09-22T19:40 local (operator local time; UTC was ~23:40Z -- retained for continuity with prior local-time records, R13 note)",
+  "tier": {
+    "label": "ambient-host tier; INFORMATIONAL / NON-PROMOTION",
+    "cannot_alone_support": [
+      "N8-32 selection",
+      "any default-enablement"
+    ],
+    "authority": "trials/n8_31_frozen_cells_addendum.json amendment_2026-09-22T1945Z (pre-results; zero tag=timed records existed at amendment time)"
+  },
+  "archives": [
+    "experiments/optimization_v8/native/evidence/abc_quiet_window_timed_20260922T232539Z.json",
+    "experiments/optimization_v8/native/evidence/abc_tierA_timed_20260922T232538Z.stderr.txt (per-cell loadavg)",
+    "gate-refusal + smoke check archives: abc_quiet_window_check_20260922T232442Z.json, _232451Z.json"
+  ],
+  "cells": "B=128 x mixes {all-binary, mix, all-raw} x REPS=9, min_ms; parity A0==C1==C1k==B1==B1k PASS in all three cells (bitwise per harness parity check)",
+  "ambient_envelope": {
+    "start": [
+      6.57,
+      6.17,
+      6.09
+    ],
+    "end": [
+      6.84,
+      6.24,
+      6.11
+    ],
+    "per_cell": [
+      6.6,
+      6.6,
+      6.8
+    ],
+    "censored_cells": 0,
+    "gate": "start loadavg 6.57 <= 8.0 (harness-archived); memory view >= 1.5 GB floor satisfied per OPERATOR observation ~3.17 GB pre-run (NOT harness-archived -- the harness archives loadavg only; consistent with host_quiet_window_note ~3.2 GB; R13-D2 restatement)",
+    "note": "min-of-9 under stable recorded ambient; arms interleaved in one process per the frozen harness"
+  },
+  "end_to_end_min_ms": {
+    "composition_rule": "UNIFORM all-min: sum of component min_ms from the archive -- A0x = A_decode_block_x3 + A0_{parallel,serial}_dense; B1 = BC_produce + BC_pack_masks + B1_numba_adapter (CANONICAL per review R-SEL-1: the timed B call receives PRE-PACKED sun_a/shade_a, call signature verified, so pack_masks sits OUTSIDE B1's timed kernel and is charged to B1 per the frozen harness comment); C1 = BC_produce + BC_float32_views + BC_pack_masks + C1_native_aosoa_adapter. Single rule for every cell.",
+    "all-binary": {
+      "A0p": 0.6207,
+      "A0s": 0.5767,
+      "B1": 0.5035,
+      "C1": 0.4719
+    },
+    "mix": {
+      "A0p": 0.5262,
+      "A0s": 0.4514,
+      "B1": 0.4688,
+      "C1": 0.427
+    },
+    "all-raw": {
+      "A0p": 0.2421,
+      "A0s": 0.1494,
+      "B1": 0.2024,
+      "C1": 0.169
+    },
+    "r_sel_1_correction": "B1 row corrected per n8-rev-n8-13 R-SEL-1 (selection review, outcome-invariant): prior values 0.4757/0.4396/0.175 undercharged B1 by the pack_masks cost because the R13-D1 rule wrongly stated the adapter covered it. Verdict unchanged: C < B1 in every mix under EVERY composition (0.4719<0.5035, 0.427<0.4688, 0.169<0.2024); the correction's error direction is unfavorable-to-C (conservative). The selection skeleton's tier-A B1 row retains the stale values and must never be cited."
+  },
+  "verdict_end_to_end": "Uniform recompute: C wins all-binary (-18.2% vs A0s) and mix (-5.4%) vs ALL arms; C < B1 in every mix; sole loss all-raw vs A0-serial (+13.1%)",
+  "kernel_leaf_min_ms": {
+    "C1k_native": [
+      0.04,
+      0.042
+    ],
+    "B1k_numba": [
+      0.108,
+      0.118
+    ],
+    "A0s": [
+      0.109,
+      0.194
+    ],
+    "A0p": [
+      0.201,
+      0.238
+    ],
+    "ratio": "native leaf ~2.6-2.9x B1k; A0p/C1k 5.0-5.9x (conservative statement per review)"
+  },
+  "producer_accounting": {
+    "all-binary": {
+      "A_decode_x3": 0.383,
+      "BC_produce": 0.34,
+      "delta": -0.043
+    },
+    "mix": {
+      "A_decode_x3": 0.291,
+      "BC_produce": 0.303,
+      "delta": 0.012
+    },
+    "all-raw": {
+      "A_decode_x3": 0.041,
+      "BC_produce": 0.041,
+      "delta": 0.0
+    },
+    "note": "mix reversal consistent with N8-11's recorded note, smaller magnitude at P=153; does not flip any end-to-end verdict"
+  },
+  "attribution_all_raw_loss": {
+    "cause": "harness-charged BC_pack_masks_x2 adapter = 0.0274 min_ms (0.0277 was the median; min quoted per review): the harness's dense->AoSoA mask transpose",
+    "pipeline_relevance": "the integrated row C path uses N8-11 classify_block_aosoa which emits AoSoA masks at the source, so the routed pipeline does NOT pay this transpose; charged here per protocol regardless",
+    "kernel_only_all_raw": "C1 0.100 < A0s 0.109"
+  },
+  "honest_losses_and_conservatism": [
+    "all-raw vs A0-serial is the only end-to-end loss and is adapter-attributed as above; recorded unedited",
+    "A0 parallel is SLOWER than serial at B=128 in all mixes (pool overhead at tiny blocks); results reported against BOTH A labels so no label shopping is possible",
+    "ambient tier means absolute numbers carry desktop-load uncertainty; only intra-run relative ordering is used"
+  ],
+  "n6_envelope_context": "Tier B (B=1024) remains a REQUIRED cell; scene-size envelope for continuity: ~2.25 GB routed-call overhead at 1024^2, ~9 GB at 2048^2, P=153. The BINDING envelope statement lands in the first QUALIFIED record (tier-B based), per the n8-rev-n8-40 N6 follow-through.",
+  "n7_fairness_note": "Block-level cells exclude the per-driver-call resolve_lw_backend() JSON stat+read; N7 requires driver-level (tier-B / pipeline campaign) accounting to include one resolve per call in BOTH arms (shipped-state row A pays it in repo state, which is the fair baseline).",
+  "concurrent_repair_verified": "n8-13's N-D2 conftest repair (native_test_helpers.py) verified by integrator: native standalone 194 passed (0.88s); native-first combined order native/region/integration/policy/dx 451 passed -- the second known_interference instance (native-first collection errors) is closed by the same repair.",
+  "next": [
+    "tier B (B=1024) on strict quiet-window cron 51454019: loadavg < 2.0 AND memory view >= 1.5 GB (amendment 1955Z); harness invocation --block-sizes 1024 --max-loadavg 2.0",
+    "N8-32 selection waits for tier B; this record cannot substitute for it"
+  ],
+  "delta_review": {
+    "reviewer": "n8-rev-n8-13",
+    "verdict": "APPROVE-WITH-NOTES",
+    "records": [
+      "optimization_v8_native_default/evidence/reviews/n8_30_review_n8_13_delta.json",
+      ".md"
+    ],
+    "required_corrections_applied": {
+      "R13-D1": "end_to_end table re-transcribed under the single stated all-min composition rule; recomputed values differ from the prior mixed-rule table by <=0.028 ms (largest: B1 all-binary 0.503->0.476, the reported value had counted the views adapter outside the kernel that includes it); NO verdict flips (reviewer-predicted, independently recomputed here). SUPERSEDED IN DETAIL by R-SEL-1 (N8-32 selection review): the '(adapter includes masks)' premise was FALSE for masks -- the timed B call receives pre-packed sun_a/shade_a -- so B1 was undercharged; the canonical rule B1 = produce + pack_masks + B1_adapter is now applied in the table above (B1 0.5035/0.4688/0.2024) and in the transcription tool.",
+      "R13-D2": "memory view restated as operator context with explicit non-archived provenance"
+    },
+    "recommended_applied": [
+      "pack_masks min 0.0274 quoted",
+      "leaf ratio conservative 5.0-5.9x",
+      "tier-B floor citation updated to 1.5 GB per amendment 1955Z"
+    ]
+  }
+}

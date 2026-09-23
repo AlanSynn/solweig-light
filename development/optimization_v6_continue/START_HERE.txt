@@ -1,0 +1,20 @@
+Continue SOLWEIG-light optimization in Claude Code with GLM-5.3 coordination and actual Opus specialists/reviewers where available. Work ONLY on the existing integration branch perf/claude-glm53-cpu-v5. Do not create/switch a new named branch or merge/push/PR/release. Find its existing worktree, preserve user changes, and record actual HEAD. Known checkpoint: e7a2d6ec; never reset to it. Workers may use detached worktrees at an explicit immutable commit; only the integrator advances the same branch.
+
+Read applicable repository instructions, optimization_v6_continue/DESIGN_AUTHORITY.md, PLAN.md, VALIDATION_POLICY.md, DELEGATION.md and TASKS_CLAUDE.yaml once. Workers read assigned dossiers only. Design is supplied here; implement without Astra/Codex calls or routine approvals.
+
+Preserve all seven workflows, Python/CLI/TIFF contracts, compatibility distribution, CPU-only own-met path, chronological state, original model/domain/patch count, typed arithmetic, guards/fallbacks and durability. No approximation, new FMA/reassociation, shortened model support, tolerance relaxation or fabricated oracle. Keep accepted v5 changes. Measured-rejected fused radiation stays OFF unless a materially different candidate earns promotion.
+
+First correct measurement scope and effective-thread telemetry. The reported 598.9s covers TWO spatial scenes, each with 24 timesteps, not 24 spatial tiles. Append an evidence-scope correction without rewriting historical records. RuntimeOptions alone does not set Numba's actual threads in an in-process harness. Use isolated configured children and record actual masks, routes and admitted workers.
+
+Prioritize:
+1. Shared geometry producer/native key: standalone SVF adds construction/exporter fields absent in simulation. Confirm real producer call counts on tiny cold TIFFs, then remove duplicate construction with a versioned common recipe and separate export provenance. Keep all validation/legacy outputs; never use trust as a shortcut.
+2. Private anisotropic Lside fast path and cylinder longwave demand specialization, preserving live radiation/state and full public diagnostics/failure behavior.
+3. Phase-level geometry concurrency, ordered publication/barriers, then simulation pool tuning under measured memory/native budgets.
+4. Actual GVF expression hoisting, compiled ordered postprocess, prepared multi-channel decoder, cylinder shortwave scratch specialization and exact static coefficient reuse.
+5. If still useful: one-pass CRC/schema/value export validation, compiled aniLum, certified ray suffixes and exact-value reuse. Select by measured residual, not by catalog size.
+
+Delegate all useful independent proof, implementation, fixtures and review tasks to GLM/Opus without artificial token/session limits. Verify served-model routing: a GLM-mapped opus alias is not Anthropic Opus. Missing Opus does not block independent honestly labeled GLM review. Do not create credentials/gateways or print secrets. No progress polling/transcript replay. Workers finish implement-test-fix-review and return terminal evidence. One file owner and one integrator; local tests obey resource admission; benchmarks hold an exclusive host lease.
+
+Use tiny actual-kernel differential tests and 64/128-square TIFFs with complete 24/48-step state during development; 128/256-square small batches for timing. Reuse dependency-valid evidence and environments. No per-agent 1024, full CI matrix, automatic push or full-suite repetition. Freeze the final candidate and actual 24-spatial-tile workload before one large campaign; permit one causally fixed retry. Missing data/reference remains unverified. Separate single-run observation from statistical or release claims.
+
+Proceed autonomously through the smallest effective portfolio. Record source hashes, failures, commands, measurements and reviews. Deliver reviewed commits on this SAME unmerged branch, measured scoped gains and remaining gaps. No stubs or unmeasured speed promises.

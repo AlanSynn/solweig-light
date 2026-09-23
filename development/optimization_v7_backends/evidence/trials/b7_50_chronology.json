@@ -1,0 +1,29 @@
+{
+ "schema": "solweig-v7-b7-50-chronology-v1",
+ "scene": "/Users/alansynn/Workspace/solweig-light/tests/reference/small_original_cpu/scene/processed_inputs",
+ "date": "2020-07-18",
+ "started_utc": "2026-09-22T06:25:18.887881+00:00",
+ "output_files": [
+  "output_folder/0_0/Kdown_0_0.tif",
+  "output_folder/0_0/Kup_0_0.tif",
+  "output_folder/0_0/Ldown_0_0.tif",
+  "output_folder/0_0/Lup_0_0.tif",
+  "output_folder/0_0/Shadow_0_0.tif",
+  "output_folder/0_0/TMRT_0_0.tif",
+  "output_folder/0_0/Ta_0_0.tif",
+  "output_folder/0_0/UTCI_0_0.tif",
+  "output_folder/0_0/WBGT_0_0.tif",
+  "output_folder/0_0/Wind_0_0.tif"
+ ],
+ "default_identity": true,
+ "native_bitwise_equal_to_default": true,
+ "differing_files": [],
+ "file_count": 10,
+ "finished_utc": "2026-09-22T06:25:24.988844+00:00",
+ "native_tpw4_concurrency": {
+  "bitwise_equal_to_default": true,
+  "differing_files": [],
+  "file_count": 10,
+  "note": "numba 4-thread pool blocks calling the single-thread ISPC kernel concurrently; thread-safety per call (own output buffer)"
+ }
+}

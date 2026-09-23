@@ -1,0 +1,49 @@
+# C6-20 command log (worktree /Users/alansynn/Workspace/solweig-light-v6-lside, HEAD 5e1fab467f7e6038dcf3992cb694008a51ea2c58)
+# Interpreter: /Users/alansynn/Workspace/solweig-light/.venv-light/bin/python (absolute, as required)
+# All commands run from the worktree root. Date: 2026-09-21 (development session).
+
+# 1) Full C6-20 test suite (bitwise parity, warning contract, fallback/profile).
+#    Post-C6-60-review rerun (3 prescribed fixes applied): 65 passed.
+.venv-light/bin/python -m pytest tests/optimization_v6/lside -q
+# -> "65 passed, 70 warnings in 4.76s"; exit code 0
+
+# 2) L1 evidence harness: per-timestep/per-field bitwise parity + warning
+#    streams + timing (contended tier, recorded only). Writes
+#    optimization_v6_continue/evidence/lside/l1_parity_and_timing.json.
+.venv-light/bin/python tests/optimization_v6/lside/run_l1_evidence.py
+# -> verdict ALL_BITWISE_OK; exit code 0
+#    stderr shows the documented warning-location delta (engine.py:1370 vs
+#    pipeline_demand.py:303, same category+message).
+
+# 3) Cycle-freedom simulation of the proposed engine import (not an edit).
+.venv-light/bin/python -c "import solweig_light.radiation.engine as engine; from solweig_light.radiation.pipeline_demand import current_demand, lside_veg_v2022a_demanded; engine.lside_veg_v2022a_demanded = lside_veg_v2022a_demanded; print('ok')"
+# -> ok; exit code 0
+
+# 4) sha256 of owned artifacts (recorded 2026-09-21, post-C6-60-review fixes).
+# src/solweig_light/radiation/pipeline_demand.py
+#   db7ad07e4d15989395f33c8d4c0a54d7505b45b5ad84dff353ea9248a856f22e
+# tests/optimization_v6/lside/run_l1_evidence.py
+#   4ec9ca1b80bac5273ca308d9eb7fb6f714b782ae380c793f055d315daa1fd7d5
+# tests/optimization_v6/lside/test_lside_bitwise_parity.py
+#   9de014e2784fc33c24ebe85a72514c1782d8d633d152c851b145f8c09d576667
+# tests/optimization_v6/lside/test_lside_fallback_and_profile.py
+#   bd7d46a62c8d3a14581c39be116bc6a655027bdb4c71813594006c931afcd108
+# tests/optimization_v6/lside/test_lside_warning_contract.py
+#   90bf6edadefc3abcea64c476fd2f7a2c2cdc7d7502730b00581c1ad00f63a2d0
+# optimization_v6_continue/evidence/lside/integration_patch_recipe.diff
+#   96a9196120ef13a31aa562e22f1fc89a04a729fb9a762a3c1f573c4a33537ef7
+# optimization_v6_continue/evidence/lside/l1_parity_and_timing.json
+#   regenerated on every harness run (timing samples change); latest run
+#   (verdict ALL_BITWISE_OK, all 4 parity blocks true):
+#   ca16a0ec405f0adc6a8c720d258bae64e3b4a81e074121a65efe31c91c768650
+# (README.md and commands.txt were written after these hashes; re-hash on review if needed.)
+#
+# C6-60 review deltas applied (2026-09-21):
+# 1. azimuth/t must be 0-d in BOTH altitude regimes (prologue azi* sums
+#    engine.py:1375-1378 run unconditionally; night array azimuth/t could
+#    overflow-warn in the original while the fast path stayed silent).
+#    Regression tests: azimuth_array_night, t_array_night (fallback).
+# 2. Bool-svf test added (admitted fast path, bitwise, warning-stream parity).
+# 3. _minmax_1d explicit empty early-out -> (nan, nan), deterministic
+#    empty-raster fallback (no placeholder out-of-bounds read).
+# README float32-margin prose corrected: wall terms ~350-700x below threshold.

@@ -1,0 +1,1370 @@
+{
+ "schema": "sw8-n8-02-profile-v1",
+ "task": "N8-02 packed worker boundary + native entry measurement",
+ "evidence_class": "new_region_measurement",
+ "started_utc": "2026-09-22T19:31:50Z",
+ "finished_utc": "2026-09-22T19:33:18Z",
+ "protocol": {
+  "host": {
+   "cpu": "Apple M1 Pro",
+   "memsize_bytes": 17179869184,
+   "python": "/Users/alansynn/Workspace/solweig-v8-native/.venv/bin/python"
+  },
+  "scene": {
+   "dir": "/Users/alansynn/Workspace/solweig-v8-native/tests/reference/state_sequence_original_cpu/scene",
+   "fixture_files_sha256": {
+    "Building_DSM.tif": "e13aefb56d224680fd0a04fbf1886faf840d73db032aa4bbe2bbc651c4d8f80a",
+    "DEM.tif": "a550dd0b6519621fff999eb6cc7bce224c27a3c5cc17d73660c41b52767a7105",
+    "Trees.tif": "aacbcf3ffe3296c1ad4528138555b19d59358210a4c2b5b1c636074975fc8bdc",
+    "met.txt": "37132c8851294b39e8cb57087a22527f155704e61ba8c37a0e4f36c9f591b0ac",
+    "manifest.json": "fe013dcdfebb28db2e45141afe86a1ac3b1c19b2987a82befaa9e6628c4fc5b6"
+   },
+   "prepared_files_sha256_count": 10,
+   "prepared_digest": "f289988976c4cfad"
+  },
+  "scene_survey": {
+   "distinct_sizes": {
+    "2x2": 31,
+    "2x3": 28,
+    "3x2": 28,
+    "3x3": 28,
+    "4x4": 4,
+    "32x35": 81,
+    "32x48": 97
+   },
+   "largest_square_min_side": 32,
+   "largest_examples": [
+    "tests/reference/optional_original_cpu/base/processed_inputs/Building_DSM/Building_DSM_0_0.tif",
+    "tests/reference/optional_original_cpu/base/processed_inputs/DEM/DEM_0_0.tif",
+    "tests/reference/optional_original_cpu/base/processed_inputs/SVF/SkyViewFactor_0_0.tif",
+    "tests/reference/optional_original_cpu/base/processed_inputs/Trees/Trees_0_0.tif"
+   ],
+   "exists_128_or_256_square_real_fixture": false,
+   "note": "census over real reference TIFFs only (no synthetic scenes)"
+  },
+  "threads": 4,
+  "cpu_budget": 4,
+  "pairs_b128": 5,
+  "pairs_b1024": 3,
+  "user_native_cache_before": {
+   "exists": true,
+   "dylibs": [
+    "liblw_native_g4.dylib",
+    "liblw_native_g8.dylib"
+   ],
+   "build_stamp": {
+    "kernel_sha256": "52652a598cd85ead04747a83a52b1184035c880aa0b32cf518efef06b961663c",
+    "ispc": "/opt/homebrew/bin/ispc",
+    "built_utc": "2026-09-22T06:25:24Z"
+   }
+  }
+ },
+ "warmup": {
+  "returncode": 0,
+  "run_wall_s": 1.4897
+ },
+ "first_use_native": {
+  "returncode": 0,
+  "run_wall_s": 1.416,
+  "scratch_cache_after": {
+   "exists": true,
+   "dylibs": [
+    "liblw_native_g4.dylib",
+    "liblw_native_g8.dylib"
+   ],
+   "build_stamp": {
+    "kernel_sha256": "52652a598cd85ead04747a83a52b1184035c880aa0b32cf518efef06b961663c",
+    "ispc": "/opt/homebrew/bin/ispc",
+    "built_utc": "2026-09-22T19:31:57Z"
+   }
+  },
+  "counters": {
+   "counts": {
+    "native_adapter.admitted": 432,
+    "native_adapter.lw_native_primary": 432,
+    "native_c_entry.f64": 432,
+    "native_prep.build": 1,
+    "native_prep.build_needed": 433,
+    "native_prep.cache_dir": 433,
+    "native_prep.ensure_loaded_total": 433,
+    "native_prep.first_load_at_install": 1,
+    "native_prep.fs.exists": 869,
+    "native_prep.fs.mkdir": 434,
+    "native_prep.fs.read_bytes": 433,
+    "native_prep.fs.read_text": 432,
+    "native_prep.json_loads": 432,
+    "native_prep.kernel_digest": 433,
+    "stage.classifier_classes": 684,
+    "stage.coefficients_prepared": 76,
+    "stage.decode_block_x3": 2052,
+    "stage.dpc_primary": 48,
+    "stage.geometry_legacy_load": 1,
+    "stage.lcyl_by_demand": 48,
+    "stage.output_checkpoint": 48,
+    "stage.output_write": 48,
+    "stage.patch_geometry": 152,
+    "stage.read_raster_pipeline": 5,
+    "stage.solweig_calc": 48,
+    "stage.utci": 48
+   },
+   "env_lw_backend": "native",
+   "fallback_reasons": {},
+   "first_call_s": {
+    "native_adapter.admitted": 0.000747,
+    "native_adapter.lw_native_primary": 0.00015,
+    "native_c_entry.f64": 8.5e-05,
+    "native_prep.build": 2.173652,
+    "native_prep.build_needed": 1.8e-05,
+    "native_prep.cache_dir": 8.4e-05,
+    "native_prep.ensure_loaded_total": 2.477637,
+    "native_prep.first_load_at_install": 2.477646,
+    "native_prep.fs.exists": 1.3e-05,
+    "native_prep.fs.mkdir": 7.4e-05,
+    "native_prep.fs.read_bytes": 0.0002,
+    "native_prep.fs.read_text": 0.000266,
+    "native_prep.json_loads": 8e-06,
+    "native_prep.kernel_digest": 0.000231,
+    "stage.classifier_classes": 1.3e-05,
+    "stage.coefficients_prepared": 1.8e-05,
+    "stage.decode_block_x3": 0.112092,
+    "stage.dpc_primary": 0.116626,
+    "stage.geometry_legacy_load": 0.052416,
+    "stage.lcyl_by_demand": 0.119666,
+    "stage.output_checkpoint": 0.004852,
+    "stage.output_write": 0.001769,
+    "stage.patch_geometry": 0.002801,
+    "stage.read_raster_pipeline": 0.01816,
+    "stage.solweig_calc": 0.121926,
+    "stage.utci": 0.003701
+   },
+   "install_perf_counter": 2.491033707978204,
+   "max_s": {
+    "native_adapter.admitted": 0.000747,
+    "native_adapter.lw_native_primary": 0.00017,
+    "native_c_entry.f64": 0.000133,
+    "native_prep.build": 2.173652,
+    "native_prep.build_needed": 0.00053,
+    "native_prep.cache_dir": 8.4e-05,
+    "native_prep.ensure_loaded_total": 2.477637,
+    "native_prep.first_load_at_install": 2.477646,
+    "native_prep.fs.exists": 0.000144,
+    "native_prep.fs.mkdir": 7.4e-05,
+    "native_prep.fs.read_bytes": 0.000252,
+    "native_prep.fs.read_text": 0.000266,
+    "native_prep.json_loads": 1.2e-05,
+    "native_prep.kernel_digest": 0.00026,
+    "stage.classifier_classes": 0.004765,
+    "stage.coefficients_prepared": 0.001403,
+    "stage.decode_block_x3": 0.112092,
+    "stage.dpc_primary": 0.116626,
+    "stage.geometry_legacy_load": 0.052416,
+    "stage.lcyl_by_demand": 0.119666,
+    "stage.output_checkpoint": 0.009725,
+    "stage.output_write": 0.009023,
+    "stage.patch_geometry": 0.002843,
+    "stage.read_raster_pipeline": 0.01816,
+    "stage.solweig_calc": 0.121926,
+    "stage.utci": 0.003701
+   },
+   "mean_us": {
+    "native_adapter.admitted": 208.864,
+    "native_adapter.lw_native_primary": 87.084,
+    "native_c_entry.f64": 61.298,
+    "native_prep.build": 2173651.5,
+    "native_prep.build_needed": 99.604,
+    "native_prep.cache_dir": 18.037,
+    "native_prep.ensure_loaded_total": 5842.414,
+    "native_prep.first_load_at_install": 2477646.208,
+    "native_prep.fs.exists": 6.814,
+    "native_prep.fs.mkdir": 14.652,
+    "native_prep.fs.read_bytes": 30.615,
+    "native_prep.fs.read_text": 39.984,
+    "native_prep.json_loads": 2.644,
+    "native_prep.kernel_digest": 37.335,
+    "stage.classifier_classes": 74.357,
+    "stage.coefficients_prepared": 715.792,
+    "stage.decode_block_x3": 90.474,
+    "stage.dpc_primary": 6237.502,
+    "stage.geometry_legacy_load": 52415.833,
+    "stage.lcyl_by_demand": 6517.442,
+    "stage.output_checkpoint": 6263.706,
+    "stage.output_write": 3389.193,
+    "stage.patch_geometry": 41.149,
+    "stage.read_raster_pipeline": 4015.633,
+    "stage.solweig_calc": 15768.242,
+    "stage.utci": 251.993
+   },
+   "native_cache_env": "/Users/alansynn/Workspace/solweig-v8-native/optimization_v8_native_default/evidence/profile/work/native_cache_firstuse",
+   "native_entry_specs": {
+    "f64": 432
+   },
+   "notes": [
+    "wrapper overhead self-test: bare=27.9ns wrapped=181.4ns delta=153.5ns per call (timed-wrapper style used everywhere here)",
+    "ctypes entry pointers wrapped after first load (gang=8); counts are completed C invocations"
+   ],
+   "pid": 24959,
+   "sys_modules_native": {
+    "solweig_light.backends.native.lw_native": true,
+    "solweig_light.backends.native_lw": true
+   },
+   "total_s": {
+    "native_adapter.admitted": 0.090229,
+    "native_adapter.lw_native_primary": 0.03762,
+    "native_c_entry.f64": 0.026481,
+    "native_prep.build": 2.173652,
+    "native_prep.build_needed": 0.043129,
+    "native_prep.cache_dir": 0.00781,
+    "native_prep.ensure_loaded_total": 2.529765,
+    "native_prep.first_load_at_install": 2.477646,
+    "native_prep.fs.exists": 0.005921,
+    "native_prep.fs.mkdir": 0.006359,
+    "native_prep.fs.read_bytes": 0.013256,
+    "native_prep.fs.read_text": 0.017273,
+    "native_prep.json_loads": 0.001142,
+    "native_prep.kernel_digest": 0.016166,
+    "stage.classifier_classes": 0.05086,
+    "stage.coefficients_prepared": 0.0544,
+    "stage.decode_block_x3": 0.185652,
+    "stage.dpc_primary": 0.2994,
+    "stage.geometry_legacy_load": 0.052416,
+    "stage.lcyl_by_demand": 0.312837,
+    "stage.output_checkpoint": 0.300658,
+    "stage.output_write": 0.162681,
+    "stage.patch_geometry": 0.006255,
+    "stage.read_raster_pipeline": 0.020078,
+    "stage.solweig_calc": 0.756876,
+    "stage.utci": 0.012096
+   }
+  }
+ },
+ "instrumented": {
+  "instr_default_b128": {
+   "returncode": 0,
+   "run_wall_s": 1.4124,
+   "counters": {
+    "counts": {
+     "island.numba_lw_primary": 432,
+     "stage.classifier_classes": 684,
+     "stage.coefficients_prepared": 76,
+     "stage.decode_block_x3": 2052,
+     "stage.dpc_primary": 48,
+     "stage.geometry_legacy_load": 1,
+     "stage.lcyl_by_demand": 48,
+     "stage.output_checkpoint": 48,
+     "stage.output_write": 48,
+     "stage.patch_geometry": 152,
+     "stage.read_raster_pipeline": 5,
+     "stage.solweig_calc": 48,
+     "stage.utci": 48
+    },
+    "env_lw_backend": "",
+    "fallback_reasons": {},
+    "first_call_s": {
+     "island.numba_lw_primary": 0.003887,
+     "stage.classifier_classes": 9e-06,
+     "stage.coefficients_prepared": 2e-05,
+     "stage.decode_block_x3": 0.115891,
+     "stage.dpc_primary": 0.123044,
+     "stage.geometry_legacy_load": 0.050407,
+     "stage.lcyl_by_demand": 0.126184,
+     "stage.output_checkpoint": 0.005534,
+     "stage.output_write": 0.00177,
+     "stage.patch_geometry": 0.0029,
+     "stage.read_raster_pipeline": 0.017488,
+     "stage.solweig_calc": 0.128413,
+     "stage.utci": 0.003555
+    },
+    "install_perf_counter": 0.013912874972447753,
+    "max_s": {
+     "island.numba_lw_primary": 0.003887,
+     "stage.classifier_classes": 0.004111,
+     "stage.coefficients_prepared": 0.001425,
+     "stage.decode_block_x3": 0.115891,
+     "stage.dpc_primary": 0.123044,
+     "stage.geometry_legacy_load": 0.050407,
+     "stage.lcyl_by_demand": 0.126184,
+     "stage.output_checkpoint": 0.009788,
+     "stage.output_write": 0.005718,
+     "stage.patch_geometry": 0.002953,
+     "stage.read_raster_pipeline": 0.017488,
+     "stage.solweig_calc": 0.128413,
+     "stage.utci": 0.003555
+    },
+    "mean_us": {
+     "island.numba_lw_primary": 145.962,
+     "stage.classifier_classes": 79.416,
+     "stage.coefficients_prepared": 725.691,
+     "stage.decode_block_x3": 94.785,
+     "stage.dpc_primary": 5961.457,
+     "stage.geometry_legacy_load": 50407.167,
+     "stage.lcyl_by_demand": 6253.846,
+     "stage.output_checkpoint": 6445.124,
+     "stage.output_write": 3322.659,
+     "stage.patch_geometry": 42.664,
+     "stage.read_raster_pipeline": 3845.85,
+     "stage.solweig_calc": 15638.652,
+     "stage.utci": 253.351
+    },
+    "native_cache_env": "",
+    "native_entry_specs": {},
+    "notes": [
+     "wrapper overhead self-test: bare=27.0ns wrapped=178.5ns delta=151.5ns per call (timed-wrapper style used everywhere here)",
+     "default arm: native modules pre-imported by the instrument itself (not by the pipeline); counts below isolate pipeline-initiated calls. sys.modules evidence distinguishes the two.",
+     "native_lw already imported before install: False"
+    ],
+    "pid": 25082,
+    "sys_modules_native": {
+     "solweig_light.backends.native.lw_native": true,
+     "solweig_light.backends.native_lw": true
+    },
+    "total_s": {
+     "island.numba_lw_primary": 0.063056,
+     "stage.classifier_classes": 0.05432,
+     "stage.coefficients_prepared": 0.055153,
+     "stage.decode_block_x3": 0.194498,
+     "stage.dpc_primary": 0.28615,
+     "stage.geometry_legacy_load": 0.050407,
+     "stage.lcyl_by_demand": 0.300185,
+     "stage.output_checkpoint": 0.309366,
+     "stage.output_write": 0.159488,
+     "stage.patch_geometry": 0.006485,
+     "stage.read_raster_pipeline": 0.019229,
+     "stage.solweig_calc": 0.750655,
+     "stage.utci": 0.012161
+    }
+   },
+   "rss_tree": {
+    "sample_count": 15,
+    "errors": 0,
+    "peak_sum_rss_bytes": 209879040,
+    "mean_sum_rss_bytes": 162343595,
+    "per_pid_peak_rss_bytes": {
+     "25082": 209879040
+    },
+    "unit": "bytes (macOS ps rss KB * 1024)",
+    "double_count_note": "sum over the process tree counts shared pages once per process; peak_sum is an upper bound, never an admission number"
+   }
+  },
+  "instr_default_b1024": {
+   "returncode": 0,
+   "run_wall_s": 1.3474,
+   "counters": {
+    "counts": {
+     "island.numba_lw_primary": 96,
+     "stage.classifier_classes": 152,
+     "stage.coefficients_prepared": 76,
+     "stage.decode_block_x3": 456,
+     "stage.dpc_primary": 48,
+     "stage.geometry_legacy_load": 1,
+     "stage.lcyl_by_demand": 48,
+     "stage.output_checkpoint": 48,
+     "stage.output_write": 48,
+     "stage.patch_geometry": 152,
+     "stage.read_raster_pipeline": 5,
+     "stage.solweig_calc": 48,
+     "stage.utci": 48
+    },
+    "env_lw_backend": "",
+    "fallback_reasons": {},
+    "first_call_s": {
+     "island.numba_lw_primary": 0.004102,
+     "stage.classifier_classes": 1.3e-05,
+     "stage.coefficients_prepared": 1.9e-05,
+     "stage.decode_block_x3": 0.121969,
+     "stage.dpc_primary": 0.127944,
+     "stage.geometry_legacy_load": 0.053724,
+     "stage.lcyl_by_demand": 0.131173,
+     "stage.output_checkpoint": 0.005038,
+     "stage.output_write": 0.001573,
+     "stage.patch_geometry": 0.002978,
+     "stage.read_raster_pipeline": 0.017894,
+     "stage.solweig_calc": 0.133447,
+     "stage.utci": 0.003596
+    },
+    "install_perf_counter": 0.013693958055227995,
+    "max_s": {
+     "island.numba_lw_primary": 0.004102,
+     "stage.classifier_classes": 0.004837,
+     "stage.coefficients_prepared": 0.001439,
+     "stage.decode_block_x3": 0.121969,
+     "stage.dpc_primary": 0.127944,
+     "stage.geometry_legacy_load": 0.053724,
+     "stage.lcyl_by_demand": 0.131173,
+     "stage.output_checkpoint": 0.010223,
+     "stage.output_write": 0.008345,
+     "stage.patch_geometry": 0.002978,
+     "stage.read_raster_pipeline": 0.017894,
+     "stage.solweig_calc": 0.133447,
+     "stage.utci": 0.003596
+    },
+    "mean_us": {
+     "island.numba_lw_primary": 286.606,
+     "stage.classifier_classes": 306.844,
+     "stage.coefficients_prepared": 721.792,
+     "stage.decode_block_x3": 407.593,
+     "stage.dpc_primary": 4946.466,
+     "stage.geometry_legacy_load": 53724.041,
+     "stage.lcyl_by_demand": 5235.402,
+     "stage.output_checkpoint": 6378.442,
+     "stage.output_write": 3518.103,
+     "stage.patch_geometry": 41.954,
+     "stage.read_raster_pipeline": 3952.9,
+     "stage.solweig_calc": 13943.059,
+     "stage.utci": 253.654
+    },
+    "native_cache_env": "",
+    "native_entry_specs": {},
+    "notes": [
+     "wrapper overhead self-test: bare=28.6ns wrapped=183.6ns delta=155.0ns per call (timed-wrapper style used everywhere here)",
+     "default arm: native modules pre-imported by the instrument itself (not by the pipeline); counts below isolate pipeline-initiated calls. sys.modules evidence distinguishes the two.",
+     "native_lw already imported before install: False"
+    ],
+    "pid": 25343,
+    "sys_modules_native": {
+     "solweig_light.backends.native.lw_native": true,
+     "solweig_light.backends.native_lw": true
+    },
+    "total_s": {
+     "island.numba_lw_primary": 0.027514,
+     "stage.classifier_classes": 0.04664,
+     "stage.coefficients_prepared": 0.054856,
+     "stage.decode_block_x3": 0.185863,
+     "stage.dpc_primary": 0.23743,
+     "stage.geometry_legacy_load": 0.053724,
+     "stage.lcyl_by_demand": 0.251299,
+     "stage.output_checkpoint": 0.306165,
+     "stage.output_write": 0.168869,
+     "stage.patch_geometry": 0.006377,
+     "stage.read_raster_pipeline": 0.019764,
+     "stage.solweig_calc": 0.669267,
+     "stage.utci": 0.012175
+    }
+   },
+   "rss_tree": {
+    "sample_count": 15,
+    "errors": 0,
+    "peak_sum_rss_bytes": 213057536,
+    "mean_sum_rss_bytes": 153731072,
+    "per_pid_peak_rss_bytes": {
+     "25343": 213057536
+    },
+    "unit": "bytes (macOS ps rss KB * 1024)",
+    "double_count_note": "sum over the process tree counts shared pages once per process; peak_sum is an upper bound, never an admission number"
+   }
+  },
+  "instr_native_b128": {
+   "returncode": 0,
+   "run_wall_s": 1.4298,
+   "counters": {
+    "counts": {
+     "native_adapter.admitted": 432,
+     "native_adapter.lw_native_primary": 432,
+     "native_c_entry.f64": 432,
+     "native_prep.build_needed": 433,
+     "native_prep.cache_dir": 433,
+     "native_prep.ensure_loaded_total": 433,
+     "native_prep.first_load_at_install": 1,
+     "native_prep.fs.exists": 867,
+     "native_prep.fs.mkdir": 433,
+     "native_prep.fs.read_bytes": 433,
+     "native_prep.fs.read_text": 433,
+     "native_prep.json_loads": 433,
+     "native_prep.kernel_digest": 433,
+     "stage.classifier_classes": 684,
+     "stage.coefficients_prepared": 76,
+     "stage.decode_block_x3": 2052,
+     "stage.dpc_primary": 48,
+     "stage.geometry_legacy_load": 1,
+     "stage.lcyl_by_demand": 48,
+     "stage.output_checkpoint": 48,
+     "stage.output_write": 48,
+     "stage.patch_geometry": 152,
+     "stage.read_raster_pipeline": 5,
+     "stage.solweig_calc": 48,
+     "stage.utci": 48
+    },
+    "env_lw_backend": "native",
+    "fallback_reasons": {},
+    "first_call_s": {
+     "native_adapter.admitted": 0.000625,
+     "native_adapter.lw_native_primary": 0.000362,
+     "native_c_entry.f64": 0.000292,
+     "native_prep.build_needed": 0.000313,
+     "native_prep.cache_dir": 4.2e-05,
+     "native_prep.ensure_loaded_total": 0.006498,
+     "native_prep.first_load_at_install": 0.006501,
+     "native_prep.fs.exists": 1e-05,
+     "native_prep.fs.mkdir": 1.5e-05,
+     "native_prep.fs.read_bytes": 4.6e-05,
+     "native_prep.fs.read_text": 0.000213,
+     "native_prep.json_loads": 1.2e-05,
+     "native_prep.kernel_digest": 5.7e-05,
+     "stage.classifier_classes": 1e-05,
+     "stage.coefficients_prepared": 1.7e-05,
+     "stage.decode_block_x3": 0.119542,
+     "stage.dpc_primary": 0.123779,
+     "stage.geometry_legacy_load": 0.05052,
+     "stage.lcyl_by_demand": 0.127084,
+     "stage.output_checkpoint": 0.004638,
+     "stage.output_write": 0.001627,
+     "stage.patch_geometry": 0.003051,
+     "stage.read_raster_pipeline": 0.021284,
+     "stage.solweig_calc": 0.129267,
+     "stage.utci": 0.003545
+    },
+    "install_perf_counter": 0.020415290957316756,
+    "max_s": {
+     "native_adapter.admitted": 0.000625,
+     "native_adapter.lw_native_primary": 0.000362,
+     "native_c_entry.f64": 0.000292,
+     "native_prep.build_needed": 0.00035,
+     "native_prep.cache_dir": 0.000107,
+     "native_prep.ensure_loaded_total": 0.006498,
+     "native_prep.first_load_at_install": 0.006501,
+     "native_prep.fs.exists": 1.8e-05,
+     "native_prep.fs.mkdir": 7.3e-05,
+     "native_prep.fs.read_bytes": 0.000171,
+     "native_prep.fs.read_text": 0.000213,
+     "native_prep.json_loads": 1.2e-05,
+     "native_prep.kernel_digest": 0.000179,
+     "stage.classifier_classes": 0.003959,
+     "stage.coefficients_prepared": 0.001432,
+     "stage.decode_block_x3": 0.119542,
+     "stage.dpc_primary": 0.123779,
+     "stage.geometry_legacy_load": 0.05052,
+     "stage.lcyl_by_demand": 0.127084,
+     "stage.output_checkpoint": 0.008032,
+     "stage.output_write": 0.007053,
+     "stage.patch_geometry": 0.003051,
+     "stage.read_raster_pipeline": 0.021284,
+     "stage.solweig_calc": 0.129267,
+     "stage.utci": 0.003545
+    },
+    "mean_us": {
+     "native_adapter.admitted": 221.178,
+     "native_adapter.lw_native_primary": 88.901,
+     "native_c_entry.f64": 62.436,
+     "native_prep.build_needed": 99.678,
+     "native_prep.cache_dir": 28.696,
+     "native_prep.ensure_loaded_total": 145.666,
+     "native_prep.first_load_at_install": 6500.959,
+     "native_prep.fs.exists": 6.31,
+     "native_prep.fs.mkdir": 13.957,
+     "native_prep.fs.read_bytes": 31.791,
+     "native_prep.fs.read_text": 39.401,
+     "native_prep.json_loads": 2.79,
+     "native_prep.kernel_digest": 38.524,
+     "stage.classifier_classes": 73.517,
+     "stage.coefficients_prepared": 726.8,
+     "stage.decode_block_x3": 94.545,
+     "stage.dpc_primary": 6541.594,
+     "stage.geometry_legacy_load": 50519.583,
+     "stage.lcyl_by_demand": 6831.635,
+     "stage.output_checkpoint": 6142.834,
+     "stage.output_write": 3309.035,
+     "stage.patch_geometry": 43.564,
+     "stage.read_raster_pipeline": 4713.783,
+     "stage.solweig_calc": 16082.248,
+     "stage.utci": 251.434
+    },
+    "native_cache_env": "",
+    "native_entry_specs": {
+     "f64": 432
+    },
+    "notes": [
+     "wrapper overhead self-test: bare=27.1ns wrapped=182.0ns delta=154.9ns per call (timed-wrapper style used everywhere here)",
+     "ctypes entry pointers wrapped after first load (gang=8); counts are completed C invocations"
+    ],
+    "pid": 25720,
+    "sys_modules_native": {
+     "solweig_light.backends.native.lw_native": true,
+     "solweig_light.backends.native_lw": true
+    },
+    "total_s": {
+     "native_adapter.admitted": 0.095549,
+     "native_adapter.lw_native_primary": 0.038405,
+     "native_c_entry.f64": 0.026972,
+     "native_prep.build_needed": 0.043161,
+     "native_prep.cache_dir": 0.012426,
+     "native_prep.ensure_loaded_total": 0.063074,
+     "native_prep.first_load_at_install": 0.006501,
+     "native_prep.fs.exists": 0.005471,
+     "native_prep.fs.mkdir": 0.006043,
+     "native_prep.fs.read_bytes": 0.013766,
+     "native_prep.fs.read_text": 0.017061,
+     "native_prep.json_loads": 0.001208,
+     "native_prep.kernel_digest": 0.016681,
+     "stage.classifier_classes": 0.050285,
+     "stage.coefficients_prepared": 0.055237,
+     "stage.decode_block_x3": 0.194006,
+     "stage.dpc_primary": 0.313996,
+     "stage.geometry_legacy_load": 0.05052,
+     "stage.lcyl_by_demand": 0.327919,
+     "stage.output_checkpoint": 0.294856,
+     "stage.output_write": 0.158834,
+     "stage.patch_geometry": 0.006622,
+     "stage.read_raster_pipeline": 0.023569,
+     "stage.solweig_calc": 0.771948,
+     "stage.utci": 0.012069
+    }
+   },
+   "rss_tree": {
+    "sample_count": 14,
+    "errors": 0,
+    "peak_sum_rss_bytes": 209649664,
+    "mean_sum_rss_bytes": 159230245,
+    "per_pid_peak_rss_bytes": {
+     "25720": 209649664
+    },
+    "unit": "bytes (macOS ps rss KB * 1024)",
+    "double_count_note": "sum over the process tree counts shared pages once per process; peak_sum is an upper bound, never an admission number"
+   }
+  },
+  "instr_native_b1024": {
+   "returncode": 0,
+   "run_wall_s": 1.3163,
+   "counters": {
+    "counts": {
+     "native_adapter.admitted": 96,
+     "native_adapter.lw_native_primary": 96,
+     "native_c_entry.f64": 96,
+     "native_prep.build_needed": 97,
+     "native_prep.cache_dir": 97,
+     "native_prep.ensure_loaded_total": 97,
+     "native_prep.first_load_at_install": 1,
+     "native_prep.fs.exists": 195,
+     "native_prep.fs.mkdir": 97,
+     "native_prep.fs.read_bytes": 97,
+     "native_prep.fs.read_text": 97,
+     "native_prep.json_loads": 97,
+     "native_prep.kernel_digest": 97,
+     "stage.classifier_classes": 152,
+     "stage.coefficients_prepared": 76,
+     "stage.decode_block_x3": 456,
+     "stage.dpc_primary": 48,
+     "stage.geometry_legacy_load": 1,
+     "stage.lcyl_by_demand": 48,
+     "stage.output_checkpoint": 48,
+     "stage.output_write": 48,
+     "stage.patch_geometry": 152,
+     "stage.read_raster_pipeline": 5,
+     "stage.solweig_calc": 48,
+     "stage.utci": 48
+    },
+    "env_lw_backend": "native",
+    "fallback_reasons": {},
+    "first_call_s": {
+     "native_adapter.admitted": 0.000759,
+     "native_adapter.lw_native_primary": 0.000485,
+     "native_c_entry.f64": 0.000427,
+     "native_prep.build_needed": 0.000181,
+     "native_prep.cache_dir": 4.5e-05,
+     "native_prep.ensure_loaded_total": 0.006567,
+     "native_prep.first_load_at_install": 0.006572,
+     "native_prep.fs.exists": 1e-05,
+     "native_prep.fs.mkdir": 1.6e-05,
+     "native_prep.fs.read_bytes": 5.2e-05,
+     "native_prep.fs.read_text": 7e-05,
+     "native_prep.json_loads": 1.5e-05,
+     "native_prep.kernel_digest": 6.2e-05,
+     "stage.classifier_classes": 1.3e-05,
+     "stage.coefficients_prepared": 1.8e-05,
+     "stage.decode_block_x3": 0.107886,
+     "stage.dpc_primary": 0.110336,
+     "stage.geometry_legacy_load": 0.049383,
+     "stage.lcyl_by_demand": 0.11347,
+     "stage.output_checkpoint": 0.004148,
+     "stage.output_write": 0.001433,
+     "stage.patch_geometry": 0.002905,
+     "stage.read_raster_pipeline": 0.018828,
+     "stage.solweig_calc": 0.115481,
+     "stage.utci": 0.003344
+    },
+    "install_perf_counter": 0.02117799990810454,
+    "max_s": {
+     "native_adapter.admitted": 0.005737,
+     "native_adapter.lw_native_primary": 0.000755,
+     "native_c_entry.f64": 0.000677,
+     "native_prep.build_needed": 0.005566,
+     "native_prep.cache_dir": 9.7e-05,
+     "native_prep.ensure_loaded_total": 0.006567,
+     "native_prep.first_load_at_install": 0.006572,
+     "native_prep.fs.exists": 1.6e-05,
+     "native_prep.fs.mkdir": 6.1e-05,
+     "native_prep.fs.read_bytes": 0.000298,
+     "native_prep.fs.read_text": 0.005427,
+     "native_prep.json_loads": 2.2e-05,
+     "native_prep.kernel_digest": 0.000312,
+     "stage.classifier_classes": 0.00574,
+     "stage.coefficients_prepared": 0.0014,
+     "stage.decode_block_x3": 0.107886,
+     "stage.dpc_primary": 0.110336,
+     "stage.geometry_legacy_load": 0.049383,
+     "stage.lcyl_by_demand": 0.11347,
+     "stage.output_checkpoint": 0.014759,
+     "stage.output_write": 0.006628,
+     "stage.patch_geometry": 0.002905,
+     "stage.read_raster_pipeline": 0.018828,
+     "stage.solweig_calc": 0.115481,
+     "stage.utci": 0.003344
+    },
+    "mean_us": {
+     "native_adapter.admitted": 557.355,
+     "native_adapter.lw_native_primary": 303.925,
+     "native_c_entry.f64": 269.758,
+     "native_prep.build_needed": 199.674,
+     "native_prep.cache_dir": 46.713,
+     "native_prep.ensure_loaded_total": 316.714,
+     "native_prep.first_load_at_install": 6571.958,
+     "native_prep.fs.exists": 7.85,
+     "native_prep.fs.mkdir": 24.329,
+     "native_prep.fs.read_bytes": 43.157,
+     "native_prep.fs.read_text": 118.644,
+     "native_prep.json_loads": 5.342,
+     "native_prep.kernel_digest": 51.688,
+     "stage.classifier_classes": 299.494,
+     "stage.coefficients_prepared": 711.066,
+     "stage.decode_block_x3": 373.79,
+     "stage.dpc_primary": 5132.468,
+     "stage.geometry_legacy_load": 49383.083,
+     "stage.lcyl_by_demand": 5406.868,
+     "stage.output_checkpoint": 6297.652,
+     "stage.output_write": 3196.974,
+     "stage.patch_geometry": 41.319,
+     "stage.read_raster_pipeline": 4151.9,
+     "stage.solweig_calc": 13906.083,
+     "stage.utci": 243.716
+    },
+    "native_cache_env": "",
+    "native_entry_specs": {
+     "f64": 96
+    },
+    "notes": [
+     "wrapper overhead self-test: bare=28.4ns wrapped=185.2ns delta=156.8ns per call (timed-wrapper style used everywhere here)",
+     "ctypes entry pointers wrapped after first load (gang=8); counts are completed C invocations"
+    ],
+    "pid": 25856,
+    "sys_modules_native": {
+     "solweig_light.backends.native.lw_native": true,
+     "solweig_light.backends.native_lw": true
+    },
+    "total_s": {
+     "native_adapter.admitted": 0.053506,
+     "native_adapter.lw_native_primary": 0.029177,
+     "native_c_entry.f64": 0.025897,
+     "native_prep.build_needed": 0.019368,
+     "native_prep.cache_dir": 0.004531,
+     "native_prep.ensure_loaded_total": 0.030721,
+     "native_prep.first_load_at_install": 0.006572,
+     "native_prep.fs.exists": 0.001531,
+     "native_prep.fs.mkdir": 0.00236,
+     "native_prep.fs.read_bytes": 0.004186,
+     "native_prep.fs.read_text": 0.011508,
+     "native_prep.json_loads": 0.000518,
+     "native_prep.kernel_digest": 0.005014,
+     "stage.classifier_classes": 0.045523,
+     "stage.coefficients_prepared": 0.054041,
+     "stage.decode_block_x3": 0.170448,
+     "stage.dpc_primary": 0.246358,
+     "stage.geometry_legacy_load": 0.049383,
+     "stage.lcyl_by_demand": 0.25953,
+     "stage.output_checkpoint": 0.302287,
+     "stage.output_write": 0.153455,
+     "stage.patch_geometry": 0.00628,
+     "stage.read_raster_pipeline": 0.02076,
+     "stage.solweig_calc": 0.667492,
+     "stage.utci": 0.011698
+    }
+   },
+   "rss_tree": {
+    "sample_count": 14,
+    "errors": 0,
+    "peak_sum_rss_bytes": 212926464,
+    "mean_sum_rss_bytes": 162360759,
+    "per_pid_peak_rss_bytes": {
+     "25856": 212926464
+    },
+    "unit": "bytes (macOS ps rss KB * 1024)",
+    "double_count_note": "sum over the process tree counts shared pages once per process; peak_sum is an upper bound, never an admission number"
+   }
+  }
+ },
+ "timing_paired": {
+  "b128": {
+   "n_pairs": 5,
+   "default_run_wall_med_s": 1.4,
+   "native_run_wall_med_s": 1.4099,
+   "native_over_default": 1.0071,
+   "default_all": [
+    1.4057,
+    1.4,
+    1.3869,
+    1.4346,
+    1.3982
+   ],
+   "native_all": [
+    1.4287,
+    1.4283,
+    1.4099,
+    1.401,
+    1.4023
+   ]
+  },
+  "b1024": {
+   "n_pairs": 3,
+   "default_run_wall_med_s": 1.3121,
+   "native_run_wall_med_s": 1.3397,
+   "native_over_default": 1.021,
+   "default_all": [
+    1.3121,
+    1.3079,
+    1.3204
+   ],
+   "native_all": [
+    1.3257,
+    1.3397,
+    1.4332
+   ]
+  }
+ },
+ "pool_entry": {
+  "default": {
+   "returncode": 0,
+   "run_wall_s": 4.5573,
+   "scratch_cache_after": {
+    "exists": false,
+    "dylibs": [],
+    "build_stamp": null
+   },
+   "rss_tree": {
+    "sample_count": 30,
+    "errors": 0,
+    "peak_sum_rss_bytes": 384630784,
+    "mean_sum_rss_bytes": 289639083,
+    "per_pid_peak_rss_bytes": {
+     "27340": 188350464,
+     "27400": 210665472
+    },
+    "unit": "bytes (macOS ps rss KB * 1024)",
+    "double_count_note": "sum over the process tree counts shared pages once per process; peak_sum is an upper bound, never an admission number"
+   }
+  },
+  "native": {
+   "returncode": 0,
+   "run_wall_s": 6.7038,
+   "scratch_cache_after": {
+    "exists": true,
+    "dylibs": [
+     "liblw_native_g4.dylib",
+     "liblw_native_g8.dylib"
+    ],
+    "build_stamp": {
+     "kernel_sha256": "52652a598cd85ead04747a83a52b1184035c880aa0b32cf518efef06b961663c",
+     "ispc": "/opt/homebrew/bin/ispc",
+     "built_utc": "2026-09-22T19:33:15Z"
+    }
+   },
+   "rss_tree": {
+    "sample_count": 39,
+    "errors": 0,
+    "peak_sum_rss_bytes": 475217920,
+    "mean_sum_rss_bytes": 309644997,
+    "per_pid_peak_rss_bytes": {
+     "27481": 186466304,
+     "27498": 208961536,
+     "27533": 2654208,
+     "27535": 68894720,
+     "27539": 77152256,
+     "27551": 16842752,
+     "27552": 5668864,
+     "27554": 76103680,
+     "27557": 75907072
+    },
+    "unit": "bytes (macOS ps rss KB * 1024)",
+    "double_count_note": "sum over the process tree counts shared pages once per process; peak_sum is an upper bound, never an admission number"
+   }
+  }
+ },
+ "failures": [],
+ "answers": {
+  "a_native_counts_and_fallbacks": {
+   "default_env": {
+    "run_wall_s_instrumented": 1.4124,
+    "lcyl_calls": 48,
+    "blocks_per_run": 432,
+    "numba_kernel_calls": 432,
+    "native_adapter_calls": 0,
+    "native_c_entry_calls": {},
+    "native_rejected_unsupportedinput": 0,
+    "distinct_fallback_reasons": {},
+    "pipeline_initiated_native_loader_calls": 0,
+    "island_total_s": 0.063056,
+    "island_fraction_of_lcyl": 0.2101,
+    "island_fraction_of_radiation_calc": 0.084,
+    "island_fraction_of_run_tile_wall": 0.0446,
+    "stage_totals_s": {
+     "island.numba_lw_primary": 0.063056,
+     "stage.classifier_classes": 0.05432,
+     "stage.coefficients_prepared": 0.055153,
+     "stage.decode_block_x3": 0.194498,
+     "stage.dpc_primary": 0.28615,
+     "stage.geometry_legacy_load": 0.050407,
+     "stage.lcyl_by_demand": 0.300185,
+     "stage.output_checkpoint": 0.309366,
+     "stage.output_write": 0.159488,
+     "stage.patch_geometry": 0.006485,
+     "stage.read_raster_pipeline": 0.019229,
+     "stage.solweig_calc": 0.750655,
+     "stage.utci": 0.012161
+    }
+   },
+   "default_env_b1024": {
+    "run_wall_s_instrumented": 1.3474,
+    "lcyl_calls": 48,
+    "blocks_per_run": 96,
+    "numba_kernel_calls": 96,
+    "native_adapter_calls": 0,
+    "native_c_entry_calls": {},
+    "native_rejected_unsupportedinput": 0,
+    "distinct_fallback_reasons": {},
+    "pipeline_initiated_native_loader_calls": 0,
+    "island_total_s": 0.027514,
+    "island_fraction_of_lcyl": 0.1095,
+    "island_fraction_of_radiation_calc": 0.0411,
+    "island_fraction_of_run_tile_wall": 0.0204,
+    "stage_totals_s": {
+     "island.numba_lw_primary": 0.027514,
+     "stage.classifier_classes": 0.04664,
+     "stage.coefficients_prepared": 0.054856,
+     "stage.decode_block_x3": 0.185863,
+     "stage.dpc_primary": 0.23743,
+     "stage.geometry_legacy_load": 0.053724,
+     "stage.lcyl_by_demand": 0.251299,
+     "stage.output_checkpoint": 0.306165,
+     "stage.output_write": 0.168869,
+     "stage.patch_geometry": 0.006377,
+     "stage.read_raster_pipeline": 0.019764,
+     "stage.solweig_calc": 0.669267,
+     "stage.utci": 0.012175
+    }
+   },
+   "native_env": {
+    "run_wall_s_instrumented": 1.4298,
+    "lcyl_calls": 48,
+    "blocks_per_run": 432,
+    "numba_kernel_calls": 0,
+    "native_adapter_calls": 432,
+    "native_c_entry_calls": {
+     "f64": 432
+    },
+    "native_rejected_unsupportedinput": 0,
+    "distinct_fallback_reasons": {},
+    "pipeline_initiated_native_loader_calls": 433,
+    "island_total_s": 0.095549,
+    "island_fraction_of_lcyl": 0.2914,
+    "island_fraction_of_radiation_calc": 0.1238,
+    "island_fraction_of_run_tile_wall": 0.0668,
+    "stage_totals_s": {
+     "native_adapter.admitted": 0.095549,
+     "native_adapter.lw_native_primary": 0.038405,
+     "native_c_entry.f64": 0.026972,
+     "native_prep.build_needed": 0.043161,
+     "native_prep.cache_dir": 0.012426,
+     "native_prep.ensure_loaded_total": 0.063074,
+     "native_prep.first_load_at_install": 0.006501,
+     "native_prep.fs.exists": 0.005471,
+     "native_prep.fs.mkdir": 0.006043,
+     "native_prep.fs.read_bytes": 0.013766,
+     "native_prep.fs.read_text": 0.017061,
+     "native_prep.json_loads": 0.001208,
+     "native_prep.kernel_digest": 0.016681,
+     "stage.classifier_classes": 0.050285,
+     "stage.coefficients_prepared": 0.055237,
+     "stage.decode_block_x3": 0.194006,
+     "stage.dpc_primary": 0.313996,
+     "stage.geometry_legacy_load": 0.05052,
+     "stage.lcyl_by_demand": 0.327919,
+     "stage.output_checkpoint": 0.294856,
+     "stage.output_write": 0.158834,
+     "stage.patch_geometry": 0.006622,
+     "stage.read_raster_pipeline": 0.023569,
+     "stage.solweig_calc": 0.771948,
+     "stage.utci": 0.012069
+    }
+   },
+   "native_env_b1024": {
+    "run_wall_s_instrumented": 1.3163,
+    "lcyl_calls": 48,
+    "blocks_per_run": 96,
+    "numba_kernel_calls": 0,
+    "native_adapter_calls": 96,
+    "native_c_entry_calls": {
+     "f64": 96
+    },
+    "native_rejected_unsupportedinput": 0,
+    "distinct_fallback_reasons": {},
+    "pipeline_initiated_native_loader_calls": 97,
+    "island_total_s": 0.053506,
+    "island_fraction_of_lcyl": 0.2062,
+    "island_fraction_of_radiation_calc": 0.0802,
+    "island_fraction_of_run_tile_wall": 0.0406,
+    "stage_totals_s": {
+     "native_adapter.admitted": 0.053506,
+     "native_adapter.lw_native_primary": 0.029177,
+     "native_c_entry.f64": 0.025897,
+     "native_prep.build_needed": 0.019368,
+     "native_prep.cache_dir": 0.004531,
+     "native_prep.ensure_loaded_total": 0.030721,
+     "native_prep.first_load_at_install": 0.006572,
+     "native_prep.fs.exists": 0.001531,
+     "native_prep.fs.mkdir": 0.00236,
+     "native_prep.fs.read_bytes": 0.004186,
+     "native_prep.fs.read_text": 0.011508,
+     "native_prep.json_loads": 0.000518,
+     "native_prep.kernel_digest": 0.005014,
+     "stage.classifier_classes": 0.045523,
+     "stage.coefficients_prepared": 0.054041,
+     "stage.decode_block_x3": 0.170448,
+     "stage.dpc_primary": 0.246358,
+     "stage.geometry_legacy_load": 0.049383,
+     "stage.lcyl_by_demand": 0.25953,
+     "stage.output_checkpoint": 0.302287,
+     "stage.output_write": 0.153455,
+     "stage.patch_geometry": 0.00628,
+     "stage.read_raster_pipeline": 0.02076,
+     "stage.solweig_calc": 0.667492,
+     "stage.utci": 0.011698
+    }
+   },
+   "verdict": {
+    "default_takes_native_path": false,
+    "default_evidence": [
+     "pipeline-initiated native loader calls = 0 in both default instrumented runs",
+     "native adapter / C-entry counters = 0 under default env",
+     "production pool entry (run_utci_tiles, default env, fresh scratch SOLWEIG_LIGHT_NATIVE_CACHE): scratch cache EMPTY after the run - worker children never imported/built native"
+    ],
+    "native_evidence": [
+     "432 C entries (f64) per run at block=128 (48 timesteps x 9 blocks)",
+     "96 C entries (f64) per run at block=1024 (48 x 2)",
+     "pool entry with native env: worker child built dylibs + stamp in the fresh scratch cache (filesystem proof through the scheduler)"
+    ],
+    "fallbacks": "ZERO UnsupportedInput rejections in the real packed pipeline (admitted: 432/432 and 96/96; the admission domain matches the real pipeline exactly; f64 surface-scalar spec selected)"
+   }
+  },
+  "b_island_fraction": {
+   "default_env_b128": {
+    "run_tile_wall_s": 1.4124,
+    "radiation_solweig_calc_s": 0.7507,
+    "lcyl_wrapper_s": 0.3002,
+    "dpc_primary_s": 0.2862,
+    "classifier_stage_total_s": 0.0543,
+    "decode_stage_total_s": 0.1945,
+    "lw_reducer_island_s": 0.0631,
+    "comfort_utci_s": 0.0122,
+    "output_write_s": 0.1595,
+    "output_checkpoint_s": 0.3094,
+    "geometry_legacy_load_s": 0.0504,
+    "raster_reads_s": 0.0192,
+    "fractions_of_wall": {
+     "radiation": 0.5315,
+     "lcyl": 0.2125,
+     "lw_reducer_island": 0.0446,
+     "decode_stage_total": 0.1377,
+     "classifier_stage_total": 0.0385,
+     "comfort": 0.0086,
+     "durable_io_write_plus_checkpoint": 0.332
+    },
+    "fractions_of_lcyl": {
+     "lw_reducer_island_measured": 0.2101,
+     "decode_in_lcyl_estimated": 0.4092,
+     "classifier_in_lcyl_estimated": 0.1143,
+     "dpc_residual_layout_scatter_estimated": 0.2197,
+     "note": "island is exact (LW-only calls); decode/classifier counters cover LW+SW, in-Lcyl parts are per-call-mean estimates using the 3-decodes+1-classifier-per-LW-block pattern"
+    }
+   },
+   "default_env_b1024": {
+    "run_tile_wall_s": 1.3474,
+    "radiation_solweig_calc_s": 0.6693,
+    "lcyl_wrapper_s": 0.2513,
+    "dpc_primary_s": 0.2374,
+    "classifier_stage_total_s": 0.0466,
+    "decode_stage_total_s": 0.1859,
+    "lw_reducer_island_s": 0.0275,
+    "comfort_utci_s": 0.0122,
+    "output_write_s": 0.1689,
+    "output_checkpoint_s": 0.3062,
+    "geometry_legacy_load_s": 0.0537,
+    "raster_reads_s": 0.0198,
+    "fractions_of_wall": {
+     "radiation": 0.4967,
+     "lcyl": 0.1865,
+     "lw_reducer_island": 0.0204,
+     "decode_stage_total": 0.1379,
+     "classifier_stage_total": 0.0346,
+     "comfort": 0.009,
+     "durable_io_write_plus_checkpoint": 0.3526
+    },
+    "fractions_of_lcyl": {
+     "lw_reducer_island_measured": 0.1095,
+     "decode_in_lcyl_estimated": 0.4671,
+     "classifier_in_lcyl_estimated": 0.1172,
+     "dpc_residual_layout_scatter_estimated": 0.251,
+     "note": "island is exact (LW-only calls); decode/classifier counters cover LW+SW, in-Lcyl parts are per-call-mean estimates using the 3-decodes+1-classifier-per-LW-block pattern"
+    }
+   },
+   "native_env_b128": {
+    "run_tile_wall_s": 1.4298,
+    "radiation_solweig_calc_s": 0.7719,
+    "lcyl_wrapper_s": 0.3279,
+    "dpc_primary_s": 0.314,
+    "classifier_stage_total_s": 0.0503,
+    "decode_stage_total_s": 0.194,
+    "lw_reducer_island_s": 0.0955,
+    "comfort_utci_s": 0.0121,
+    "output_write_s": 0.1588,
+    "output_checkpoint_s": 0.2949,
+    "geometry_legacy_load_s": 0.0505,
+    "raster_reads_s": 0.0236,
+    "fractions_of_wall": {
+     "radiation": 0.5399,
+     "lcyl": 0.2293,
+     "lw_reducer_island": 0.0668,
+     "decode_stage_total": 0.1357,
+     "classifier_stage_total": 0.0352,
+     "comfort": 0.0084,
+     "durable_io_write_plus_checkpoint": 0.3173
+    },
+    "fractions_of_lcyl": {
+     "lw_reducer_island_measured": 0.2914,
+     "decode_in_lcyl_estimated": 0.3737,
+     "classifier_in_lcyl_estimated": 0.0968,
+     "dpc_residual_layout_scatter_estimated": 0.1957,
+     "note": "island is exact (LW-only calls); decode/classifier counters cover LW+SW, in-Lcyl parts are per-call-mean estimates using the 3-decodes+1-classifier-per-LW-block pattern"
+    }
+   },
+   "native_env_b1024": {
+    "run_tile_wall_s": 1.3163,
+    "radiation_solweig_calc_s": 0.6675,
+    "lcyl_wrapper_s": 0.2595,
+    "dpc_primary_s": 0.2464,
+    "classifier_stage_total_s": 0.0455,
+    "decode_stage_total_s": 0.1704,
+    "lw_reducer_island_s": 0.0535,
+    "comfort_utci_s": 0.0117,
+    "output_write_s": 0.1535,
+    "output_checkpoint_s": 0.3023,
+    "geometry_legacy_load_s": 0.0494,
+    "raster_reads_s": 0.0208,
+    "fractions_of_wall": {
+     "radiation": 0.5071,
+     "lcyl": 0.1972,
+     "lw_reducer_island": 0.0406,
+     "decode_stage_total": 0.1295,
+     "classifier_stage_total": 0.0346,
+     "comfort": 0.0089,
+     "durable_io_write_plus_checkpoint": 0.3462
+    },
+    "fractions_of_lcyl": {
+     "lw_reducer_island_measured": 0.2062,
+     "decode_in_lcyl_estimated": 0.4148,
+     "classifier_in_lcyl_estimated": 0.1108,
+     "dpc_residual_layout_scatter_estimated": 0.2175,
+     "note": "island is exact (LW-only calls); decode/classifier counters cover LW+SW, in-Lcyl parts are per-call-mean estimates using the 3-decodes+1-classifier-per-LW-block pattern"
+    }
+   },
+   "headline": {
+    "default_numba_island_vs_whole_packed_run": 0.0446,
+    "default_numba_island_vs_lcyl_wrapper": 0.2101,
+    "native_island_vs_whole_packed_run": 0.0668,
+    "native_island_vs_lcyl_wrapper": 0.2914,
+    "v7_residual_claim_for_comparison": "1.5-2.2% of the Lcyl wrapper came from a synthetic DENSE FALLBACK shape; the REAL packed pipeline measures the Numba LW reducer island at 21.0% of the Lcyl wrapper and 4.5% of the whole run_tile wall at block=128 (32x35 scene, 153 patches, 48 steps)",
+    "end_to_end_paired_uninstrumented": {
+     "b128": {
+      "n_pairs": 5,
+      "default_run_wall_med_s": 1.4,
+      "native_run_wall_med_s": 1.4099,
+      "native_over_default": 1.0071,
+      "default_all": [
+       1.4057,
+       1.4,
+       1.3869,
+       1.4346,
+       1.3982
+      ],
+      "native_all": [
+       1.4287,
+       1.4283,
+       1.4099,
+       1.401,
+       1.4023
+      ]
+     },
+     "b1024": {
+      "n_pairs": 3,
+      "default_run_wall_med_s": 1.3121,
+      "native_run_wall_med_s": 1.3397,
+      "native_over_default": 1.021,
+      "default_all": [
+       1.3121,
+       1.3079,
+       1.3204
+      ],
+      "native_all": [
+       1.3257,
+       1.3397,
+       1.4332
+      ]
+     }
+    }
+   }
+  },
+  "c_per_block_preparation_overhead": {
+   "measured_chain": "_ensure_loaded -> _cache_dir(mkdir) -> _build_needed(dylib.exists + stamp.exists + stamp.read_text + json.loads + _kernel_digest(kernel read_bytes + sha256)) per native call",
+   "calls_after_first_load_b128": {
+    "per_call_ops": {
+     "fs.exists": 867,
+     "fs.mkdir": 433,
+     "fs.read_bytes": 433,
+     "fs.read_text": 433,
+     "json_loads": 433
+    },
+    "ensure_loaded_warm": {
+     "n": 433,
+     "total_s": 0.063074,
+     "first_s": 0.006498,
+     "warm_per_call_us": 130.96
+    },
+    "c_entry_warm": {
+     "n": 432,
+     "total_s": 0.026972,
+     "first_s": 0.000292,
+     "warm_per_call_us": 61.9
+    },
+    "adapter_admitted_warm": {
+     "n": 432,
+     "total_s": 0.095549,
+     "first_s": 0.000625,
+     "warm_per_call_us": 220.24
+    }
+   },
+   "calls_after_first_load_b1024": {
+    "ensure_loaded_warm": {
+     "n": 97,
+     "total_s": 0.030721,
+     "first_s": 0.006567,
+     "warm_per_call_us": 251.6
+    },
+    "c_entry_warm": {
+     "n": 96,
+     "total_s": 0.025897,
+     "first_s": 0.000427,
+     "warm_per_call_us": 268.11
+    }
+   },
+   "kernel_source_bytes": 10194,
+   "first_use_build_and_load_s": 2.477646,
+   "counterfactual_loader_fixed_island_b128_s": 0.039,
+   "comparison_b128_s": {
+    "numba_island": {
+     "n": 432,
+     "total_s": 0.063056,
+     "first_s": 0.003887,
+     "warm_per_call_us": 137.28
+    },
+    "native_island_measured": {
+     "n": 432,
+     "total_s": 0.095549,
+     "first_s": 0.000625,
+     "warm_per_call_us": 220.24
+    },
+    "native_c_entry_only": {
+     "n": 432,
+     "total_s": 0.026972,
+     "first_s": 0.000292,
+     "warm_per_call_us": 61.9
+    },
+    "verdict": "per-call preparation (~146us) is ~2.4x the C kernel time (~62us) and alone exceeds the entire Numba island per call (~146us vs ~146us); removing it would flip the native island from slower-than-Numba to ~2.3x faster at block=128"
+   },
+   "b760_scale_extrapolation_labelled": {
+    "blocks": 98304,
+    "prep_per_block_us": 130.96,
+    "prep_total_s_extrapolated": 12.9,
+    "note": "linear extrapolation from measured per-call warm cost to the B7-60 block count; diagnostic only, not a measurement of that campaign"
+   }
+  },
+  "d_stage_decomposition_and_rss": {
+   "see_b_decompositions": [
+    "default_env_b128",
+    "default_env_b1024",
+    "native_env_b128",
+    "native_env_b1024",
+    "headline"
+   ],
+   "process_tree_rss": {
+    "runtile_single_process_peak_mb": [
+     200.2,
+     203.2,
+     199.9,
+     203.1
+    ],
+    "runtile_child_ru_maxrss_mb": [
+     200.2,
+     203.2,
+     199.9,
+     203.1
+    ],
+    "pool_default_peak_sum_mb": 366.8,
+    "pool_native_peak_sum_mb": 453.2,
+    "pool_native_pid_count": 9,
+    "unit_note": "macOS ps rss (KB) * 1024; tree SUMS double-count shared pages (parent+worker share the ~200MB interpreter/frameworks); single-process runtile numbers have no double counting",
+    "native_pool_extra_pids": "the ispc build chain (zsh/ispc/clang) during first use inside the worker child"
+   },
+   "ambient_windows_non_quiet": 6,
+   "ambient_note": "single ~51% macOS system processes (ControlCenter/CoreServices/Traps) flagged at window edges; no sustained competitor, no censored runs, no memory-pressure kills"
+  },
+  "instrumentation_overhead": {
+   "wrapper_self_test": [
+    "wrapper overhead self-test: bare=27.0ns wrapped=178.5ns delta=151.5ns per call (timed-wrapper style used everywhere here)"
+   ],
+   "wall_comparison": {
+    "instr_default_b128": {
+     "instrumented_wall_s": 1.4124,
+     "uninstrumented_med_s": 1.4,
+     "delta_s": 0.0124,
+     "delta_pct": 0.89
+    },
+    "instr_native_b128": {
+     "instrumented_wall_s": 1.4298,
+     "uninstrumented_med_s": 1.4099,
+     "delta_s": 0.0199,
+     "delta_pct": 1.41
+    },
+    "instr_default_b1024": {
+     "instrumented_wall_s": 1.3474,
+     "uninstrumented_med_s": 1.3121,
+     "delta_s": 0.0353,
+     "delta_pct": 2.69
+    },
+    "instr_native_b1024": {
+     "instrumented_wall_s": 1.3163,
+     "uninstrumented_med_s": 1.3397,
+     "delta_s": -0.0234,
+     "delta_pct": -1.75
+    }
+   },
+   "note": "instrumented walls also differ by run-to-run noise (~1-2%); counter timers are perf_counter around each call (157ns/call self-test)"
+  }
+ },
+ "bitwise_output_parity": {
+  "runtile_all_22_runs_one_digest": true,
+  "pool_native_equals_pool_default": true,
+  "note": "simulation outputs bitwise identical between arms at both block sizes and through the production scheduler entry"
+ },
+ "measurement_caveats": [
+  "scene is 32x35 (1120 px) x 153 patches x 48 timesteps - the task brief said \"64-square\"; actual size verified from raster census and recorded",
+  "no 128/256-square real fixture exists in tests/reference (census: largest real scenes are 32x35 and 32x48); the 32x35 state_sequence scene was used; no synthetic dense-fallback shape was substituted",
+  "block=1024 arm reached via RuntimeOptions.block_pixels (internal aggregation); public default block_pixels=128 unchanged",
+  "island fractions at this scene size include fixed per-call costs that shrink relative to kernel time at larger blocks; the loader per-call cost does NOT shrink (it is per-call), so its fraction grows with block count",
+  "instrumented runs add one Python wrapper frame per stage call (157ns/call self-test); counts are exact, sub-ms timings carry ~us-level timer overhead"
+ ]
+}

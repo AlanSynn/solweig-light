@@ -1,0 +1,132 @@
+{
+  "record": "N9 FINAL optimization decision - FINAL_SELECTION",
+  "campaign": "optimization_n9_final",
+  "branch": "perf/native-optimization",
+  "selection": "closed_cpu_only",
+  "selection_count": 1,
+  "decided_utc": "2026-09-23",
+  "decides": {
+    "native_promotion": "CLOSED - n8_32 selection closed N9 F3 NATIVE_LOSS on measured native loss; the N8 native row and its qualification machinery are archived repo-only under experiments/optimization_v8/native_dispatch/ (N9 F4 closed_cpu_only) and ship in no wheel (banned-members gate enforces this).",
+    "shipped_default": "Bounded Numba stream row B (H=1): admitted non-raw lane-aligned longwave region calls execute through _native_dispatch.lw_stream.plan_invocation with thread_budget PINNED to 1 (lw_stream.py:303); the engine passes parallel=True only when threads_per_worker > 1, else None (engine.py:1666), so the stream fires at H=1 and plain numba threads are never exceeded. Everything else keeps the unchanged legacy path.",
+    "all_raw_guard": "Structural pre-launch guard: when all three visibility channels are mode-byte 4 (all-raw), the plan declines and the legacy A8 route executes (bitwise-identical to main's reference). The guard is exactly the measured loss class (F6: all-raw is the only family where FINAL does not clearly win).",
+    "expert_env": "SOLWEIG_LIGHT_LW_BACKEND=native|ispc keeps the B7-32 expert route (cylinder_longwave.py:196 region stand-down, :216 kernel resolver). This is the ONLY env read in the dispatch region (installed-gate R1 asserts the exact surface).",
+    "further_measurement": "NONE ADMISSIBLE - amendment 1 declares the causal-correction allowance consumed; run 2 is terminal for this campaign.",
+    "native_goal_open_handoff": "NONE - the campaign closes with exactly one selection and no open native handoff."
+  },
+  "default_call_graph": {
+    "entry": "radiation/cylinder_longwave.py _lw_region_route -> os.environ.get(_LW_BACKEND_ENV) :196 (expert stand-down only; env unset falls through)",
+    "route": "radiation/_lw_dispatch.py region_route -> _execute_row (module reads NO environment)",
+    "plan": "_native_dispatch/lw_stream.py plan_invocation -> InvocationPlan(thread_budget=1) :303; _all_patches_raw structural guard declines all-raw pre-launch (lease released)",
+    "consumer": "_native_dispatch/lw_stream.py AosoaBStreamConsumer (bounded BlockSlot prealloc, borrowed visibility)",
+    "engine": "radiation/engine.py :1666 Lcyl_v2022a_by_demand(..., parallel=True if threads_per_worker > 1 else None) - tri-state, plain-boolean restoration NOT triggered",
+    "teardown": "pipeline.py :313-319 releases stream thread pools between tiles via _native_dispatch.region.shutdown_all_pools",
+    "decode": "_native_dispatch/aplus_decode.py _decode_at_plus is SHIPPED and WIRED into both consumer seams (installed-gate R2 asserts module-identity binding into radiation.cylinder_longwave and radiation.patch_radiation)"
+  },
+  "route_map_vs_main": {
+    "default_executor_change": "main executes every longwave region through the legacy inline Numba path. FINAL routes admitted non-raw lane-aligned calls through the bounded stream (row B, H=1); all-raw declines structurally to that same legacy path (bitwise-identical reference); packed-lane decode is served by the shipped aplus_decode module.",
+    "n8_endpoint": "The N8 native promotion campaign is CLOSED: n8_32 selection closed F3 NATIVE_LOSS (measured native loss); F4 archived the native row, lw_default_policy selector, qualification registry, installed_loader/native_handle/build_native machinery repo-only. Production dispatcher/qualification code is REMOVED from the shipped path; research copies preserved under experiments/optimization_v8/native_dispatch/. N8 quantitative promotion gates remain on record unmodified - no promotion was earned.",
+    "parity_chain_separate_from_timing": "Bitwise parity is proven independently of every timing claim: Ldown+Lside uint32-sha256 FINAL == MAIN on all 6 F6 cells, all 9 reps (f6_final_vs_main_timed_20260923T171623Z.json digest_pairs_by_rep, per-cell parity_per_cell), plus the installed DX surface parity gate (subprocess-origin capture). Timing numbers below make no contribution to the parity chain."
+  },
+  "measured_claims": {
+    "f6_run2_final_vs_main": {
+      "source": "evidence/f6_verdict.json (recorded 2026-09-23T17:26:30Z; raw f6_final_vs_main_timed_20260923T171623Z.json; REPS=9 paired alternating tree order, one clock per cell after untimed warm pass, per-pair ratios as verdict basis)",
+      "protocol": "amendment-2 launch discipline: start load1 5.14, censor bound 8.225, max rep load 6.1, zero censored; threads_per_worker=1 asserted both sides, numba threads 4 both sides, env unset",
+      "carried_cells_per_pair_median": {
+        "B=1024_all_binary": 2.7586,
+        "B=1024_mix": 1.879,
+        "B=128_all_binary": 1.268,
+        "B=128_mix": 1.0491
+      },
+      "carried_geomean_median_of_times": 1.5981,
+      "declined_cells": {
+        "B=1024_all_raw": "per-pair median 1.2162 - FINAL FASTER (shipped decode improvements also help the legacy path)",
+        "B=128_all_raw": "per-pair median 0.9747 - 2.6% max regression, within the 3% bound and within 2x spread"
+      },
+      "cold_full_entry": {
+        "metric": "median of 3 paired fresh-NUMBA_CACHE_DIR cold samples per tree (models the read-only installed tree)",
+        "per_sample_ratios": [1.0153, 0.9226, 0.9069],
+        "median": 0.9226,
+        "bound": "<= 1.03",
+        "verdict": "PASS, MARGINAL (one sample above 1.0; per-sample spread 0.1084)"
+      },
+      "parity": "Ldown+Lside bitwise FINAL == MAIN on all 6 cells, all 9 reps"
+    },
+    "installed_wheel_gates": {
+      "source": "optimization_v8_native_default/evidence/installed/installed_gates.json (run 7; run 7 re-verified every content gate on the rebuilt wheel after the conftest pinned-attempts status fix)",
+      "wheel_sha256_prefix": "aa184a71bc16d015",
+      "dx_surface_parity": "passed (subprocess-origin capture, zero unexpected divergences)",
+      "env_read_surface_R1": "passed - the dispatch region's ONLY env read is SOLWEIG_LIGHT_LW_BACKEND at cylinder_longwave.py:196/:216; _lw_dispatch and _native_dispatch read NO environment",
+      "aplus_decode_R2": "passed - module present in wheel and wired into both consumer seams (module-identity binding)",
+      "banned_machinery": "passed - no qualification registry, lw_default_policy, lw_native_aosoa, installed_loader, native_handle, or build_native in the wheel"
+    },
+    "regression_suites": {
+      "f4_final_tree": "2449 passed / 16 pre-existing failures (strict subset of baseline bfd9915e set; FMA flake order-dependent) / 8 environmental",
+      "tests_optimization_v8_gate": "1999 passed after F4 fixups; whole-tree collection 6492 collected, 0 errors except 4 pre-existing optional-extras ModuleNotFound"
+    }
+  },
+  "unmeasured_or_blocked": {
+    "single_channel_raw_compositions": "UNMEASURED and stream by design (e.g. one raw channel among packed ones); the structural guard is exactly the measured all-raw loss class, not the mixed compositions",
+    "installed_tree_cold": "NOT MEASURED - F6 cold is source-tree cold under the fresh-cache protocol; the installed tree is the installed gates' domain",
+    "installed_api_cli_product_runs": "ADMISSION-BLOCKED, environmental: 7 runs, 4 labelled attempts each (3 pinned + the GDAL_CACHEMAX=64 diagnostic) refused BY CONSTRUCTION (admission charge = default_gdal_cache_bytes() = 5% of probed physical RAM, runtime_memory.py:485-494; the planner never reads the env var and the pinned no-env contract forbids RuntimeOptions overrides). Requires available-memory view >= ~4.3 GB; diagnostics and construction proof retained in installed_gates.json + evidence/review/f5_review.md. Not a DX property of the product.",
+    "inferential_statistics": "NONE - single host, n=9 paired reps and n=3 cold samples; no confidence claims are made or implied"
+  },
+  "gates": {
+    "parity_bitwise_all_cells": true,
+    "cold_within_3pct": true,
+    "cold_marginal": true,
+    "declined_within_3pct": true,
+    "pre_committed_tw1_restoration_rule_triggered": false,
+    "gate_table_reference": "MERGE_MANIFEST.json gate_table (cold entry per f6_cold_gate_ruling_amendment_1.json)"
+  },
+  "accepted_residuals": [
+    "carried-cell winning margins at B=128 all-binary and B=128 mix are MARGINAL (winning margin within 2x per-pair spread) - not clear passes",
+    "cold parity is MARGINAL: median 0.9226 within the 1.03 bound, but one of three paired samples is above 1.0 (per-sample spread 0.1084)",
+    "declined B=128 all-raw cell regresses 2.6% vs main (per-pair median 0.9747) - within the 3% bound and within 2x spread",
+    "single-channel-raw channel compositions (e.g. one raw channel among packed ones) are UNMEASURED and stream by design; the structural guard is exactly the measured all-raw loss class"
+  ],
+  "limitations": {
+    "cold_jit_regression_one_time": "WITHDRAWN by f6_cold_gate_ruling_amendment_1.json - deliberately omitted, not restated in weakened form: the gate passes on run 2 and a limitations entry would misstate it. The superseded ruling (f6_cold_gate_ruling.json) and the discrepancy notice (f6_ruling_discrepancy_note.json) are retained for provenance.",
+    "numba_cache_dir_follow_up": "Named post-release follow-up, NOT a merge condition, NOT shipped: a bounded default NUMBA_CACHE_DIR under the user cache directory. Motivation reframed by amendment 1 - cold parity holds at source-tree cold, so the read-only-installed-tree cache defeat is SHARED-BASELINE cost, not a measured regression; the follow-up is a general cold-start/UX candidate, the natural remedy only IF a future platform measurement shows a real cold regression. New write-location behavior requiring its own review; landing it now would invalidate F5/F6 evidence reuse.",
+    "product_runs_block": "The installed no-env API/CLI product runs remain admission-blocked on this host (environmental; see unmeasured_or_blocked). They are self-driving (~4 min each) once a >= ~4.3 GB available-memory window opens; no env cap is needed."
+  },
+  "immutable_hashes": {
+    "main_pinned_reference": "14e888760727583ef782a4dc0e7a5c7c6e6ff9d1 (local main; also the F6 pinned reference at /Users/alansynn/Workspace/n9-main-ref)",
+    "verified_code_tree_commit": "22876fb6853e6cd10237214bd514b777fe717594 (tip at which F4 landing, full suites, F6 campaign, and the first merge rehearsal all ran)",
+    "verified_code_tree_hash": "cf94ff9853559ff19a776a58a0314034421af6dc",
+    "record_commits_after_code_tree": {
+      "f5_evidence": "ca9a6564",
+      "f6_evidence": "806d16a8",
+      "note": "record-only commits: evidence and installed-gate tests only, NO src/ changes; the final ff-only rehearsal re-runs at the closing tip and is recorded in evidence/f7_merge_rehearsal.md"
+    },
+    "branch_position": "155 commits ahead of main, 0 behind - pure fast-forward",
+    "f6_shas": {"final": "22876fb6853e6cd10237214bd514b777fe717594", "main": "14e888760727583ef782a4dc0e7a5c7c6e6ff9d1"}
+  },
+  "merge_instruction": {
+    "command": "git checkout main && git merge --ff-only perf/native-optimization",
+    "property": "fast-forward by construction (0 behind); no conflicts possible; equivalent to git push origin perf/native-optimization:main",
+    "authorization": "NOT EXECUTED - no push, no PR, no main merge, no release without separate user authorization",
+    "rehearsal": "evidence/f7_merge_rehearsal.md"
+  },
+  "commands": {
+    "full_suite": "pytest tests/",
+    "optimization_v8_gate": "pytest tests/optimization_v8/",
+    "installed_wheel_gates": "pytest tests/optimization_v8/installed/",
+    "f6_harness": "python optimization_n9_final/tools/f6_final_vs_main.py (see evidence/f6_verdict.json and tools/f6_worker.py)",
+    "wheel_build_handover": "build wheels ONLY from a purged build/ directory or a pristine copy - a stale build/ resurrects archived modules into the wheel (D2, caught by the banned-members gate; see evidence/review/f5_tainted_wheel_namelist.json and f5_review.md)"
+  },
+  "scopes": {
+    "included": [
+      "N9 F0-F6 records under optimization_n9_final/",
+      "N9 A-plus decode shipped and wired (aplus_decode)",
+      "bounded stream row B default at thread_budget=1 with all-raw structural guard",
+      "B7-32 expert env compatibility (SOLWEIG_LIGHT_LW_BACKEND)",
+      "N8 archive under experiments/optimization_v8/native_dispatch/ (repo-only)",
+      "installed-wheel gate set incl. R1 env surface + R2 aplus wiring"
+    ],
+    "excluded": [
+      "N8 native runtime row and qualification machinery (archived; ships in no wheel)",
+      "NUMBA_CACHE_DIR default mitigation (post-release follow-up only)",
+      "any push/PR/main-merge/release action (requires separate user authorization)"
+    ]
+  }
+}

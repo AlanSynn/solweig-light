@@ -1,0 +1,29 @@
+{
+  "ambient_loadavg_end": [
+    6.876953125,
+    6.66845703125,
+    7.00244140625
+  ],
+  "ambient_loadavg_start": [
+    6.876953125,
+    6.66845703125,
+    7.00244140625
+  ],
+  "aosoa_pack_only_ms": 5.170040996745229,
+  "b7_arm_error": null,
+  "bitwise_parity": "serial == native-aosoa == b7 (uint32 view)",
+  "class": "leaf_kernel (synthetic; no application-gain claim)",
+  "native_aosoa_min_ms": 2.6694999542087317,
+  "native_aosoa_ms": 2.8506251983344555,
+  "native_b7_dense_ms": 4.481417126953602,
+  "note": "quiet-window b1024 A/B/C comparison deferred to the coordinator window; this is a small leaf sanity record",
+  "recorded_utc": "2026-09-22T20:32:11Z",
+  "serial_dense_ms": 9.152415907010436,
+  "shape": {
+    "B": 8192,
+    "P": 153,
+    "reps": 7,
+    "stat": "median_ms",
+    "surface_profile": "f64"
+  }
+}

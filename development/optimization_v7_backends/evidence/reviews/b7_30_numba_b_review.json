@@ -1,0 +1,99 @@
+{
+  "schema": "solweig-v7-review-v1",
+  "task": "B7-30",
+  "variant": "B7-10-numba-layout-B",
+  "candidate_base": "c66ff3b6",
+  "candidate_path": "/Users/alansynn/Workspace/solweig-v7-numba/experiments/optimization_v7/numba_layout/",
+  "routing": "independent GLM review; no verified Anthropic Opus route in this session",
+  "reviewer_environment": {
+    "python": "3.12.13 (.venv-v7 of the candidate worktree)",
+    "numba": "0.67.0",
+    "numpy": "2.4.6",
+    "platform": "macOS 26.6.2 arm64 Apple M1 Pro, numba threads 10 (workqueue)",
+    "cache_redirection": "NUMBA_CACHE_DIR=/tmp/b7_30_numba_cache and /tmp/b7_30_ir_cache; worktree src/ verified still clean (git hash-object of cylinder_longwave.py = 27ba6ce48454399c7b97285c8408511d050a32da before and after reruns)",
+    "provenance_checks": [
+      "worktree detached at c66ff3b6; src/ unmodified",
+      "longwave_primary_b.py sha256 = fcd9cf054146e15dba7fe126dc72227b28bee1d3985a49cd29f306acc7f74566, matches capability.json and proof_record.md",
+      "b7_02_capture_manifest.json pins reducer blob 27ba6ce4..., env flags unset, 520 calls (260 serial + 260 parallel)"
+    ]
+  },
+  "reruns": [
+    {
+      "command": ".venv-v7/bin/python replay_bitwise.py 4 8  (NUMBA_CACHE_DIR=/tmp/b7_30_numba_cache)",
+      "exit": 0,
+      "summary": "Reproduced exactly: W=4/W=8 x serial/parallel each 260 admitted / 0 rejected / 260 bitwise matched (uint32 view) / 0 mismatched, PASS in all 4 configs."
+    },
+    {
+      "command": ".venv-v7/bin/python adversarial_checks.py  (NUMBA_CACHE_DIR=/tmp/b7_30_numba_cache)",
+      "exit": 0,
+      "summary": "Reproduced exactly: checks=1842, failures=0, rejection-checks-passed=108 (27 rejection cases x 4 schedules). 102 generated cases x 4 B schedules each compared bitwise against BOTH live baseline kernels (A serial + A parallel); inputs hash-verified unmutated; ownership/dtype/shape checked per call. Note: the 108 rejection checks are part of the 1842 total (102x17 + 108 = 1842)."
+    },
+    {
+      "command": ".venv-v7/bin/python ir_audit.py  (fresh NUMBA_CACHE_DIR=/tmp/b7_30_ir_cache, NUMBA_OPT=3, LOOP_VECTORIZE=1, SLP_VECTORIZE=0)",
+      "exit": 0,
+      "summary": "Reproduced identically for all 8 specializations (A serial/parallel x f64/f32 surface, B W4 serial/parallel x f64/f32): 0 llvm.fmuladd, 0 llvm.fma, 0 fast-math flags, 0 fmadd/fmsub/fmla in arm64 asm. Vector fops: B serial 75, B parallel 67, A 0. Fresh IR/asm dumps written to logs/ir/."
+    },
+    {
+      "command": ".venv-v7/bin/python /tmp/b7_30_probe.py  (reviewer-written probes)",
+      "exit": 0,
+      "summary": "B=0 returns owned (0,7) bitwise-equal to A in all 4 configs; multi-payload NaN (0x7FC00000, 0x7FA00000, 0xFFC00000, 0x7FC12345), +Inf, -Inf and -0.0 in sh/vs/vb/lup/sky tables propagate bitwise-identically to both A kernels in all 4 configs (27 output NaNs bit-preserved); all-NaN-sh case confirms the branchless predicate truth table; numba pack path inspected for tail-slot behavior (see finding F1)."
+    },
+    {
+      "command": "reviewer grep audit over fresh logs/ir/*.ll and *.s",
+      "exit": 0,
+      "summary": "Independent of ir_audit.py regexes: 0 fmuladd/llvm.fma/fast-flag matches in all 8 .ll; 0 fmadd|fmsub|fmla|fnmadd|fnmsub in all 8 .s; B_W4_serial_f64 contains 75 vector fops = 47 <4 x float> + 28 <4 x double> (f64-surface chains vectorize as doubles - direct evidence the f64 promotion graph is preserved); 0 llvm.vector.reduce; non-broadcast shuffles are only the stride-7 output-store interleave idiom; solar_gate appears as load i8 -> icmp eq i8 -> br i1 into two distinct loop regions; the only 3 selects in the serial kernel (6 in parallel) are vectorizer runtime-dependence merges (%brmerge/%conflict.rdx), not gate logic."
+    },
+    {
+      "command": "dev_timing.py - NOT rerun (audited code + logs only)",
+      "exit": null,
+      "summary": "Not rerun per the protocol's exclusive-lease policy (other agents active on this host; timing would be garbage). Code audit confirms: adapter timing = reject_unsupported + pack + kernel (pack is INSIDE adapter-total); pack kernels schedule-matched to the main kernel (make_pack2d(parallel)); 2 alternating paired reps (A,B)x2, median = upper of two (disclosed, conservative for B); both W=4 and W=8 measured. Recorded logs match the claims in layout_and_schedule.md / proof_record.md."
+    }
+  ],
+  "findings": [
+    {
+      "id": "F1",
+      "severity": "low",
+      "description": "Packed-tail zero-fill claim holds only for the 'numpy' pack engine, not the default 'numba' engine.",
+      "evidence": "longwave_primary_b.py:32-33 and proof_record.md:59-60 state packed tail slots are 'zero-filled (as belt and braces)'. pack_block_major (:261-280) does zero-fill, but the default _pack_all_numba path (:368-387) allocates np.empty and _pack2d_kernel/_pack1d_kernel (:330-351) write only lanes < width, leaving tail slots uninitialized; they read as zero in practice only because fresh pages on macOS are zero-filled. No correctness impact: lane loops are bounded to width=min(W, pixels-p0) so slots >= width are never loaded (source + IR confirmed). Reword at the next capability re-issue."
+    },
+    {
+      "id": "F2",
+      "severity": "low",
+      "description": "ir_audit.py dumps/audits only the W=4 kernels; the recommended default W=8 has no direct IR/asm evidence.",
+      "evidence": "ir_audit.py:142 builds make_longwave_primary_b(4, parallel) only. Not blocking: fastmath=False is in the source decoration and verified in IR for both schedules and both surface specializations at W4, and W=8 bitwise replay covers 520 fixtures + 102 adversarial cases x 4 schedules against live A (contraction would break bitwise equality with near-certainty at that volume). Recommend adding W=8 to ir_audit before the B7-31/32 selection freeze."
+    },
+    {
+      "id": "F3",
+      "severity": "info",
+      "description": "Summary phrasing '67-75 <4 x float> ops' is imprecise; the actual 67/75 counts include <4 x double> ops.",
+      "evidence": "B_W4_serial_f64.ll contains 75 vector float ops = 47 <4 x float> + 28 <4 x double>; parallel variant 67. The <4 x double> ops are the f64-surface promotion chains vectorizing across lanes - positive evidence for typed-graph preservation, not a defect. layout_and_schedule.md's own table ('vector fops') is accurate; A has 0 vector ops of either kind."
+    },
+    {
+      "id": "F4",
+      "severity": "info",
+      "description": "The claim '1842 adversarial checks + 108 rejection checks' double-counts the rejection checks.",
+      "evidence": "logs/adversarial_checks.json: checks=1842 total, of which 108 are rejection checks (102 shape/numeric cases x 17 checks = 1734, plus 27 rejection cases x 4 schedules = 108). proof_record.md's wording ('checks=1842, failures=0, rejection-checks-passed=108') is accurate; only the second-hand summary adds them."
+    },
+    {
+      "id": "F5",
+      "severity": "info",
+      "description": "Dev-tier timing honesty: acceptable as dev-tier, with disclosed limits.",
+      "evidence": "Sizes 16384/65536 only (protocol kernel_only_sizes also names 4096 - acceptable at dev tier); 2 paired reps with median = upper-of-two (disclosed, conservative for B); the 65536 serial W4 cell has high rep variance (46.86/33.75 ms raw) and its reported 2.07x uses the upper value, but the W8>W4 selection holds under either rep (W8 29.4-30.4 vs W4 33.7). Pack cost is inside adapter-total timing and schedule-matched; pack is 41-54% of serial adapter cells, matching the author's '40-50%' disclosure. Cold-first-use and compile cost are explicitly not measured (declared out of scope for this tier)."
+    },
+    {
+      "id": "F6",
+      "severity": "info",
+      "description": "Minor admission-surface observations, all consistent with the frozen contract.",
+      "evidence": "directions/gate are validated for dtype/ndim only, not shape vs P (unused by the kernel exactly as in A; contract says 'unused, validated only'). Input-input aliasing is not rejected - documented and inert since no input is ever written (adversarial hash checks confirm). Output ownership is 'fresh numba memsys allocation, owndata=False with the same flags as A's own output' - honestly documented and checked per-call rather than naively asserting owndata=True."
+    },
+    {
+      "id": "F7",
+      "severity": "info",
+      "description": "Claims verified true that go beyond what reruns alone show (recorded for the selection ledger).",
+      "evidence": "(1) Typed graph: B's per-patch statement sequence is textually identical to A lines 92-177 (blob 27ba6ce4...) in operand order, grouping, and every np.float32 rounding node, for both gate paths and both sweeps; accumulator update order A8,A7,A3,A2 (gate true) / A7,A2 (false) preserved; reflection only from A0+lup with np.float32(np.pi) (= 0x40490FDB); output folds are ordered left, columns 2..6 = A5..A9. (2) Truth tables: (x==k) is False for NaN on both short-circuit and branchless forms; all-NaN-sh probe bitwise-matches A. No float op is newly unmasked: the gate remains control flow, so sun/shade expressions are only computed on the taken path (IR: two distinct loop regions; 0 llvm.vector.reduce; the interleaved shuffles belong to the stride-7 output store). (3) Lane mapping: accum[k,lane] is per-block thread-local (allocated inside the prange body), lanes never read each other, tails never read padding. (4) B=0, NaN payloads, -0.0, Inf all bitwise vs both A kernels (reviewer probes)."
+    }
+  ],
+  "verdict": "APPROVE-WITH-NOTES",
+  "scope": "B7-10 candidate (numba layout control B) at worktree c66ff3b6, module sha256 fcd9cf054146e15dba7fe126dc72227b28bee1d3985a49cd29f306acc7f74566: exactness on the full frozen 520-call corpus for W=4 and W=8, serial and parallel; the 1842-check adversarial + 108-check rejection suite; no-new-contraction evidence (IR/asm, W=4 direct, W=8 empirical); solar_gate branch preservation outside the lane loop; pre-launch rejection with explicit reasons and no fallback; pack cost inside adapter-total timing; W=8-vs-W=4 dev-tier selection. NOT in scope: any final performance claim (dev-tier numbers are noisy-host indications only; final numbers belong to the performance owner's frozen campaign), integration into src/, and portability beyond this M1 Pro/arm64 numba 0.67.0 environment.",
+  "recommended_disposition": "Advance B7-10 as control B to the B7-31/32 A/B/C trials with W=8 default, exactly as the author recommends. Conditions: (1) reword the tail zero-fill claim at the next capability re-issue (F1) - no source change is required for correctness; (2) add W=8 kernels to ir_audit.py before the selection freeze so the default width has direct IR/asm evidence (F2); (3) per policy, any module edit invalidates the source sha256 and requires re-review; (4) final performance statements only from the perf owner's frozen campaign."
+}

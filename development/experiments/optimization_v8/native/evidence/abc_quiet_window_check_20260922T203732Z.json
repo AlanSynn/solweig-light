@@ -1,0 +1,79 @@
+{
+  "ambient_loadavg_end": [
+    9.42236328125,
+    8.55615234375,
+    7.8203125
+  ],
+  "ambient_loadavg_start": [
+    9.42236328125,
+    8.55615234375,
+    7.8203125
+  ],
+  "b_consumer": "lw_b_control.py:lw_primary_b",
+  "block_sizes": [
+    128,
+    1024
+  ],
+  "mixes": [
+    "all-binary",
+    "mix",
+    "all-raw"
+  ],
+  "mode": "check-only (no timing)",
+  "n1_note": "producer cost is reported per block size and mix; the direct producer reverses vs decode+transpose at B=128 in 3 of 6 N8-11 cells, so C1 end-to-end totals at 128 must include that penalty honestly",
+  "patches": 153,
+  "per_block": [
+    {
+      "B": 128,
+      "adapter_ms": {},
+      "kernel_ms": {},
+      "mix": "all-binary",
+      "parity": "pass (A0==C1==C1k==B1==B1k)",
+      "producer_ms": {}
+    },
+    {
+      "B": 128,
+      "adapter_ms": {},
+      "kernel_ms": {},
+      "mix": "mix",
+      "parity": "pass (A0==C1==C1k==B1==B1k)",
+      "producer_ms": {}
+    },
+    {
+      "B": 128,
+      "adapter_ms": {},
+      "kernel_ms": {},
+      "mix": "all-raw",
+      "parity": "pass (A0==C1==C1k==B1==B1k)",
+      "producer_ms": {}
+    },
+    {
+      "B": 1024,
+      "adapter_ms": {},
+      "kernel_ms": {},
+      "mix": "all-binary",
+      "parity": "pass (A0==C1==C1k==B1==B1k)",
+      "producer_ms": {}
+    },
+    {
+      "B": 1024,
+      "adapter_ms": {},
+      "kernel_ms": {},
+      "mix": "mix",
+      "parity": "pass (A0==C1==C1k==B1==B1k)",
+      "producer_ms": {}
+    },
+    {
+      "B": 1024,
+      "adapter_ms": {},
+      "kernel_ms": {},
+      "mix": "all-raw",
+      "parity": "pass (A0==C1==C1k==B1==B1k)",
+      "producer_ms": {}
+    }
+  ],
+  "recorded_utc": "2026-09-22T20:37:31Z",
+  "reps": 0,
+  "stat": "min_ms (median_ms recorded alongside)",
+  "status": "INFORMATIONAL / NON-PROMOTION (N8-31 owns protocol cells)"
+}

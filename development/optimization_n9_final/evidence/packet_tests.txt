@@ -1,0 +1,22 @@
+test_blocked (test_packet.PacketTests.test_blocked) ... ok
+test_branch (test_packet.PacketTests.test_branch) ... ok
+test_cost_bounds (test_packet.PacketTests.test_cost_bounds) ... ok
+test_cost_identity (test_packet.PacketTests.test_cost_identity) ... ok
+test_cpu_closure_structure (test_packet.PacketTests.test_cpu_closure_structure) ... ok
+test_dag (test_packet.PacketTests.test_dag) ... ok
+test_memory_payload (test_packet.PacketTests.test_memory_payload) ... ok
+test_native_false_success (test_packet.PacketTests.test_native_false_success) ... ok
+test_native_shape (test_packet.PacketTests.test_native_shape) ... ok
+test_negative_sizes (test_packet.PacketTests.test_negative_sizes) ... ok
+test_no_remote (test_packet.PacketTests.test_no_remote) ... ok
+test_no_shipped_claim_record (test_packet.PacketTests.test_no_shipped_claim_record) ... ok
+test_open_forbidden (test_packet.PacketTests.test_open_forbidden) ... ok
+test_probe_results_labeled (test_packet.PacketTests.test_probe_results_labeled) ... ok
+test_safety_required (test_packet.PacketTests.test_safety_required) ... ok
+test_scenario_not_measurement (test_packet.PacketTests.test_scenario_not_measurement) ... ok
+test_short_prompt (test_packet.PacketTests.test_short_prompt) ... ok
+
+----------------------------------------------------------------------
+Ran 17 tests in 0.012s
+
+OK

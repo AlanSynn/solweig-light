@@ -1,0 +1,224 @@
+{
+ "arms": [
+  "A8",
+  "B4",
+  "B1",
+  "C4",
+  "C1"
+ ],
+ "cells": [
+  {
+   "B": 1024,
+   "mix": "all-binary"
+  },
+  {
+   "B": 1024,
+   "mix": "mix"
+  },
+  {
+   "B": 1024,
+   "mix": "all-raw"
+  },
+  {
+   "B": 128,
+   "mix": "all-binary"
+  },
+  {
+   "B": 128,
+   "mix": "mix"
+  },
+  {
+   "B": 128,
+   "mix": "all-raw"
+  }
+ ],
+ "env": {
+  "SOLWEIG_LIGHT_FUSED_RAD": null,
+  "SOLWEIG_LIGHT_LW_BACKEND": null,
+  "SOLWEIG_LIGHT_PATCH_CLASS_TABLES": null,
+  "native_cache": "/Users/alansynn/Workspace/solweig-v8-native/experiments/optimization_v8/native/stage",
+  "numba_cache_dir": "/Users/alansynn/Workspace/solweig-v8-native/.numba_cache/f3"
+ },
+ "host": {
+  "machine": "arm64",
+  "ncpu": 10,
+  "numba": "0.67.0",
+  "numba_threads": 4,
+  "tier_budget_N": 4,
+  "tier_note": "N8-02 tier-B configuration: threads=4, cpu_budget=4, workers=1"
+ },
+ "mode": "check-only (no timing)",
+ "per_cell": [
+  {
+   "B": 1024,
+   "mix": "all-binary",
+   "parity": {
+    "finite": {
+     "digest_a8": "ff7b7683ea3da88f",
+     "digest_b": "ff7b7683ea3da88f",
+     "digest_c": "ff7b7683ea3da88f",
+     "ok": true,
+     "shape": [
+      7,
+      1024
+     ]
+    },
+    "grid": {
+     "digest_a8": "327150777794a85a",
+     "digest_b": "327150777794a85a",
+     "digest_c": "327150777794a85a",
+     "ok": true,
+     "shape": [
+      7,
+      1024
+     ]
+    },
+    "note": "grid = N8-04 adversarial provenance (saturates to NaN at P=153); finite = seeded finite patch scalars so payload bits move the output. Both must agree.",
+    "ok": true
+   }
+  },
+  {
+   "B": 1024,
+   "mix": "mix",
+   "parity": {
+    "finite": {
+     "digest_a8": "e46e6fd75abb7b52",
+     "digest_b": "e46e6fd75abb7b52",
+     "digest_c": "e46e6fd75abb7b52",
+     "ok": true,
+     "shape": [
+      7,
+      1024
+     ]
+    },
+    "grid": {
+     "digest_a8": "327150777794a85a",
+     "digest_b": "327150777794a85a",
+     "digest_c": "327150777794a85a",
+     "ok": true,
+     "shape": [
+      7,
+      1024
+     ]
+    },
+    "note": "grid = N8-04 adversarial provenance (saturates to NaN at P=153); finite = seeded finite patch scalars so payload bits move the output. Both must agree.",
+    "ok": true
+   }
+  },
+  {
+   "B": 1024,
+   "mix": "all-raw",
+   "parity": {
+    "finite": {
+     "digest_a8": "47115271520435bf",
+     "digest_b": "47115271520435bf",
+     "digest_c": "47115271520435bf",
+     "ok": true,
+     "shape": [
+      7,
+      1024
+     ]
+    },
+    "grid": {
+     "digest_a8": "327150777794a85a",
+     "digest_b": "327150777794a85a",
+     "digest_c": "327150777794a85a",
+     "ok": true,
+     "shape": [
+      7,
+      1024
+     ]
+    },
+    "note": "grid = N8-04 adversarial provenance (saturates to NaN at P=153); finite = seeded finite patch scalars so payload bits move the output. Both must agree.",
+    "ok": true
+   }
+  },
+  {
+   "B": 128,
+   "mix": "all-binary",
+   "parity": {
+    "finite": {
+     "digest_a8": "1b5d1b2e83ef2a61",
+     "digest_b": "1b5d1b2e83ef2a61",
+     "digest_c": "1b5d1b2e83ef2a61",
+     "ok": true,
+     "shape": [
+      7,
+      128
+     ]
+    },
+    "grid": {
+     "digest_a8": "9055311c37a6fde7",
+     "digest_b": "9055311c37a6fde7",
+     "digest_c": "9055311c37a6fde7",
+     "ok": true,
+     "shape": [
+      7,
+      128
+     ]
+    },
+    "note": "grid = N8-04 adversarial provenance (saturates to NaN at P=153); finite = seeded finite patch scalars so payload bits move the output. Both must agree.",
+    "ok": true
+   }
+  },
+  {
+   "B": 128,
+   "mix": "mix",
+   "parity": {
+    "finite": {
+     "digest_a8": "522d28b8fe22b339",
+     "digest_b": "522d28b8fe22b339",
+     "digest_c": "522d28b8fe22b339",
+     "ok": true,
+     "shape": [
+      7,
+      128
+     ]
+    },
+    "grid": {
+     "digest_a8": "9055311c37a6fde7",
+     "digest_b": "9055311c37a6fde7",
+     "digest_c": "9055311c37a6fde7",
+     "ok": true,
+     "shape": [
+      7,
+      128
+     ]
+    },
+    "note": "grid = N8-04 adversarial provenance (saturates to NaN at P=153); finite = seeded finite patch scalars so payload bits move the output. Both must agree.",
+    "ok": true
+   }
+  },
+  {
+   "B": 128,
+   "mix": "all-raw",
+   "parity": {
+    "finite": {
+     "digest_a8": "6c3215ee6f961adb",
+     "digest_b": "6c3215ee6f961adb",
+     "digest_c": "6c3215ee6f961adb",
+     "ok": true,
+     "shape": [
+      7,
+      128
+     ]
+    },
+    "grid": {
+     "digest_a8": "9055311c37a6fde7",
+     "digest_b": "9055311c37a6fde7",
+     "digest_c": "9055311c37a6fde7",
+     "ok": true,
+     "shape": [
+      7,
+      128
+     ]
+    },
+    "note": "grid = N8-04 adversarial provenance (saturates to NaN at P=153); finite = seeded finite patch scalars so payload bits move the output. Both must agree.",
+    "ok": true
+   }
+  }
+ ],
+ "protocol": "N9-CONT-v1",
+ "recorded_utc": "2026-09-23T12:23:47Z",
+ "reps": 9
+}

@@ -1,0 +1,88 @@
+{
+  "schema": "solweig-v7-review-v1",
+  "task": "B7-30",
+  "variant": "B7-22-opencl-pocl",
+  "candidate_base": "c66ff3b6",
+  "candidate_path": "/Users/alansynn/Workspace/solweig-v7-opencl/experiments/optimization_v7/opencl/",
+  "reviewer": "independent reviewer (GLM-5.3 agent), not the author; candidate treated as immutable",
+  "routing": "independent GLM review; no verified Anthropic Opus route in this session",
+  "review_date": "2026-09-22",
+  "provenance_checked": {
+    "worktree_head": "c66ff3b6 (child of frozen dca2035c; working tree clean except untracked experiments/)",
+    "kernel_source_blob": "27ba6ce48454399c7b97285c8408511d050a32da (git hash-object of worktree src cylinder_longwave.py matches frozen contract)",
+    "captures_parity": "b7_02_fixtures.npz, b7_02_capture_manifest.json, b7_02_typed_ir.txt byte-identical between worktree and main checkout",
+    "sha256_kernel": "f2a381d528f46062a077b08760173200197475bf7c148c682291a47492aa9b87 (matches capability.json)",
+    "sha256_adapter": "15c68f7cf13150d2d40f909fcc07920515702bafa9b69de0198cdf88b52d4800 (matches capability.json)",
+    "venv": ".venv-v7 reused (python 3.12.13, numpy 2.4.6, numba 0.67.0, pyopencl 2026.1.4) - matches frozen environment",
+    "candidate_mutated_by_review": false
+  },
+  "reruns": [
+    {
+      "command": "cd /Users/alansynn/Workspace/solweig-v7-opencl/experiments/optimization_v7/opencl && DYLD_FRAMEWORK_PATH=<opencl>/fwwrap OCL_ICD_FILENAMES=/opt/homebrew/etc/OpenCL/vendors/pocl.icd .venv-v7/bin/python replay_fixtures.py",
+      "exit": 0,
+      "summary": "520/520 frozen captured calls admitted, 520/520 bitwise matched (uint32 view incl. NaN payload+sign), 0 rejected, input canary OK on every case. Rerun log byte-identical to the author's replay_log.json; originals restored afterwards.",
+      "log_compared": "byte-identical to pre-existing replay_log.json"
+    },
+    {
+      "command": "cd /Users/alansynn/Workspace/solweig-v7-opencl/experiments/optimization_v7/opencl && DYLD_FRAMEWORK_PATH=<opencl>/fwwrap OCL_ICD_FILENAMES=/opt/homebrew/etc/OpenCL/vendors/pocl.icd .venv-v7/bin/python adversarial_tests.py",
+      "exit": 0,
+      "summary": "512/512 pass, 0 fail: 504 domain combos (B in {0,1,17,96,128} x P in {1,153} x surface {f64,f32,python-float} x nonfinite x gate mode) each bitwise vs BOTH numba schedules, + local_size=64 padded tails (B=1,17,96,128), + 7/7 pre-launch UnsupportedInput rejections. Rerun log byte-identical to the author's adversarial_log.json; originals restored afterwards.",
+      "log_compared": "byte-identical to pre-existing adversarial_log.json"
+    }
+  ],
+  "source_audit": {
+    "typed_graph_fidelity": "lw_primary.cl LW_BODY matches b7_02_typed_ir.txt node-for-node: +0.0f init of A0..A9; ordered sweep 1 p=0..P-1; sky=(sh==1)&&(vs==1), veg=(vs==0)||(vb==0), building=((1.0f-sh)*vb)==1.0f all float32; sky chains bool-multiplier float32 (0*NaN stays NaN) then float32 accum add; veg/sun/shade chains in SC (double for f64 specialization, float for f32) with bool operands as exact 0/1 of SC, rounded to float32 ONLY at the accum add ((float)((double)acc+chain) for f64; plain f32 add for f32 - both numba nodes present in typed IR); solar_gate true-branch computes sun_side,shade_side,sun_down,shade_down as ((((S*bool)*solid)*cos|sin)*building) and updates a8,a7,a3,a2 in source order, false-branch shade_side/shade_down then a7,a2 - identical to typed IR lines 109-121; reflection only after completed sweep 1: r0=a0+lup, r1=r0*factor, r2=r1*0.5f, reflected=r2/pi_f32, all float32; pi enters as a host-precomputed float32 kernel argument (const float pi_f32, NOT a literal/M_PI_F), adapter asserts bits 0x40490FDB at init and raises otherwise; sweep 2 re-traverses p=0..P-1 with float32 node per multiply (((reflected*solid)*cos|sin)*mask); A9/A4 accumulate; outputs 0/1 are ordered left folds (((a0+a1)+a2)+a3)+a4 / (((a5+a6)+a7)+a8)+a9, outputs 2..6 copy a5..a9. Both sweeps strictly sequential per work-item; parallel/serial numba schedules legitimately map to one kernel because pixels are independent, and this is verified bitwise against BOTH numba kernels.",
+    "adapter_audit": "opencl_adapter.py: full validation before any launch or buffer creation (dtype/ndim/shape/C-contiguity for sh/vs/vb f32 [B,P], sun/shade bool, solid/sine/cosine f32 [P], solar_gate bool [P] any-strides copied, sky_down/sky_side f32 [P] any-strides copied - stride-12 materialization inside timed boundary, lup f32 [B], directions f32/gate bool [P,4] validated but not passed), P range 1..609, surface scalar classification (both-f64 -> f64 kernel incl. python float; both-f32 -> f32 kernel; mixed rejected), reflection_factor float32-scalar-only. B==0 returns owned zeros((0,7)) without launching. Raise-only design: UnsupportedInput for unsupported inputs, DeviceUnavailable when no PoCL CPU device qualifies, raw cl.RuntimeError propagates for build/launch failures - there is no silent fallback path in the file. Device selection enumerates all platforms and requires PoCL platform name AND CL_DEVICE_TYPE_CPU AND available AND compiler AND cl_khr_fp64; Apple GPU/Rusticl excluded structurally; never auto-selects. Inputs never written (COPY_HOST_PTR host->device reads, const __global kernel args; canary-verified per call by the harness). cl.enqueue_copy of results + queue.finish() inside the adapter call, so the timed boundary includes validation, 12 per-call buffer copies, enqueue, sync, and host materialization. Context/queue/program created once per process and reused; buffers per call with no cross-call device caching (documented as a policy B must mirror).",
+    "fp_methodology": "verify_fp.py is genuinely discriminative: f32 contraction inputs are boundary-straddling (1+k*2^-12 products against c near -1 with 2^-23 perturbation, cancellation-amplified), device compared bitwise to separate-op host ground truth with 480/4096 cases where FMA would differ - so the check fails if contraction were ON; f64 and chain-shape ((S*x)*y)*z+acc -> f32 probes analogous; division check compares device / against correctly-rounded numpy f32 division over 19889 finite adversarial bit-pattern pairs (random uint32 mantissa/exponent spread + pathological ratios + subnormal results); denormal preservation and bool-multiplier NaN payload checked bitwise. Probes are built with the SAME options as the primary kernels and the same uppercase FP_CONTRACT OFF pragma. fp32 divide correctness is mandatory here because the PoCL CPU fp32 config does not advertise CL_FP_CORRECTLY_ROUNDED_DIVIDE_SQRT; -cl-fp32-correctly-rounded-divide-sqrt is accepted and recorded.",
+    "timing_honesty": "dev_timing.py/json is honestly labeled DEV-TIER / NOISY-HOST; 2 alternating paired reps (A-then-C, C-then-A) per workload with exactness cross-check before timing; C timed across the full adapter boundary. Recorded speedup_C_over_A = 0.9108 (B=16384) and 0.9423 (B=65536), i.e. C ~9%/6% slower - below the >=1.10x adapter gate and the >=1.20x kernel-only triage signal, and the author recommends NOT integrating on performance grounds. Claim matches evidence. (The proof record's sizing-probe numbers 26/356/364 ms do not match the retained dev_timing.json 22.3/24.6/26.3 ms - see finding F3; the retained numbers support the same conclusion, local_size=auto.)"
+  },
+  "claims_verification": {
+    "claim_1_replay_520": "CONFIRMED by independent rerun (byte-identical log): 520/520 admitted, 520/520 bitwise uint32 incl. NaN payload+sign, 0 rejected, canary OK.",
+    "claim_2_adversarial_512": "CONFIRMED by independent rerun (byte-identical log) + source spot checks: B=0 exercised as 72 combos compared shape vs numba (adapter returns without launching); float64-surface chain exercised via 168 float64 + 168 python-float combos through the ACCADD_D f64 kernel vs numba float64 chains; stride-12 sky views are genuine table[:,2] views; gate modes and nonfinite injections present in make_block.",
+    "claim_3_rejections_7": "CONFIRMED 7/7 raise UnsupportedInput with no silent fallback; however the P_over_609 case was rejected by the sun shape-consistency check, not the P<=609 guard itself (finding F1).",
+    "claim_4_contraction_and_division": "CONFIRMED: 480/4096 f32 cases would differ under FMA and device matched separate-op semantics on all 4096; division check correctly constructed over 19889 finite pairs, 0 mismatches (finite-only scope noted in F5).",
+    "claim_5_pocl_option_and_pragma": "CONSISTENT: fp_verification.json records the accepted options as '-cl-fp32-correctly-rounded-divide-sqrt' with fp_contract_option_accepted=false, matching the PoCL-rejects--cl-fp-contract=off claim; the operative pragma is uppercase OFF and the probe build shows no pragma warning. The raw INVALID_BUILD_OPTIONS text is asserted in prose only, not retained as a log - immaterial because the behavioral contraction check is authoritative.",
+    "claim_6_dev_tier_timing": "CONFIRMED honest: 0.9108x / 0.9423x (A-time/C-time), dev-tier labeled, below threshold, not recommended for integration."
+  },
+  "findings": [
+    {
+      "id": "F1",
+      "severity": "minor",
+      "description": "The P_over_609 adversarial rejection does not exercise the P<=609 guard itself. The test passes (8,4)-shaped sun/shade against (8,610) visibility, so the adapter rejects at the earlier shape-consistency check ('sun: shape (8, 4) != (8, 610)') and the explicit range check at opencl_adapter.py:195-196 is never reached. The rejection outcome (pre-launch UnsupportedInput) is still real and the guard is trivially correct by inspection, but the claimed 'P=610' coverage is nominal, not actual.",
+      "evidence": "adversarial_log.json rejections[P_over_609].reason = 'sun: shape (8, 4) != (8, 610)'; adversarial_tests.py args_big construction (r[3][:, :610] from a P=4 base block)."
+    },
+    {
+      "id": "F2",
+      "severity": "note",
+      "description": "Stale/contradictory header comment in lw_primary.cl lines 13-16: it claims contraction is disabled by 'BOTH #pragma OPENCL FP_CONTRACT off (accepted since OpenCL C 1.2) and the -cl-fp-contract=off build option', while lines 34-38 of the same file and the proof record document that the lowercase spelling is ineffective on PoCL (compiles with a warning, contraction stays ON) and that PoCL 7.2 rejects the build option. The operative pragma (line 38, uppercase OFF) is correct and behaviorally verified; only the prose is stale.",
+      "evidence": "lw_primary.cl lines 13-16 vs 34-38; proof_record.md FP discipline section; fp_verification.json pragma_warning PASS."
+    },
+    {
+      "id": "F3",
+      "severity": "note",
+      "description": "Proof record quotes local-size sizing-probe numbers (auto 26 ms, local=1 356 ms, local=128 364 ms at B=65536) that are not in the retained dev_timing.json (22.3 / 24.6 / 26.3 ms). The cited numbers evidently come from an earlier dev_timing run that was overwritten (the record acknowledges a first timing run existed). Direction and conclusion (auto None fastest) are consistent, but the quoted magnitudes are not traceable to any retained artifact.",
+      "evidence": "proof_record.md check 5 parenthetical vs dev_timing.json local_size_sizing_probe."
+    },
+    {
+      "id": "F4",
+      "severity": "note",
+      "description": "Replay canary bookkeeping is per-case-last-call: entry['input_canary'] is overwritten each call, and an input mutation with matching outputs would append to mismatch_detail but not increment 'mismatched', so the exit code would stay 0. No mutation occurred in the rerun (all canaries OK) and the adapter structurally cannot write host inputs (COPY_HOST_PTR reads + const __global args), so this is a harness-robustness nit, not an exactness gap.",
+      "evidence": "replay_fixtures.py lines 98-103 and 126."
+    },
+    {
+      "id": "F5",
+      "severity": "note",
+      "description": "The division check is finite-only: non-finite (NaN/Inf) numerator/denominator pairs are filtered before the 19889-case comparison. IEEE special-case propagation through '/' is instead covered transitively by the lup_nonfinite fixture replay and lup/lup_all adversarial combos (Inf/NaN numerators traverse the reflection divide) and PoCL fp32 advertises CL_FP_INF_NAN; combined coverage is adequate, but the division check alone would not catch a special-case bug.",
+      "evidence": "verify_fp.py lines 149-150 (finite filter); replay_log.json lup_nonfinite 4/4 bitwise; capability.json fp_config_float32."
+    },
+    {
+      "id": "F6",
+      "severity": "note",
+      "description": "Single-run exactness evidence is highly reproducible (reviewer reruns byte-identical), but all dev-tier numbers are single-process, noisy-host observations with 2 reps per workload - correctly labeled as such and not used for any selection claim. Clean paired trials per b7_03 remain the performance owner's scope and were not run.",
+      "evidence": "dev_timing.json tier_label; b7_03_protocol.json budgets."
+    }
+  ],
+  "verdict": "APPROVE-WITH-NOTES",
+  "scope": "Exactness evidence for candidate C_opencl (B7-22, OpenCL 3.0 / PoCL 7.2 CPU) as recorded in the candidate directory: 520/520 frozen-fixture bitwise replay, 512/512 adversarial bitwise vs numba baseline A incl. both schedules and 7/7 pre-launch rejections, behavioral FP verification (contraction OFF, correctly-rounded f32 divide, denormals, NaN multiplier semantics), typed-graph source fidelity of lw_primary.cl and adapter discipline of opencl_adapter.py, and the below-threshold dev-tier disposition. This review does NOT re-time, does not qualify clean performance, does not approve integration, and does not cover portability beyond this machine (Homebrew PoCL 7.2, M1 Pro, ICD-redirect shim).",
+  "recommended_disposition": "Record C_opencl as comparison-complete exactness evidence for the PoCL track (status available_exact_not_selected_on_performance, as capability.json already does); do NOT integrate on performance grounds (dev-tier C/A ~0.91-0.94x, below the >=1.10x adapter gate). Findings F1-F5 are documentation/test-hygiene items for any future revival of this backend: fix the P_over_609 test to actually reach the P-range guard, refresh the stale kernel header comment, and either re-quote or drop superseded run numbers in prose. No repair is required for the evidence as it stands because none of the findings undermines a recorded claim."
+}

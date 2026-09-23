@@ -1,0 +1,728 @@
+{
+ "actual_start_loadavg_1m": 5.140625,
+ "cells": [
+  "B=1024 all-binary",
+  "B=1024 mix",
+  "B=1024 all-raw",
+  "B=128 all-binary",
+  "B=128 mix",
+  "B=128 all-raw"
+ ],
+ "censor_bound_1p6x_start": 8.225,
+ "censored_records": [],
+ "cold_pair_ratios": [
+  1.0153,
+  0.9226,
+  0.9069
+ ],
+ "cold_pair_spread": 0.1084,
+ "cold_phase": {
+  "cell": "B=1024 mix",
+  "samples": [
+   {
+    "cold_ms": 2545.395,
+    "loadavg_1m_after": 4.97,
+    "sample": 0,
+    "tree": "final",
+    "warm_ms": 3.557
+   },
+   {
+    "cold_ms": 2506.9922,
+    "loadavg_1m_after": 4.81,
+    "sample": 0,
+    "tree": "main",
+    "warm_ms": 6.0965
+   },
+   {
+    "cold_ms": 2425.0325,
+    "loadavg_1m_after": 4.81,
+    "sample": 1,
+    "tree": "main",
+    "warm_ms": 6.64
+   },
+   {
+    "cold_ms": 2237.2804,
+    "loadavg_1m_after": 4.67,
+    "sample": 1,
+    "tree": "final",
+    "warm_ms": 3.449
+   },
+   {
+    "cold_ms": 2238.2288,
+    "loadavg_1m_after": 5.25,
+    "sample": 2,
+    "tree": "final",
+    "warm_ms": 3.6927
+   },
+   {
+    "cold_ms": 2467.872,
+    "loadavg_1m_after": 5.39,
+    "sample": 2,
+    "tree": "main",
+    "warm_ms": 6.4699
+   }
+  ]
+ },
+ "cold_ratio_final_over_main": 0.9069,
+ "digest_pairs_by_rep": [
+  {
+   "B=1024 all-binary": {
+    "final": "af669616ee569c58b2594214bf8b7587ac1dce80862acaea354d2ef1c9b34bb2",
+    "main": "af669616ee569c58b2594214bf8b7587ac1dce80862acaea354d2ef1c9b34bb2"
+   },
+   "B=1024 all-raw": {
+    "final": "7a7a1adb0afab95e9244d277b3a3f91d2b52b2813733de2b7b6aae866c733546",
+    "main": "7a7a1adb0afab95e9244d277b3a3f91d2b52b2813733de2b7b6aae866c733546"
+   },
+   "B=1024 mix": {
+    "final": "f6f2734636d0b8dde8b6a14c06c7fa230c8571604d58c7da9a17df7bc3503e5e",
+    "main": "f6f2734636d0b8dde8b6a14c06c7fa230c8571604d58c7da9a17df7bc3503e5e"
+   },
+   "B=128 all-binary": {
+    "final": "f08bfea94e587f2a08a9bfc002b8bdafdab3593e80cbe977672c0505473c7659",
+    "main": "f08bfea94e587f2a08a9bfc002b8bdafdab3593e80cbe977672c0505473c7659"
+   },
+   "B=128 all-raw": {
+    "final": "2735f3ed6a64a274d6496e12b2c7f70300d96095f02edbb9587fda10d78451bb",
+    "main": "2735f3ed6a64a274d6496e12b2c7f70300d96095f02edbb9587fda10d78451bb"
+   },
+   "B=128 mix": {
+    "final": "ad4ca67819edeea6631e82f82099ff75f89e205889d49259f98751f1d2321cee",
+    "main": "ad4ca67819edeea6631e82f82099ff75f89e205889d49259f98751f1d2321cee"
+   }
+  },
+  {
+   "B=1024 all-binary": {
+    "final": "af669616ee569c58b2594214bf8b7587ac1dce80862acaea354d2ef1c9b34bb2",
+    "main": "af669616ee569c58b2594214bf8b7587ac1dce80862acaea354d2ef1c9b34bb2"
+   },
+   "B=1024 all-raw": {
+    "final": "7a7a1adb0afab95e9244d277b3a3f91d2b52b2813733de2b7b6aae866c733546",
+    "main": "7a7a1adb0afab95e9244d277b3a3f91d2b52b2813733de2b7b6aae866c733546"
+   },
+   "B=1024 mix": {
+    "final": "f6f2734636d0b8dde8b6a14c06c7fa230c8571604d58c7da9a17df7bc3503e5e",
+    "main": "f6f2734636d0b8dde8b6a14c06c7fa230c8571604d58c7da9a17df7bc3503e5e"
+   },
+   "B=128 all-binary": {
+    "final": "f08bfea94e587f2a08a9bfc002b8bdafdab3593e80cbe977672c0505473c7659",
+    "main": "f08bfea94e587f2a08a9bfc002b8bdafdab3593e80cbe977672c0505473c7659"
+   },
+   "B=128 all-raw": {
+    "final": "2735f3ed6a64a274d6496e12b2c7f70300d96095f02edbb9587fda10d78451bb",
+    "main": "2735f3ed6a64a274d6496e12b2c7f70300d96095f02edbb9587fda10d78451bb"
+   },
+   "B=128 mix": {
+    "final": "ad4ca67819edeea6631e82f82099ff75f89e205889d49259f98751f1d2321cee",
+    "main": "ad4ca67819edeea6631e82f82099ff75f89e205889d49259f98751f1d2321cee"
+   }
+  },
+  {
+   "B=1024 all-binary": {
+    "final": "af669616ee569c58b2594214bf8b7587ac1dce80862acaea354d2ef1c9b34bb2",
+    "main": "af669616ee569c58b2594214bf8b7587ac1dce80862acaea354d2ef1c9b34bb2"
+   },
+   "B=1024 all-raw": {
+    "final": "7a7a1adb0afab95e9244d277b3a3f91d2b52b2813733de2b7b6aae866c733546",
+    "main": "7a7a1adb0afab95e9244d277b3a3f91d2b52b2813733de2b7b6aae866c733546"
+   },
+   "B=1024 mix": {
+    "final": "f6f2734636d0b8dde8b6a14c06c7fa230c8571604d58c7da9a17df7bc3503e5e",
+    "main": "f6f2734636d0b8dde8b6a14c06c7fa230c8571604d58c7da9a17df7bc3503e5e"
+   },
+   "B=128 all-binary": {
+    "final": "f08bfea94e587f2a08a9bfc002b8bdafdab3593e80cbe977672c0505473c7659",
+    "main": "f08bfea94e587f2a08a9bfc002b8bdafdab3593e80cbe977672c0505473c7659"
+   },
+   "B=128 all-raw": {
+    "final": "2735f3ed6a64a274d6496e12b2c7f70300d96095f02edbb9587fda10d78451bb",
+    "main": "2735f3ed6a64a274d6496e12b2c7f70300d96095f02edbb9587fda10d78451bb"
+   },
+   "B=128 mix": {
+    "final": "ad4ca67819edeea6631e82f82099ff75f89e205889d49259f98751f1d2321cee",
+    "main": "ad4ca67819edeea6631e82f82099ff75f89e205889d49259f98751f1d2321cee"
+   }
+  },
+  {
+   "B=1024 all-binary": {
+    "final": "af669616ee569c58b2594214bf8b7587ac1dce80862acaea354d2ef1c9b34bb2",
+    "main": "af669616ee569c58b2594214bf8b7587ac1dce80862acaea354d2ef1c9b34bb2"
+   },
+   "B=1024 all-raw": {
+    "final": "7a7a1adb0afab95e9244d277b3a3f91d2b52b2813733de2b7b6aae866c733546",
+    "main": "7a7a1adb0afab95e9244d277b3a3f91d2b52b2813733de2b7b6aae866c733546"
+   },
+   "B=1024 mix": {
+    "final": "f6f2734636d0b8dde8b6a14c06c7fa230c8571604d58c7da9a17df7bc3503e5e",
+    "main": "f6f2734636d0b8dde8b6a14c06c7fa230c8571604d58c7da9a17df7bc3503e5e"
+   },
+   "B=128 all-binary": {
+    "final": "f08bfea94e587f2a08a9bfc002b8bdafdab3593e80cbe977672c0505473c7659",
+    "main": "f08bfea94e587f2a08a9bfc002b8bdafdab3593e80cbe977672c0505473c7659"
+   },
+   "B=128 all-raw": {
+    "final": "2735f3ed6a64a274d6496e12b2c7f70300d96095f02edbb9587fda10d78451bb",
+    "main": "2735f3ed6a64a274d6496e12b2c7f70300d96095f02edbb9587fda10d78451bb"
+   },
+   "B=128 mix": {
+    "final": "ad4ca67819edeea6631e82f82099ff75f89e205889d49259f98751f1d2321cee",
+    "main": "ad4ca67819edeea6631e82f82099ff75f89e205889d49259f98751f1d2321cee"
+   }
+  },
+  {
+   "B=1024 all-binary": {
+    "final": "af669616ee569c58b2594214bf8b7587ac1dce80862acaea354d2ef1c9b34bb2",
+    "main": "af669616ee569c58b2594214bf8b7587ac1dce80862acaea354d2ef1c9b34bb2"
+   },
+   "B=1024 all-raw": {
+    "final": "7a7a1adb0afab95e9244d277b3a3f91d2b52b2813733de2b7b6aae866c733546",
+    "main": "7a7a1adb0afab95e9244d277b3a3f91d2b52b2813733de2b7b6aae866c733546"
+   },
+   "B=1024 mix": {
+    "final": "f6f2734636d0b8dde8b6a14c06c7fa230c8571604d58c7da9a17df7bc3503e5e",
+    "main": "f6f2734636d0b8dde8b6a14c06c7fa230c8571604d58c7da9a17df7bc3503e5e"
+   },
+   "B=128 all-binary": {
+    "final": "f08bfea94e587f2a08a9bfc002b8bdafdab3593e80cbe977672c0505473c7659",
+    "main": "f08bfea94e587f2a08a9bfc002b8bdafdab3593e80cbe977672c0505473c7659"
+   },
+   "B=128 all-raw": {
+    "final": "2735f3ed6a64a274d6496e12b2c7f70300d96095f02edbb9587fda10d78451bb",
+    "main": "2735f3ed6a64a274d6496e12b2c7f70300d96095f02edbb9587fda10d78451bb"
+   },
+   "B=128 mix": {
+    "final": "ad4ca67819edeea6631e82f82099ff75f89e205889d49259f98751f1d2321cee",
+    "main": "ad4ca67819edeea6631e82f82099ff75f89e205889d49259f98751f1d2321cee"
+   }
+  },
+  {
+   "B=1024 all-binary": {
+    "final": "af669616ee569c58b2594214bf8b7587ac1dce80862acaea354d2ef1c9b34bb2",
+    "main": "af669616ee569c58b2594214bf8b7587ac1dce80862acaea354d2ef1c9b34bb2"
+   },
+   "B=1024 all-raw": {
+    "final": "7a7a1adb0afab95e9244d277b3a3f91d2b52b2813733de2b7b6aae866c733546",
+    "main": "7a7a1adb0afab95e9244d277b3a3f91d2b52b2813733de2b7b6aae866c733546"
+   },
+   "B=1024 mix": {
+    "final": "f6f2734636d0b8dde8b6a14c06c7fa230c8571604d58c7da9a17df7bc3503e5e",
+    "main": "f6f2734636d0b8dde8b6a14c06c7fa230c8571604d58c7da9a17df7bc3503e5e"
+   },
+   "B=128 all-binary": {
+    "final": "f08bfea94e587f2a08a9bfc002b8bdafdab3593e80cbe977672c0505473c7659",
+    "main": "f08bfea94e587f2a08a9bfc002b8bdafdab3593e80cbe977672c0505473c7659"
+   },
+   "B=128 all-raw": {
+    "final": "2735f3ed6a64a274d6496e12b2c7f70300d96095f02edbb9587fda10d78451bb",
+    "main": "2735f3ed6a64a274d6496e12b2c7f70300d96095f02edbb9587fda10d78451bb"
+   },
+   "B=128 mix": {
+    "final": "ad4ca67819edeea6631e82f82099ff75f89e205889d49259f98751f1d2321cee",
+    "main": "ad4ca67819edeea6631e82f82099ff75f89e205889d49259f98751f1d2321cee"
+   }
+  },
+  {
+   "B=1024 all-binary": {
+    "final": "af669616ee569c58b2594214bf8b7587ac1dce80862acaea354d2ef1c9b34bb2",
+    "main": "af669616ee569c58b2594214bf8b7587ac1dce80862acaea354d2ef1c9b34bb2"
+   },
+   "B=1024 all-raw": {
+    "final": "7a7a1adb0afab95e9244d277b3a3f91d2b52b2813733de2b7b6aae866c733546",
+    "main": "7a7a1adb0afab95e9244d277b3a3f91d2b52b2813733de2b7b6aae866c733546"
+   },
+   "B=1024 mix": {
+    "final": "f6f2734636d0b8dde8b6a14c06c7fa230c8571604d58c7da9a17df7bc3503e5e",
+    "main": "f6f2734636d0b8dde8b6a14c06c7fa230c8571604d58c7da9a17df7bc3503e5e"
+   },
+   "B=128 all-binary": {
+    "final": "f08bfea94e587f2a08a9bfc002b8bdafdab3593e80cbe977672c0505473c7659",
+    "main": "f08bfea94e587f2a08a9bfc002b8bdafdab3593e80cbe977672c0505473c7659"
+   },
+   "B=128 all-raw": {
+    "final": "2735f3ed6a64a274d6496e12b2c7f70300d96095f02edbb9587fda10d78451bb",
+    "main": "2735f3ed6a64a274d6496e12b2c7f70300d96095f02edbb9587fda10d78451bb"
+   },
+   "B=128 mix": {
+    "final": "ad4ca67819edeea6631e82f82099ff75f89e205889d49259f98751f1d2321cee",
+    "main": "ad4ca67819edeea6631e82f82099ff75f89e205889d49259f98751f1d2321cee"
+   }
+  },
+  {
+   "B=1024 all-binary": {
+    "final": "af669616ee569c58b2594214bf8b7587ac1dce80862acaea354d2ef1c9b34bb2",
+    "main": "af669616ee569c58b2594214bf8b7587ac1dce80862acaea354d2ef1c9b34bb2"
+   },
+   "B=1024 all-raw": {
+    "final": "7a7a1adb0afab95e9244d277b3a3f91d2b52b2813733de2b7b6aae866c733546",
+    "main": "7a7a1adb0afab95e9244d277b3a3f91d2b52b2813733de2b7b6aae866c733546"
+   },
+   "B=1024 mix": {
+    "final": "f6f2734636d0b8dde8b6a14c06c7fa230c8571604d58c7da9a17df7bc3503e5e",
+    "main": "f6f2734636d0b8dde8b6a14c06c7fa230c8571604d58c7da9a17df7bc3503e5e"
+   },
+   "B=128 all-binary": {
+    "final": "f08bfea94e587f2a08a9bfc002b8bdafdab3593e80cbe977672c0505473c7659",
+    "main": "f08bfea94e587f2a08a9bfc002b8bdafdab3593e80cbe977672c0505473c7659"
+   },
+   "B=128 all-raw": {
+    "final": "2735f3ed6a64a274d6496e12b2c7f70300d96095f02edbb9587fda10d78451bb",
+    "main": "2735f3ed6a64a274d6496e12b2c7f70300d96095f02edbb9587fda10d78451bb"
+   },
+   "B=128 mix": {
+    "final": "ad4ca67819edeea6631e82f82099ff75f89e205889d49259f98751f1d2321cee",
+    "main": "ad4ca67819edeea6631e82f82099ff75f89e205889d49259f98751f1d2321cee"
+   }
+  },
+  {
+   "B=1024 all-binary": {
+    "final": "af669616ee569c58b2594214bf8b7587ac1dce80862acaea354d2ef1c9b34bb2",
+    "main": "af669616ee569c58b2594214bf8b7587ac1dce80862acaea354d2ef1c9b34bb2"
+   },
+   "B=1024 all-raw": {
+    "final": "7a7a1adb0afab95e9244d277b3a3f91d2b52b2813733de2b7b6aae866c733546",
+    "main": "7a7a1adb0afab95e9244d277b3a3f91d2b52b2813733de2b7b6aae866c733546"
+   },
+   "B=1024 mix": {
+    "final": "f6f2734636d0b8dde8b6a14c06c7fa230c8571604d58c7da9a17df7bc3503e5e",
+    "main": "f6f2734636d0b8dde8b6a14c06c7fa230c8571604d58c7da9a17df7bc3503e5e"
+   },
+   "B=128 all-binary": {
+    "final": "f08bfea94e587f2a08a9bfc002b8bdafdab3593e80cbe977672c0505473c7659",
+    "main": "f08bfea94e587f2a08a9bfc002b8bdafdab3593e80cbe977672c0505473c7659"
+   },
+   "B=128 all-raw": {
+    "final": "2735f3ed6a64a274d6496e12b2c7f70300d96095f02edbb9587fda10d78451bb",
+    "main": "2735f3ed6a64a274d6496e12b2c7f70300d96095f02edbb9587fda10d78451bb"
+   },
+   "B=128 mix": {
+    "final": "ad4ca67819edeea6631e82f82099ff75f89e205889d49259f98751f1d2321cee",
+    "main": "ad4ca67819edeea6631e82f82099ff75f89e205889d49259f98751f1d2321cee"
+   }
+  }
+ ],
+ "end_snapshot": {
+  "admitted_busy_processes": [
+   "Finder"
+  ],
+  "at_utc": "2026-09-23T17:16:23Z",
+  "loadavg": [
+   6.09619140625,
+   5.45361328125,
+   7.54931640625
+  ],
+  "memory": {
+   "page_size": 16384,
+   "pages_available": 209388
+  }
+ },
+ "measurement_notes": [
+  "run 1 (f6_final_vs_main_timed_20260923T170156Z.json) is INVALID for the MAIN warm cells: its worker performed no untimed warm pass before the clock, so MAIN's first timed cell paid JIT disk-cache load inside the measurement. FINAL warm cells were unaffected (route audit doubled as warm-up). Run 1 raw retained; this record is authoritative."
+ ],
+ "parity_per_cell": {
+  "B=1024 all-binary": {
+   "bitwise_equal": true,
+   "equal_all_reps": true,
+   "final": "af669616ee569c58b2594214bf8b7587ac1dce80862acaea354d2ef1c9b34bb2",
+   "main": "af669616ee569c58b2594214bf8b7587ac1dce80862acaea354d2ef1c9b34bb2"
+  },
+  "B=1024 all-raw": {
+   "bitwise_equal": true,
+   "equal_all_reps": true,
+   "final": "7a7a1adb0afab95e9244d277b3a3f91d2b52b2813733de2b7b6aae866c733546",
+   "main": "7a7a1adb0afab95e9244d277b3a3f91d2b52b2813733de2b7b6aae866c733546"
+  },
+  "B=1024 mix": {
+   "bitwise_equal": true,
+   "equal_all_reps": true,
+   "final": "f6f2734636d0b8dde8b6a14c06c7fa230c8571604d58c7da9a17df7bc3503e5e",
+   "main": "f6f2734636d0b8dde8b6a14c06c7fa230c8571604d58c7da9a17df7bc3503e5e"
+  },
+  "B=128 all-binary": {
+   "bitwise_equal": true,
+   "equal_all_reps": true,
+   "final": "f08bfea94e587f2a08a9bfc002b8bdafdab3593e80cbe977672c0505473c7659",
+   "main": "f08bfea94e587f2a08a9bfc002b8bdafdab3593e80cbe977672c0505473c7659"
+  },
+  "B=128 all-raw": {
+   "bitwise_equal": true,
+   "equal_all_reps": true,
+   "final": "2735f3ed6a64a274d6496e12b2c7f70300d96095f02edbb9587fda10d78451bb",
+   "main": "2735f3ed6a64a274d6496e12b2c7f70300d96095f02edbb9587fda10d78451bb"
+  },
+  "B=128 mix": {
+   "bitwise_equal": true,
+   "equal_all_reps": true,
+   "final": "ad4ca67819edeea6631e82f82099ff75f89e205889d49259f98751f1d2321cee",
+   "main": "ad4ca67819edeea6631e82f82099ff75f89e205889d49259f98751f1d2321cee"
+  }
+ },
+ "primary_cell": "B=1024 mix",
+ "protocol": "amendment-2 launch discipline; per-pair ratios are the verdict basis; marginality within 2x spread",
+ "record": "N9-F6 FINAL vs pinned-main compact comparison",
+ "rep_load_annotations": [
+  {
+   "loadavg_1m_max": 5.39,
+   "order": [
+    "final",
+    "main"
+   ],
+   "rep": 0
+  },
+  {
+   "loadavg_1m_max": 5.28,
+   "order": [
+    "main",
+    "final"
+   ],
+   "rep": 1
+  },
+  {
+   "loadavg_1m_max": 5.28,
+   "order": [
+    "final",
+    "main"
+   ],
+   "rep": 2
+  },
+  {
+   "loadavg_1m_max": 5.42,
+   "order": [
+    "main",
+    "final"
+   ],
+   "rep": 3
+  },
+  {
+   "loadavg_1m_max": 5.42,
+   "order": [
+    "final",
+    "main"
+   ],
+   "rep": 4
+  },
+  {
+   "loadavg_1m_max": 6.1,
+   "order": [
+    "main",
+    "final"
+   ],
+   "rep": 5
+  },
+  {
+   "loadavg_1m_max": 6.1,
+   "order": [
+    "final",
+    "main"
+   ],
+   "rep": 6
+  },
+  {
+   "loadavg_1m_max": 6.1,
+   "order": [
+    "main",
+    "final"
+   ],
+   "rep": 7
+  },
+  {
+   "loadavg_1m_max": 6.1,
+   "order": [
+    "final",
+    "main"
+   ],
+   "rep": 8
+  }
+ ],
+ "reps": 9,
+ "route_audit_final": {
+  "B=1024 all-binary": true,
+  "B=1024 all-raw": false,
+  "B=1024 mix": true,
+  "B=128 all-binary": true,
+  "B=128 all-raw": false,
+  "B=128 mix": true
+ },
+ "samples_ms": {
+  "B=1024 all-binary": {
+   "final": [
+    2.7029,
+    2.898,
+    2.67,
+    2.5179,
+    2.5368,
+    2.787,
+    2.5342,
+    2.8414,
+    2.8077
+   ],
+   "main": [
+    7.6877,
+    7.236,
+    7.3655,
+    7.5063,
+    7.4957,
+    7.4328,
+    7.4566,
+    7.2679,
+    7.5993
+   ]
+  },
+  "B=1024 all-raw": {
+   "final": [
+    2.963,
+    3.0269,
+    3.0758,
+    2.7172,
+    2.7498,
+    3.193,
+    2.8193,
+    2.862,
+    3.0779
+   ],
+   "main": [
+    3.3578,
+    3.9174,
+    3.5435,
+    3.6902,
+    3.4073,
+    3.5091,
+    3.6389,
+    3.4808,
+    3.5462
+   ]
+  },
+  "B=1024 mix": {
+   "final": [
+    3.6919,
+    3.6652,
+    3.7246,
+    3.6392,
+    3.2653,
+    3.6231,
+    3.2695,
+    3.7273,
+    3.4537
+   ],
+   "main": [
+    6.8709,
+    7.0963,
+    6.5281,
+    6.3563,
+    6.3824,
+    6.8079,
+    6.748,
+    6.3371,
+    6.6996
+   ]
+  },
+  "B=128 all-binary": {
+   "final": [
+    1.6258,
+    1.7205,
+    1.7104,
+    1.4668,
+    1.5277,
+    1.662,
+    1.5885,
+    1.4751,
+    1.6626
+   ],
+   "main": [
+    1.8925,
+    2.1816,
+    1.9969,
+    2.054,
+    1.9673,
+    2.0418,
+    2.0228,
+    2.0046,
+    2.0349
+   ]
+  },
+  "B=128 all-raw": {
+   "final": [
+    1.6066,
+    1.5605,
+    1.6035,
+    1.3732,
+    1.4294,
+    1.4602,
+    1.3523,
+    1.5882,
+    1.5375
+   ],
+   "main": [
+    1.4357,
+    1.4415,
+    1.4339,
+    1.4558,
+    1.6093,
+    1.4232,
+    1.6209,
+    1.3517,
+    1.5007
+   ]
+  },
+  "B=128 mix": {
+   "final": [
+    1.6443,
+    1.782,
+    1.7833,
+    1.7938,
+    1.8697,
+    1.7083,
+    1.5429,
+    1.7977,
+    1.6988
+   ],
+   "main": [
+    1.725,
+    1.8395,
+    1.8429,
+    1.9341,
+    1.7649,
+    1.8146,
+    1.8883,
+    1.7357,
+    1.8455
+   ]
+  }
+ },
+ "shas": {
+  "final": "22876fb6853e6cd10237214bd514b777fe717594",
+  "main": "14e888760727583ef782a4dc0e7a5c7c6e6ff9d1"
+ },
+ "start_snapshot": {
+  "at_utc": "2026-09-23T17:15:37Z",
+  "gate": "pass",
+  "loadavg": [
+   5.140625,
+   5.263671875,
+   7.60400390625
+  ],
+  "memory": {
+   "page_size": 16384,
+   "pages_available": 207692
+  },
+  "rule": "1-min loadavg < 10.0 (amendment-2) AND available >= 92000 pages"
+ },
+ "threads": 4,
+ "utc": "2026-09-23T17:15:37Z",
+ "verdict": {
+  "cells": {
+   "B=1024 all-binary": {
+    "final_median_ms": 2.7029,
+    "main_median_ms": 7.4566,
+    "max_pair": 2.9812,
+    "min_pair": 2.4969,
+    "per_pair_ratio_median": 2.7586,
+    "per_pair_spread": 0.4843,
+    "speedup_main_over_final_median_of_times": 2.7587,
+    "stream_carried": true
+   },
+   "B=1024 all-raw": {
+    "declined_regression_ratio": 0.8362,
+    "final_median_ms": 2.963,
+    "main_median_ms": 3.5435,
+    "max_pair": 1.3581,
+    "min_pair": 1.099,
+    "per_pair_ratio_median": 1.2162,
+    "per_pair_spread": 0.2591,
+    "speedup_main_over_final_median_of_times": 1.1959,
+    "stream_carried": false
+   },
+   "B=1024 mix": {
+    "final_median_ms": 3.6392,
+    "main_median_ms": 6.6996,
+    "max_pair": 2.0639,
+    "min_pair": 1.7002,
+    "per_pair_ratio_median": 1.879,
+    "per_pair_spread": 0.3637,
+    "speedup_main_over_final_median_of_times": 1.841,
+    "stream_carried": true
+   },
+   "B=128 all-binary": {
+    "final_median_ms": 1.6258,
+    "main_median_ms": 2.0228,
+    "max_pair": 1.4003,
+    "min_pair": 1.164,
+    "per_pair_ratio_median": 1.268,
+    "per_pair_spread": 0.2363,
+    "speedup_main_over_final_median_of_times": 1.2442,
+    "stream_carried": true
+   },
+   "B=128 all-raw": {
+    "declined_regression_ratio": 1.0666,
+    "final_median_ms": 1.5375,
+    "main_median_ms": 1.4415,
+    "max_pair": 1.1986,
+    "min_pair": 0.8511,
+    "per_pair_ratio_median": 0.9747,
+    "per_pair_spread": 0.3475,
+    "speedup_main_over_final_median_of_times": 0.9376,
+    "stream_carried": false
+   },
+   "B=128 mix": {
+    "final_median_ms": 1.782,
+    "main_median_ms": 1.8395,
+    "max_pair": 1.2239,
+    "min_pair": 0.9439,
+    "per_pair_ratio_median": 1.0491,
+    "per_pair_spread": 0.2799,
+    "speedup_main_over_final_median_of_times": 1.0323,
+    "stream_carried": true
+   }
+  },
+  "cold": {
+   "bound": 1.03,
+   "cell": "B=1024 mix",
+   "final_cold_median_ms": 2238.2288,
+   "final_cold_over_final_warm": 629.2462,
+   "final_over_main_median": 0.9226,
+   "label": "MARGINAL",
+   "main_cold_median_ms": 2467.872,
+   "main_cold_over_main_warm": 404.8014,
+   "metric": "cold full-entry (fresh JIT cache per sample), paired",
+   "per_sample_ratios": [
+    1.0153,
+    0.9226,
+    0.9069
+   ],
+   "per_sample_spread": 0.1084,
+   "samples_final_ms": [
+    2545.395,
+    2237.2804,
+    2238.2288
+   ],
+   "samples_main_ms": [
+    2506.9922,
+    2425.0325,
+    2467.872
+   ]
+  },
+  "declined_cells_max_regression_ratio": 1.0666,
+  "gates": {
+   "cold_marginal": true,
+   "cold_within_3pct": true,
+   "declined_within_3pct": false,
+   "parity_bitwise_all_cells": true,
+   "pre_committed_rule_triggered": false
+  },
+  "geomean_speedup_carried_median_of_times": 1.5981,
+  "marginal_labels": [
+   "B=128 all-binary: winning margin within 2x per-pair spread -> MARGINAL, not a clear pass",
+   "B=128 mix: winning margin within 2x per-pair spread -> MARGINAL, not a clear pass"
+  ],
+  "note": "cold or declined-cell regression beyond the inherited 3% bound; see gates",
+  "parity": "Ldown+Lside bitwise (uint32 sha256) FINAL == MAIN on all 6 cells",
+  "plain_boolean_restoration": "NOT_TRIGGERED (stream wins its carried cells at budget 1)",
+  "record": "N9-F6 verdict: shipped FINAL default vs pinned main at shipped defaults (tw=1)",
+  "recorded_utc": "2026-09-23T17:16:23Z",
+  "shas": {
+   "final": "22876fb6853e6cd10237214bd514b777fe717594",
+   "main": "14e888760727583ef782a4dc0e7a5c7c6e6ff9d1"
+  },
+  "terminal_label": "GATE_FAILURE",
+  "verdict_basis": "per-pair ratios (median of paired per-rep MAIN/FINAL ratios), median-of-times ratios reported alongside"
+ }
+}

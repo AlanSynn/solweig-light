@@ -1,0 +1,26 @@
+{
+  "schema": "solweig-backend-packet-provenance-v1",
+  "date": "2026-09-21",
+  "repository": "AlanSynn/solweig-light",
+  "required_branch": "perf/cpu-optimization",
+  "historical_review_commit": "4689421c81a9dc9ad5e047bd7ff1dcdd704483b9",
+  "branch_rechecked_commit": "7a37a6f59924aa4c13444c977991d7f731ba5e8e",
+  "model_api_ancestry": "0d7fe742abeeddd890dd58fc76ed7f78bd47faec",
+  "rechecked_files": [
+    {
+      "path": "src/solweig_light/radiation/cylinder_longwave.py",
+      "git_blob_sha": "27ba6ce48454399c7b97285c8408511d050a32da",
+      "read_lines": [
+        85,
+        210
+      ],
+      "matches_prior_observed_blob": true
+    }
+  ],
+  "full_current_source_audit_executed": false,
+  "solweig_execution_by_packet_author": false,
+  "backend_benchmark_executed": false,
+  "claude_agent_executed": false,
+  "user_repository_modified": false,
+  "scope_note": "Branch metadata and the nominated reducer were re-read through GitHub. Full runtime/framework validation is pending execution of this packet. The prior survey is included as historical design, not benchmark evidence."
+}

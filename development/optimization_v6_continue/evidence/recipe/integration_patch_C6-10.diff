@@ -1,0 +1,117 @@
+diff --git a/src/solweig_light/geometry/service.py b/src/solweig_light/geometry/service.py
+--- a/src/solweig_light/geometry/service.py
++++ b/src/solweig_light/geometry/service.py
+@@ -15,8 +15,9 @@ import numpy as np
+ 
+ from ..cache import GeometryStore, content_fingerprint, validate_legacy_geometry, SVF_FIELDS, VISIBILITY_FIELDS
+ from ..cache.geometry import _lock, canonical_json, _manifest_digest, _read_json
+-from ..identities import geometry_identity, InputGuard
++from ..identities import InputGuard
+ from ..runtime import get_runtime_options, plan_admission
++from .recipe import numerical_geometry_recipe
+ from .shadows import create_patches
+ from .svf import svf_calculator_compact, save_svf_zip_npz_outputs
+ from .visibility import import_visibility_npz, DEFAULT_WORKSPACE_BYTES
+@@ -59,30 +60,6 @@ def _destination_locks(destinations):
+             handle.close()
+ 
+ 
+-def _producer(paths, patch_option, template):
+-    from osgeo import gdal
+-    a = template.GetRasterBand(1).ReadAsArray().astype(np.float32)
+-    def read(path):
+-        dataset = gdal.Open(str(path))
+-        try:
+-            return dataset.ReadAsArray().astype(np.float32)
+-        finally:
+-            dataset = None
+-    tree, dem = read(paths['Trees']), read(paths['DEM'])
+-    scale = 1 / template.GetGeoTransform()[1]
+-    tree[tree < 0] = 0
+-    height = tree + dem
+-    trunkheight = tree * np.float32(.25) + dem
+-    bush = np.logical_not(trunkheight * height) * height
+-    vegdem = tree + a
+-    vegdem[vegdem == a] = 0
+-    vegdem2 = tree * np.float32(.25) + a
+-    vegdem2[vegdem2 == a] = 0
+-    amaxvalue = np.maximum(a.max(), height.max())
+-    values = svf_calculator_compact(patch_option, amaxvalue, a, vegdem, vegdem2, bush, scale, save_rasters=False)
+-    return dict(zip(RESULT_NAMES, values))
+-
+-
+ def _schema(template, patch_option):
+     from osgeo import gdal
+     # Ask the installed GTiff driver for the exact defaults used by the legacy
+@@ -276,10 +253,13 @@ def prepare_geometry_exports(preprocess_dir, tile, paths, patch_option, overwrit
+     guard.check()
+     output = Path(preprocess_dir) / 'SVF'
+     output.mkdir(parents=True, exist_ok=True)
+-    identity = geometry_identity(paths, patch_option)
++    recipe = numerical_geometry_recipe(paths, patch_option)
+     guard.check()
+-    identity['construction'] = 'standalone-svf-v1'
+-    identity['standalone_implementation'] = content_fingerprint(__file__)
++    # Export-operation provenance is separate from the numerical recipe that
++    # keys native production; extending the export identity never changes the
++    # native key, so both routes produce under one shared key.
++    identity = recipe.export_identity(construction='standalone-svf-v1',
++                                      exporter_implementation=content_fingerprint(__file__))
+     artifacts = {'svfs': output / f'svfs_{tile}.zip', 'shadowmats': output / f'shadowmats_{tile}.npz',
+                  'svftotal': output / f'SkyViewFactor_{tile}.tif'}
+     control = Path(preprocess_dir) / '.solweig-light' / 'export-manifests'
+@@ -298,14 +278,14 @@ def prepare_geometry_exports(preprocess_dir, tile, paths, patch_option, overwrit
+                     return existing
+             def producer():
+                 guard.check()
+-                fields = _producer(paths, patch_option, template)
++                fields = recipe.produce()
+                 guard.check()
+                 return fields
+             def publish(cache_hit):
+                 guard.check()
+                 return _publish_manifest(manifest_path, identity, artifacts, schema, cache_hit)
+             store = GeometryStore(runtime.cache_dir or Path(preprocess_dir) / '.solweig-light' / 'cache')
+-            handle = store.get_or_create(identity, producer) if runtime.cache_enabled else None
++            handle = store.get_or_create(recipe.identity, producer) if runtime.cache_enabled else None
+             try:
+                 fields = handle.fields if handle is not None else producer()
+                 cache_hit = handle.hit if handle is not None else False
+
+diff --git a/src/solweig_light/pipeline.py b/src/solweig_light/pipeline.py
+--- a/src/solweig_light/pipeline.py
++++ b/src/solweig_light/pipeline.py
+@@ -159,11 +159,15 @@ def _run_tile(base_path, preprocess_dir, selected_date_str, tile, paths, flags,
+     cache_available = all((svf_dir / name).is_file() for name in
+                           (f"SkyViewFactor_{tile}.tif", f"svfs_{tile}.zip", f"shadowmats_{tile}.npz"))
+     from .cache import GeometryStore, load_legacy_geometry, content_fingerprint
+-    from .identities import geometry_identity, simulation_identity
++    from .identities import simulation_identity
+     from .geometry.svf import save_svf_zip_npz_outputs
+     from .geometry.shadows import create_patches
++    from .geometry.recipe import numerical_geometry_recipe, guarded_producer
+ 
+-    geometry_key = geometry_identity(paths, 2)
++    # One shared numerical recipe with the standalone route: same identity,
++    # same native key, one production per logical tile when caching is on.
++    recipe = numerical_geometry_recipe(paths, 2)
++    geometry_key = recipe.identity
+     input_guard.check()
+     geometry = None
+     legacy_guard = None
+@@ -175,13 +179,10 @@ def _run_tile(base_path, preprocess_dir, selected_date_str, tile, paths, flags,
+             patch_count=int(np.sum(create_patches(2)[4])), geotransform=metadata.transform,
+             projection=metadata.projection)
+         legacy_guard.check()
+-        geometry_key['trusted_legacy'] = legacy_guard.fingerprints
++        geometry_key = dict(geometry_key, trusted_legacy=legacy_guard.fingerprints)
+ 
+     def produce_geometry():
+-        values = svf_calculator(2, scene.amaxvalue, scene.dsm, scene.vegdsm, scene.vegdsm2, scene.bush, scene.scale,
+-                                save_rasters=False)
+-        input_guard.check()
+-        return dict(zip(SVF_NAMES, values))
++        return guarded_producer(recipe, input_guard.check)()
+ 
+     if geometry is None:
+         if runtime.cache_enabled:

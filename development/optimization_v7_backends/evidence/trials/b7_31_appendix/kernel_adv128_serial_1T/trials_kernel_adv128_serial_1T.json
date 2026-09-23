@@ -1,0 +1,120 @@
+{
+ "schema": "solweig-v7-abc-trials-v1",
+ "config": {
+  "rounds": 1,
+  "reps": 4,
+  "adapters": {
+   "A": "/Users/alansynn/Workspace/solweig-light/tools/optimization_v7/adapter_a.py",
+   "C_native": "/Users/alansynn/Workspace/solweig-light/tools/optimization_v7/adapter_c_native.py",
+   "C_drjit": "/Users/alansynn/Workspace/solweig-light/tools/optimization_v7/adapter_c_drjit.py"
+  },
+  "env": {
+   "NUMBA_NUM_THREADS": "1"
+  },
+  "out": "/Users/alansynn/Workspace/solweig-light/optimization_v7_backends/evidence/trials/b7_31_appendix/kernel_adv128_serial_1T",
+  "label": "kernel_adv128_serial_1T",
+  "order": [
+   "C_drjit",
+   "A",
+   "C_native"
+  ]
+ },
+ "spec_boundary": "kernel_only",
+ "trials": [
+  {
+   "variant": "C_drjit",
+   "boundary": "kernel_only",
+   "reps": 4,
+   "identity": {
+    "variant": "C_drjit_llvm_symbolic",
+    "drjit": "1.5.0",
+    "loop_mode": "symbolic",
+    "thread_count": 1,
+    "requested_env_NUMBA_NUM_THREADS": "1",
+    "adapter_sha256": "592d12a2f265fa8beb67c996f619ab3defefe22dd748340cb2ad7d9fb5b21fdd",
+    "numpy": "2.4.6",
+    "boundary_note": "kernel_only == adapter_total (pack inside adapter)"
+   },
+   "supported": true,
+   "samples_s": [
+    0.0008935410296544433,
+    0.00046154193114489317,
+    0.0006497909780591726,
+    0.0004946249537169933
+   ],
+   "output_bits_sha256": "f3c434b2c93a5788a64cbd9bca66bb4b3980f7b012c3050df1cc0b1a975db678",
+   "rejected_reason": null,
+   "output_shape": [
+    128,
+    7
+   ],
+   "output_dtype": "float32",
+   "round": 0
+  },
+  {
+   "variant": "A",
+   "boundary": "kernel_only",
+   "reps": 4,
+   "identity": {
+    "variant": "A_baseline_numba",
+    "numba": "0.67.0",
+    "numpy": "2.4.6",
+    "effective_num_threads": 1,
+    "threading_layer": null,
+    "requested_env_NUMBA_NUM_THREADS": "1",
+    "kernels": [
+     "_longwave_primary (parallel prange)",
+     "_longwave_primary_serial"
+    ]
+   },
+   "supported": true,
+   "samples_s": [
+    0.08321395900566131,
+    0.00018733309116214514,
+    0.00017479201778769493,
+    0.0001698340056464076
+   ],
+   "output_bits_sha256": "f3c434b2c93a5788a64cbd9bca66bb4b3980f7b012c3050df1cc0b1a975db678",
+   "rejected_reason": null,
+   "output_shape": [
+    128,
+    7
+   ],
+   "output_dtype": "float32",
+   "round": 0
+  },
+  {
+   "variant": "C_native",
+   "boundary": "kernel_only",
+   "reps": 4,
+   "identity": {
+    "variant": "C_native_ispc_g8",
+    "gang": 8,
+    "effective_threads": 1,
+    "thread_control_method": "none (synchronous single-thread kernel)",
+    "adapter": "lw_native.primary as-shipped (no chunking)",
+    "binary_sha256": {
+     "liblw_native_g4.dylib": "1062373e5e3822ff4463c8327512c9156cac908b04173bbeffbf45903764201f",
+     "liblw_native_g8.dylib": "eb1071fcef64e5763839b65240986e9519d3de1906cf821925d1e0922582b46a"
+    },
+    "adapter_sha256": "a1ce7547562a44a9548f9c34ccd3c3f0f0c5aaac4ed130975eb894bbe562ddd6",
+    "numpy": "2.4.6"
+   },
+   "supported": true,
+   "samples_s": [
+    0.00012833403889089823,
+    8.304195944219828e-05,
+    0.00012633309233933687,
+    9.529199451208115e-05
+   ],
+   "output_bits_sha256": "f3c434b2c93a5788a64cbd9bca66bb4b3980f7b012c3050df1cc0b1a975db678",
+   "rejected_reason": null,
+   "output_shape": [
+    128,
+    7
+   ],
+   "output_dtype": "float32",
+   "round": 0
+  }
+ ]
+}

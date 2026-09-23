@@ -1,0 +1,71 @@
+{
+  "commit": "e7a2d6ec8594b234820e7783e0ca26d821de7f3d",
+  "fixture": "tests/reference/small_original_cpu/scene/processed_inputs",
+  "tile": "0_0",
+  "threads": 1,
+  "instrumentation": [
+    "tracemalloc",
+    "resource.ru_maxrss",
+    "sampling-thread"
+  ],
+  "numerics_altered": false,
+  "run_dir": "system temp (cleaned)",
+  "rss_before_mib": 19.71875,
+  "wall_seconds": 14.813,
+  "tracemalloc_peak_mib": 64.62,
+  "tracemalloc_end_mib": 55.109,
+  "rss_peak_mib_sampled": 219.4,
+  "rss_peak_mib_final": 256.8,
+  "top_allocation_sites": [
+    {
+      "site": "<frozen importlib._bootstrap_external>:729",
+      "size_mib": 22.724,
+      "count": 174225
+    },
+    {
+      "site": "<frozen importlib._bootstrap>:241",
+      "size_mib": 6.818,
+      "count": 44962
+    },
+    {
+      "site": "<frozen abc>:106",
+      "size_mib": 4.769,
+      "count": 15744
+    },
+    {
+      "site": "_array_api.py:847",
+      "size_mib": 1.104,
+      "count": 172
+    },
+    {
+      "site": "<frozen abc>:123",
+      "size_mib": 0.726,
+      "count": 6724
+    },
+    {
+      "site": "<frozen abc>:107",
+      "size_mib": 0.692,
+      "count": 4814
+    },
+    {
+      "site": "templates.py:1184",
+      "size_mib": 0.565,
+      "count": 2075
+    },
+    {
+      "site": "context.py:548",
+      "size_mib": 0.391,
+      "count": 2560
+    },
+    {
+      "site": "<frozen importlib._bootstrap_external>:746",
+      "size_mib": 0.307,
+      "count": 221
+    },
+    {
+      "site": "templates.py:898",
+      "size_mib": 0.294,
+      "count": 5235
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+C6-20 integration patch recipe (PROPOSAL - engine.py is integrator-owned)
+
+Target: src/solweig_light/radiation/engine.py, single call site of
+Lside_veg_v2022a inside Solweig_2022a_calc (line ~1658 at worktree head
+5e1fab467f7e6038dcf3992cb694008a51ea2c58), plus one module-level import.
+
+Behavior when integrated:
+
+* No wrapper, no context, or ``FULL_DIAGNOSTICS`` demand: the call routes to
+  the untouched ``Lside_veg_v2022a``; public behavior is bit-identical
+  (verified by tests/optimization_v6/lside/test_lside_fallback_and_profile.py).
+* The private TIFF driver opts in per run by wrapping the radiation stage:
+
+      from solweig_light.pipeline... # driver side, integrator-owned placement
+      from solweig_light.radiation.pipeline_demand import (
+          RadiationDemand, radiation_demand,
+      )
+      with radiation_demand(RadiationDemand.PIPELINE_CYLINDER_ANISOTROPIC):
+          # per-timestep Solweig_2022a_calc calls for the admitted profile
+          ...
+
+  The demand is thread-local; each tile/worker thread must wrap its own stage.
+  Requesting the reduced profile while ``anisotropic_sky != 1`` still falls
+  back to the full original isotropic branch (never reduced silently).
+
+Diff proposal (unified, generated against 5e1fab46; the integrator may place
+the import differently, e.g. function-local, without semantic change):
+
+--- a/src/solweig_light/radiation/engine.py
++++ b/src/solweig_light/radiation/engine.py
+@@ -25,6 +25,11 @@
+ from osgeo import gdal, osr
+ import datetime
+ import calendar
++# C6-20 private demand dispatcher. pipeline_demand imports engine
++# lazily inside its functions, so this module-level import is cycle-free.
++from .pipeline_demand import current_demand, lside_veg_v2022a_demanded
+ import scipy.ndimage.interpolation as sc
+ from scipy.ndimage import rotate
+ from solweig_light.geometry.shadows import create_patches
+@@ -1658,7 +1663,8 @@
+-    Least, Lsouth, Lwest, Lnorth = Lside_veg_v2022a(svfS, svfW, svfN, svfE, svfEveg, svfSveg, svfWveg, svfNveg, svfEaveg, svfSaveg, svfWaveg, svfNaveg, azimuth.item(), altitude.item(), Ta, Tgwall, SBC, ewall, Ldown, esky, t, F_sh, CI, LupE, LupS, LupW, LupN, anisotropic_sky)
++    Least, Lsouth, Lwest, Lnorth = lside_veg_v2022a_demanded(svfS, svfW, svfN, svfE, svfEveg, svfSveg, svfWveg, svfNveg, svfEaveg, svfSaveg, svfWaveg, svfNaveg, azimuth.item(), altitude.item(), Ta, Tgwall, SBC, ewall, Ldown, esky, t, F_sh, CI, LupE, LupS, LupW, LupN, anisotropic_sky, demand=current_demand())
+
+Integration gates before promotion (dossier 09 acceptance bundle):
+* C6-20 independent review of evidence/lside/.
+* L2 real-TIFF run with the reduced profile: every carried map and demanded
+  radiation field compared at every timestep; the four Lside returns must be
+  bitwise; no diagnostic field may be compared as if generated (the profile
+  marks them NOT_REQUESTED).
+* FULL_DIAGNOSTIC API tests keep running unchanged on the integrated tree.
+
+Note: apply the import hunk with the surrounding import order kept intact;
+the hunk context above is indicative, the call-site hunk is exact for head
+5e1fab46.  If other workers' changes moved the line, relocate by the unique
+call text ``Least, Lsouth, Lwest, Lnorth = Lside_veg_v2022a(``.

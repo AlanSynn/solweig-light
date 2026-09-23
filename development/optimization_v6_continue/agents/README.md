@@ -1,0 +1,3 @@
+# Optional role definitions
+
+Reuse the existing working Claude Code setup. Install only needed definitions after checking current client schema and actual model routes. No automatic settings or credential edits. No native `isolation: worktree` field: explicit detached worktree preparation is required to avoid default-branch starts. These roles do not cap simultaneous independent tasks. `opus` is valid only on a verified real Opus route; a GLM alias is not an Anthropic review. Always-loaded root instructions should import only CLAUDE_PROJECT_RULES.md, not every dossier. Do not automatically overwrite root CLAUDE.md or existing v5 agents.

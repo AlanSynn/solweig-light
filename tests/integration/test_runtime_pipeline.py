@@ -17,7 +17,7 @@ from solweig_light.runtime import RuntimeOptions, runtime_options
 
 ROOT = Path(__file__).resolve().parents[2]
 REFERENCE = ROOT / 'tests/reference/small_original_cpu/scene'
-PROTOCOL = json.loads((ROOT / 'benchmarks/protocols/comparison_v1.json').read_text())
+PROTOCOL = json.loads((ROOT / 'development/benchmarks/protocols/comparison_v1.json').read_text())
 FLAGS = {f'save_{name}': True for name in
          ('tmrt', 'kup', 'kdown', 'lup', 'ldown', 'shadow', 'wbgt', 'ta', 'wind')}
 

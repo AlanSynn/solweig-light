@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 
-_PATH = Path(__file__).resolve().parents[2] / "tools/summarize_exact_cpu_pairs.py"
+_PATH = Path(__file__).resolve().parents[2] / "development/tools/summarize_exact_cpu_pairs.py"
 _SPEC = importlib.util.spec_from_file_location("exact_pair_statistics", _PATH)
 statistics_tool = importlib.util.module_from_spec(_SPEC)
 _SPEC.loader.exec_module(statistics_tool)

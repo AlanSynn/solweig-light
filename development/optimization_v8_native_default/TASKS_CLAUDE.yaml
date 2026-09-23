@@ -1,0 +1,540 @@
+{
+  "schema": "solweig-native-default-tasks-v1",
+  "format_note": "JSON-compatible YAML 1.2",
+  "status": "specification_only",
+  "branch": "perf/native-optimization",
+  "tasks": [
+    {
+      "id": "N8-00",
+      "title": "Pin current branch, baseline closures and actual model routes",
+      "status": "pending",
+      "depends_on": [],
+      "role": "coordinator",
+      "dossier": "DESIGN_AUTHORITY.md",
+      "owned_scope": [
+        "optimization_v8_native_default/evidence/inventory/"
+      ],
+      "gate": [
+        "same branch and dirty paths recorded",
+        "no source reset or provider/credential edits"
+      ]
+    },
+    {
+      "id": "N8-01",
+      "title": "Freeze main DX/API/install contract",
+      "status": "pending",
+      "depends_on": [
+        "N8-00"
+      ],
+      "role": "dx_owner",
+      "dossier": "DX_CONTRACT.md",
+      "owned_scope": [
+        "tests/optimization_v8/dx/",
+        "optimization_v8_native_default/evidence/dx_baseline/"
+      ],
+      "gate": [
+        "actual main defaults including block size captured",
+        "source snapshot distinguished from runtime behavior"
+      ]
+    },
+    {
+      "id": "N8-02",
+      "title": "Measure actual packed worker boundary and entry counts",
+      "status": "pending",
+      "depends_on": [
+        "N8-00"
+      ],
+      "role": "performance_owner",
+      "dossier": "dossiers/01_measurement_and_loader.md",
+      "owned_scope": [
+        "tools/optimization_v8/",
+        "optimization_v8_native_default/evidence/profile/"
+      ],
+      "gate": [
+        "actual C entry and fallback counters",
+        "loader/region/IO and process-tree memory separated"
+      ]
+    },
+    {
+      "id": "N8-03",
+      "title": "Freeze small protocols, held-outs and promotion gates",
+      "status": "pending",
+      "depends_on": [
+        "N8-01",
+        "N8-02"
+      ],
+      "role": "performance_owner",
+      "dossier": "BENCHMARK_PROTOCOL.md",
+      "owned_scope": [
+        "benchmarks/protocols/optimization_v8/"
+      ],
+      "gate": [
+        "before new candidate performance",
+        "A0 B1 C1 and default/tuned cases fixed"
+      ]
+    },
+    {
+      "id": "N8-04",
+      "title": "Freeze typed LW and owner/ABI contract",
+      "status": "pending",
+      "depends_on": [
+        "N8-00"
+      ],
+      "role": "numerical_owner",
+      "dossier": "KERNEL_CONTRACT.md",
+      "owned_scope": [
+        "tests/optimization_v8/reference/",
+        "optimization_v8_native_default/evidence/contract/"
+      ],
+      "gate": [
+        "f32/f64 graph and both sweeps",
+        "prior goldens not overwritten"
+      ]
+    },
+    {
+      "id": "N8-10",
+      "title": "Move native preparation into workflow-owned handle",
+      "status": "pending",
+      "depends_on": [
+        "N8-03",
+        "N8-04"
+      ],
+      "role": "loader_worker",
+      "dossier": "dossiers/01_measurement_and_loader.md",
+      "owned_scope": [
+        "experiments/optimization_v8/loader/",
+        "tests/optimization_v8/loader/"
+      ],
+      "gate": [
+        "zero per-block source hash/JSON/build IO",
+        "PID generation lifetime and error taxonomy tested"
+      ]
+    },
+    {
+      "id": "N8-11",
+      "title": "Produce final AoSoA layout directly",
+      "status": "pending",
+      "depends_on": [
+        "N8-03",
+        "N8-04"
+      ],
+      "role": "layout_worker",
+      "dossier": "dossiers/02_direct_aosoa.md",
+      "owned_scope": [
+        "experiments/optimization_v8/layout/",
+        "tests/optimization_v8/layout/"
+      ],
+      "gate": [
+        "exact raw/binary/ternary layout tails",
+        "no invisible full-payload flatten/copy"
+      ]
+    },
+    {
+      "id": "N8-12",
+      "title": "Build strongest producer-matched Numba control",
+      "status": "pending",
+      "depends_on": [
+        "N8-11"
+      ],
+      "role": "numba_worker",
+      "dossier": "dossiers/02_direct_aosoa.md",
+      "owned_scope": [
+        "experiments/optimization_v8/numba/"
+      ],
+      "gate": [
+        "same region and layout as C",
+        "adapter cost counted"
+      ]
+    },
+    {
+      "id": "N8-13",
+      "title": "Implement native consumer of direct layout",
+      "status": "pending",
+      "depends_on": [
+        "N8-10",
+        "N8-11"
+      ],
+      "role": "native_worker",
+      "dossier": "dossiers/02_direct_aosoa.md",
+      "owned_scope": [
+        "experiments/optimization_v8/native/",
+        "tests/optimization_v8/native/"
+      ],
+      "gate": [
+        "both exact scalar profiles",
+        "ISA and generated FP operations audited"
+      ]
+    },
+    {
+      "id": "N8-14",
+      "title": "Add coarse region and single bounded multicore owner",
+      "status": "pending",
+      "depends_on": [
+        "N8-12",
+        "N8-13"
+      ],
+      "role": "region_worker",
+      "dossier": "dossiers/03_region_multicore.md",
+      "owned_scope": [
+        "experiments/optimization_v8/region/",
+        "tests/optimization_v8/region/"
+      ],
+      "gate": [
+        "microblock scratch independent from dispatch size",
+        "same CPU budget and cancellation ownership"
+      ]
+    },
+    {
+      "id": "N8-16",
+      "title": "Conditional exact longwave predicate cache",
+      "status": "pending",
+      "depends_on": [
+        "N8-04",
+        "N8-11"
+      ],
+      "role": "predicate_worker",
+      "dossier": "dossiers/04_predicate_state.md",
+      "owned_scope": [
+        "experiments/optimization_v8/predicates/",
+        "tests/optimization_v8/predicates/"
+      ],
+      "gate": [
+        "factorization proof over admitted domain",
+        "original visibility/export and memory kept"
+      ],
+      "activate_when": "actual decode/predicate residual and crossover justify preparation"
+    },
+    {
+      "id": "N8-17",
+      "title": "Conditional exact classifier/contribution reuse",
+      "status": "pending",
+      "depends_on": [
+        "N8-04",
+        "N8-11"
+      ],
+      "role": "numerical_worker",
+      "dossier": "dossiers/04_predicate_state.md",
+      "owned_scope": [
+        "experiments/optimization_v8/tables/"
+      ],
+      "gate": [
+        "original f64 intermediates retained",
+        "not a repeat of R04/G06"
+      ],
+      "activate_when": "current residual remains material and finite-state table is exact"
+    },
+    {
+      "id": "N8-18",
+      "title": "Conditional stored-export traversal/phase improvement",
+      "status": "pending",
+      "depends_on": [
+        "N8-02",
+        "N8-03"
+      ],
+      "role": "storage_worker",
+      "dossier": "dossiers/05_export_and_phase.md",
+      "owned_scope": [
+        "experiments/optimization_v8/storage/",
+        "tests/optimization_v8/storage/"
+      ],
+      "gate": [
+        "CRC/schema/bit value checks all preserved",
+        "ordered failure/publication and bounded disk queues"
+      ],
+      "activate_when": "cold residual is large enough; selected independent of native claim"
+    },
+    {
+      "id": "N8-19",
+      "title": "Optional heterogeneous residency-region experiment",
+      "status": "pending",
+      "depends_on": [
+        "N8-03",
+        "N8-04"
+      ],
+      "role": "gpu_worker",
+      "dossier": "dossiers/07_gpu_future.md",
+      "owned_scope": [
+        "experiments/optimization_v8/gpu/"
+      ],
+      "gate": [
+        "actual device precision/capability",
+        "full transfer/sync boundary and separate CPU outcome"
+      ],
+      "activate_when": "reviewed CPU residual plus actual available device and useful cost estimate"
+    },
+    {
+      "id": "N8-20",
+      "title": "Prepare source-fallback and bundled-native wheel build",
+      "status": "pending",
+      "depends_on": [
+        "N8-01",
+        "N8-04"
+      ],
+      "role": "packaging_worker",
+      "dossier": "PACKAGING_AND_DISTRIBUTION.md",
+      "owned_scope": [
+        "experiments/optimization_v8/packaging/",
+        "tests/optimization_v8/packaging/"
+      ],
+      "gate": [
+        "same package and user commands",
+        "no new runtime compiler/download dependency"
+      ]
+    },
+    {
+      "id": "N8-21",
+      "title": "Trusted installed-artifact loader",
+      "status": "pending",
+      "depends_on": [
+        "N8-10",
+        "N8-20"
+      ],
+      "role": "loader_worker",
+      "dossier": "ARCHITECTURE.md",
+      "owned_scope": [
+        "experiments/optimization_v8/artifacts/"
+      ],
+      "gate": [
+        "content/ABI/ISA/profile before load",
+        "auto never enters legacy developer builder"
+      ]
+    },
+    {
+      "id": "N8-22",
+      "title": "Prepare disabled-by-default qualification policy selector",
+      "status": "pending",
+      "depends_on": [
+        "N8-03",
+        "N8-21"
+      ],
+      "role": "policy_worker",
+      "dossier": "dossiers/06_default_dispatch.md",
+      "owned_scope": [
+        "experiments/optimization_v8/policy/",
+        "tests/optimization_v8/policy/"
+      ],
+      "gate": [
+        "legacy explicit overrides preserved",
+        "no example rows promoted"
+      ]
+    },
+    {
+      "id": "N8-23",
+      "title": "Implement installed no-env and source-DX tests",
+      "status": "pending",
+      "depends_on": [
+        "N8-01",
+        "N8-20"
+      ],
+      "role": "dx_owner",
+      "dossier": "DX_CONTRACT.md",
+      "owned_scope": [
+        "tests/optimization_v8/installed/"
+      ],
+      "gate": [
+        "main-style no-env API and CLI",
+        "no compiler native wheel and labelled source fallback"
+      ]
+    },
+    {
+      "id": "N8-30",
+      "title": "Completion-triggered independent review service",
+      "status": "pending",
+      "depends_on": [
+        "N8-03",
+        "N8-04"
+      ],
+      "role": "independent_reviewer",
+      "dossier": "VALIDATION_POLICY.md",
+      "owned_scope": [
+        "optimization_v8_native_default/evidence/reviews/"
+      ],
+      "gate": [
+        "each candidate has immutable reviewed diff",
+        "author and reviewer differ"
+      ],
+      "service_rule": "Invoked for each completed artifact. This node does not approve all future patches. Changed artifact invalidates affected review."
+    },
+    {
+      "id": "N8-31",
+      "title": "Exclusive small region/pipeline A B C comparisons",
+      "status": "pending",
+      "depends_on": [
+        "N8-12",
+        "N8-14",
+        "N8-30"
+      ],
+      "role": "performance_owner",
+      "dossier": "BENCHMARK_PROTOCOL.md",
+      "owned_scope": [
+        "optimization_v8_native_default/evidence/trials/"
+      ],
+      "gate": [
+        "reviewed exact candidates only",
+        "actual pool and boundary overhead measured"
+      ],
+      "per_variant_requires": "N8-16/17/18/19 variants require their own completed code, review and matched baseline; unavailable variants are not counted as passed."
+    },
+    {
+      "id": "N8-32",
+      "title": "Select minimum useful portfolio",
+      "status": "pending",
+      "depends_on": [
+        "N8-31"
+      ],
+      "role": "coordinator",
+      "dossier": "PROMOTION_POLICY.md",
+      "owned_scope": [
+        "optimization_v8_native_default/evidence/selection/"
+      ],
+      "gate": [
+        "native-specific gain vs B",
+        "negative variants and future flip conditions preserved"
+      ]
+    },
+    {
+      "id": "N8-40",
+      "title": "Integrate selected region, identities and resource planner",
+      "status": "pending",
+      "depends_on": [
+        "N8-32",
+        "N8-21",
+        "N8-22"
+      ],
+      "role": "integrator",
+      "dossier": "ARCHITECTURE.md",
+      "owned_scope": [
+        "src/solweig_light/",
+        "pyproject.toml",
+        "compat/"
+      ],
+      "gate": [
+        "public DX and existing compatibility ownership unchanged",
+        "selected default still needs final qualification"
+      ]
+    },
+    {
+      "id": "N8-41",
+      "title": "Build installed binary wheel and compiler-free source variant",
+      "status": "pending",
+      "depends_on": [
+        "N8-40",
+        "N8-23"
+      ],
+      "role": "packaging_worker",
+      "dossier": "PACKAGING_AND_DISTRIBUTION.md",
+      "owned_scope": [
+        "optimization_v8_native_default/evidence/wheels/",
+        "tests/optimization_v8/installed/"
+      ],
+      "gate": [
+        "actual installed origins",
+        "native build cannot silently degrade to pure release wheel"
+      ]
+    },
+    {
+      "id": "N8-42",
+      "title": "Small exact chronology and no-env DX qualification",
+      "status": "pending",
+      "depends_on": [
+        "N8-41"
+      ],
+      "role": "evidence_owner",
+      "dossier": "VALIDATION_POLICY.md",
+      "owned_scope": [
+        "optimization_v8_native_default/evidence/integration/"
+      ],
+      "gate": [
+        "all affected state/intermediate/output gates",
+        "native coverage and fallback exercised"
+      ]
+    },
+    {
+      "id": "N8-43",
+      "title": "Frozen installed-default paired comparison",
+      "status": "pending",
+      "depends_on": [
+        "N8-42"
+      ],
+      "role": "performance_owner",
+      "dossier": "BENCHMARK_PROTOCOL.md",
+      "owned_scope": [
+        "optimization_v8_native_default/evidence/default_trials/"
+      ],
+      "gate": [
+        "ordinary defaults included",
+        "matches A0 and strongest B plus full boundary"
+      ]
+    },
+    {
+      "id": "N8-44",
+      "title": "Issue scoped default certificate or reject promotion",
+      "status": "pending",
+      "depends_on": [
+        "N8-43",
+        "N8-30"
+      ],
+      "role": "independent_reviewer",
+      "dossier": "PROMOTION_POLICY.md",
+      "owned_scope": [
+        "optimization_v8_native_default/evidence/promotion/"
+      ],
+      "gate": [
+        "criteria not loosened",
+        "actual platform/native vs fallback scope explicit"
+      ]
+    },
+    {
+      "id": "N8-50",
+      "title": "Freeze final source/wheel and scale protocol",
+      "status": "pending",
+      "depends_on": [
+        "N8-44"
+      ],
+      "role": "evidence_owner",
+      "dossier": "BENCHMARK_PROTOCOL.md",
+      "owned_scope": [
+        "optimization_v8_native_default/evidence/freeze/"
+      ],
+      "gate": [
+        "actual target availability and references checked",
+        "one final workload/campaign budget"
+      ]
+    },
+    {
+      "id": "N8-51",
+      "title": "Final scale or actual-target campaign",
+      "status": "pending",
+      "depends_on": [
+        "N8-50"
+      ],
+      "role": "performance_owner",
+      "dossier": "VALIDATION_POLICY.md",
+      "owned_scope": [
+        "optimization_v8_native_default/evidence/final/"
+      ],
+      "gate": [
+        "no automatic large repeated matrix",
+        "actual24 vs synthetic4 labels correct"
+      ],
+      "activate_when": "valid data/reference/resources; otherwise unverified"
+    },
+    {
+      "id": "N8-60",
+      "title": "Independent same-branch handover and future residual plan",
+      "status": "pending",
+      "depends_on": [
+        "N8-50"
+      ],
+      "role": "independent_reviewer",
+      "dossier": "FUTURE_OPTIMIZATION.md",
+      "owned_scope": [
+        "optimization_v8_native_default/evidence/handover/"
+      ],
+      "gate": [
+        "N8-51 outcome or unavailable state present",
+        "native goal vs B-only outcome honest; no publication"
+      ]
+    }
+  ]
+}

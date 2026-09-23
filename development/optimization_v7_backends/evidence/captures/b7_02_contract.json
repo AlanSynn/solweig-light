@@ -1,0 +1,49 @@
+{
+  "schema": "solweig-v7-typed-contract-v1",
+  "task": "B7-02",
+  "frozen_at_head": "dca2035c4046ac4387f694a6c7b66967e590500c",
+  "kernel_source_blob": "27ba6ce48454399c7b97285c8408511d050a32da",
+  "environment": {"python": "3.12.13", "numpy": "2.4.6", "numba": "0.67.0", "os": "macOS 26.6.2 arm64"},
+  "artifacts": {
+    "manifest": "optimization_v7_backends/evidence/captures/b7_02_capture_manifest.json",
+    "fixtures": "optimization_v7_backends/evidence/captures/b7_02_fixtures.npz",
+    "typed_ir": "optimization_v7_backends/evidence/captures/b7_02_typed_ir.txt",
+    "replay_test": "tests/optimization_v7/reference/test_v7_contract_freeze.py",
+    "capture_tool": "tools/optimization_v7/capture_longwave_primary.py"
+  },
+  "capture_summary": {
+    "calls": 520,
+    "real_pipeline": "35x32 reference scene, 24 records, 9 blocks/timestep (8x128+1x96), serial-default AND threads_per_worker=4 configurations",
+    "edges": ["P1_default", "adversarial_16/64", "vis_all_zero/two", "lup_nonfinite", "B0_empty", "direct_scalar_f64", "direct_python_float"],
+    "replay_gate": "all 520 calls bitwise-reproduce on baseline at freeze; test passes 5/5"
+  },
+  "real_pipeline_specialization": {
+    "sh_vs_vb": "float32 [B,P] C-contiguous, writeable",
+    "sun_shade": "bool [B,P] C-contiguous",
+    "solid_sine_cosine": "float32 [P] C-contiguous, readonly",
+    "directions": "float32 [P,4] C-contiguous, readonly (unused by primary reducer body)",
+    "gate": "bool [P,4] C-contiguous, readonly (unused by primary reducer body)",
+    "solar_gate": "bool [P] non-contiguous 'A', readonly",
+    "sky_down_sky_side": "float32 [P] NON-CONTIGUOUS stride-12 'A' views (column 2 of [P,3] tables), readonly",
+    "surface_sun_surface_sh": "numpy float64 scalars - CONFIRMED float64 in the real accepted path",
+    "lup": "float32 [B] C-contiguous, readonly",
+    "reflection_factor": "numpy float32 scalar",
+    "output": "float32 [B,7], owned by kernel"
+  },
+  "numerical_consequences": [
+    "sun/shade chains: surface(float64) * bool -> float64; * solid(float32) -> float64; * cosine/sine(float32) -> float64; * building(bool) -> float64; rounded to float32 ONLY at the accum add (np.float32 cast)",
+    "vegetation chains: surface(float64)*solid(float32)->float64 * cosine/sine(float32)->float64 * veg(bool)->float64, rounded at accum add",
+    "sky chains: bool * sky_down/sky_side(float32) -> float32 throughout; accum adds float32",
+    "reflection: A0(float32)+lup(float32)->float32; * factor(float32) -> float32; *0.5f; / pi(float32 bit 0x40490FDB)",
+    "the synthetic wrapper captures additionally froze the all-float32 surface specialization (np.float32 scalars) - BOTH specializations are admitted domains with bitwise fixtures",
+    "no FMA contraction may be introduced in float32->float64 promotion chains or the reflection divide"
+  ],
+  "guard_domains": {
+    "wrapper_guards": "Lcyl_v2022a_primary: non-float32 cube -> fallback; scalar solar_altitude -> TypeError (original failure); P>609 -> fallback; 0<P<=609 admitted",
+    "kernel_admission": "C-contiguous [B,P] float32 visibility, bool classifications, P=1..609, B>=0",
+    "nonfinite": "NaN/Inf payloads flow through as captured; output NaN masks must match bitwise",
+    "fused_route": "SOLWEIG_LIGHT_FUSED_RAD default OFF; OFF in all captures",
+    "patch_class_tables": "SOLWEIG_LIGHT_PATCH_CLASS_TABLES default OFF; OFF in all captures"
+  },
+  "immutable_baseline": "A = _longwave_primary (parallel) / _longwave_primary_serial as-is at frozen HEAD"
+}

@@ -8,7 +8,7 @@ from solweig_light.radiation import engine, patch_radiation
 
 ROOT = Path(__file__).resolve().parents[1] / 'reference/small_original_cpu/boundaries'
 MANIFEST = json.loads((ROOT / 'manifest.json').read_text())
-PROTOCOL = json.loads((ROOT.parents[3] / 'benchmarks/protocols/comparison_v1.json').read_text())
+PROTOCOL = json.loads((ROOT.parents[3] / 'development/benchmarks/protocols/comparison_v1.json').read_text())
 
 def load_input(event, compact=False):
     with np.load(ROOT / event['path']) as archive:

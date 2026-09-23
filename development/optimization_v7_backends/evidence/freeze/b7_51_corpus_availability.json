@@ -1,0 +1,16 @@
+{
+  "schema": "solweig-v7-corpus-availability-v1",
+  "task": "B7-51 (early availability check, 2026-09-22)",
+  "finding": "actual 24-tile 1024^2 corpus ABSENT locally",
+  "evidence": {
+    "largest_real_fixture": "tests/fixtures/generated/p7_real/dense_urban (256x256, 1 met file); siblings real_sparse, real_vegetation_rich also 256-class synthetic/replayed scenes",
+    "protocol_enumeration": "benchmarks/protocols/p7_pairs_v4/manifest.json lists 7 cases; none is a 24-spatial-tile 1024^2 set",
+    "historic_598_9s": "two scenes (p7 real cases), NOT the 24-tile target; matches PLAN.md interpretation fix",
+    "search": "no 1024-side TIFF corpus found under benchmarks/, tests/fixtures/, reports/"
+  },
+  "consequence": [
+    "B7-52 final 24-tile campaign remains BLOCKED -> status actual_target_unverified unless data+references appear before freeze",
+    "per VALIDATION_POLICY: no substituted/duplicated scenes; small-scope completion proceeds independently",
+    "if the user supplies the corpus and references, exactly one frozen campaign may run (plus at most one causal retry)"
+  ]
+}

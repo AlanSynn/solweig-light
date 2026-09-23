@@ -53,7 +53,7 @@ environment.
 
 ## Retained scientific limitations
 
-The compatibility profile retains upstream SVF initialization and float32 ground-view accumulation. The user approved a narrow release exception for four named independent scientific-check failures; they remain recorded as failures, not passes. See [model deviations](model_deviations.md#approved-compatibility-release-exception-inherited-svf-and-umep-failures) and the [evidence-bound policy](../reports/scientific_release_exceptions.json). The separately approved portable-math reference amendment is documented in [portable math profile v1](portable_math_profile.md); release qualification remains incomplete.
+The compatibility profile retains upstream SVF initialization and float32 ground-view accumulation. The user approved a narrow release exception for four named independent scientific-check failures; they remain recorded as failures, not passes. See [model deviations](model_deviations.md#approved-compatibility-release-exception-inherited-svf-and-umep-failures) and the [evidence-bound policy](../development/reports/scientific_release_exceptions.json). The separately approved portable-math reference amendment is documented in [portable math profile v1](portable_math_profile.md); release qualification remains incomplete.
 
 
 The development runtime uses `solweig-portable-sleef-5a1d179d-v1` in both normal and opt-in legacy namespaces, without a Torch or MKL runtime dependency. Geometry and checkpoint identities include its implementation/runtime fingerprint; incompatible old checkpoint state is rejected, and derived geometry is regenerated. OriginalCura/MKL comparisons remain separately labeled rather than promised as universal backend parity.

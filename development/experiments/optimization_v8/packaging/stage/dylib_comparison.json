@@ -1,0 +1,27 @@
+{
+  "record": "N8-20 proof: build_native.py output vs B7 dev-cache dylib",
+  "date_utc": "2026-09-22T20:00:00Z",
+  "driver": "experiments/optimization_v8/packaging/build_native.py",
+  "built_generation": "lw-g8-42aeba6a50dc5937",
+  "built_dylib": "experiments/optimization_v8/packaging/stage/lw-g8-42aeba6a50dc5937/liblw_native_g8.dylib",
+  "b7_cache_dylib": "~/.cache/solweig-light/native/liblw_native_g8.dylib",
+  "comparison": {
+    "driver_dylib_sha256": "eb1071fcef64e5763839b65240986e9519d3de1906cf821925d1e0922582b46a",
+    "b7_cache_dylib_sha256": "eb1071fcef64e5763839b65240986e9519d3de1906cf821925d1e0922582b46a",
+    "byte_identical": true,
+    "asm_sha256_driver": "bbdfdc9588d8349cbf9e554631d682d3313269cc99d4a321f22f5c4957afc0e8",
+    "asm_sha256_b7_cache_build": "bbdfdc9588d8349cbf9e554631d682d3313269cc99d4a321f22f5c4957afc0e8",
+    "asm_byte_identical": true,
+    "bytes": 34280
+  },
+  "why_identical": {
+    "kernel_sha256": "52652a598cd85ead04747a83a52b1184035c880aa0b32cf518efef06b961663c",
+    "kernel_matches_b7_build_stamp": true,
+    "ispc": "1.31.0 (LLVM 22.1.8) -- same pinned binary at /opt/homebrew/bin/ispc in both builds; the pin, not the path, determines the output",
+    "cc": "Apple clang 21.0.0 (clang-2100.1.1.101), /usr/bin/clang",
+    "flags": ["-O2", "--opt=disable-fma", "--math-lib=default", "--pic", "--target=neon-i32x8"],
+    "link": "cwd-scoped relative -o (same LC_ID_DYLIB basename); ld's content-derived UUID is deterministic, so same inputs -> same bytes",
+    "note": "the driver contains NO /opt/homebrew assumption: the pinned ISPC was located the same way the B7 build located it, and identity (version + sha256) is recorded in manifest.json"
+  },
+  "verdict": "REPRODUCIBLE: the maintainer driver reproduces the B7 dev-cache artifact byte-for-byte under the same pinned toolchain"
+}

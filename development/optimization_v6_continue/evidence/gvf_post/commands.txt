@@ -1,0 +1,78 @@
+C6-31 command record — all commands run from worktree
+/Users/alansynn/Workspace/solweig-light-v6-gvfpost (detached HEAD,
+5e1fab467f7e6038dcf3992cb694008a51ea2c58). Python is the absolute venv
+interpreter throughout.
+
+Environment
+-----------
+Python 3.11.16 / numpy 2.4.6 / numba 0.67.0 / Darwin arm64 (macOS 25.6.0)
+Default numba threads in bench runs: 10. The test conftest caps numba threads
+to min(2, current) for determinism (see tests .../gvf_postprocess/conftest.py).
+Routing: GLM via Z.ai (per INVENTORY; no other identity claimed).
+
+Commands and exit codes
+-----------------------
+
+1. Full parity/contract test suite (final post-docstring-edit run):
+   PYTHONPATH=src /Users/alansynn/Workspace/solweig-light/.venv-light/bin/python \
+     -m pytest tests/optimization_v6/gvf_postprocess/ -q
+   -> "125 passed, 84 warnings in 2.10s", exit code 0
+   (the 84 warnings are the expected RuntimeWarnings raised INSIDE the
+   warning-parity and errstate-raise tests exercising divide/invalid paths)
+
+2. Parity table generation (end-to-end + 16 nodes x 30 cases + parallel):
+   PYTHONPATH=src /Users/alansynn/Workspace/solweig-light/.venv-light/bin/python \
+     optimization_v6_continue/evidence/gvf_post/parity_harness.py
+   -> exit code 0; wrote parity_table.md ("**Overall: PASS**")
+
+3. Timing record (contended development tier, medians, no claims):
+   PYTHONPATH=src /Users/alansynn/Workspace/solweig-light/.venv-light/bin/python \
+     optimization_v6_continue/evidence/gvf_post/bench_postprocess.py \
+     > optimization_v6_continue/evidence/gvf_post/timing_raw.txt
+   -> exit code 0; run twice, consistent; see timing_raw.txt
+
+Fix round after review C6-60 (APPROVE-WITH-NOTES, F1-F4)
+--------------------------------------------------------
+
+F1 scoping was verified empirically BEFORE the docstring/test edits:
+  subnormal-sum probe (case_underflow_subnormal construction, first=second=2**24-1):
+  default regime  -> orig silent, candidate silent, outputs+planes bitwise-equal
+  errstate(all='raise') -> orig raises FloatingPointError
+      "underflow encountered in divide"; candidate returns, outputs bitwise-equal
+
+4. Full test suite after fixes (adds case_underflow_subnormal to the
+   adversarial suite and two new tests: test_underflow_regime_contract,
+   test_boundary_requires_float32_block):
+   PYTHONPATH=src /Users/alansynn/Workspace/solweig-light/.venv-light/bin/python \
+     -m pytest tests/optimization_v6/gvf_postprocess/ -q
+   -> "139 passed, 84 warnings in 2.81s", exit code 0
+
+5. Parity table regeneration (now 33 cases = 11 builders x 3 sizes):
+   PYTHONPATH=src /Users/alansynn/Workspace/solweig-light/.venv-light/bin/python \
+     optimization_v6_continue/evidence/gvf_post/parity_harness.py
+   -> exit code 0; parity_table.md "Overall: PASS";
+      parallel section: "Bitwise parity vs original on all 33 cases: PASS"
+
+6. Timing run 2 appended post-fix:
+   PYTHONPATH=src /Users/alansynn/Workspace/solweig-light/.venv-light/bin/python \
+     optimization_v6_continue/evidence/gvf_post/bench_postprocess.py \
+     >> optimization_v6_continue/evidence/gvf_post/timing_raw.txt
+   -> exit code 0; combined serial/original ratios 2.0-2.7,
+      parallel/original 0.26-0.68 (both runs in timing_raw.txt)
+
+Fix-to-finding map: F1 -> module docstring carve-out +
+  test_underflow_regime_contract + case_underflow_subnormal +
+  node_inventory.md carve-out; F2 -> integration_patch.md regenerated from
+  the verbatim base call site (5-name unpack, ground_view.py:656-659);
+  F3 -> timing_raw.txt run 2 recorded, serial bound corrected to 2.0-2.7
+  across both runs; F4 -> TypeError guard on (16, rows, cols) float32 block
+  at wrapper entry + test_boundary_requires_float32_block.
+
+Notes
+-----
+- Timing numbers are contended-host development-tier records per
+  VALIDATION_POLICY.md; no performance claim is made from them.
+- The kernel modules use numba cache=True; first import after any edit
+  writes __pycache__/*.nbi/*.nbc next to the module (do not commit).
+- The warning-parity mechanism relies on the flagged fallback re-running the
+  untouched _postprocess_block; the compiled kernel itself never warns.

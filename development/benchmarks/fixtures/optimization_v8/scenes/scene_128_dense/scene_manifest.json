@@ -1,0 +1,36 @@
+{
+ "label": "SYNTHETIC-DEVELOPMENT held-out fixture (N8-03); NOT the actual 24-tile corpus",
+ "dir": "/Users/alansynn/Workspace/solweig-v8-native/benchmarks/fixtures/optimization_v8/scenes/scene_128_dense",
+ "tile_size": [
+  128,
+  128
+ ],
+ "tiles": [
+  "0_0"
+ ],
+ "variant": "dense",
+ "motif": "dense_urban 32-pixel motif (pinned p7 generator lineage), no RNG",
+ "vegetation_additions": null,
+ "canopy_fraction_of_pixels": null,
+ "met_source": "/Users/alansynn/Workspace/solweig-v8-native/tests/reference/state_sequence_original_cpu/scene/met.txt",
+ "met_derivation": "header + first 24 data records (day 200 = 2020-07-18 hourly cycle, it 0..23); values unmodified",
+ "met_records_including_header": 25,
+ "selected_date": "2020-07-18",
+ "epsg": 32618,
+ "geotransform": [
+  582953.5,
+  1.0,
+  0.0,
+  4507048.0,
+  0.0,
+  -1.0
+ ],
+ "generator": "tools/optimization_v8/n8_03_build_scenes.py",
+ "generator_sha256": "c272575d7ea0f3bb4db46d5790a643dcae2487fff2ebafad665b9b7f55baed99",
+ "sha256": {
+  "processed_inputs/DEM/DEM_0_0.tif": "07e60ecf82e0677128fd732636ea3d528f376fb65e1e1f05603a94b829d1038d",
+  "processed_inputs/Building_DSM/Building_DSM_0_0.tif": "e28b66df31c553a273b27ef12cd407d348291b955891cd4638c9a141f6080797",
+  "processed_inputs/Trees/Trees_0_0.tif": "238d36b7b378e1dd2ea45835d3e3374b3ed7b2451c1f121d337d2796f6e9b945",
+  "processed_inputs/metfiles/metfile_0_0.txt": "bc8ee6361071dd109649857127d6b777571e868bdb06db0e47968b39e99189e4"
+ }
+}

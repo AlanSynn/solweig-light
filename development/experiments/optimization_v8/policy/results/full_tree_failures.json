@@ -1,0 +1,101 @@
+{
+  "schema": "sw8-n822-full-tree-failure-audit-v1",
+  "purpose": "Wave 3 accounting: decompose the N8-22 session's '1832 passed / 117 failed' full-tree result, classify causality (N8-22-caused vs pre-existing vs concurrent-worker state), and archive reproducible evidence. Classification only; no other worker's tests were modified.",
+  "captured_utc": "2026-09-22T21:01:18Z",
+  "environment": {
+    "repo": "/Users/alansynn/Workspace/solweig-v8-native",
+    "branch": "perf/native-optimization",
+    "head_commit": "16cdc56cbc8755675487b9c9c1f5a7e987e2c9e4",
+    "python": ".venv/bin/python (cpython 3.12.13, uv-managed, aarch64)",
+    "numba_thread_cap_env": "none set (no NUMBA_*, OMP_*, MKL_* in the shell)",
+    "shared_venv_note": ".venv is shared across concurrently active packet workers; its state can drift between runs"
+  },
+  "original_117_run": {
+    "when": "2026-09-22 ~20:2x UTC (N8-22 session, before N8-14's 16:43-16:56 local edits settled)",
+    "result": "1832 passed / 117 failed / 6 skipped",
+    "decomposition": [
+      {
+        "suite": "tests/optimization_v8/region/",
+        "count": 115,
+        "classification": "concurrent-worker in-flight state (N8-14 region/pool suite was being edited during the run: file mtimes 16:43-16:56 local)",
+        "not_caused_by_n8_22_evidence": [
+          "region suite run STANDALONE at that time (no policy code loaded at all): 113 failed / 32 passed",
+          "region suite later standalone (after N8-14 edits settled): 6 failed / 145 passed",
+          "region suite GREEN in current full-tree runs WITH policy dirs present (run1 below)"
+        ]
+      },
+      {
+        "suite": "tests/optimization_v8/installed/",
+        "count": 2,
+        "tests": [
+          "test_installed_wheel_gates.py::test_wheel_ships_no_torch_cuda_code",
+          "test_installed_wheel_gates.py::test_surface_gate_recorded"
+        ],
+        "classification": "environmental drift + cross-suite conftest name collision (see failure_catalog); both independent of N8-22 files"
+      }
+    ],
+    "evidence_basis": "session terminal outputs (pytest tails and FAILED-line greps); a raw per-test log of this specific run was not archived before N8-14's tree state moved on -- the state is no longer reproducible because the region suite changed underneath. The two greps established: non-region FAILED lines = exactly the 2 installed tests above; all other failures carried the /region/ path prefix."
+  },
+  "current_tree_runs": [
+    {
+      "id": "run1_full_tree_with_all",
+      "command": ".venv/bin/python -m pytest tests/optimization_v8/ -q -p no:cacheprovider --tb=line",
+      "result": "1 failed, 1948 passed, 6 skipped (199s)",
+      "failed": ["tests/optimization_v8/installed/test_installed_wheel_gates.py::test_surface_gate_recorded"],
+      "raw_log": "full_tree_run1_withall_tbline.log"
+    },
+    {
+      "id": "runB_full_tree_minus_policy",
+      "command": ".venv/bin/python -m pytest tests/optimization_v8/ -q -p no:cacheprovider --tb=line --ignore=tests/optimization_v8/policy",
+      "result": "1 failed, 1864 passed, 6 skipped (198s)",
+      "failed": ["tests/optimization_v8/installed/test_installed_wheel_gates.py::test_surface_gate_recorded"],
+      "interpretation": "identical failure without any N8-22 file collected/imported (1864 = 1948 - 84 policy tests); N8-22-caused failures = 0",
+      "raw_log": "runB_fulltree_minus_policy.log"
+    },
+    {
+      "id": "runC_collision_repro",
+      "command": ".venv/bin/python -m pytest tests/optimization_v8/installed tests/optimization_v8/region -q -p no:cacheprovider --tb=line",
+      "result": "3 collection errors",
+      "errors": [
+        "tests/optimization_v8/installed/test_source_fallback_gates.py:23: ImportError: cannot import name 'REPO_ROOT' from 'conftest' (/Users/alansynn/Workspace/solweig-v8-native/tests/optimization_v8/region/conftest.py)",
+        "same class for test_installed_noenv_gates.py and test_installed_wheel_gates.py"
+      ],
+      "interpretation": "isolated 2-suite repro of the bare-conftest module-name collision: region/conftest.py (later collection) rebinds sys.modules['conftest']",
+      "raw_log": "runC_installed_then_region.log"
+    },
+    {
+      "id": "historical_installed_standalone",
+      "command": ".venv/bin/python -m pytest tests/optimization_v8/installed -q",
+      "result": "1 failed (test_wheel_ships_no_torch_cuda_code: ImportError 'Requirement' from 'packaging'), 10 passed, 6 skipped -- test_surface_gate_recorded PASSED standalone",
+      "interpretation": "both installed failures are order/environment-dependent, not deterministic test logic"
+    }
+  ],
+  "failure_catalog": [
+    {
+      "test": "tests/optimization_v8/installed/test_installed_wheel_gates.py::test_surface_gate_recorded",
+      "error": "ImportError: cannot import name 'GATE_RECORD' from 'conftest' (.../tests/optimization_v8/region/conftest.py) at test_installed_wheel_gates.py:154",
+      "error_class": "import-order / module-name shadowing (NOT timeout, NOT thread-cap, NOT fork, NOT numba threading-layer)",
+      "mechanism": "pytest (prepend import mode, no __init__.py in the v8 test dirs) imports every suite's conftest.py under the bare module name 'conftest'; the last-collected conftest (alphabetically region/) owns that name at test RUN time. The installed suite imports helpers via 'from conftest import ...' at module level in 3 test files AND inside test functions (line 154). Module-level imports happened while installed's own conftest still owned the name (installed collects 3rd); the in-function import executes after region's conftest rebound it -> ImportError.",
+      "causality": "pre-existing defect in the installed suite's import style; triggered by ANY later-collected sibling conftest. Reproduced identically with N8-22 dirs ignored (runB). N8-22 caused 0 failures.",
+      "suggested_fix_pattern_not_applied": "per N8-22 convention (tests/optimization_v8/policy/policy_test_helpers.py + memory note v8-test-conftest-name-collision): move shared helpers into a uniquely named module next to the suite and import that instead of 'conftest'. Owned by the installed/N8-23 worker; not modified here per classification-first instruction."
+    },
+    {
+      "test": "tests/optimization_v8/installed/test_installed_wheel_gates.py::test_wheel_ships_no_torch_cuda_code",
+      "error": "ImportError: cannot import name 'Requirement' from 'packaging' (venv site-packages) at test line 81 -- in earlier runs; PASSES in run1/runB",
+      "error_class": "environmental / shared-venv drift in the suite's own dependency usage",
+      "causality": "not N8-22; not reproducible in current tree state"
+    },
+    {
+      "suite": "tests/optimization_v8/region/ (115 tests in the original 117 run)",
+      "error": "assorted (in-flight state; suite was concurrently edited mid-run)",
+      "error_class": "concurrent-worker edit state, transient",
+      "causality": "not N8-22 (failed standalone without policy loaded; green in current full tree with policy present)"
+    }
+  ],
+  "conclusion": {
+    "n8_22_caused_failures": 0,
+    "n8_22_policy_tests": "84 passed standalone; 84 passed inside full tree (1948 total incl. them)",
+    "tree_state_now": "1 pre-existing failure (installed conftest collision), everything else green",
+    "thread_interference_verdict": "no evidence of numba thread-cap/fork/threading-layer interference from N8-22: no NUMBA_* env set, policy tests spawn no threads beyond stdlib, and the combined 5-suite run (policy+dx+artifacts+loader+numba+packaging, 700 tests) was clean"
+  }
+}

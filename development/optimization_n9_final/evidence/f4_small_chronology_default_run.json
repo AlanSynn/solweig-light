@@ -1,0 +1,73 @@
+{
+  "record": "N9 F4 REQUIRED-before-F5 evidence: frozen small chronology under the new default route, plus the section-3 REQUIRED test additions",
+  "date_utc": "2026-09-23T11:48Z",
+  "worktree": "/Users/alansynn/Workspace/solweig-v8-native",
+  "git_head_short": "8e3e9eba",
+  "git_state": "uncommitted F4 working tree (integrator commits); tests-only additions by stream owner",
+  "environment": {
+    "NUMBA_NUM_THREADS": "2",
+    "NUMBA_CACHE_DIR": "/tmp/n9f4_t3_cache (fresh this campaign)",
+    "runtime_default": "threads_per_worker=1 -> engine tri-state parallel=None -> structural stream route"
+  },
+  "chronology": {
+    "test": "tests/differential/test_pipeline_reference.py::test_chronological_tiff_pipeline",
+    "selection": "-k small (warm [small-False] + cold-SVF [small-True]); 7 others deselected",
+    "invocation": "pytest --basetemp=/Users/alansynn/Workspace/solweig-v8-native/optimization_n9_final/evidence/f4_small_chronology_default",
+    "outcome": "2 passed, 7 deselected (frozen comparison_v1 protocol: metadata/geotransform/band-count plus per-field atol/rtol)",
+    "artifact_dir": "/Users/alansynn/Workspace/solweig-v8-native/optimization_n9_final/evidence/f4_small_chronology_default",
+    "case_pipeli0": "warm small: comparison.json + published output TIFFs (10 files, 24 bands each)",
+    "case_pipeli1": "cold small (SVF cache deleted, regenerated): comparison.json + output TIFFs incl. SVF_0_0.tif",
+    "max_abs_deltas_warm": {
+      "Kdown": 0.0001220703125,
+      "Kup": 1.52587890625e-05,
+      "Ldown": 0.000457763671875,
+      "Lup": 0.0001220703125,
+      "Shadow": 0.0,
+      "TMRT": 6.103515625e-05,
+      "Ta": 0.0,
+      "UTCI": 6.866455078125e-05,
+      "WBGT": 5.7220458984375e-05,
+      "Wind": 0.0
+    },
+    "max_abs_deltas_cold": {
+      "Kdown": 0.0001220703125,
+      "Kup": 1.52587890625e-05,
+      "Ldown": 0.000457763671875,
+      "Lup": 0.0001220703125,
+      "Shadow": 0.0,
+      "TMRT": 6.103515625e-05,
+      "Ta": 0.0,
+      "UTCI": 6.866455078125e-05,
+      "WBGT": 5.7220458984375e-05,
+      "Wind": 0.0
+    },
+    "dispatch_probe": {
+      "method": "region_pool.execute_regions spy around pipeline.run_tile on the same frozen small inputs (separate process, same env)",
+      "timesteps_dispatched": 24,
+      "budgets": [
+        1
+      ],
+      "modes": [
+        "self_parallel"
+      ],
+      "blocks_per_call": [
+        9
+      ],
+      "note": "all 24 timesteps took the stream at pinned budget 1; trace reached _lw_dispatch._execute_row (execute_regions call site)"
+    }
+  },
+  "required_test_additions": {
+    "a_budget_pin": "tests/optimization_v8/stream/test_lw_stream.py::test_plan_thread_budget_pinned_to_one_regardless_of_runtime_threads (threads_per_worker 1 and 4 -> plan.thread_budget == 1) PASSED",
+    "b_pool_budget_one": "tests/optimization_v8/integration/test_lw_dispatch.py::test_routed_call_pins_budget_one_and_pool_has_zero_workers (execute_regions received budget=1; _POOLS[(pid,1)] exists; worker_count == 0) PASSED",
+    "c_decline_parity": "tests/optimization_v8/integration/test_lw_dispatch.py::test_all_raw_decline_parity_same_process_with_guard_alternation (all-raw bitwise == forced-legacy A8 in the SAME process; raw->packed->raw alternation; exactly one dispatch) PASSED",
+    "d_expert_env": "existing tests kept green under the A2 wiring: integration::test_explicit_expert_env_stands_down_to_b7_32 and policy::test_expert_env_stands_the_stream_route_down (env native/ispc -> B7-32 route, region machinery untouched) PASSED",
+    "e_chronology": "this record"
+  },
+  "suite_counts": {
+    "stream": "34 passed",
+    "integration": "14 passed",
+    "region": "147 passed, 6 skipped (archived-with-N8-native-row marks)",
+    "policy": "23 passed, 1 skipped (module-level: lw_default_policy archived)",
+    "combined": "218 passed, 7 skipped, 0 failed"
+  }
+}

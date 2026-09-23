@@ -1,0 +1,27 @@
+{
+  "spatial_tiles": 2,
+  "dataset_kind": "historical_two_scene_admission",
+  "elapsed_seconds": 598.9,
+  "tiles": [
+    {
+      "spatial_id": "dense1024",
+      "shape": [
+        1024,
+        1024
+      ],
+      "timesteps": 24,
+      "patches": 153,
+      "status": "complete"
+    },
+    {
+      "spatial_id": "vegetation1024",
+      "shape": [
+        1024,
+        1024
+      ],
+      "timesteps": 24,
+      "patches": 153,
+      "status": "complete"
+    }
+  ]
+}

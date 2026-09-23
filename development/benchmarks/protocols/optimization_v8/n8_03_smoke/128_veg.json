@@ -1,0 +1,75 @@
+{
+ "schema": "sw8-n8-03-smoke-v1",
+ "scene": "/Users/alansynn/Workspace/solweig-v8-native/benchmarks/fixtures/optimization_v8/scenes/scene_128_veg",
+ "scene_label": "SYNTHETIC-DEVELOPMENT held-out fixture (N8-03); NOT the actual 24-tile corpus",
+ "tile_size": [
+  128,
+  128
+ ],
+ "variant": "veg",
+ "selected_date": "2020-07-18",
+ "timesteps": 24,
+ "env_lw_backend": "",
+ "admission": {
+  "ambient_default_budget_bytes": 1822113792,
+  "ambient_budget_gib": 1.697,
+  "pinned_memory_budget_gib": 12
+ },
+ "options_ambient_defaults": {
+  "cache_dir": null,
+  "legacy_cache_policy": "recompute",
+  "cache_enabled": true,
+  "memory_budget_bytes": null,
+  "cpu_budget": 1,
+  "workers": 1,
+  "threads_per_worker": 1,
+  "block_pixels": 128,
+  "checkpoint_interval": 1,
+  "resume": false
+ },
+ "options_active": {
+  "cache_dir": null,
+  "legacy_cache_policy": "recompute",
+  "cache_enabled": true,
+  "memory_budget_bytes": 12884901888,
+  "cpu_budget": 1,
+  "workers": 1,
+  "threads_per_worker": 1,
+  "block_pixels": 128,
+  "checkpoint_interval": 1,
+  "resume": false
+ },
+ "flags": [
+  "save_kdown",
+  "save_kup",
+  "save_ldown",
+  "save_lup",
+  "save_shadow",
+  "save_svf",
+  "save_ta",
+  "save_tmrt",
+  "save_wbgt",
+  "save_wind"
+ ],
+ "module_origin": {
+  "solweig_light": "/Users/alansynn/Workspace/solweig-v8-native/src/solweig_light/__init__.py"
+ },
+ "stage_splits_s": {
+  "walls_aspect_s": 0.702,
+  "svf_geometry_s": 1.217,
+  "simulation_s": 5.856
+ },
+ "output_manifest": {
+  "file_count": 20,
+  "simulation_tiff_count": 10,
+  "digest": "235b32936cf11f7d",
+  "simulation_tiff_digest": "3075882d4afa0cf8"
+ },
+ "versions": {
+  "python": "3.12.13",
+  "numpy": "2.4.6",
+  "numba": "0.67.0",
+  "machine": "arm64"
+ },
+ "returncode": 0
+}

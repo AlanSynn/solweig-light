@@ -1,0 +1,222 @@
+{
+  "schema": "solweig-v8-protocol-freeze-v1",
+  "task": "N8-03",
+  "title": "Freeze small protocols, held-outs and promotion gates",
+  "frozen_before_variant_results": true,
+  "frozen_at_head": "16cdc56cbc8755675487b9c9c1f5a7e987e2c9e4",
+  "frozen_branch": "perf/native-optimization (worktree /Users/alansynn/Workspace/solweig-v8-native)",
+  "frozen_utc": "2026-09-22T19:55:00Z",
+  "sources": {
+    "protocol": "optimization_v8_native_default/BENCHMARK_PROTOCOL.md",
+    "gates": "optimization_v8_native_default/PROMOTION_POLICY.md",
+    "profile_context": "optimization_v8_native_default/evidence/profile/n8_02_profile.json",
+    "dx_baseline": "optimization_v8_native_default/evidence/dx_baseline/ (default block_pixels=128 pinned, runtime.py:325/462/510/563)",
+    "inventory": "optimization_v8_native_default/evidence/inventory/n8_00_inventory.json",
+    "contract": "optimization_v8_native_default/evidence/contract/n8_04_typed_lw_contract.json (+.md)"
+  },
+  "controls": {
+    "A0": "current accepted Numba default arm at frozen HEAD: SOLWEIG_LIGHT_LW_BACKEND unset, packed pipeline resolves to _longwave_primary (numba); the arm every gate ratio uses as numerator baseline",
+    "B1": "N8-12 strongest producer-matched Numba control: direct-AoSoA producer (N8-11 layout) + equivalent-layout Numba kernel at the same region/pipeline boundary as C1",
+    "C1": "N8-13 native AoSoA consumer: same direct-AoSoA producer, native (ispc) execution of the frozen typed LW graph through the installed artifact",
+    "C0": "old opt-in ISPC g8 path (B7 env-gated SOLWEIG_LIGHT_LW_BACKEND=native at 16cdc56c) - DIAGNOSTIC ONLY, explains regressions, never replaces A0/B1 controls",
+    "auto": "post-integration env-unset packaged candidate (installed wheel default path, packaged allow-list); used ONLY from N8-43 on; before that no 'auto' arm exists",
+    "M0": "main DX baseline (pin 14e888760727583ef782a4dc0e7a5c7c6e6ff9d1); DX/identity comparison only, NO performance claim",
+    "historical_note": "B7-60 (4 synthetic 1024^2 tiles x 24: native 1.2-3% slower end-to-end) and B7-31 values are HISTORICAL evidence under the v7 protocol, not fresh matched controls for any N8 gate; they motivate, never substitute"
+  },
+  "gates_verbatim_from_promotion_policy": {
+    "section": "PROMOTION_POLICY.md 'Proposed quantitative gates to freeze at N8-03' - copied verbatim; these are THE final gates",
+    "intro": "These are engineering acceptance thresholds, not observed results. Freeze exactly or justify amendments using baseline noise/cost characterization BEFORE evaluating new candidates, recording a new protocol version. After candidate failures, do not loosen gates.",
+    "bullets": [
+      "Exact supported-domain numerical/metadata/state, full API/DX and memory gates are mandatory.",
+      "Use three alternating paired observations per final selected small held-out cell, not an exhaustive grid. Primary evaluation has at least four predeclared workload/configuration cells covering dense and vegetation scenes plus ordinary defaults and production H/B; use tuning cases only to choose variants.",
+      "Installed auto default must yield geometric mean `A0_time / auto_time >= 1.10` across the declared primary native-eligible cells.",
+      "Each primary cell used in the auto-native allow-list must have paired median `A0_time / auto_time >= 1.05`; every such cell must have paired median `B1_time / auto_time >= 1.05` at the installed region/pipeline boundary. Native-specific value cannot be credited solely to B1's layout.",
+      "No more than 3% paired median regression in a predeclared protected default/fallback cell. A new degraded or noisy cell is removed from auto eligibility only with explicit guard coverage and prior workload-domain policy, not erased from reports. Never shrink the target workload definition to hide a failure.",
+      "Meaningful native coverage: required output has been computed by actual native region on >=80% of PREDECLARED eligible pixel-patch work in a primary cell; overall absolute coverage and fallback workload are reported. Counters must verify actual C execution, not initialization. A mask cache or mixed region needs a defined non-double-counted work unit.",
+      "First-use native library initialization performs no build/download. Cold full-entry guard must not materially regress beyond the predeclared 3% paired bound where valid paired data exists; unresolved host noise means insufficient evidence, not passed.",
+      "A noisy host, memory-pressure interruption, unmatched layout/profile/resource, missing completed pair or synthetic-only default extrapolation invalidates promotion evidence for the affected cell. Preserve censored runs and investigate via small repro before at most one permitted rerun."
+    ],
+    "closing": "These small-sample gates establish local scoped evidence, not a p95 service-level guarantee. A large claimed speedup requires enough evidence for that claim; the design aim of 20-23 minutes is not measured here."
+  },
+  "exactness_gates": {
+    "mandatory_for_admission": "B1 and C1 admission is conditional on the N8-04 frozen typed LW contract (optimization_v8_native_default/evidence/contract/n8_04_typed_lw_contract.json) and a green tests/optimization_v8/reference/ suite (112 tests collected at freeze) BEFORE any timing",
+    "bitwise_rule": "uint32 view of all seven output columns bitwise-identical to A0 on the admitted domain (uint64-level digest of the packed output equivalent per contract); f64 surface-scalar profile is the real pipeline profile, f32 is the frozen synthetic profile - both share one provenance per contract 1.4",
+    "domain_rule": "a candidate implements the full admitted domain or restricts admission explicitly; inputs outside the admitted subset must be REJECTED to the Numba path (decline cell PR2), never silently mis-executed",
+    "no_performance_exemption": "capability/exactness failures disqualify a timed run regardless of speed"
+  },
+  "workload_cells": {
+    "tuning_only": {
+      "T1_real_scene": {
+        "scene": "tests/reference/state_sequence_original_cpu/scene",
+        "identity": "32x35 px (1120), 153 patches, 48 timesteps; measured identity from n8_02 profile (protocol.scene)",
+        "input_sha256": {
+          "Building_DSM.tif": "e13aefb56d224680fd0a04fbf1886faf840d73db032aa4bbe2bbc651c4d8f80a",
+          "DEM.tif": "a550dd0b6519621fff999eb6cc7bce224c27a3c5cc17d73660c41b52767a7105",
+          "Trees.tif": "aacbcf3ffe3296c1ad4528138555b19d59358210a4c2b5b1c636074975fc8bdc",
+          "met.txt": "37132c8851294b39e8cb57087a22527f155704e61ba8c37a0e4f36c9f591b0ac",
+          "manifest.json": "fe013dcdfebb28db2e45141afe86a1ac3b1c19b2987a82befaa9e6628c4fc5b6"
+        },
+        "hashes_reverified_at_freeze": "2026-09-22, all five match n8_02 pins",
+        "command": ".venv/bin/python tools/optimization_v8/n8_02_child.py --site src --prepared tests/reference/state_sequence_original_cpu/scene/processed_inputs --backend {default|native} --block-pixels {128|1024} --threads 4 --cpu-budget 4 --entry {runtile|pool} --run-root <scratch> --out <record.json>",
+        "boundaries": "leaf_kernel and region_total style with short kernel repetitions; full 48-step chronology, never truncated (BENCHMARK_PROTOCOL: guard tests may vary B/P, final workload never shrunk)"
+      },
+      "T2_adversarial_arrays": {
+        "source": "N8-04 suite builders: tests/optimization_v8/reference/ (conftest.py, lw_reference_oracle.py; 112 tests)",
+        "use": "boundary-only adversarial arrays (Inf/NaN producers, occlusion masks, f32-vs-f64 provenance pins, boundary gang sizes) at the leaf_kernel/region_total boundary for bitwise admission screening; never counted as pipeline cells"
+      }
+    },
+    "held_out_primary_native_eligible": {
+      "fixture_label": "SYNTHETIC-DEVELOPMENT scenes generated for this freeze (BENCHMARK_PROTOCOL: a synthetic medium motif is a development case and CANNOT represent the actual 24-tile corpus; no actual-target claim is derivable from these cells)",
+      "generator": "tools/optimization_v8/n8_03_build_scenes.py (adapted from optimization_v6_continue/evidence/campaign_synthetic/tools/build_scene1024.py; dense_urban 32-px motif, pinned p7 lineage, no RNG; GDAL own-met TIFF generation, EPSG 32618)",
+      "generator_sha256": "c272575d7ea0f3bb4db46d5790a643dcae2487fff2ebafad665b9b7f55baed99",
+      "met_derivation": "original v5 dense256 own-met file ABSENT on this machine; metfile = header + first 24 records of tests/reference/state_sequence_original_cpu/scene/met.txt (day 200 = 2020-07-18 hourly cycle, it 0..23, values unmodified); met_source sha256 37132c8851294b39e8cb57087a22527f155704e61ba8c37a0e4f36c9f591b0ac",
+      "cells": {
+        "P1": {
+          "name": "default_128_dense (the main-compatible cell)",
+          "scene": "benchmarks/fixtures/optimization_v8/scenes/scene_128_dense",
+          "config": "installed-source DEFAULT call: env unset (no SOLWEIG_LIGHT_LW_BACKEND), ambient RuntimeOptions defaults verbatim (workers=1, threads_per_worker=1, cpu_budget=1, block_pixels=128, checkpoint_interval=1, cache_enabled=True), no thread env caps, no runtime_options overrides",
+          "entry": "public three-stage API: api.run_walls_aspect + api.calculate_svf(patch_option=2, overwrite=False) prepared ONCE per scratch copy (untimed), timed boundary = api.run_utci_tiles(selected_date_str='2020-07-18', tile_keys=['0_0'], 10 save flags) - implemented by tools/optimization_v8/n8_03_smoke_scene.py (no --memory-budget-gib)",
+          "host_condition": "QUIET HOST REQUIRED: ambient admission = 0.50 x currently-available memory must exceed the ~2.22 GiB (simulation ~1.78 GiB + parent ~0.43 GiB) this cell reserves; observed non-quiet failure recorded in n8_03_smoke/ambient_default_admission_attempt.json",
+          "expected_files": "10 per-flag GeoTIFFs output_folder/0_0/{Kdown,Kup,Ldown,Lup,Shadow,Svf,Ta,Tmrt,WBGT,Wind}_0_0.tif + checkpoint state; smoke observed simulation_tiff_count=10",
+          "timesteps": 24
+        },
+        "P2": {
+          "name": "default_128_veg",
+          "scene": "benchmarks/fixtures/optimization_v8/scenes/scene_128_veg",
+          "config": "as P1 (pure ambient defaults, env unset) on the vegetation variant (canopy fraction 0.1484)",
+          "entry": "as P1",
+          "host_condition": "as P1",
+          "expected_files": "as P1",
+          "timesteps": 24
+        },
+        "P3": {
+          "name": "production_128_dense (B7-60 matched budget)",
+          "scene": "benchmarks/fixtures/optimization_v8/scenes/scene_128_dense",
+          "config": "block_pixels=1024, threads_per_worker=4, cpu_budget=4, memory_budget_bytes=12 GiB (the B7-60 production cell budget: workers=1, tpw=4, B=1024, 12 GiB), checkpoint_interval=1, env unset",
+          "entry": "as P1 (stage A+B prepared untimed; timed = run_utci_tiles / packed run_tile at the pinned options; H change runs in an independent child process with pool sizes verified inside tile children)",
+          "expected_files": "as P1",
+          "timesteps": 24
+        },
+        "P4": {
+          "name": "production_128_veg",
+          "scene": "benchmarks/fixtures/optimization_v8/scenes/scene_128_veg",
+          "config": "as P3 on the vegetation variant",
+          "entry": "as P3",
+          "expected_files": "as P1",
+          "timesteps": 24
+        },
+        "P5": {
+          "name": "default_256_dense (second size, recorded admission deviation)",
+          "scene": "benchmarks/fixtures/optimization_v8/scenes/scene_256_dense",
+          "config": "default call env unset, default block_pixels=128, default workers/threads (1/1/1), memory_budget_bytes=12 GiB PINNED (recorded deviation: the 256^2 x 24 simulation reserves ~7.1 GiB by the admission estimator, ambient 0.50x-available cannot fit it on this 16 GiB host even quiet; pinning touches admission only, not the backend path under test)",
+          "entry": "as P1 via n8_03_smoke_scene.py --memory-budget-gib 12",
+          "expected_files": "as P1",
+          "timesteps": 24
+        },
+        "P6": {
+          "name": "default_256_veg",
+          "scene": "benchmarks/fixtures/optimization_v8/scenes/scene_256_veg",
+          "config": "as P5 on the vegetation variant",
+          "entry": "as P5",
+          "expected_files": "as P1",
+          "timesteps": 24
+        }
+      },
+      "geomean_set": ["P1", "P2", "P3", "P4", "P5", "P6"],
+      "note": "P1..P6 exceed the policy minimum of four cells and cover dense+vegetation, ordinary defaults (P1/P2 pure ambient; P5/P6 default-B128 with pinned admission) and production H/B (P3/P4)"
+    },
+    "protected_cells": {
+      "PR1": {
+        "name": "explicit_numba_env",
+        "definition": "SOLWEIG_LIGHT_LW_BACKEND=numba (explicit fallback selection) on scene_128_dense, default config otherwise",
+        "bound": "paired median regression vs A0 <= 3%; guards the explicit opt-out path"
+      },
+      "PR2": {
+        "name": "unsupported_input_decline",
+        "definition": "one N8-04 adversarial input OUTSIDE the candidate's admitted domain (e.g. f32-profile scalar provenance or unadmitted layout) driven through the region boundary; candidate must decline to the Numba A0 path",
+        "bound": "paired median regression vs A0 <= 3%; decline must be correct (bitwise A0 outputs) and cheap"
+      }
+    },
+    "target_campaign_placeholder": {
+      "status": "actual 24-tile 1024^2 corpus ABSENT on this machine (optimization_v7_backends/evidence/freeze/b7_51_corpus_availability.json)",
+      "primary": "if the corpus + references appear before the final campaign: actual K=24 tiles x 24 records, actual extents/overlap/resolution, frozen flags and total resource envelope, one campaign + at most one causal retry",
+      "scale_guard_fallback": "existing synthetic 4-tile 1024^2 x 24 shape (C6-101r lineage, optimization_v6_continue/evidence/campaign_synthetic/), rebuilt if needed - EXPLICITLY LABELLED not-actual-target; a local small-default promotion may be reported with actual-target unverified",
+      "open_dependency": "build_scene1024.py's MET_SOURCE (v5 dense256 metfile) is absent on this machine; a fallback rebuild must substitute the same real-scene-derived 24-record met used by n8_03_build_scenes.py (one-line adaptation owned by the campaign task) - recorded here so it cannot be discovered mid-campaign"
+    }
+  },
+  "fixture_registry": {
+    "root": "benchmarks/fixtures/optimization_v8/scenes/",
+    "storage_total": "~2.0 MB (well under the 200 MB budget)",
+    "manifests": "benchmarks/fixtures/optimization_v8/scenes/n8_03_scene_manifests.json (per-file sha256 for every produced input; dense/veg share DEM+Building_DSM+met and differ only in Trees, by design; 128 vs 256 differ everywhere)",
+    "input_sha256": {
+      "128_dense": {"DEM_0_0.tif": "07e60ecf82e0677128fd732636ea3d528f376fb65e1e1f05603a94b829d1038d", "Building_DSM_0_0.tif": "e28b66df31c553a273b27ef12cd407d348291b955891cd4638c9a141f6080797", "Trees_0_0.tif": "238d36b7b378e1dd2ea45835d3e3374b3ed7b2451c1f121d337d2796f6e9b945", "metfile_0_0.txt": "bc8ee6361071dd109649857127d6b777571e868bdb06db0e47968b39e99189e4"},
+      "128_veg": {"DEM_0_0.tif": "07e60ecf82e0677128fd732636ea3d528f376fb65e1e1f05603a94b829d1038d", "Building_DSM_0_0.tif": "e28b66df31c553a273b27ef12cd407d348291b955891cd4638c9a141f6080797", "Trees_0_0.tif": "dad16528e1b35c520633999a61634a2036e0bd93a846f521bb323ce82ee65772", "metfile_0_0.txt": "bc8ee6361071dd109649857127d6b777571e868bdb06db0e47968b39e99189e4"},
+      "256_dense": {"DEM_0_0.tif": "85ab26fcec6fa193ca5d5d116eb1560c03b44d9f87c32dce0988b0d3ef29334e", "Building_DSM_0_0.tif": "687655ed2122002eebc16214fa506537a433aec5ca12ef198572c8dc0bee430f", "Trees_0_0.tif": "30f9e56852cc59aa196df9ce281666612a63608ee14cef76ee698227128ccdfa", "metfile_0_0.txt": "bc8ee6361071dd109649857127d6b777571e868bdb06db0e47968b39e99189e4"},
+      "256_veg": {"DEM_0_0.tif": "85ab26fcec6fa193ca5d5d116eb1560c03b44d9f87c32dce0988b0d3ef29334e", "Building_DSM_0_0.tif": "687655ed2122002eebc16214fa506537a433aec5ca12ef198572c8dc0bee430f", "Trees_0_0.tif": "c080fcf489a88fbed41cf3225a15f1361ad1fcb643a7bd6bf5a0a25e947c7530", "metfile_0_0.txt": "bc8ee6361071dd109649857127d6b777571e868bdb06db0e47968b39e99189e4"}
+    },
+    "smoke_verification": {
+      "what": "each scene ran ONE full smoke step through the real public pipeline entry WITHOUT backend env (env_lw_backend empty, module origin = worktree src, 24 records, 10 flags)",
+      "admission": "pinned 12 GiB via --memory-budget-gib 12 because teammates held the host (ambient ~1.65-1.72 GiB; see n8_03_smoke/ambient_default_admission_attempt.json)",
+      "records": "benchmarks/protocols/optimization_v8/n8_03_smoke/{128_dense,128_veg,256_dense,256_veg}.json",
+      "results": {
+        "128_dense": {"returncode": 0, "walls_aspect_s": 1.109, "svf_geometry_s": 1.178, "simulation_s": 5.826, "simulation_tiffs": 10, "output_digest": "7e276889a0cb4a78"},
+        "128_veg": {"returncode": 0, "walls_aspect_s": 0.702, "svf_geometry_s": 1.217, "simulation_s": 5.856, "simulation_tiffs": 10, "output_digest": "235b32936cf11f7d"},
+        "256_dense": {"returncode": 0, "walls_aspect_s": 0.806, "svf_geometry_s": 4.476, "simulation_s": 15.477, "simulation_tiffs": 10, "output_digest": "e97ddaa7c03a97db"},
+        "256_veg": {"returncode": 0, "walls_aspect_s": 0.727, "svf_geometry_s": 4.598, "simulation_s": 15.758, "simulation_tiffs": 10, "output_digest": "2c87a101bb8ba29a"}
+      },
+      "interpretation": "all four fixtures are VALID pipeline inputs; dense vs veg digests differ (vegetation changes outputs); scratch run trees deleted, only records retained"
+    }
+  },
+  "timing_boundaries": {
+    "source": "BENCHMARK_PROTOCOL.md - record all five; do not substitute",
+    "leaf_kernel": "prepared native pointers/arrays, synchronous result; no claim of application gain.",
+    "region_total": "checks, owner leases, decode, exact classifier, layout, pool dispatch, two sweeps, synchronization, output placement; all costs required per execution included.",
+    "workflow_warm": "real public API/CLI over prepared unchanged geometry, all output/checkpoint work included, native artifacts already installed. Record residual startup.",
+    "workflow_first_use": "start before required imports/initialization for that deployment profile; include validation, preparation, geometry and durable publication. Build a release wheel before this timer, because end users receive it; old dev-build time belongs to a separately labelled dev case. Do not subtract imports for candidate while retaining them for baseline.",
+    "target_campaign": "actual K=24 spatial tiles, 24 records each, actual extents/overlap/resolution, frozen flags and total resource envelope, artifacts complete.",
+    "rules": [
+      "measure lazy/native COMPLETION, not enqueue time",
+      "instrumented and uninstrumented timings kept separate (n8-02 measured instrumented delta -1.75%..+2.69%, ~157ns/call wrapper)",
+      "independent child processes for every H (threads/workers) change; verify actual Numba/native pool sizes inside tile children, not env strings",
+      "cold full-entry guard only where valid paired data exists; unresolved host noise = insufficient evidence, not passed"
+    ]
+  },
+  "budgets_and_schedule": {
+    "host_identity_frozen": {
+      "machine": "Apple M1 Pro, arm64, 10 cores, 16 GiB RAM",
+      "os": "macOS 26.6.2 (Build 25G83), Darwin 25.6.0",
+      "python": "3.12.13 (.venv created by uv sync --python 3.12 --frozen)",
+      "numba": "0.67.0", "numpy": "2.4.6", "gdal": "3.13.3",
+      "ispc": "1.31.0 (build 20260625, LLVM 22.1.8, /opt/homebrew/bin/ispc)",
+      "site": "worktree src (editable); comparisons against installed wheel use the N8-20 packaged artifact"
+    },
+    "exclusive_lease": "one benchmark owner at a time on this host; no other builds/tests/measurements during timed trials; quiet-host monitoring is read-only and never terminates user applications",
+    "ambient_recording": "ambient load + memory snapshot in a window BEFORE and AFTER every timed block (os.getloadavg + ps tree, as n8_02); a flagged window edge does not censor a run by itself - only memory-pressure kills and unmatched configs do",
+    "paired_reps": {
+      "triage": "2 alternating pairs (T1 real scene + one 128 cell; tuning cases only, choose variants)",
+      "finalists": "3 alternating pairs per primary cell P1..P6",
+      "order": "A/C then C/A alternating, or a frozen seeded randomized schedule recorded BEFORE the runs",
+      "summary_labels": "paired medians and aggregate geometric means are labelled OBSERVED SMALL-SAMPLE SUMMARIES, never significance claims"
+    },
+    "censoring": [
+      "memory-pressure kill = failed/censored run: recorded, never erased; a retry does not remove it",
+      "noisy host / unmatched layout/profile/resource / missing completed pair invalidates the affected cell's promotion evidence; investigate via small reproducer before AT MOST one permitted rerun",
+      "admission failures under load are environment-blocked attempts, not candidate defects"
+    ],
+    "final_campaign": "after local candidate freeze exactly ONE final large workload: actual 24-tile corpus if present and qualified, else the predeclared synthetic 4-tile scale guard labelled not-actual-target; one candidate run + zero new large baselines when valid matched evidence exists; at most one justified fresh A baseline; at most one causal retry after a small reproducer/fix/re-freeze"
+  },
+  "native_execution_proof": {
+    "counter_point": "C-entry counters incremented AT THE ADMITTED FUNCTION POINTER on completed pixel-patch work (n8-02 pattern: native_c_entry.f64 / native_adapter.admitted / island.numba_lw_primary), plus call counts, scalar/layout/profile identity and artifact generation id",
+    "coverage_rule": "per primary cell: eligible work = every LW pixel-patch block call of the cell's 24-step chronology (predeclared rule; the integer denominator is recorded from the first control run and MUST be identical across arms or the pair is invalid - n8-02 reference values: 432 = 48 steps x 9 blocks at 32x35 B=128; 96 at B=1024); gate = native-completed / eligible >= 80% with overall absolute coverage AND fallback workload both reported",
+    "not_proof": "build stamps, cache-dir contents or a loaded module alone do not prove execution; pre-launch fallbacks and errors are counted separately",
+    "timing_runs": "low-overhead aggregated counters inside timing runs; detailed per-call timers only in separate diagnostic runs"
+  },
+  "measured_context_frozen_before_variants": {
+    "source": "optimization_v8_native_default/evidence/profile/n8_02_profile.json (real packed-path measurements, 32x35/153/48 scene)",
+    "island_share": "default Numba LW island = 21.0% of the Lcyl wrapper (4.5% of run_tile wall) at B=128; native arm island 29.1% of Lcyl",
+    "per_call_prep": "native per-call preparation 130.96us warm (ensure_loaded, B=128; 251.6us at B=1024); adapter-admitted warm 220.2us; C entry alone 61.9us; Numba island ~146us/call - preparation alone ~= the whole Numba island and ~2.4x the C kernel time",
+    "decode_share": "decode_block ~41% of Lcyl (40.9% default B=128 / 46.7% default B=1024 / 41.5% native B=1024, per-call-mean estimates)",
+    "end_to_end_paired": "native/default uninstrumented end-to-end: 1.0071 at B=128 (5 pairs), 1.021 at B=1024 (3 pairs) - the CURRENT g8 path is neutral-to-slower; N8-10..N8-14 must change this, not re-measure it",
+    "amendment_rule": "N8-30 review of N8-02 is IN FLIGHT at freeze time; any confirmed defect amends this section BY APPENDIX with a new protocol version - never by silent edit"
+  }
+}

@@ -1,0 +1,475 @@
+{
+ "schema": "sw7-b7-60-whole-pipeline-v1",
+ "task": "B7-60 user-directed whole-pipeline A(numba default) vs C_native, 4 synthetic 1024^2 tiles x 24 records, T4 workers=1 block_pixels=1024",
+ "finished_utc": "2026-09-22T18:04:02Z",
+ "protocol": {
+  "child_reused_verbatim": "optimization_v6_continue/evidence/campaign_synthetic/tools/campaign_child.py",
+  "interpreter": "/Users/alansynn/Workspace/solweig-light/.venv/bin/python",
+  "threads_per_worker": 4,
+  "workers": 1,
+  "block_pixels": 1024,
+  "memory_budget_gib": 12,
+  "checkpoint_interval": 1,
+  "slots_frozen_order": [
+   "cold_default",
+   "r0_default",
+   "r0_native",
+   "r1_native",
+   "r1_default",
+   "r2_default",
+   "r2_native"
+  ],
+  "interruption": "system low-memory kill during r2_default after 5 slots; incomplete output transaction removed (the only state cleaned); r2 slots rerun in frozen order on the same run dir; parity gate covers correctness",
+  "label": "SYNTHETIC dev-tier single-lease; no statistical or actual-target claims (24-tile corpus absent)"
+ },
+ "slots": [
+  {
+   "slot": "cold_default",
+   "backend": "default",
+   "temp": "cold",
+   "stages_s": {
+    "walls_aspect": 5.8317,
+    "svf_geometry_total": 383.408,
+    "svf_phase_wall": 0,
+    "svf_phase_calls": 0,
+    "svf_store_production": 172.6287,
+    "svf_export_calls_total": 383.4066,
+    "svf_export_calls_count": 4,
+    "simulation_total": 541.5795,
+    "simulation_store_calls": 0,
+    "simulation_store_production": 0,
+    "simulation_store_hits": 0,
+    "simulation_export_calls": 0,
+    "total_measured": 930.8192
+   },
+   "digest_per_tile": {
+    "0_0": {
+     "file_count": 10,
+     "digest": "b588c9aaaf8f0c56"
+    },
+    "0_1": {
+     "file_count": 10,
+     "digest": "6920615e3444a432"
+    },
+    "1_0": {
+     "file_count": 10,
+     "digest": "3bde41a404508003"
+    },
+    "1_1": {
+     "file_count": 10,
+     "digest": "8cf33ecc2943a19f"
+    }
+   },
+   "module_origin": {
+    "solweig_light": "/Users/alansynn/Workspace/solweig-light/src/solweig_light/__init__.py",
+    "pipeline": "/Users/alansynn/Workspace/solweig-light/src/solweig_light/pipeline.py",
+    "runtime_phases_present": true,
+    "pythonpath_env": "/Users/alansynn/Workspace/solweig-light/src"
+   },
+   "versions": {
+    "python": "3.12.13",
+    "numpy": "2.4.6",
+    "numba": "0.67.0",
+    "llvmlite": "0.49.0",
+    "machine": "arm64",
+    "system": "Darwin"
+   },
+   "peak_rss_gib": 0.88
+  },
+  {
+   "slot": "r0_default",
+   "backend": "default",
+   "temp": "warm_full",
+   "stages_s": {
+    "walls_aspect": 5.4136,
+    "svf_geometry_total": 2.1534,
+    "svf_phase_wall": 0,
+    "svf_phase_calls": 0,
+    "svf_store_production": 0,
+    "svf_export_calls_total": 2.1526,
+    "svf_export_calls_count": 4,
+    "simulation_total": 531.2707,
+    "simulation_store_calls": 0,
+    "simulation_store_production": 0,
+    "simulation_store_hits": 0,
+    "simulation_export_calls": 0,
+    "total_measured": 538.8377
+   },
+   "digest_per_tile": {
+    "0_0": {
+     "file_count": 10,
+     "digest": "b588c9aaaf8f0c56"
+    },
+    "0_1": {
+     "file_count": 10,
+     "digest": "6920615e3444a432"
+    },
+    "1_0": {
+     "file_count": 10,
+     "digest": "3bde41a404508003"
+    },
+    "1_1": {
+     "file_count": 10,
+     "digest": "8cf33ecc2943a19f"
+    }
+   },
+   "module_origin": {
+    "solweig_light": "/Users/alansynn/Workspace/solweig-light/src/solweig_light/__init__.py",
+    "pipeline": "/Users/alansynn/Workspace/solweig-light/src/solweig_light/pipeline.py",
+    "runtime_phases_present": true,
+    "pythonpath_env": "/Users/alansynn/Workspace/solweig-light/src"
+   },
+   "versions": {
+    "python": "3.12.13",
+    "numpy": "2.4.6",
+    "numba": "0.67.0",
+    "llvmlite": "0.49.0",
+    "machine": "arm64",
+    "system": "Darwin"
+   },
+   "peak_rss_gib": 0.23
+  },
+  {
+   "slot": "r0_native",
+   "backend": "native",
+   "temp": "warm_full",
+   "stages_s": {
+    "walls_aspect": 5.3406,
+    "svf_geometry_total": 2.0221,
+    "svf_phase_wall": 0,
+    "svf_phase_calls": 0,
+    "svf_store_production": 0,
+    "svf_export_calls_total": 2.0215,
+    "svf_export_calls_count": 4,
+    "simulation_total": 537.4938,
+    "simulation_store_calls": 0,
+    "simulation_store_production": 0,
+    "simulation_store_hits": 0,
+    "simulation_export_calls": 0,
+    "total_measured": 544.8564
+   },
+   "digest_per_tile": {
+    "0_0": {
+     "file_count": 10,
+     "digest": "b588c9aaaf8f0c56"
+    },
+    "0_1": {
+     "file_count": 10,
+     "digest": "6920615e3444a432"
+    },
+    "1_0": {
+     "file_count": 10,
+     "digest": "3bde41a404508003"
+    },
+    "1_1": {
+     "file_count": 10,
+     "digest": "8cf33ecc2943a19f"
+    }
+   },
+   "module_origin": {
+    "solweig_light": "/Users/alansynn/Workspace/solweig-light/src/solweig_light/__init__.py",
+    "pipeline": "/Users/alansynn/Workspace/solweig-light/src/solweig_light/pipeline.py",
+    "runtime_phases_present": true,
+    "pythonpath_env": "/Users/alansynn/Workspace/solweig-light/src"
+   },
+   "versions": {
+    "python": "3.12.13",
+    "numpy": "2.4.6",
+    "numba": "0.67.0",
+    "llvmlite": "0.49.0",
+    "machine": "arm64",
+    "system": "Darwin"
+   },
+   "peak_rss_gib": 0.24
+  },
+  {
+   "slot": "r1_native",
+   "backend": "native",
+   "temp": "warm_full",
+   "stages_s": {
+    "walls_aspect": 5.334,
+    "svf_geometry_total": 2.0088,
+    "svf_phase_wall": 0,
+    "svf_phase_calls": 0,
+    "svf_store_production": 0,
+    "svf_export_calls_total": 2.008,
+    "svf_export_calls_count": 4,
+    "simulation_total": 537.1162,
+    "simulation_store_calls": 0,
+    "simulation_store_production": 0,
+    "simulation_store_hits": 0,
+    "simulation_export_calls": 0,
+    "total_measured": 544.459
+   },
+   "digest_per_tile": {
+    "0_0": {
+     "file_count": 10,
+     "digest": "b588c9aaaf8f0c56"
+    },
+    "0_1": {
+     "file_count": 10,
+     "digest": "6920615e3444a432"
+    },
+    "1_0": {
+     "file_count": 10,
+     "digest": "3bde41a404508003"
+    },
+    "1_1": {
+     "file_count": 10,
+     "digest": "8cf33ecc2943a19f"
+    }
+   },
+   "module_origin": {
+    "solweig_light": "/Users/alansynn/Workspace/solweig-light/src/solweig_light/__init__.py",
+    "pipeline": "/Users/alansynn/Workspace/solweig-light/src/solweig_light/pipeline.py",
+    "runtime_phases_present": true,
+    "pythonpath_env": "/Users/alansynn/Workspace/solweig-light/src"
+   },
+   "versions": {
+    "python": "3.12.13",
+    "numpy": "2.4.6",
+    "numba": "0.67.0",
+    "llvmlite": "0.49.0",
+    "machine": "arm64",
+    "system": "Darwin"
+   },
+   "peak_rss_gib": 0.23
+  },
+  {
+   "slot": "r1_default",
+   "backend": "default",
+   "temp": "warm_full",
+   "stages_s": {
+    "walls_aspect": 5.3657,
+    "svf_geometry_total": 2.0183,
+    "svf_phase_wall": 0,
+    "svf_phase_calls": 0,
+    "svf_store_production": 0,
+    "svf_export_calls_total": 2.0176,
+    "svf_export_calls_count": 4,
+    "simulation_total": 510.7103,
+    "simulation_store_calls": 0,
+    "simulation_store_production": 0,
+    "simulation_store_hits": 0,
+    "simulation_export_calls": 0,
+    "total_measured": 518.0943
+   },
+   "digest_per_tile": {
+    "0_0": {
+     "file_count": 10,
+     "digest": "b588c9aaaf8f0c56"
+    },
+    "0_1": {
+     "file_count": 10,
+     "digest": "6920615e3444a432"
+    },
+    "1_0": {
+     "file_count": 10,
+     "digest": "3bde41a404508003"
+    },
+    "1_1": {
+     "file_count": 10,
+     "digest": "8cf33ecc2943a19f"
+    }
+   },
+   "module_origin": {
+    "solweig_light": "/Users/alansynn/Workspace/solweig-light/src/solweig_light/__init__.py",
+    "pipeline": "/Users/alansynn/Workspace/solweig-light/src/solweig_light/pipeline.py",
+    "runtime_phases_present": true,
+    "pythonpath_env": "/Users/alansynn/Workspace/solweig-light/src"
+   },
+   "versions": {
+    "python": "3.12.13",
+    "numpy": "2.4.6",
+    "numba": "0.67.0",
+    "llvmlite": "0.49.0",
+    "machine": "arm64",
+    "system": "Darwin"
+   },
+   "peak_rss_gib": 0.23
+  },
+  {
+   "slot": "r2_default",
+   "backend": "default",
+   "temp": "warm_full",
+   "stages_s": {
+    "walls_aspect": 5.3984,
+    "svf_geometry_total": 2.1174,
+    "svf_phase_wall": 0,
+    "svf_phase_calls": 0,
+    "svf_store_production": 0,
+    "svf_export_calls_total": 2.1136,
+    "svf_export_calls_count": 4,
+    "simulation_total": 540.6269,
+    "simulation_store_calls": 0,
+    "simulation_store_production": 0,
+    "simulation_store_hits": 0,
+    "simulation_export_calls": 0,
+    "total_measured": 548.1428
+   },
+   "digest_per_tile": {
+    "0_0": {
+     "file_count": 10,
+     "digest": "b588c9aaaf8f0c56"
+    },
+    "0_1": {
+     "file_count": 10,
+     "digest": "6920615e3444a432"
+    },
+    "1_0": {
+     "file_count": 10,
+     "digest": "3bde41a404508003"
+    },
+    "1_1": {
+     "file_count": 10,
+     "digest": "8cf33ecc2943a19f"
+    }
+   },
+   "module_origin": {
+    "solweig_light": "/Users/alansynn/Workspace/solweig-light/src/solweig_light/__init__.py",
+    "pipeline": "/Users/alansynn/Workspace/solweig-light/src/solweig_light/pipeline.py",
+    "runtime_phases_present": true,
+    "pythonpath_env": "/Users/alansynn/Workspace/solweig-light/src"
+   },
+   "versions": {
+    "python": "3.12.13",
+    "numpy": "2.4.6",
+    "numba": "0.67.0",
+    "llvmlite": "0.49.0",
+    "machine": "arm64",
+    "system": "Darwin"
+   },
+   "peak_rss_gib": 0.22
+  },
+  {
+   "slot": "r2_native",
+   "backend": "native",
+   "temp": "warm_full",
+   "stages_s": {
+    "walls_aspect": 5.5499,
+    "svf_geometry_total": 2.0596,
+    "svf_phase_wall": 0,
+    "svf_phase_calls": 0,
+    "svf_store_production": 0,
+    "svf_export_calls_total": 2.0588,
+    "svf_export_calls_count": 4,
+    "simulation_total": 556.149,
+    "simulation_store_calls": 0,
+    "simulation_store_production": 0,
+    "simulation_store_hits": 0,
+    "simulation_export_calls": 0,
+    "total_measured": 563.7584
+   },
+   "digest_per_tile": {
+    "0_0": {
+     "file_count": 10,
+     "digest": "b588c9aaaf8f0c56"
+    },
+    "0_1": {
+     "file_count": 10,
+     "digest": "6920615e3444a432"
+    },
+    "1_0": {
+     "file_count": 10,
+     "digest": "3bde41a404508003"
+    },
+    "1_1": {
+     "file_count": 10,
+     "digest": "8cf33ecc2943a19f"
+    }
+   },
+   "module_origin": {
+    "solweig_light": "/Users/alansynn/Workspace/solweig-light/src/solweig_light/__init__.py",
+    "pipeline": "/Users/alansynn/Workspace/solweig-light/src/solweig_light/pipeline.py",
+    "runtime_phases_present": true,
+    "pythonpath_env": "/Users/alansynn/Workspace/solweig-light/src"
+   },
+   "versions": {
+    "python": "3.12.13",
+    "numpy": "2.4.6",
+    "numba": "0.67.0",
+    "llvmlite": "0.49.0",
+    "machine": "arm64",
+    "system": "Darwin"
+   },
+   "peak_rss_gib": 0.24
+  }
+ ],
+ "warm_summary": {
+  "default": {
+   "n": 3,
+   "warm_total_med_s": 538.84,
+   "warm_sim_med_s": 531.27,
+   "warm_total_all": [
+    538.8377,
+    518.0943,
+    548.1428
+   ],
+   "warm_sim_all": [
+    531.2707,
+    510.7103,
+    540.6269
+   ]
+  },
+  "native": {
+   "n": 3,
+   "warm_total_med_s": 544.86,
+   "warm_sim_med_s": 537.49,
+   "warm_total_all": [
+    544.8564,
+    544.459,
+    563.7584
+   ],
+   "warm_sim_all": [
+    537.4938,
+    537.1162,
+    556.149
+   ]
+  }
+ },
+ "warm_ratio_native_over_default": {
+  "total_native_over_default": 1.0112,
+  "sim_native_over_default": 1.0117,
+  "per_round_sim_ratios": {
+   "r0": 1.0117,
+   "r1": 1.0517,
+   "r2": 1.0287
+  },
+  "convention": "ratio > 1.0 means the native arm is slower"
+ },
+ "per_tile_digest_parity": {
+  "verdict": {
+   "0_0": true,
+   "0_1": true,
+   "1_0": true,
+   "1_1": true
+  },
+  "digests": {
+   "0_0": [
+    "b588c9aaaf8f0c56"
+   ],
+   "0_1": [
+    "6920615e3444a432"
+   ],
+   "1_0": [
+    "3bde41a404508003"
+   ],
+   "1_1": [
+    "8cf33ecc2943a19f"
+   ]
+  },
+  "c6_101r_cross_check": "digests identical to the committed C6-101r per-tile digests (b588c9aa/3bde41a4/6920615e/8cf33ecc) \u2014 the current tree reproduces the C6-101r-era outputs bitwise on this scene, and the met substitution was byte-neutral (metfile sha bc8ee636 both)"
+ },
+ "native_execution_proof": {
+  "scratch_native_cache": "/Users/alansynn/Workspace/solweig-light/optimization_v7_backends/evidence/trials/b7_60/native_cache_scratch",
+  "build_stamp_present": true,
+  "built_utc": "2026-09-22T17:09:01Z",
+  "note": "cache empty at campaign start (rmtree before slot 0); only in-campaign worker children had SOLWEIG_LIGHT_NATIVE_CACHE pointing here \u2014 a build stamp proves the native path executed inside the worker transport"
+ },
+ "cold_reference": {
+  "slot": "cold_default",
+  "total_measured_s": 930.8192,
+  "sim_s": 541.5795,
+  "peak_rss_gib": 0.88
+ }
+}

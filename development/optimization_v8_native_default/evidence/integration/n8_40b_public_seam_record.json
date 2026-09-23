@@ -1,0 +1,126 @@
+{
+  "task": "N8-40b public LW route seam rework (n8-seam)",
+  "date_utc": "2026-09-22",
+  "worktree": "/Users/alansynn/Workspace/solweig-v8-native",
+  "branch": "perf/native-optimization",
+  "head_at_start": "3079d69a2142d2967553c8561395c30d0505d9cc",
+  "status": "implemented-tests-passing",
+
+  "problem": {
+    "statement": "The N8-40 policy-selected region dispatch (cylinder_longwave._lw_region_route -> _lw_dispatch.region_route -> resolve_lw_backend) is gated on the driver's parallel flag; the public pipeline call site computes parallel = get_runtime_options().threads_per_worker > 1, and the DX-pinned default threads_per_worker=1 makes the selector structurally unreachable at the ordinary no-env default. Native can never be the automatic default without a seam change.",
+    "driver_gate": "cylinder_longwave.py:387 'if parallel and rows*cols:' (single route-consult call site at :388)",
+    "wrapper_value": "engine.py:1655 'parallel=get_runtime_options().threads_per_worker > 1'"
+  },
+
+  "site_verification": {
+    "purpose": "Brief required confirming which public sites actually reach the LW region dispatch before touching anything.",
+    "confirmed": [
+      "engine.py:1655 (Solweig_2022a_calc anisotropic branch) is the ONLY public call site that reaches _lw_region_route: Lcyl_v2022a_by_demand (PIPELINE_CYLINDERS_ANISOTROPIC demand, set by pipeline.py:262 for the whole tile loop) -> Lcyl_v2022a_primary -> define_patch_characteristics_primary -> :388 _lw_region_route. This is the site the public pipeline drives every timestep; region/consumers.py:33 names define_patch_characteristics_primary as the sole consumer.",
+      "engine.py:1770 (engine.define_patch_characteristics wrapper) and engine.py:1778 (engine.Lcyl_v2022a wrapper) delegate to patch_radiation drivers, which never import cylinder_longwave and contain no route consult point. They cannot reach the region dispatch under ANY demand profile or H value.",
+      "engine.py:1762 (engine.Kside_veg_v2022a wrapper) is the shortwave side; untouched.",
+      "Lcyl_v2022a_by_demand has exactly one caller in src: engine.py:1655."
+    ],
+    "brief_correction": "The brief classifies :1770 as a cylinder-longwave call site that reaches the LW region dispatch. That is incorrect for this tree: :1770's driver (patch_radiation.define_patch_characteristics) has no region-dispatch consult point, and making it route-eligible would require either (a) a second selector consult path in patch_radiation -- forbidden by hard constraint 3 -- or (b) rerouting the public full-diagnostics drivers through the primary-output driver, which would drop the four cardinal outputs and change shipped public behavior -- forbidden. This is NOT a guardrail conflict that forced a change beyond the brief; it is a factual correction of the site inventory. The default objective is unaffected: the public pipeline's LW cost flows exclusively through :1655, which becomes route-eligible at H=1.",
+    "untouched_sites": ["engine.py:1762 (shortwave Kside)", "engine.py:1770 (public full-diagnostics define_patch_characteristics)", "engine.py:1778 (public full-diagnostics Lcyl_v2022a)", "patch_radiation.py (no changes at all)"]
+  },
+
+  "design": {
+    "rejected_candidates": [
+      {
+        "candidate": "Flip the wrapper to parallel=True unconditionally",
+        "why_rejected": "At H=1 the legacy path would switch from the serial njit kernels (_longwave_primary_serial / _longwave_fused_primary_serial) to the parallel prange variants: different kernel, extra thread usage, nonzero shipped-state delta in threading and code path. Violates shipped-state inertness (hard constraint 1)."
+      },
+      {
+        "candidate": "Thread the selector consult before the parallel gate at the driver with a serial-preservation flag",
+        "why_rejected": "Requires a new boolean threaded through Lcyl_v2022a_by_demand -> Lcyl_v2022a_primary -> define_patch_characteristics_primary so the driver can distinguish 'explicit parallel=False' from 'wrapper-derived False'. Same effect as the chosen mechanism but with a wider driver surface (a second policy-shaped parameter alongside parallel), and it forks route-eligibility into a flag that callers could set inconsistently with the parallel value. The chosen design achieves the identical distinction inside the existing parameter's value domain with zero new parameters."
+      },
+      {
+        "candidate": "Consult the route at the wrapper and pass an explicit route hint down",
+        "why_rejected": "Puts a selector consult (or its result) at the wrapper, creating a second selector consult path and a second place that must replicate the expert-env standdown -- violates hard constraint 3 (single interception point at cylinder_longwave._lw_region_route, no new env reads)."
+      }
+    ],
+    "chosen_mechanism": "Tri-state the parallel value at the existing seam, inside the existing parameter's domain. The wrapper at engine.py:1655 stops deriving a serial demand from H: threads_per_worker > 1 passes parallel=True (explicit parallel demand, byte-identical to today); threads_per_worker <= 1 passes parallel=None (NO explicit demand) instead of False. None is falsy, so every existing falsy-parallel branch in the driver family resolves exactly as parallel=False does today: _lw_kernel(None) -> _longwave_primary_serial, the fused block selector -> _longwave_fused_primary_serial, and the FULL_DIAGNOSTICS path enters patch_radiation normalized to bool(None)=False (patch_radiation stays boolean-domain and untouched). The one and only gate change is in define_patch_characteristics_primary: 'if parallel and rows*cols:' becomes 'if parallel is not False and rows*cols:' -- explicit False keeps the gate shut (driver-level serial demand pinned by test_serial_demand_never_dispatches is preserved verbatim), while None opens it so the EXISTING single consult point (_lw_region_route at :388) fires at H=1.",
+    "consult_location": "Unchanged: cylinder_longwave._lw_region_route (the package's only env-read standdown) -> _lw_dispatch.region_route -> resolve_lw_backend, once per routed driver call. No second consult path, no new env reads, selector taxonomy untouched.",
+    "new_parameters": "None. No signature changes anywhere; the seam reuses the existing parallel keyword's value domain (True / False / None).",
+    "serial_demand_preservation": "Driver-level parallel=False remains the ONLY serial demand: the route gate 'parallel is not False' excludes exactly False, so test_serial_demand_never_dispatches and every sibling keep their exact semantics with zero test edits. The wrapper's H-derived value at H=1 is no longer False, so it is no longer a serial demand -- that is the entire seam.",
+    "qualified_state_behavior": "With an injected qualified row (tests only), the public H=1 call opens the gate, the selector resolves row B/C, and _execute_row dispatches through the one bounded region owner whose threading is its own (BLOCK_FANOUT / self_parallel modes are independent of RuntimeOptions threads_per_worker -- the N8-40 driver-level tests already dispatch under default H=1 options). Row A/absent declines to None and the caller's legacy loop runs unchanged.",
+    "shipped_state_delta_statement": "With the shipped empty registry and no env, the public H=1 call takes the exact legacy serial path as today: bitwise-identical outputs, same serial kernels (_longwave_primary_serial / _longwave_fused_primary_serial), same thread usage (zero extra threads). The ONLY permitted and deliberate delta: exactly one resolve_lw_backend() registry read per public LW driver call -- the N7-fair per-call read already shipped at the driver boundary for H>1 since N8-40 -- plus the import of the vendored policy module inside region_route (pure Python, no execution machinery: an empty registry fails closed to row A before any of it is imported).",
+    "h_over_1_delta": "None. H>1 keeps parallel=True: the gate already consulted at H>1, so shipped H>1 behavior is bit-identical including the existing per-call selector read."
+  },
+
+  "diff_map": [
+    {
+      "file": "src/solweig_light/radiation/engine.py",
+      "lines": "1653-1655",
+      "change": "Site comment + 'parallel=True if get_runtime_options().threads_per_worker > 1 else None' at the by_demand call (was 'parallel=get_runtime_options().threads_per_worker > 1'). No other engine.py change."
+    },
+    {
+      "file": "src/solweig_light/radiation/cylinder_longwave.py",
+      "lines": "387",
+      "change": "Route gate 'if parallel and rows*cols:' -> 'if parallel is not False and rows*cols:'; tri-state contract documented on define_patch_characteristics_primary, Lcyl_v2022a_primary, Lcyl_v2022a_by_demand docstrings; FULL_DIAGNOSTICS branch normalizes parallel=bool(parallel) at the patch_radiation boundary."
+    },
+    {
+      "file": "tests/optimization_v8/integration/test_lw_public_seam.py",
+      "change": "NEW. Uniquely-named helpers only; no existing test modified."
+    },
+    {
+      "file": "optimization_v8_native_default/evidence/integration/n8_40b_public_seam_record.json",
+      "change": "NEW. This record."
+    }
+  ],
+
+  "working_tree_note_for_integrator": "Deliberate footprint is ONLY the four files above. Suite execution regenerated run-metadata evidence on tracked files (same class as any suite run): optimization_v8_native_default/evidence/installed/installed_gates.json (pytest tmp-dir numbers / budget figures rewritten by the installed suite) and optimization_v6_continue/evidence/{census,recipe}/raw/* (pid-named jsonl raws + summary counters regenerated when the exploratory out-of-scope full-repo pytest invocation ran the legacy v6 suites). Integrator may restore those with git checkout -- if the regenerated raws are not wanted; no src/ or tests/ file beyond the four above was touched.",
+
+  "tests": {
+    "new_file": "tests/optimization_v8/integration/test_lw_public_seam.py",
+    "cases": [
+      "test_public_wrapper_h1_passes_no_serial_demand: captured parallel kwarg at engine:1655 is None at H=1 and True at H=2 (seam semantics pinned at the call site)",
+      "test_shipped_h1_public_call_consults_once_and_stays_serial: shipped state, public calc at H=1 under PIPELINE demand: exactly one resolve_lw_backend call, '[absent]' in policy_reasons, region machinery untouched (region_spy empty), parallel njit kernel family zero calls, Ldown/Lside bitwise-identical (uint32) to the same call with _lw_region_route forced None (= today's behavior)",
+      "test_shipped_h2_public_call_identical_to_today: public calc at H=2: consult fires once (as today), region_spy empty, parallel kernel family taken / serial family zero, Ldown/Lside bitwise vs route-forced-None run",
+      "test_qualified_row_h1_public_call_dispatches_region: injected qualified row B, public calc at H=1: region_spy captures exactly one execute_regions with self_parallel consumer, numba kernel families zero calls in the routed run, Ldown/Lside bitwise vs legacy run",
+      "test_driver_explicit_serial_demand_never_dispatches_qualified: driver-level parallel=False under an INJECTED qualified row: zero selector consults, region_spy empty (strengthens the pinned shipped-state contract against the tri-state)"
+    ],
+    "existing_tests_modified": []
+  },
+
+  "suite_ladder": {
+    "invocations": "each preceded by a 1-min loadavg check (all >= 2.5; no benchmark-window stop fired)",
+    "integration": {
+      "command": "pytest tests/optimization_v8/integration -q",
+      "result": "14 passed (9 pre-existing N8-40 tests UNTOUCHED, incl. test_serial_demand_never_dispatches + 5 new seam tests)"
+    },
+    "policy_dx": {
+      "command": "pytest tests/optimization_v8/policy tests/optimization_v8/dx -q",
+      "result": "95 passed"
+    },
+    "region_layout_numba_native_artifacts": {
+      "command": "pytest tests/optimization_v8/region tests/optimization_v8/layout tests/optimization_v8/numba tests/optimization_v8/native tests/optimization_v8/artifacts -q",
+      "result": "1572 passed"
+    },
+    "installed": {
+      "command": "pytest tests/optimization_v8/installed -q",
+      "result": "13 passed / 6 skipped -- expected 13/6, decomposition unchanged"
+    },
+    "full_tree": {
+      "command": "pytest tests/optimization_v8/ -q -p no:cacheprovider (ONE invocation, alphabetical collection order)",
+      "result": "1972 passed / 6 skipped / 0 failed in 212.61s = baseline 1967 + exactly the 5 new tests; same 6-skip decomposition (all in installed/)",
+      "baseline_source": "tests/optimization_v8/ one-invocation full tree per n8_40_integration_record.json ('tests/optimization_v8/: 1963 passed, 6 skipped (full tree, one invocation)'), grown to 1967 at this HEAD by intervening suites"
+    },
+    "full_repo_out_of_scope_note": "A repo-wide 'pytest tests/ --ignore=tests/optional' invocation (6415 collected) mass-fails on the legacy optimization_v5/v6/v7 campaign suites (pre-existing cross-suite/thread-cap interference class documented in the v5 memory notes and n8_40 full_tree_failures.json) and on rasterio-gated tests/optional collection; that selection is NOT the team's canonical full tree and was not used for any conclusion."
+  },
+
+  "probe_evidence": {
+    "negative_control": {
+      "purpose": "Prove the new tests are sensitive to the seam, not vacuously green.",
+      "procedure": "git checkout -- the two changed src files; run tests/optimization_v8/integration/test_lw_public_seam.py; restore.",
+      "result": "4 failed / 1 passed pre-change: the H-value capture, shipped H=1 consult-once, qualified-row H=1 dispatch, and driver tri-state (False vs None) tests all FAIL on the pre-seam sources; only the no-regression H=2 test passes on both. Sources restored; final diff verified."
+    },
+    "shipped_state_delta_probe": {
+      "method": "Standalone script driving the real public calc (reference scene, PIPELINE demand) with a recording delegator on policy.resolve_lw_backend and a live-pool census.",
+      "H1": {"resolve_lw_backend_calls": 1, "live_pools_after": 0, "reasons": "[absent] no qualification records in the registry (shipped state: every non-legacy row disabled; auto resolves to legacy A)"},
+      "H2": {"resolve_lw_backend_calls": 1, "live_pools_after": 0, "reasons": "same '[absent]' fail-closed row A"},
+      "interpretation": "The entire shipped-state delta at H=1 is the single per-call registry read (0 before the seam); zero pools, zero machinery, fail-closed row A, serial legacy kernels (asserted per-kernel in the tests). H=2 is unchanged at one read."
+    },
+    "site_reach_probe": "grep + call-graph: _lw_region_route has exactly one call site (cylinder_longwave.py:388); patch_radiation.py never imports cylinder_longwave; Lcyl_v2022a_by_demand has exactly one src caller (engine.py:1655); region/consumers.py:33 names define_patch_characteristics_primary as the sole machinery consumer."
+  }
+}

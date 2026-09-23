@@ -1,0 +1,74 @@
+{
+  "schema": "sw8-n8-30-review-v1",
+  "review_of": "n841-3 install_assets diff on HEAD 194cb973 (uncommitted): pyproject.toml +1 glob, _native_dispatch/__init__.py docstring paragraph, +2 installed wheel-gate tests, suite-rewritten installed_gates.json; author n8-41-assets, this review independent",
+  "reviewer": "n8-rev-n8-41 (independent; did not author; also reviewed the underlying N8-41 vendoring separately)",
+  "review_utc": "2026-09-22T22:05Z",
+  "worktree": "/Users/alansynn/Workspace/solweig-v8-native @ HEAD 194cb973, branch perf/native-optimization, entire diff uncommitted (4 modified + 1 untracked draft, verified via git status)",
+  "verdict": "APPROVE-WITH-NOTES",
+  "blocking_defects": [],
+  "required_repairs": [],
+  "claims": [
+    {
+      "claim": "1. pyproject.toml: exactly ONE glob added, matching only the registry",
+      "status": "PASS",
+      "finding": "Diff is one line: 'backends/native/*.py' -> 'backends/native/*.py', \"_native_dispatch/*.json\" in [tool.setuptools.package-data] solweig_light. Executed find: the ONLY .json under src/solweig_light/_native_dispatch (recursive, incl. region/) is qualification_registry.json -- the non-recursive glob matches exactly that one file today."
+    },
+    {
+      "claim": "2. __init__.py: docstring-ONLY change",
+      "status": "PASS",
+      "finding": "Single hunk, +15/-0, entirely inside the module docstring (closing '\"\"\"' and 'from pathlib import Path' are context lines). No import/def/assignment/export changes. New paragraph records the designed '[absent]' wheel story and the maintainer-tree-only promotion_gate disposition."
+    },
+    {
+      "claim": "3. +2 wheel-gate tests are non-vacuous on pre-existing fixtures",
+      "status": "PASS",
+      "finding": "HEAD module has 7 tests -> 9. json/zipfile imports, GATE_RECORD/REPO_ROOT (installed_test_helpers), _run=run_cmd (signature (cmd, *, env, cwd, timeout)), and fixtures built_wheel/wheel_venv all pre-exist at HEAD (conftest.py:118/153; wheel_venv dict carries python/path/site_packages). (a) Membership test asserts the wheel member exists, zf.read(...) == SHIPPED_REGISTRY.read_bytes() (byte identity to the single source), and json records == []. Non-vacuity of the membership assert is structural AND observed: no MANIFEST.in, no include-package-data setting, no SCM plugin in build requires (setuptools>=77 only) -- without the glob setuptools ships no package .json, which is exactly the D4 accident recorded at the vendoring state. (b) The probe test executes resolve_lw_backend in the wheel venv and asserts row A / 'auto-legacy' / expert False / record None; DEFAULT_REGISTRY_PATH under wheel_venv site_packages (not the repo tree); reason startswith '[absent]' and contains 'no qualification records'; '[malformed]' and 'unreadable/invalid' both explicitly banned. At HEAD this test would fail (missing file -> '[malformed] ... unreadable/invalid' reason), post-diff it passes -- recorded in the coordinator's run as GATE_RECORD['registry_gate'] with the pytest-861 site-packages path."
+    },
+    {
+      "claim": "4. installed_gates.json: run-scoped metadata + exactly one additive status section",
+      "status": "PASS",
+      "finding": "Full 142-line diff categorized: all removed/changed lines are run-scoped metadata (tmp paths pytest-861, pids, timestamps, memory numbers in unchanged messages, numba cache dir hashes, run-scoped wheel sha256 c48eda6f...). Status lines old-vs-new: HEAD 3 ('blocked:host-memory-pressure' x2, surface 'passed') -> new 4, the addition being registry_gate {status: passed, wheel_member, byte_identical_to, installed_registry_path (site-packages), resolution {row A, auto-legacy, '[absent] ...'}}. Deferred-gates list structurally IDENTICAL (diff of parsed JSON: empty). Both no-env gates still blocked:host-memory-pressure; surface_gate still passed. NOTE: the file reflects the COORDINATOR's rerun (pytest-861), not the author's (pytest-858) -- as the task brief itself flagged; the rewrite is done by the suite's pytest_sessionfinish, not hand-edited, so this is the expected mechanism."
+    },
+    {
+      "claim": "5. Suite counts: installed 13/6 (coordinator-given), full tree 1967/6/0",
+      "status": "PASS",
+      "finding": "Installed 13 passed / 6 skipped taken as given from the coordinator's reproduction (154.34s). FULL TREE rerun by this review, ONE invocation: 1967 passed / 6 skipped / 0 failed in 200.87s = baseline 1965 + exactly the 2 new tests; 6 skips = 4 unconditional deferred gates + 2 host-memory-pressure (unchanged decomposition). The 4 warnings are the pre-existing set (1 native cast RuntimeWarning + 3 region fork DeprecationWarnings) already attributed in the vendoring review. Loadavg checked before each execution: 6.10 / 4.69 / 3.80 -- all >= 2.5; full tree started away from the quiet-window marks. No commits, no builds beyond the suite's own fixture, nothing timed."
+    },
+    {
+      "claim": "6. Promotion-gate disposition: unreachable in shipped state; loud ModuleNotFoundError mechanics; vendoring-draft wording correction accurate",
+      "status": "PASS",
+      "finding": "Control flow read in full: _assess_promotion has exactly ONE caller, line 539 inside validate_row_record, which runs only in the per-record loop of resolve_lw_backend. The auto path with the shipped-empty registry returns at 'if not records: Selection(ROW_A, \"auto-legacy\", \"[absent] no qualification records ...\")' BEFORE any record validation; the expert path returns at step 1 (records never consulted); unknown legacy values return at step 2. So no shipped-state resolve reaches _assess_promotion. Mechanics verified: _assess_promotion inserts REPO_ROOT/'optimization_v8_native_default'/'tools' on sys.path (inserting a nonexistent dir does not raise) and 'import promotion_gate' sits OUTSIDE the defensive try (only promotion_gate.assess is wrapped) -- in an installed tree REPO_ROOT (MODULE_DIR.parents[2]) resolves under the venv (e.g. <venv>/lib/python3.12), the tools dir does not exist, and the import raises ModuleNotFoundError that propagates out of resolve_lw_backend: loud, never a mis-qualification. The committed vendoring draft's promotion_gate_resolution.proper_fix indeed says 'fail loud (FileNotFoundError on import)' -- inaccurate on both exception type and moment; the correction in this draft is mechanically exact. (Also checked: even a crafted record reaching validation in a non-repo tree fails earlier -- _repo_contained_path rejects non-contained module/promotion paths.)"
+    },
+    {
+      "claim": "7. Shipped-state invariance in the repo tree",
+      "status": "PASS",
+      "finding": "git status: no src file touched except the docstring-only __init__.py; pipeline.py, cylinder_longwave.py, all vendored machinery untouched. tests/optimization_v8/integration/test_lw_dispatch.py is not modified (not in git status), and the integration+dx segment rerun by this review: 16 passed in 2.61s, including test_explicit_expert_env_stays_with_legacy_route."
+    },
+    {
+      "claim": "8. dx cosmetic: branch_surface.json stale package_data is real, unasserted, gates green",
+      "status": "PASS",
+      "finding": "Executed: evidence/dx_baseline/branch_surface.json line 60 lists the PRE-n841-3 package_data (no '_native_dispatch/*.json') -- milestone-frozen, one milestone behind, exactly as claimed. dx_snapshot._asserted_leaves enumerates the asserted contract leaves and package_data is NOT among them (name/version/requires_python/console_scripts/dunder_version/all/workflows/runtime_options.fields/runtime_all/runtime_functions/dataclass_records/cli.* only), so the dx gates are insensitive to the glob; the dx segment passed 16/16 in this review's run."
+    }
+  ],
+  "notes": [
+    "N1: The glob is non-recursive ('_native_dispatch/*.json'): a JSON ever added under _native_dispatch/region/ would NOT ship. No such file exists today; flag for the native-wheel step if assets ever land in subpackages.",
+    "N2: registry_gate's 'byte_identical_to' and 'installed_registry_path' are absolute run-scoped paths (repo + coordinator tmp) -- consistent with the file's existing run-scoped convention; no action.",
+    "N3: The docstring's 'fails loudly -- never mis-qualifying' is verified as ModuleNotFoundError-from-import; if the wheel story is ever revisited, the invariant to preserve (missing tool never lets a record qualify; shipped-empty registry keeps the whole path unreachable) is correctly recorded in the draft's guard_property_for_future_work.",
+    "N4: Evidence provenance: the committed installed_gates.json will record the COORDINATOR's run (pytest-861); the author's own run (pytest-858) survives only in the draft. Both suites were 13/6, so the recorded gate outcomes are the same either way -- fine, but the commit message should not claim the file is the author's run.",
+    "N5: Non-vacuity of the membership test is structural (setuptools ship mechanics) plus the D4-era accident record, not re-executed against a pre-diff wheel by this review (that would require a second build; the coordinator's single run covers the post-diff side). Judged sufficient: the mechanism is deterministic."
+  ],
+  "rerun": {
+    "command_sets": [
+      {"command": ".venv/bin/python -m pytest tests/optimization_v8/integration/ tests/optimization_v8/dx/ -q", "result": "16 passed in 2.61s (incl. test_explicit_expert_env_stays_with_legacy_route untouched and green; dx gates green against the stale-but-unasserted baseline)"},
+      {"command": ".venv/bin/python -m pytest tests/optimization_v8/ -q", "result": "1967 passed, 6 skipped, 0 failed in 200.87s (one invocation; baseline 1965 + exactly the 2 new tests)"}
+    ],
+    "probes": [
+      "Glob audit: only qualification_registry.json matches under _native_dispatch (recursive find)",
+      "Fixture provenance: built_wheel/wheel_venv/_run/GATE_RECORD/REPO_ROOT/zipfile/json all pre-exist at HEAD; test count 7 -> 9",
+      "Gates diff: statuses 3 -> 4 (only addition registry_gate passed); deferred list parsed-JSON identical; both no-env gates still blocked:host-memory-pressure",
+      "Control flow: single _assess_promotion call site inside validate_row_record; auto path returns at '[absent]' before validation; 'import promotion_gate' outside the defensive try -> ModuleNotFoundError propagates in an installed tree"
+    ],
+    "interpreter": "/Users/alansynn/Workspace/solweig-v8-native/.venv/bin/python",
+    "timed_benchmarking": "none"
+  },
+  "scope_guard": "no commits, no edits outside evidence/reviews/ and /tmp; no build beyond the suite's own wheel fixture (coordinator's installed-suite run taken as given); loadavg >= 2.5 before every execution"
+}

@@ -1,0 +1,130 @@
+{
+ "schema": "sw8-n8-30-review-v1",
+ "review_of": "experiments/optimization_v8/loader/native_handle.py + bench_leaf_compare.py; tests/optimization_v8/loader/{conftest.py,test_native_handle.py}",
+ "review_target_task": "N8-10 workflow-owned native handle (dossiers/01_measurement_and_loader.md 'Handle lifecycle')",
+ "reviewer": "n8-30 review service (independent; did not author N8-10)",
+ "review_utc": "2026-09-22",
+ "worktree": "/Users/alansynn/Workspace/solweig-v8-native @ 16cdc56c (perf/native-optimization)",
+ "verdict": "APPROVE-WITH-NOTES",
+ "blocking_defects": [],
+ "required_repairs": [],
+ "notes": [
+  {
+   "id": "N1",
+   "severity": "note",
+   "where": "tests/optimization_v8/loader/test_native_handle.py:63-99 (IoSpy._TARGETS)",
+   "finding": "Two theoretical spy blind spots, confirmed empirically on this host (py 3.12.13): (a) pathlib file reads (read_text/read_bytes -> io.open) are NOT counted -- io.open is the same function object as builtins.open but a distinct module attribute, so patching builtins.open leaves pathlib reads invisible (probe: counts stayed {} for Path.read_text); (b) os.scandir/os.listdir and C-level opens (np.load) are unspied. Not blocking: every op class the OLD per-call path performed (native_lw.py:49-115: mkdir, dylib/stamp exists, stamp read_text+json.loads, kernel read_bytes, sha256, CDLL, which, subprocess) still has at least one spied chokepoint (Path.exists/is_file and os.path.exists route through os.stat at call time on 3.12 -- probe counted 3/3; the kernel read exists only to be hashed -> hashlib.sha256; the stamp read only to be json.loads-ed). Independently, the structural read of execute() (native_handle.py:412-518) and of every helper it calls (lw_native.py:102-160) contains no IO of any kind, and entries/argtypes are bound eagerly at prepare (native_handle.py:538-546), so there is no lazy init left to fire inside execute() on any input class.",
+   "repair_if_touched": "Add (io, 'open', 'io.open') and (os, 'scandir', 'os.scandir') to IoSpy._TARGETS."
+  },
+  {
+   "id": "N2",
+   "severity": "note",
+   "where": "tests/optimization_v8/loader/test_native_handle.py:421-427",
+   "finding": "The pairwise-distinct taxonomy assertion uses `a is not b` (object identity), which would not catch one class being a SUBCLASS of another. The property itself holds -- all five are direct sibling subclasses of NativeHandleError (native_handle.py:114-144) and `not issubclass(a, UnsupportedInput)` is asserted -- but the assertion is weaker than its comment suggests.",
+   "repair_if_touched": "Assert `not (issubclass(a, b) or issubclass(b, a))` for each pair."
+  },
+  {
+   "id": "N3",
+   "severity": "note",
+   "where": "experiments/optimization_v8/loader/native_handle.py:575-587",
+   "finding": "The in-lock double-check consults only _REGISTRY, not _NEG_CACHE. Two same-key threads that both pass the fast path before a failure is cached will each re-run full artifact validation (redundant IO, ~ms scale; steady-state caching is separately proven by test_missing_artifact_never_builds_and_is_cached:445-448, retry does zero IO). No correctness impact.",
+   "repair_if_touched": "Also re-read _NEG_CACHE.get(key) in the double-check and raise it."
+  },
+  {
+   "id": "N4",
+   "severity": "note",
+   "where": "experiments/optimization_v8/loader/native_handle.py:163-166,528; _REGISTRY never evicted",
+   "finding": "Real-fork coverage and multi-threaded fork: the reviewer additionally ran a REAL os.fork probe (beyond the author's pid-injection test): the child raised StaleNativeHandle on the parent handle, re-prepared a distinct handle under its own pid, and reproduced the parent's output bitwise -- the pid guard genuinely re-prepares in a forked child. Remaining edges are out of N8-10 scope but must be carried: (a) a fork WHILE another thread holds _REGISTRY_LOCK/_dir_lock could deadlock the child (inherent to lock-based modules; ARCHITECTURE permits 'only spawn-based execution is supported and tested'; fork-vs-spawn policy belongs to the pool owner N8-14); (b) _REGISTRY grows one entry per (pid, generation, dir, ...) key -- negligible per workflow, but a long-lived process bumping new_workflow_generation per tile accumulates handles/CDLLs (retention is intentional per the no-dlclose rule).",
+   "repair_if_touched": "N8-14 integration: state the fork policy explicitly; consider bounding registry size per pid."
+  },
+  {
+   "id": "N5",
+   "severity": "note",
+   "where": "experiments/optimization_v8/loader/native_handle.py:305-328 (_verify_manifest_if_present)",
+   "finding": "A present manifest.json whose 'files' is absent or non-dict passes silently (comment defers full schema validation to N8-21), and member paths are joined as artifact_dir / rel WITHOUT containment checks -- a manifest entry like '../x' or a special file would be hashed (potentially unbounded read, e.g. a FIFO); members are only ever hashed, never executed, so this is a robustness edge, not a code-execution vector. ARCHITECTURE requires 'path containment and no symlink escape' for the packaged loader.",
+   "repair_if_touched": "N8-21: reject non-dict files, and require rel paths that resolve inside artifact_dir with no symlink escape before hashing."
+  },
+  {
+   "id": "N6",
+   "severity": "note",
+   "where": "experiments/optimization_v8/loader/bench_leaf_compare.py (whole file) vs evidence/ tree",
+   "finding": "The leaf-timing numbers (B=128: A=187.2us C0=177.6us H=83.3us E=70.9us, A/H=2.25x, C0-H=94.3us; B=1024: A=407.7us H=575.0us anomaly) exist ONLY in the author's handover message -- no bench stdout was archived under optimization_v8_native_default/evidence/. The labelling itself is correct and protocol-consistent (see obligation 6), and the arithmetic is internally consistent (177.6-83.3=94.3; 187.2/83.3=2.247; removed-prep 94.3us is direction-consistent with, and below, n8_02's warm 131us in-pipeline loader measurement -- plausible under different cache/host conditions). But the b1024 anomaly is explicitly deferred to N8-13's quiet window; a deferred question needs a durable record of the anomalous raw numbers to compare against later. TASKS_CLAUDE.yaml gates for N8-10 do not mandate an evidence file, so this is a hygiene note, not a gate failure.",
+   "repair_if_touched": "Archive the bench stdout (with loadavg lines) as evidence before or at N8-13's quiet-window rerun."
+  },
+  {
+   "id": "N7",
+   "severity": "note",
+   "where": "tests/optimization_v8/loader/test_native_handle.py:168,468 (reflection_factor provenances)",
+   "finding": "Carried forward from n8_30_review_n8_04_contract note 1: the 0-d float32 ndarray reflection_factor provenance (admitted by _reflection_spec, lw_native.py:140-141) is still not positively bitwise-exercised anywhere (tests use np.float32 scalars; Python-float rejection IS tested here at mutate='python_refl'). The handle reuses the identical helper as the shipped path, so there is no NEW exposure -- but N8-13 should pin it when the consumer lands.",
+   "repair_if_touched": "Add one positive 0-d-ndarray case to the parity grid."
+  }
+ ],
+ "obligation_findings": {
+  "1_io_freedom_claim": {
+   "status": "PASS",
+   "evidence": [
+    "Spy scope is correct: IoSpy is armed ONLY around the execute loop (test:163-176) and around identity() (test:190-192); prepare happens before arming, so warm-path proof is not diluted by expected prepare IO. Strongest form: there is NO warmup execute before arming -- the first f64 call, first f32 call, first caller-out call and every first bundle-shape all occur under the armed spy (150 executes; entry counters match the tally exactly: test:176-177).",
+    "Old-path op-class coverage: the per-call path (native_lw.py:49-115 via native_longwave_primary:130 -> _ensure_loaded) performs mkdir, dylib.exists, stamp.exists, stamp.read_text+json.loads, kernel.read_bytes, sha256, and on a build ispc-which+subprocess -- each has at least one spied chokepoint (os.mkdir/makedirs/stat/lstat; json.loads/load; hashlib.sha256; subprocess.run/Popen; ctypes.CDLL; shutil.which). os.stat chokepoint empirically intercepts Path.exists/is_file and os.path.exists on py3.12. Blind spots (io.open via pathlib, scandir, C-level opens) documented as note N1 -- structurally irrelevant because execute() contains no IO.",
+    "Lazy-init audit: execute() (native_handle.py:412-518) resolves _getpid at call time, then calls only the pure lw_native validation helpers (_need_array/_need_c_contig/_scalar_spec/_reflection_spec/_buffer/_extent/_ranges_overlap -- numpy introspection and pointer arithmetic only, lw_native.py:102-160), np.zeros/np.empty/view, and the pre-bound entry pointer. Both f32/f64 entries AND their argtypes/restype are set eagerly at prepare (native_handle.py:538-547), so no ctypes/dlopen init can fire lazily on first call, first spec, or first caller-out. B=0 returns np.zeros((0,7)) before touching any pointer (native_handle.py:436-438; no-C-entry proven at test:180-185; np.zeros does no filesystem IO)."
+   ]
+  },
+  "2_guard_for_guard_fidelity": {
+   "status": "PASS (input rejection set and order identical; one dossier-MANDATED addition; sanctioned non-input class changes only)",
+   "evidence": [
+    "Line-by-line diff of native_handle.execute (native_handle.py:428-488) vs lw_native.primary (lw_native.py:169-219): sh f32/2d; P in 1..609 (431-433 vs 172-173); B<0 (435 vs 174-175); B==0 -> zeros((0,7)) before any pointer (436-438 vs 176-178); vs/vb shape==sh.shape + C-contig itemsize 4 (440-443 vs 180-183); sun/shade bool 2d sh.shape + contig 1 (444-446 vs 184-186); solid/sine/cosine f32 (P,) + contig 4 (447-450 vs 187-189); solar_gate bool (P,) strides==(1,) (451-454 vs 190-192); sky_down/sky_side f32 (P,) any stride incl. negative (455-456 vs 193-194; stride passed as strides[0]//4, correct floor-division for negative strides); directions f32 (P,4) / gate bool (P,4), layout unrestricted (never read) (457-458 vs 195-196); lup f32 (B,) + contig (459-460 vs 197-198); _scalar_spec(surface_sun) vs _scalar_spec(surface_sh) equality incl. unsupported-provenance raises (462-467 vs 200-204); _reflection_spec (468 vs 205); out f32 2d (B,7) + C-contig + byte-extent alias rejection over ALL 14 array inputs (470-488 vs 207-219). Same UnsupportedInput class throughout -> the caller's fallback decision (cylinder_longwave.py:198-204 catches exactly UnsupportedInput) is unchanged. No missing check found.",
+    "Entry invocation argument order is byte-identical to the shipped call (native_handle.py:500-512 vs lw_native.py:231-243), including bool-as-uint8 zero-copy views and the two explicit sky element strides.",
+    "The single ADDITION -- out.flags.writeable rejection (native_handle.py:473-477) -- is required by dossier 01 ('ensure it is writable, properly sized and nonoverlapping before native writes'): the shipped adapter would write through the raw C pointer into read-only pages (silent corruption); the handle converts that to a pre-launch UnsupportedInput decline (caller falls back). Correctly ordered before the extent/alias loop; sized via _need_array(out,...,(B,7)); nonoverlap by byte extent (_extent/_ranges_overlap half-open spans).",
+    "Sanctioned non-input divergences, none touching input rejection: post-launch exceptions wrapped NativeExecutionError (native_handle.py:513-517; contract n8_04_typed_lw_contract.md sec.3 'post-launch failures propagate' -- loud RuntimeError, never caught by _dispatch, proven at test:244-257); pid checked first -> StaleNativeHandle (422-426); gang/ISA validated at prepare -> UnsupportedNativeISA instead of the shipped per-call UnsupportedInput/FileNotFoundError for gang misuse or missing dylib (capability/configuration failure, outside the 17-arg input domain, per ARCHITECTURE capability-vs-input separation)."
+   ]
+  },
+  "3_error_taxonomy": {
+   "status": "PASS",
+   "evidence": [
+    "Five sibling subclasses of NativeHandleError(RuntimeError): MissingNativeArtifact, CorruptNativeArtifact, UnsupportedNativeISA, NativeExecutionError, StaleNativeHandle (native_handle.py:114-144). None is or subclasses UnsupportedInput (TypeError); asserted at test:420-427 (see note N2 on assertion strength).",
+    "Auto-decline vs expert-loud wording separation exists as required: MissingNativeArtifact carries 'auto: the planner declines native pre-launch and keeps Numba. expert: build it explicitly with expert_build(...)' (native_handle.py:260-264, asserted at test:377); CorruptNativeArtifact stamp mismatch carries 'auto: decline native. expert: rebuild' (native_handle.py:298-301). ISA messages state the qualified domain without auto/expert routing (capability failure) -- consistent.",
+    "Missing artifact never builds: the prepare path calls only _validate_artifact + _load_entries; the only subprocess in the module is inside expert_build, which no prepare path references (verified by reading prepare_native_handle, native_handle.py:550-592). Proven at test:439-443 (zero subprocess.run/Popen on the miss) and the cached failure does zero IO on retry (test:445-448)."
+   ]
+  },
+  "4_lifetime_concurrency": {
+   "status": "PASS",
+   "evidence": [
+    "PID guard re-prepares in the child: execute resolves the module-global _getpid at call time (native_handle.py:422; test injects via nh._getpid, native_handle re-reads it -- sound). Beyond the author's simulation the reviewer ran a REAL os.fork probe: child raised StaleNativeHandle on the parent handle, prepare_native_handle in the child loaded a FRESH CDLL under the child's pid (registry key includes pid, native_handle.py:525-529), and output matched the parent bitwise. Parent handle kept working after the child exited.",
+    "Generation semantics per ARCHITECTURE: new_workflow_generation mints a token and clears _NEG_CACHE (native_handle.py:181-189) so new workflows retry unavailable capability; a RUNNING workflow keeps its already-issued handle (h1 still executes after the bump, test:313-323; the library stays resident). Negative cache is per (pid, generation, key) and cannot shadow a different dir (test:457-464); a new generation re-attempts IO (test:450-454).",
+    "Double-checked locking is closed deterministically, not by luck: same-key prepares serialize on the per-artifact-directory lock (_dir_lock, native_handle.py:170-178); the winner validates, loads and publishes under _REGISTRY_LOCK INSIDE the dir lock (590-591); the loser's recheck (576-579) happens after it acquires the dir lock, hence necessarily after publication -- exactly one CDLL and one shared handle object under any schedule. The 20ms-slowed _sha256_file (test:269-276) widens the validation window so 8 threads genuinely contend rather than finishing sequentially; correctness itself rests on lock ordering, not timing. expert_build publishes under the same per-dir lock with atomic renames and stamp LAST (642-670), so a concurrent reader sees old-complete or new-complete state.",
+    "No dlclose anywhere in the module; the CDLL owner is held in the handle slot and the registry never evicts -- 'retaining a loaded library until process exit' as the dossier requires (test_prepare_does_not_mutate_lw_native_globals additionally pins that lw_native._LIBS/_LIB_DIR are never touched; grep confirms zero assignments to lw_native attributes)."
+   ]
+  },
+  "5_bitwise_parity": {
+   "status": "PASS (rerun by reviewer)",
+   "evidence": [
+    "Rerun: .venv/bin/python -m pytest tests/optimization_v8/loader/ -q -> 122 passed in 3.11s, 0 skipped (so the real-artifact fixture path ran: user-cache dylibs accepted through the loader's own stamp/digest gate, and the real-ispc expert_build test executed). Combined with the reference suite: 234 passed -- exactly the author's claim.",
+    "Grid provenance verified: conftest imports tests/optimization_v8/reference/test_typed_graph_identity.py READ-ONLY via importlib under 'lw_identity_grid' (conftest:40-45); --collect-only confirms exactly 96 parametrized cases of test_handle_bitwise_equals_current_path_and_oracle (B in {1,7,8,9,11,13} x P in {1,2,3,5,7,11,13,153} x surface_st in {f64,f32} -- the frozen N8-04 grid minus the separately-tested B=0 and P=609 points).",
+    "Double-sided uint32 comparison: oracle.bitwise_equal is np.array_equal on uint32 views (lw_reference_oracle.py:168-173 -- exact, NaN payloads and signed zeros included); the test compares handle output against BOTH the oracle AND the shipped path native_lw.native_longwave_primary (test:498-503). Extras: stride-12/one-element/negative-stride sky columns vs both Numba and shipped (test:506-533), P=609 boundary and B=0 zero frame (test:536-543), caller-out written bitwise and returned-is-out (test:546-552)."
+   ]
+  },
+  "6_timings_labelling": {
+   "status": "PASS WITH NOTES (labelling correct; numbers not yet archived -- note N6)",
+   "evidence": [
+    "The bench self-labels as leaf-level, synthetic and ambient-contaminated: docstring 'Uninstrumented paired-rep timing ... SYNTHETIC leaf-level' (bench:13-23), loadavg printed at start and end (bench:81,177), explicit ambient note 'shared 10-core host; other optimization agents may be active' (bench:178-179).",
+    "The 2.25x claim is leaf-level only and printed as such ('A/H speedup of native handle vs Numba', bench:157-158). The island extrapolation block multiplies leaf medians by n8_02 call counts and CITES n8_02's own 1.62x counterfactual rather than replacing it (bench:160-169) -- consistent with BENCHMARK_PROTOCOL (leaf_kernel: 'no claim of application gain'; C0 'explains regression but does not replace A0/B1 controls'). No end-to-end or installed-pipeline claim is made anywhere in the artifact.",
+    "The b1024 H>A anomaly (A=407.7us, H=575.0us; raw kernel ~2x n8_02's) is reported raw and deferred to N8-13's quiet window rather than explained away -- matching the protocol's 'Delay or mark uncertainty rather than consuming unlimited experimental runs' and dossier 01's 'do not launch a new 1024 campaign merely to resolve a microsecond result'. Arithmetic internally consistent: C0-H=94.3us; A/H=2.247~=2.25x; removed-prep 94.3us is direction-consistent with (below) n8_02's 131us warm in-pipeline loader cost under different cache/host conditions.",
+    "The E arm (raw pre-marshaled ctypes entry) is labelled 'diagnostic only, not a shipping arm' (bench:119-121) and uses flattened contiguous sky columns -- acceptable as a decomposition diagnostic provided it is never quoted as a shipping arm."
+   ]
+  },
+  "7_ownership": {
+   "status": "PASS",
+   "evidence": [
+    "git status --porcelain at review time: only untracked additions (benchmarks/fixtures/, benchmarks/protocols/optimization_v8/, experiments/, optimization_v8_native_default/, tests/optimization_v8/, tools/optimization_v8/); git diff HEAD --stat is EMPTY -- zero tracked files modified, so src/ is untouched.",
+    "N8-10's footprint matches its TASKS_CLAUDE.yaml owned_scope exactly: experiments/optimization_v8/loader/{native_handle.py,bench_leaf_compare.py} and tests/optimization_v8/loader/{conftest.py,test_native_handle.py}. Sibling untracked dirs (layout/, packaging/, dx/, reference/) correspond to parallel wave-1 tasks' owned_scope (N8-11, N8-20, N8-23, N8-04).",
+    "lw_native is used strictly read-only: attribute reads at import (native_handle.py:80-93,101) and _PROTO copied by value (540); grep for assignments to lw_native attributes returns NONE; _LIBS/_LIB_DIR identity pinned across prepare+execute by test_prepare_does_not_mutate_lw_native_globals (test:467-474)."
+   ]
+  }
+ },
+ "review_method": [
+  "Read dossiers/01_measurement_and_loader.md, ARCHITECTURE.md (four lifetimes, NativeHandle row), evidence/contract/n8_04_typed_lw_contract.md, n8_30_review_n8_02_profile.json (measured per-call IO chain), TASKS_CLAUDE.yaml N8-10 entry, BENCHMARK_PROTOCOL.md, VALIDATION_POLICY.md.",
+  "Full read of the artifact under review (native_handle.py 684 lines, bench_leaf_compare.py, both test files) and line-by-line guard diff against src/solweig_light/backends/native/lw_native.py primary() and the shipped dispatcher src/solweig_light/backends/native_lw.py (per-call IO inventory) and src/solweig_light/radiation/cylinder_longwave.py _lw_kernel (fallback contract).",
+  "Rerun: pytest tests/optimization_v8/loader/ -q (122 passed), pytest loader+reference -q (234 passed), pytest --collect-only for the 96-case grid count.",
+  "Independent probes (read-only, no repo edits): IoSpy blind-spot probe on py3.12.13 (pathlib io.open vs builtins.open; os.stat chokepoint for Path.exists/is_file/os.path.exists); REAL os.fork probe of the pid guard (stale rejection in child, fresh CDLL re-prepare, bitwise-equal output).",
+  "NOT rerun: the leaf bench itself (host is the same shared/contaminated host the ambient labels describe; a rerun adds noise, not evidence -- magnitudes cross-checked against n8_02 raw instead). No files written outside optimization_v8_native_default/evidence/reviews/."
+ ]
+}

@@ -1,0 +1,25 @@
+{
+  "schema": "solweig-backend-final-freeze-v1",
+  "status": "template_not_frozen",
+  "corpus_kind": "actual_target",
+  "source_sha": null,
+  "dependency_sha256": null,
+  "fixture_set_sha256": null,
+  "reference_set_sha256": null,
+  "backend_id": null,
+  "clock_boundary": null,
+  "cache_regime": null,
+  "resource_envelope": {
+    "cpu_budget": null,
+    "memory_budget_bytes": null
+  },
+  "target": {
+    "spatial_tiles": 24,
+    "rows": 1024,
+    "cols": 1024,
+    "timesteps_per_tile": 24,
+    "patches": 153,
+    "seconds": 1800
+  },
+  "jobs": []
+}

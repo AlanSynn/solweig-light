@@ -1,0 +1,1 @@
+{"fixture": "adv4096", "boundary": "kernel_only", "schedule": "parallel", "label": "kernel_adv4096_parallel_4T", "variant": "C_native", "adapter": "/Users/alansynn/Workspace/solweig-light/tools/optimization_v7/adapter_c_native.py", "reps": 4}

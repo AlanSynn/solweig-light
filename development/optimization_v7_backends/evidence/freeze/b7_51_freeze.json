@@ -1,0 +1,47 @@
+{
+ "schema": "solweig-v7-b7-51-freeze-v1",
+ "task": "B7-51 final source/protocol freeze",
+ "frozen_utc": "2026-09-22T07:04:14Z",
+ "head": "009a1e661ccaabd025a306d64babe54c68e936d3",
+ "branch": "perf/cpu-optimization (unmerged, unpushed)",
+ "protected": {
+  "baseline_reducer_blob": "27ba6ce48454399c7b97285c8408511d050a32da (verified unchanged; both kernels byte-identical)",
+  "default_path": "SOLWEIG_LIGHT_LW_BACKEND unset returns the untouched numba kernel objects (44 protected regression tests green)",
+  "seven_apis": "unchanged; only dispatch-site kernel resolver + import os added to cylinder_longwave.py"
+ },
+ "files": {
+  "src/solweig_light/radiation/cylinder_longwave.py": "6591d6a9190b8199fa3bf94c64d1f241d55835c00a6aee1a6fb4d2b53658efa0",
+  "src/solweig_light/backends/native_lw.py": "738458d1f936d3fcc36fb6e0405338859af4951501a20482be3cedb5ed244017",
+  "src/solweig_light/backends/native/lw_primary.ispc": "52652a598cd85ead04747a83a52b1184035c880aa0b32cf518efef06b961663c",
+  "src/solweig_light/backends/native/lw_native.py": "a1ce7547562a44a9548f9c34ccd3c3f0f0c5aaac4ed130975eb894bbe562ddd6",
+  "benchmarks/protocols/optimization_v7/b7_03_protocol.json": "4e7b1709c7bac467d11e912574a058fb38b96b0bb3ebb7b6a59d886843d75f03",
+  "optimization_v7_backends/evidence/captures/b7_02_fixtures.npz": "4a48530a0a517c194cecc0bf564458fa43e55453df78dd288a4d78217d16ad76"
+ },
+ "qualification": {
+  "protected_regression": "44 passed (tests/optimization_v6/cylinder_lw + tests/optimization_v7/reference)",
+  "integration": "7 passed incl. spy-verified 520-call bitwise native replay",
+  "chronology_serial": "native == default bitwise, 10 files, default runs deterministic",
+  "chronology_concurrency": "native under tpw4 == default bitwise, 10 files",
+  "fused_route": "untouched (fused path does not use the kernel resolver)"
+ },
+ "actual_target": "UNVERIFIED: 24-tile 1024^2 corpus absent (freeze/b7_51_corpus_availability.json); B7-52 campaign remains blocked; no substituted scenes permitted",
+ "environment": {
+  "baseline_venv": "python 3.12.13 / numba 0.67.0 / numpy 2.4.6 (oracle, unmutated)",
+  "worktree_venvs": "python 3.12.13 / numba 0.67.0 / numpy 2.4.6 (+drjit 1.5.0 where needed)",
+  "toolchains": "ISPC 1.31.0 (LLVM 22.1.8), Apple clang arm64; dylib built on demand with FMA-audit gate"
+ },
+ "post_freeze_addendum": {
+  "note": "HEAD advanced past the frozen source sha by evidence-only commits; no src/ or tests/ file changed after the freeze pin.",
+  "commits": [
+   {
+    "sha": "4ab7961a",
+    "what": "this freeze record itself"
+   },
+   {
+    "sha": "fc3f4f68",
+    "what": "drjit F1 repair landing (evidence prose only; llvm_longwave.py sha re-verified 592d12a2 identical to trial records; worktree src/tests bit-clean)"
+   }
+  ],
+  "verify": "git diff 009a1e66..HEAD --stat -- src tests -> empty"
+ }
+}

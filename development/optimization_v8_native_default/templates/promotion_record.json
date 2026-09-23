@@ -1,0 +1,21 @@
+{
+  "schema": "sw8-default-promotion-record-v1",
+  "status": "pending",
+  "evidence_kind": "template_not_execution",
+  "protocol_frozen_before_candidates": false,
+  "branch": "perf/native-optimization",
+  "source_sha": null,
+  "protocol_sha256": null,
+  "artifact_sha256": null,
+  "qualification": {
+    "numeric": "pending",
+    "dx": "pending",
+    "installed_wheel": "pending",
+    "source_fallback": "pending",
+    "independent_review": "pending",
+    "resources": "pending",
+    "cold_first_use": "pending"
+  },
+  "cells": [],
+  "actual_target_status": "unverified"
+}

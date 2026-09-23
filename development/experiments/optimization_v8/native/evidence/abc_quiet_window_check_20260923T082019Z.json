@@ -1,0 +1,54 @@
+{
+  "ambient_loadavg_end": [
+    3.5419921875,
+    4.99609375,
+    6.94140625
+  ],
+  "ambient_loadavg_start": [
+    3.763671875,
+    5.06396484375,
+    6.9765625
+  ],
+  "b_consumer": null,
+  "block_sizes": [
+    1024
+  ],
+  "mixes": [
+    "all-binary",
+    "mix",
+    "all-raw"
+  ],
+  "mode": "check-only (no timing)",
+  "n1_note": "producer cost is reported per block size and mix; the direct producer reverses vs decode+transpose at B=128 in 3 of 6 N8-11 cells, so C1 end-to-end totals at 128 must include that penalty honestly",
+  "patches": 153,
+  "per_block": [
+    {
+      "B": 1024,
+      "adapter_ms": {},
+      "kernel_ms": {},
+      "mix": "all-binary",
+      "parity": "pass (A0==C1==C1k; B unavailable)",
+      "producer_ms": {}
+    },
+    {
+      "B": 1024,
+      "adapter_ms": {},
+      "kernel_ms": {},
+      "mix": "mix",
+      "parity": "pass (A0==C1==C1k; B unavailable)",
+      "producer_ms": {}
+    },
+    {
+      "B": 1024,
+      "adapter_ms": {},
+      "kernel_ms": {},
+      "mix": "all-raw",
+      "parity": "pass (A0==C1==C1k; B unavailable)",
+      "producer_ms": {}
+    }
+  ],
+  "recorded_utc": "2026-09-23T08:20:18Z",
+  "reps": 0,
+  "stat": "min_ms (median_ms recorded alongside)",
+  "status": "INFORMATIONAL / NON-PROMOTION (N8-31 owns protocol cells)"
+}

@@ -1,0 +1,42 @@
+{
+  "purpose": "Coordinator-held obligations for N8-40 (integration; integrator-owned src/solweig_light/ + pyproject + compat). Recorded as they arise from completed Wave 2 artifacts.",
+  "as_of": "2026-09-22T21:00Z",
+  "branch": "perf/native-optimization @ 16cdc56c (worktree /Users/alansynn/Workspace/solweig-v8-native)",
+  "obligations": [
+    {
+      "id": "n840-1",
+      "item": "Wire shutdown_all_pools() (N8-14 region_pool) into workflow teardown so pools do not outlive a workflow generation.",
+      "source": "n8-14 terminal summary 'Next'."
+    },
+    {
+      "id": "n840-2",
+      "item": "Carry the mode-declaration caveat: declaring parallel=True under BLOCK_FANOUT would violate the thread budget - see test_mode_is_a_parallelism_class_not_a_backend_id (tests/optimization_v8/region/). The planner must select fanout class from the consumer declaration, never trust it implicitly.",
+      "source": "n8-14 terminal summary; test docstring."
+    },
+    {
+      "id": "n840-3",
+      "item": "Planner integration shape: guarded dispatch calls execute_regions with one consumer per arm (A DenseKernelConsumer / B AosoaBConsumer / C native_handle_reduce); N8-22 policy selector chooses the arm; all rows disabled until qualification records exist.",
+      "source": "n8-14 terminal summary 'Next'; N8-22 deliverable; PLAN.md Wave 2-3."
+    },
+    {
+      "id": "n840-4",
+      "item": "Region execution must add zero growth to the N8-10 native-handle registry (threads share pid; execute writes no registry) - keep the before/after registry_snapshot assertion in the integrated path's tests.",
+      "source": "n8-14 registry-bound decision."
+    },
+    {
+      "id": "n840-5",
+      "item": "Region review recommendations to carry into integration: R1/R4 _track_pool silent 64-pool cap (fork-poison escape window for explicit pools beyond the cap) - make loud or document; N3 thread budget is per-owner not process-wide (distinct-budget concurrent pools can sum - one threads_per_worker per process is the current guard, enforce at wiring); N1 multi-failure corner uses lowest-ADMITTED-index rule (deterministic, but error choice can differ from strict serial - document at the dispatch site); R2 pool-reusable-after-cancel is probe-verified but has no dedicated test - add one at integration.",
+      "source": "n8_30_review_n8_14_region R1-R4 + notes N1/N3/N4 (verdict APPROVE-WITH-NOTES, 0 required repairs)."
+    },
+    {
+      "id": "n840-6",
+      "item": "Explicit integrator decision required: expert-path routing - the N8-22 selector's expert path goes through the N8-21 installed loader (load_explicit), NOT the legacy native_lw dev-build path. Per DX_CONTRACT's deliberate-migration clause, wire the expert route deliberately and document which path 'native'/'ispc' env values take after integration.",
+      "source": "n8_30_review_n8_22_policy non-blocking note 3 (review initially REJECT on B1 kind/row cross-wire; repair routed to author)."
+    },
+    {
+      "id": "n840-7",
+      "item": "N8-31 transcription guidance: policy record source_commit/source_sha are format-checked only, not HEAD-anchored - transcription must pin them to the frozen campaign commit deliberately.",
+      "source": "n8_30_review_n8_22_policy non-blocking note 2."
+    }
+  ]
+}

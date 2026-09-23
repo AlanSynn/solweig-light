@@ -1,0 +1,67 @@
+{
+  "ambient_loadavg_at_audit": [
+    6.123046875,
+    6.841796875,
+    7.40673828125
+  ],
+  "arch": "arm64",
+  "cpu_features": [
+    "cpu-feature:neon"
+  ],
+  "fma_audit": {
+    "asm_sha256": "d505c6bc6e064a4ae1cd54b31c397712394eca4affb35fdb4188cb97b63613a8",
+    "match_count": 0,
+    "mnemonics_scanned": [
+      "fmadd",
+      "fmla",
+      "fmsub",
+      "fnmadd",
+      "fnmsub",
+      "fnmla"
+    ],
+    "passed": true
+  },
+  "generation": "lw-g8-390acd5f57df1fe7",
+  "generation_dir": "/Users/alansynn/Workspace/solweig-v8-native/experiments/optimization_v8/native/stage/lw-g8-390acd5f57df1fe7",
+  "isa_target": "neon-i32x8",
+  "ispc": {
+    "llvm": "22.1.8",
+    "path": "/opt/homebrew/bin/ispc",
+    "sha256": "e43e5eae271552b60f6c0ee8eba25a7692642535d84438bdb304d54fd8f431d4",
+    "version": "1.31.0"
+  },
+  "ispc_flags": [
+    "-O2",
+    "--opt=disable-fma",
+    "--math-lib=default",
+    "--pic"
+  ],
+  "kernel": {
+    "name": "lw_primary_aosoa.ispc",
+    "sha256": "b3fffd1d7439ad27ddde6f4355faa433bcdff436ac328983f02a6694d545f00c",
+    "source_ref": "src/solweig_light/backends/native/lw_primary_aosoa.ispc"
+  },
+  "math_profile": {
+    "fast_math": false,
+    "fma_contraction": "disabled",
+    "id": "lw-primary-strict-fp-contract-off",
+    "math_lib": "default"
+  },
+  "passed": true,
+  "reciprocal_audit": {
+    "hits": [],
+    "mnemonics_scanned": [
+      "vrecpe",
+      "vrecps",
+      "vrsqrte",
+      "vrsqrts"
+    ],
+    "passed": true
+  },
+  "recorded_utc": "2026-09-22T20:25:05Z",
+  "true_division_audit": {
+    "fdiv_mnemonic_count": 16,
+    "note": "reflection divides by the stored float32 pi; a reciprocal-multiply rewrite is forbidden (pinned by tests) so fdiv must appear and vrecpe*/vrsqrte* must not",
+    "passed": true
+  }
+}

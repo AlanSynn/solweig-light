@@ -1,0 +1,246 @@
+{
+  "scope": "isolated single-thread decoder microexperiment, NOT SOLWEIG/native/default promotion evidence",
+  "source_basis": "7abe526aae2f97e689b1a1e4ae183e5370f29aa1 direct_aosoa.py computation; manually transcribed core; no package import",
+  "environment": {
+    "python": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+    "machine": "x86_64",
+    "platform": "Linux-6.18.44-x86_64-with-glibc2.41",
+    "numpy": "2.3.5",
+    "numba": "0.65.1"
+  },
+  "limitations": [
+    "not target M1",
+    "synthetic small buffers",
+    "single local process",
+    "wrapper, mmap, integration, multi-thread and IO excluded",
+    "source excerpt not full package"
+  ],
+  "exactness": {
+    "shape_start_width_cases": 64,
+    "independently_expected_uint32_values": 57984,
+    "reserved_error_checks": 10
+  },
+  "timings": [
+    {
+      "mode_mix": "binary",
+      "pixels": 128,
+      "patches": 153,
+      "width": 8,
+      "generic_median_ms": 0.20816579999999998,
+      "literal_median_ms": 0.1028892,
+      "ratio_generic_over_literal": 2.023203601544185,
+      "raw_ms": {
+        "generic": [
+          0.2152482,
+          0.1972544,
+          0.2085428,
+          0.2420582,
+          0.20816579999999998,
+          0.22570479999999998,
+          0.19070420000000002,
+          0.2059424,
+          0.1950006
+        ],
+        "literal_modes": [
+          0.1028892,
+          0.090685,
+          0.15033660000000001,
+          0.0818838,
+          0.1071928,
+          0.0793336,
+          0.1244258,
+          0.081088,
+          0.1123118
+        ]
+      }
+    },
+    {
+      "mode_mix": "binary",
+      "pixels": 1024,
+      "patches": 153,
+      "width": 8,
+      "generic_median_ms": 1.7096592,
+      "literal_median_ms": 1.0514872,
+      "ratio_generic_over_literal": 1.6259439011715977,
+      "raw_ms": {
+        "generic": [
+          1.7416483999999999,
+          1.8742542,
+          1.6469094,
+          1.648685,
+          1.7326153999999998,
+          1.5886832,
+          1.7096592,
+          1.7356032,
+          1.6822546
+        ],
+        "literal_modes": [
+          1.270152,
+          1.0918172,
+          0.9711255999999999,
+          1.0005716,
+          1.0514872,
+          0.950778,
+          0.9925372,
+          1.2487248,
+          1.1659202
+        ]
+      }
+    },
+    {
+      "mode_mix": "mixed",
+      "pixels": 128,
+      "patches": 153,
+      "width": 8,
+      "generic_median_ms": 0.17500839999999998,
+      "literal_median_ms": 0.102444,
+      "ratio_generic_over_literal": 1.7083323571902698,
+      "raw_ms": {
+        "generic": [
+          0.19197679999999998,
+          0.18908460000000002,
+          0.18637820000000002,
+          0.17500839999999998,
+          0.17113379999999997,
+          0.1693866,
+          0.23929720000000002,
+          0.172966,
+          0.1743586
+        ],
+        "literal_modes": [
+          0.111005,
+          0.10189060000000001,
+          0.1117466,
+          0.0987802,
+          0.1003104,
+          0.08969919999999999,
+          0.1175324,
+          0.102444,
+          0.10575739999999999
+        ]
+      }
+    },
+    {
+      "mode_mix": "mixed",
+      "pixels": 1024,
+      "patches": 153,
+      "width": 8,
+      "generic_median_ms": 1.585455,
+      "literal_median_ms": 1.1156762,
+      "ratio_generic_over_literal": 1.4210709164540751,
+      "raw_ms": {
+        "generic": [
+          1.5253846000000002,
+          1.46547,
+          1.60284,
+          1.5008686,
+          1.67575,
+          1.7266194,
+          1.5221982,
+          1.585455,
+          1.7884503999999999
+        ],
+        "literal_modes": [
+          1.0979436,
+          1.2192176000000001,
+          1.0737964,
+          1.1156762,
+          1.1946961999999999,
+          1.0845168,
+          1.1318348,
+          1.0380106,
+          2.7696602
+        ]
+      }
+    },
+    {
+      "mode_mix": "raw",
+      "pixels": 128,
+      "patches": 153,
+      "width": 8,
+      "generic_median_ms": 0.0897082,
+      "literal_median_ms": 0.11095780000000001,
+      "ratio_generic_over_literal": 0.8084893536101112,
+      "raw_ms": {
+        "generic": [
+          0.1331276,
+          0.0897082,
+          0.0853244,
+          0.1787114,
+          0.0862724,
+          0.067466,
+          0.1089034,
+          0.0766432,
+          0.4377304
+        ],
+        "literal_modes": [
+          0.09884739999999999,
+          0.11095780000000001,
+          0.0669112,
+          0.1834704,
+          0.23458720000000002,
+          0.1769532,
+          0.1661134,
+          0.0804198,
+          0.07219539999999999
+        ]
+      }
+    },
+    {
+      "mode_mix": "raw",
+      "pixels": 1024,
+      "patches": 153,
+      "width": 8,
+      "generic_median_ms": 0.589802,
+      "literal_median_ms": 0.6408834,
+      "ratio_generic_over_literal": 0.920295329852513,
+      "raw_ms": {
+        "generic": [
+          0.6201868,
+          0.65011,
+          0.701266,
+          0.6178388,
+          0.5811132,
+          0.5787574,
+          0.5540832,
+          0.5486976,
+          0.589802
+        ],
+        "literal_modes": [
+          0.711908,
+          0.7160944,
+          0.755093,
+          1.0743334,
+          0.6037148,
+          0.5592585999999999,
+          0.5642818000000001,
+          0.566876,
+          0.6408834
+        ]
+      }
+    }
+  ],
+  "assembly": {
+    "generic": {
+      "integer_divide_instruction_lines": [
+        "idivq\t%r13",
+        "divl\t%r13d",
+        "divb\t%r8b",
+        "idivq\t%r9",
+        "divl\t%r9d",
+        "divb\t%r8b",
+        "idivq\t%r10",
+        "divl\t%r10d"
+      ],
+      "signature": "(ListType(Array(uint8, 1, 'C', False, aligned=True)), Array(uint8, 1, 'C', False, aligned=True), int64, int64, int64, Array(uint32, 3, 'C', False, aligned=True), int64)"
+    },
+    "literal_modes": {
+      "integer_divide_instruction_lines": [
+        "idivq\t%r14",
+        "divl\t%ebp",
+        "divl\t%r14d"
+      ],
+      "signature": "(ListType(Array(uint8, 1, 'C', False, aligned=True)), Array(uint8, 1, 'C', False, aligned=True), int64, int64, int64, Array(uint32, 3, 'C', False, aligned=True), int64)"
+    }
+  }
+}

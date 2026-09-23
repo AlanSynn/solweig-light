@@ -1,0 +1,27 @@
+{
+ "commit": "e7a2d6ec8594b234820e7783e0ca26d821de7f3d",
+ "fields_changed": {
+  "svfEaveg": true,
+  "svfEveg": true,
+  "svfNaveg": true,
+  "svfNveg": true,
+  "svfSaveg": true,
+  "svfSveg": true,
+  "svfWaveg": true,
+  "svfWveg": true,
+  "svfaveg": true,
+  "svftotal": true,
+  "svfveg": true,
+  "vbshvegshmat": true,
+  "vegshmat": true
+ },
+ "fields_changed_somewhere": true,
+ "key_new": "cdd85863c1d4d4dcf758e43cef379056103bc80b112655b43a3e6eb35dec5dd0",
+ "key_old": "f25ff1f3aba1a998f63c8e63336eb3e342886dbbd662c14f36a851f91160a2b8",
+ "old_generation_preserved": [
+  "generation-63913445f2744d25bbca80761f7cfb54"
+ ],
+ "schema": "c6-10-recipe-stale-input-v1",
+ "stale_hit": false,
+ "svf_producer_calls_after_source_change": 1
+}

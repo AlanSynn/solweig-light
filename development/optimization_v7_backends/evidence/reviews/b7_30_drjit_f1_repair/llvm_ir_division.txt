@@ -1,0 +1,140 @@
+Evidence: Dr.Jit 1.5.0 drjit.llvm division-by-constant folding (FastMath OFF)
+=============================================================================
+
+HAZARD. With dr.JitFlag.FastMath disabled (the default flag state is ON;
+this module disables it in configure_runtime()), Dr.Jit still lowers a
+division whose divisor is a *literal* (or constant-foldable value, e.g. a
+width-1 variable built from a Python float) into a host-computed reciprocal
+multiply. This changes the operation structurally: no fdiv is emitted, so
+IEEE-754 divide rounding is not guaranteed - the kernel computes
+x * RN(1/d) instead of RN(x/d), and on random float32 inputs the two paths
+disagree on a substantial fraction of values (~15% for the pi divisor; see
+PROBE RESULTS below). IR inspection remains the conclusive detector: it
+identifies the transform structurally, before any value is run.
+
+PROBE A - literal divisor `x / Float(3.0)` (FastMath OFF):
+jit_eval(): launching 1 kernel.
+define void @drjit_77c36ec65f2916e76a23d47e02360be8(i64 %start, i64 %end, i32 %thread_id, ptr noalias %params) #0 {
+entry:
+    br label %body
+
+body:
+    %index = phi i64 [ %index_next, %suffix ], [ %start, %entry ]
+    %f1_p1 = getelementptr inbounds ptr, ptr %params, i32 3
+    %f1_p2 = load ptr, ptr %f1_p1, align 8, !alias.scope !2, !noalias !2, !invariant.load !4
+    %f1_p3 = getelementptr inbounds float, ptr %f1_p2, i64 %index
+    %f1 = load <4 x float>, ptr %f1_p3, align 16, !alias.scope !2, !noalias !2, !nontemporal !3
+    %f2_1 = insertelement <4 x float> undef, float 0x3fd5555560000000, i32 0
+    %f2 = shufflevector <4 x float> %f2_1, <4 x float> undef, <4 x i32> zeroinitializer
+    %f3_p1 = getelementptr inbounds ptr, ptr %params, i32 4
+    %f3_p2 = load ptr, ptr %f3_p1, align 8, !alias.scope !2, !noalias !2, !invariant.load !4
+    %f3_p3 = getelementptr inbounds float, ptr %f3_p2, i64 %index
+    %f3 = fmul <4 x float> %f1, %f2
+    store <4 x float> %f3, ptr %f3_p3, align 16, !alias.scope !2, !noalias !2, !nontemporal !3
+    br label %suffix
+
+suffix:
+    %index_next = add i64 %index, 4
+    %cond = icmp uge i64 %index_next, %end
+    br i1 %cond, label %done, label %body, !llvm.loop !5
+
+done:
+    ret void
+}
+
+!0 = !{!0}
+!1 = !{!1, !0}
+!2 = !{!1}
+!3 = !{i32 1}
+!4 = !{}
+!5 = !{!"llvm.loop.unroll.disable", !"llvm.loop.vectorize.enable", i1 0}
+
+attributes #0 = { norecurse nounwind "frame-pointer"="none" "no-builtins" "no-stack-arg-probe" "target-cpu"="apple-m1" "target-features"="+fp-armv8,+fp16fml,+fullfp16,+lse,+neon,+ras,+rcpc,+rdm,+v8.1a,+v8.2a,+v8.3a,+v8.4a,+v8.5a,+v8a" }
+  -> launching 77c36ec65f2916e7 (n=4, in=1, out=1, ops=4, jit=164 us):
+     cache hit, load: 548 us, 67 B.
+jit_eval(): done.
+  -> fdiv count in IR: 0.  The division is compiled to
+     %f3 = fmul <4 x float> %f1, %f2
+     where %f2 is the host-precomputed reciprocal (loaded kernel parameter).
+     No fdiv instruction exists in the kernel.
+
+PROBE B - runtime *data* divisor (width-1 array built from a NumPy buffer,
+gathered with dr.gather; the construction used by llvm_longwave._pi_divisor):
+jit_eval(): launching 1 kernel.
+define void @drjit_d4f3c518a4db42a62e9030684db3d46c(i64 %start, i64 %end, i32 %thread_id, ptr noalias %params) #0 {
+entry:
+    br label %body
+
+body:
+    %index = phi i64 [ %index_next, %suffix ], [ %start, %entry ]
+    %f1_p1 = getelementptr inbounds ptr, ptr %params, i32 3
+    %f1_p2 = load ptr, ptr %f1_p1, align 8, !alias.scope !2, !noalias !2, !invariant.load !4
+    %f1_p3 = getelementptr inbounds float, ptr %f1_p2, i64 %index
+    %f1 = load <4 x float>, ptr %f1_p3, align 16, !alias.scope !2, !noalias !2, !nontemporal !3
+    %f2_p1 = getelementptr inbounds ptr, ptr %params, i32 4
+    %f2_p2 = load ptr, ptr %f2_p1, align 8, !alias.scope !2, !noalias !2, !invariant.load !4
+    %f2_0 = load float, ptr %f2_p2, align 4, !alias.scope !2, !noalias !2, !invariant.load !4
+    %f2_1 = insertelement <4 x float> undef, float %f2_0, i32 0
+    %f2 = shufflevector <4 x float> %f2_1, <4 x float> undef, <4 x i32> zeroinitializer
+    %f3_1 = insertelement <4 x float> undef, float 0x3fe0000000000000, i32 0
+    %f3 = shufflevector <4 x float> %f3_1, <4 x float> undef, <4 x i32> zeroinitializer
+    %f4 = fmul <4 x float> %f1, %f3
+    %f5_p1 = getelementptr inbounds ptr, ptr %params, i32 5
+    %f5_p2 = load ptr, ptr %f5_p1, align 8, !alias.scope !2, !noalias !2, !invariant.load !4
+    %f5_p3 = getelementptr inbounds float, ptr %f5_p2, i64 %index
+    %f5 = fdiv <4 x float> %f4, %f2
+    store <4 x float> %f5, ptr %f5_p3, align 16, !alias.scope !2, !noalias !2, !nontemporal !3
+    br label %suffix
+
+suffix:
+    %index_next = add i64 %index, 4
+    %cond = icmp uge i64 %index_next, %end
+    br i1 %cond, label %done, label %body, !llvm.loop !5
+
+done:
+    ret void
+}
+
+!0 = !{!0}
+!1 = !{!1, !0}
+!2 = !{!1}
+!3 = !{i32 1}
+!4 = !{}
+!5 = !{!"llvm.loop.unroll.disable", !"llvm.loop.vectorize.enable", i1 0}
+
+attributes #0 = { norecurse nounwind "frame-pointer"="none" "no-builtins" "no-stack-arg-probe" "target-cpu"="apple-m1" "target-features"="+fp-armv8,+fp16fml,+fullfp16,+lse,+neon,+ras,+rcpc,+rdm,+v8.1a,+v8.2a,+v8.3a,+v8.4a,+v8.5a,+v8a" }
+  -> launching d4f3c518a4db42a6 (n=4, in=2, out=1, ops=6, jit=6 us):
+     cache miss, build: 95.492 ms, 71 B.
+jit_eval(): done.
+  -> fdiv present in IR (true vector IEEE divide, cf. the main kernel IR in
+     llvm_ir_symbolic_kernel_raw.txt line:
+         %f167 = fdiv <4 x float> %f166, %f16).
+
+BITWISE PROBES (literal-divisor path vs data-divisor path), FastMath OFF:
+  Rates measured by the B7-30 reviewer (their values/samples):
+    - pi(f32) divisor: ~39656/262144 values differ (~15.1%)
+    - d=3.0, 64-value probe: 30/64 differ
+  Independently re-verified after the B7-31 trials by this module's author
+  with the corrected probe (262144 standard-normal float32 values, seed 1):
+    - pi(f32): 39373/262144 (15.02%)   | 3.0: 87113/262144 (33.23%)
+    - 7.0: 54.49%  | 0.1: 14.58%  | 1e6: 3.07%  | 9.7: 39.11%
+    - d=3.0 on a 64-value sample: 32/64
+  CORRECTION HISTORY: an earlier revision of this file recorded "0/262144
+  bit differences for every divisor". That number came from a tautological
+  probe: the "divide" side was built with a scalar constructor
+  (`x / Float(d)`), whose divisor is a literal and therefore folds to the
+  same reciprocal multiply as the comparison side - both paths were
+  multiplies, so 0 differences was guaranteed by construction, not measured.
+  A correct comparison must construct the divisor from a NumPy buffer (the
+  data-variable construction this module uses); the IR check above confirms
+  that path lowers to a true fdiv while the literal path does not.
+
+MITIGATION (implemented in llvm_longwave.py): every value that varies across
+calls (per-patch coefficients, surface scalars, reflection factor, pi) enters
+Dr.Jit as a runtime *data* variable created from a NumPy buffer. Runtime data
+variables are never constant-folded, so (a) the reflection divide lowers to a
+true fdiv and (b) the kernel IR depends only on (P, scalar specialization,
+solar_gate branch pattern), keeping one JIT-compiled kernel per spec.
+The mitigation is load-bearing, not precautionary: without it the reflection
+term would silently compute x * RN(1/pi) and diverge bitwise from the Numba
+baseline on ~15% of pixel values (see PROBE RESULTS above).

@@ -1,0 +1,90 @@
+{
+  "schema": "sw8-n8-30-review-v1",
+  "review_of": "N8-41 early vendoring: experiments/optimization_v8/{region,layout,numba,policy,native,loader,artifacts} machinery -> src/solweig_light/_native_dispatch/ + rewrite of src/solweig_light/radiation/_lw_dispatch.py + D1 pipeline.py teardown rewire + test-tree rewiring + installed_gates.json refresh (all uncommitted working-tree state on HEAD 14a98188)",
+  "review_target_task": "N8-41 vendoring (author: n8-41-vendor agent; commissioned early per n841-8; this review is independent)",
+  "reviewer": "n8-rev-n8-41 (independent; did not author the vendoring)",
+  "review_utc": "2026-09-22T21:25Z",
+  "worktree": "/Users/alansynn/Workspace/solweig-v8-native @ HEAD 14a98188, branch perf/native-optimization, entire diff uncommitted",
+  "verdict": "APPROVE-WITH-NOTES",
+  "blocking_defects": [],
+  "required_repairs": [],
+  "claims": [
+    {
+      "claim": "1. Byte-identical moves: region/{__init__,region_plan,region_pool}.py, layout/direct_aosoa.py, numba/lw_b_control.py",
+      "status": "PASS",
+      "finding": "Executed digest comparison `git show HEAD:<old> | shasum -a 256` vs `shasum <new>`: all five IDENTICAL (region/__init__ 2f795cc2..., region_plan 37d3de47..., region_pool ccd9aff9..., direct_aosoa cb92a175..., lw_b_control 95fab457...). `git diff --cached -M --stat` shows all 10 renames at 0 insertions/0 deletions, so the index holds byte-identical copies and EVERY deviation is an unstaged working-tree hunk; all RM hunks (consumers D5, installed_loader D3, lw_default_policy D7, lw_native_aosoa D8, native_handle D2) read in full."
+    },
+    {
+      "claim": "2. _lw_dispatch.py rewrite: bootstrap gone, direct imports, tables/decline semantics unchanged, no env reads, ImportError propagates",
+      "status": "PASS",
+      "finding": "Full diff read: _BOOTSTRAP_SUFFIXES/_BOOTSTRAPPED/_experiment_roots/_bootstrap and the Path/sys imports deleted; all machinery imports are now `from solweig_light._native_dispatch import ...`. _ORDERED/_GANG_SLICED/_LANE_WIDTH appear ONLY as diff context (byte-unchanged). No environ/getenv reference in the module (grep). region_route's `try/_bootstrap/import lw_default_policy/except ImportError -> None` replaced by a bare package import with an n841-7 comment: a broken selector now propagates. Executed: fresh interpreter imports the module and resolves row A. Note: no committed test ever asserted the old silent-None behavior (git grep of HEAD tests/ for _bootstrap/machinery-absent assertions: zero hits; the silent-None observation was the n8-40 review's manual probe C3), so there was no test to update -- integration stays at 9 tests, same names as HEAD."
+    },
+    {
+      "claim": "3. D1 pipeline.py hunk is exactly the one-line teardown import rewire + comment, approved by the integrator",
+      "status": "PASS",
+      "finding": "The pipeline.py diff contains exactly one hunk (6 lines): a 2->3-line comment update plus `from region import shutdown_all_pools as _shutdown_pools` -> `from solweig_light._native_dispatch.region import \\\\ shutdown_all_pools as _shutdown_pools`. try/except ImportError pass / else structure untouched. Per the n8-40 review R3, the qualified package path also removes the foreign-`region` teardown hazard. Nothing else in pipeline.py changed. Not re-litigated per directive; verified as-scoped."
+    },
+    {
+      "claim": "4a. D3 installed_loader deferred _build_native + PEP 562 __getattr__ is a real, non-vacuous fix",
+      "status": "PASS",
+      "finding": "Executed wheel simulation: package copied to /tmp/n841_probe/sitepkg (no experiments tree reachable anywhere under the probe root), .venv python with PYTHONPATH pointing at the copy (verified solweig_light.__file__ resolves there). (1) `import solweig_light._native_dispatch.installed_loader` succeeds; (2) `il._BUILD_NATIVE == []` AND `'build_native' not in sys.modules` -- the old eager sibling insert + module-level `import build_native` would have failed right here, so the fix is non-vacuous; (3) first attribute use raises ImportError naming the exact anchor path ('requires the N8-20 build driver under /private/tmp/n841_probe/experiments/...'); (4) LOADER_ABI_VERSION/LOADER_WRAPPER_ABI/EXPECTED_PACKAGE_NAME/QUALIFIED_MATH_PROFILES resolve lazily via __getattr__; _gate_candidate reads driver.<attr> directly with identical comparison logic (full diff read -- no gate weakened); (5) with the vendored sibling registry present, resolve_lw_backend -> row A '[absent]'; (6) with the registry file deleted (true in-wheel condition per D4 package_data note), resolve_lw_backend still fails closed to row A."
+    },
+    {
+      "claim": "4b. D9 evidence-dir anchor repair in test_aosoa_native_admission.py is real and non-vacuous",
+      "status": "PASS",
+      "finding": "Diff read: `Path(lw_native_aosoa.__file__).parent/'evidence'` -> `experiments_dir('native','evidence')` with FileNotFoundError -> the identical '[canonical staging not used in this session]' skip. Executed: native suite 194 passed / 0 skipped -- test_evidence_audit_json_exists_and_passes RAN AND PASSED through the new anchor (post-vendor __file__ anchor would have pointed into src/... and silently skipped, exactly the regression the draft describes)."
+    },
+    {
+      "claim": "5. installed_gates.json diff is an honest run refresh, not gate redefinition",
+      "status": "PASS",
+      "finding": "Full 130-line diff read line by line: changes are exclusively tmp-run paths (pytest-812 -> pytest-843), pids, epoch timestamps, environment-dependent memory numbers inside unchanged ResourceAdmissionError messages, run-scoped wheel sha256 (the file's own sha256_note documents non-reproducible zip timestamps), and numba cache-listing dir hashes (all four modules differ; consistent with the prior run predating the 16cdc56c -> 14a98188 window; cache names hash module source). Every \"status\" field is IDENTICAL old-vs-new (blocked:host-memory-pressure x2, surface passed); no requirement string, threshold, or gate definition touched."
+    },
+    {
+      "claim": "6. Module identity: monkeypatched policy globals reach the module the dispatch binds",
+      "status": "PASS",
+      "finding": "Executed in one interpreter with the real worktree tree: `sys.modules['solweig_light._native_dispatch.lw_default_policy'] is` the module imported exactly as region_route imports it -> True. Monkeypatch probe: DEFAULT_REGISTRY_PATH set to a malformed registry at /tmp -> resolve_lw_backend returns row A with decline reason '[malformed] qualification registry /tmp/n841_probe/patched_registry.json unreadable/invalid JSON ...' -- the selector demonstrably reads the patched global through the dispatch-shared module object. (First probe attempt expected a raise; the selector instead fails closed on unreadable registries by design -- see note N2. The integration tests monkeypatch DEFAULT_REGISTRY_PATH/REPO_ROOT/_default_attempt_load at HEAD lines 197/198/336 and all pass.)"
+    },
+    {
+      "claim": "7. Grep audits: zero bare machinery imports; experiments-dir sys.path appends only the surfaced packaging one",
+      "status": "PASS",
+      "finding": "Executed: (a) `grep -rnE '^\\s*(import|from) (region|direct_aosoa|lw_default_policy|lw_native_aosoa|native_handle|installed_loader|lw_b_control)\\b'` over src/ and tests/ -> ZERO hits; (b) every sys.path insert/append in src/ and tests/ enumerated and its target resolved: src-side exactly 3 (lw_default_policy promotion tools, lw_native_aosoa packaging, installed_loader packaging -- all lazy, repo-anchored, comment-documented); tests-side experiments-dir inserts exactly 2: tests/optimization_v8/packaging/conftest.py (pre-existing, packaging suite's own) and tests/optimization_v8/artifacts/conftest.py:46 (the one deliberate, surfaced in the draft and in an in-file comment naming itself); every other insert resolves to tests-tree dirs (reference/, suite helpers) or tmp fake-package roots. The old experiments bootstrap in tests/ conftests (artifacts/policy/loader/layout/region/numba/native) is deleted in the diffs."
+    },
+    {
+      "claim": "8. Suite verification",
+      "status": "PASS",
+      "finding": "Reruns this review, one invocation each: integration 9 passed (4.24s); policy+dx 95 passed (1.43s); native 194 passed / 0 skipped (0.86s; 1 pre-existing RuntimeWarning from an untouched adversarial cast line); region+layout+numba+artifacts 1378 passed (38.9s; 3 pre-existing fork DeprecationWarnings in test_region_fork_policy, the deliberate test subject); FULL TREE tests/optimization_v8/ 1965 passed / 6 skipped / 0 failed in 199.51s -- matches the worker's claim and the baseline count exactly. Skip decomposition verified statically: 4 unconditional deferred-gate skips (test_deferred_gates.py [native-wheel-deferred-N8-41]/[companion-collision-deferred-N8-41]/[upstream-collision-deferred-N8-42]/[native-qualification-deferred-N8-42]) + 2 environmental [host-memory-pressure] (test_installed_noenv_gates.py:77,133) = 6. Load discipline: loadavg checked before every execution (8.34 / 4.99 / 8.76 / 8.22 / 6.07 -- all >= 2.5); full tree started away from the quiet-window marks. No commits, no builds, no timed benchmarking."
+    },
+    {
+      "claim": "9. Shipped-state inertness end-to-end + registry resolution",
+      "status": "PASS",
+      "finding": "Executed fresh interpreter: resolve_lw_backend() -> row A '[absent] no qualification records', and sys.modules gains ONLY solweig_light._native_dispatch(+__init__) and .lw_default_policy -- zero machinery modules (direct_aosoa/lw_b_control/lw_native_aosoa/native_handle/installed_loader/region all absent). Registry copy: sha256 IDENTICAL to experiments/optimization_v8/policy/qualification_registry.json (3d3911da...); original untouched (empty `git diff HEAD` on it). DEFAULT_REGISTRY_PATH is the layout-stable expression MODULE_DIR/'qualification_registry.json' (unchanged line), so the vendored sibling is the resolved file. Integration test_shipped_registry_routes_legacy_bitwise passed in this review's rerun."
+    }
+  ],
+  "notes": [
+    "N1: experiments/optimization_v8/native/quiet_window_abc.py carries a real modification (import rewiring to the vendored package + removal of the dead layout sys.path entry) that is documented only under not_vendored, NOT as a numbered deviation D1-D11. Reviewed in full: rewiring is correct and the removed sys.path entry was genuinely dead. Recommend the integrator mention this file in the commit message so the diff inventory in the draft (module_map + D1-D11) and the actual diff stay 1:1.",
+    "N2: Docstring precision (no repair required): 'a broken selector module propagates its import error' is true for MODULE-IMPORT failure. A PRESENT selector fed an unreadable/malformed registry fails CLOSED to row A (executed: malformed registry at a patched DEFAULT_REGISTRY_PATH -> row A '[malformed] ...'). That is the intended fail-safe and matches the shipped-wheel story, but the docstring sentence could be read as covering registry-content failures too. One clarifying clause at next touch.",
+    "N3: native_handle.py:655 `env={**os.environ, 'ISPC': ispc}` (child-process env construction for the ISPC invocation) moved into src/ verbatim with the byte-identical-then-hunked file; likewise lw_default_policy.py:580 reads os.environ for the legacy expert-value intercept (pre-existing line, moved verbatim). Both predate the vendoring and the DX env-surface gate (policy+dx 95 passed) is green with them present; recorded so the frozen-surface accounting is explicit that the gate counts override READ sites (D2 dedup), not child-env passthrough or the pre-existing policy intercept.",
+    "N4: Stale docstring, doc-only: tests/optimization_v8/policy/test_legacy_env_parity.py:15 still says 'The selector exists in experiments/ only' -- false post-vendoring. Fix wording at next touch of that file.",
+    "N5: Style, cosmetic: tests/optimization_v8/native/test_aosoa_native_admission.py import line `from solweig_light._native_dispatch.lw_native_aosoa import (NativeArtifactError, NativeExecutionError,` exceeds the tree's ~88-col convention. No functional impact.",
+    "N6: The staged index holds byte-identical renames and ALL deviations are unstaged; when the integrator commits, a plain `git add -A` of the reviewed paths preserves exactly the reviewed final state. The two untracked evidence drafts (n8_41_vendoring_draft.json, n8_41_pre_wiring_notes.json) and the untracked __init__.py/qualification_registry.json must be included for the commit to be self-consistent.",
+    "N7: The worker's 'digests still match pinned records' claim for lw_b_control was verified transitively: the vendored file is sha256-identical to HEAD's reviewed experiments file (95fab457...), and the integration suite's sha256-pinned record tests pass against it. The pinned evidence archives themselves were not re-hashed in this review (out of time budget; the transitive chain covers the vendoring claim)."
+  ],
+  "rerun": {
+    "command_sets": [
+      {"command": ".venv/bin/python -m pytest tests/optimization_v8/integration/ -q", "result": "9 passed in 4.24s"},
+      {"command": ".venv/bin/python -m pytest tests/optimization_v8/policy/ tests/optimization_v8/dx/ -q", "result": "95 passed in 1.43s"},
+      {"command": ".venv/bin/python -m pytest tests/optimization_v8/native/ -q", "result": "194 passed, 1 warning in 0.86s (0 skipped: the D9 evidence-audit test RAN via the new anchor)"},
+      {"command": ".venv/bin/python -m pytest tests/optimization_v8/region/ tests/optimization_v8/layout/ tests/optimization_v8/numba/ tests/optimization_v8/artifacts/ -q", "result": "1378 passed, 3 warnings in 38.9s"},
+      {"command": ".venv/bin/python -m pytest tests/optimization_v8/ -q", "result": "1965 passed, 6 skipped, 0 failed in 199.51s (one invocation; matches baseline 1965/6)"}
+    ],
+    "probes": [
+      "Wheel simulation (/tmp/n841_probe/sitepkg copy, no experiments tree): installed_loader imports clean; _BUILD_NATIVE==[] and build_native absent from sys.modules at import; first use raises loud ImportError naming the anchor; shipped sibling registry -> row A; deleted registry -> row A fail-closed",
+      "Module identity: dispatch-visible policy module is tests-visible policy module (sys.modules identity True); patched DEFAULT_REGISTRY_PATH cited verbatim in the decline reason",
+      "Fresh-interpreter inertness: resolve_lw_backend -> row A; sys.modules gains only _native_dispatch(+__init__) and .lw_default_policy",
+      "Digest audit: 5 R files byte-identical HEAD<->worktree; qualification_registry.json copy identical (3d3911da...), original empty-diff"
+    ],
+    "interpreter": "/Users/alansynn/Workspace/solweig-v8-native/.venv/bin/python",
+    "timed_benchmarking": "none (pass/fail suites and untimed functional probes only)"
+  },
+  "scope_guard": "no commits, no builds, no timed benchmarking; writes only under evidence/reviews/ and /tmp (probe copy at /tmp/n841_probe)"
+}

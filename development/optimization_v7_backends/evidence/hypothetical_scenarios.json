@@ -1,0 +1,33 @@
+{
+  "measurement_class": "hypothetical_model",
+  "scenarios": [
+    {
+      "f": 0.2,
+      "s": 2,
+      "delta": 0.03,
+      "measurement_class": "hypothetical_model",
+      "remaining_ratio": 0.93,
+      "speedup": 1.075268817204301,
+      "overhead_ratio": 0.03
+    },
+    {
+      "f": 0.6,
+      "s": 3,
+      "delta": 0.03,
+      "measurement_class": "hypothetical_model",
+      "remaining_ratio": 0.63,
+      "speedup": 1.5873015873015872,
+      "overhead_ratio": 0.03
+    },
+    {
+      "f": 0.8,
+      "s": 4,
+      "delta": 0.05,
+      "measurement_class": "hypothetical_model",
+      "remaining_ratio": 0.44999999999999996,
+      "speedup": 2.2222222222222223,
+      "overhead_ratio": 0.05
+    }
+  ],
+  "required_local_for_2x_when_f_0_6_delta_0_03": 8.571428571428573
+}

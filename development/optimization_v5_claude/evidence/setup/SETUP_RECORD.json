@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "recorded_at": "2026-09-20",
+  "branch": "perf/claude-glm53-cpu-v5",
+  "base_sha": "14e888760727583ef782a4dc0e7a5c7c6e6ff9d1",
+  "base_verified": "git worktree add -b perf/claude-glm53-cpu-v5 <path> 14e888760727583ef782a4dc0e7a5c7c6e6ff9d1; rev-parse HEAD reproduced the SHA",
+  "worktree_path": "/Users/alansynn/Workspace/solweig-light-claude-v5",
+  "main_checkout_untouched": true,
+  "user_changes_treatment": {
+    "optimization_v4": "untracked directory in main checkout, left untouched; not copied into branch (superseded by v5 packet which is committed on the branch)",
+    "optimization_v5_claude": "untracked in main checkout; copied (excluding evidence/, __pycache__) into the worktree and committed as f79fd470 so every worker sees the packet",
+    "main_checkout_clean_of_staged_changes": true
+  },
+  "environment": {
+    "created_with": "uv sync --frozen in worktree",
+    "python": "3.12 (worktree .venv)",
+    "key_packages": {"numpy": "2.4.6", "numba": "0.67.0", "scipy": "1.17.1", "GDAL": "3.13.x"},
+    "matches_main_venv_dependency_identities": true
+  },
+  "untracked_assets_copied_into_worktree": {
+    "tests/fixtures/generated/p7": "generated 256-square p7 fixtures",
+    "tests/fixtures/generated/p7_real": "real-scene p7 fixtures",
+    "tests/fixtures/generated/benchmarks": "repeated_block_256",
+    "tests/fixtures/generated/own_met_small": "own-met small fixture",
+    "tests/fixtures/generated/small_prepared": "small prepared inputs",
+    "note": "tests/reference and reports are git-tracked and present via checkout; p7_sources (zenodo raw, 91 MiB) NOT copied - regeneration source only, not needed by any validation tier"
+  },
+  "prior_evidence_reused_by_identity": {
+    "frozen_protocols": "benchmarks/protocols/local_cpu_optimization_v1/{development,combined_development,promotion}.json (status reviewed_frozen, baseline_commit 8ca23d44)",
+    "benchmark_protocol": "benchmarks/protocols/benchmark_v1.json",
+    "comparison_protocol": "benchmarks/protocols/comparison_v1.json",
+    "promotion_result": "reports/local_cpu_optimization.md - combined_v1 integrated at 14e88876; repeated_block_256 warm 1.627x; dense1024 400.827s / vegetation1024 341.365s single-tile feasibility runs, peak RSS ~1.5 GiB",
+    "holdout_fixtures_1024": "reports/characterization/local_cpu_optimization_v1/qualification/final_combined_v1/large_harness/fixtures/{dense1024,vegetation1024} + prior raw admission outputs for reference comparison under reports/cura_p8_20260919T1215Z_a7c3/admission/p8_1024/",
+    "known_scient_failure_dispositions": "dense1024 TMRT failed frozen 0.01 degC original-reference gate on Linux p8 admission (dense candidate gate failed; vegetation passed 13 artifacts + 18 geometry fields); four inherited SVF/UMEP exceptions under policy inherited-svf-umep-compatibility-v1 remain failed-by-disposition",
+    "note": "408/341s timings were single-tile diagnostics on THIS host (dense1024) and are the only local large-scale anchors; the Linux p8_1024 runs are a different host and are correctness-only"
+  },
+  "coordinator_deductions": {
+    "parallel_budget": "M1 Pro 10 logical CPUs, 16 GiB RAM; frozen resource policy 12 GiB process-tree cap, 10 GiB disk reserve",
+    "scale_math": "24 tiles x ~350-400 s/tile single-worker = 8400-9600 s serial; <=1800 s target requires ~4.7-5.3x effective throughput = persistent-worker parallelism (S02/S03) + measured code work reduction (R/P/G families)",
+    "single_tile_baseline_local": {"dense1024_s": 400.827, "vegetation1024_s": 341.365, "config": "1 worker, 4 native threads, block 1024, candidate combined_v1 @ 14e88876 lineage"}
+  }
+}

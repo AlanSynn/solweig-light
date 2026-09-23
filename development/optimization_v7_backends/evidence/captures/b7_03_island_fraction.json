@@ -1,0 +1,44 @@
+{
+ "schema": "solweig-v7-island-profile-v1",
+ "task": "B7-03",
+ "measurement_class": "dev_tier_residual_profile",
+ "scene": "tests/reference/small_original_cpu/scene (35x32, 24 records)",
+ "repeats": 3,
+ "results": [
+  {
+   "config": "serial_default",
+   "overrides": {},
+   "trials_wall_s": [
+    0.8868925420101732,
+    0.5884695840068161,
+    0.5810291660018265
+   ],
+   "median_wall_s": 0.5884695840068161,
+   "kernel_calls_per_run": 216,
+   "kernel_time_per_run_s": 0.02754977500687043,
+   "wrapper_calls_per_run": 24,
+   "wrapper_time_per_run_s": 0.12539848735711226,
+   "kernel_fraction_of_wall": 0.046815971046944245,
+   "wrapper_fraction_of_wall": 0.21309255527412235
+  },
+  {
+   "config": "parallel_tpw4_cpu4",
+   "overrides": {
+    "threads_per_worker": 4,
+    "cpu_budget": 4
+   },
+   "trials_wall_s": [
+    0.6339797080727294,
+    0.6155072909314185,
+    0.6160893749911338
+   ],
+   "median_wall_s": 0.6160893749911338,
+   "kernel_calls_per_run": 216,
+   "kernel_time_per_run_s": 0.05743644312800219,
+   "wrapper_calls_per_run": 24,
+   "wrapper_time_per_run_s": 0.11640248668845743,
+   "kernel_fraction_of_wall": 0.09322745280070568,
+   "wrapper_fraction_of_wall": 0.18893766296510564
+  }
+ ]
+}

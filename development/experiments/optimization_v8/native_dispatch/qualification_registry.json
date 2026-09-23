@@ -1,0 +1,5 @@
+{
+  "schema": "sw8-lw-default-registry-v1",
+  "description": "N8-22 qualification registry for the LW-primary backend rows. Every non-legacy row ships DISABLED: activation requires an explicit sw8-lw-default-row-record-v1 record (schema documented in lw_default_policy.py) whose evidence still validates at resolve time; absent/stale/malformed records fail closed to legacy row A. This file ships EMPTY on purpose (dossier 06: the repository must not ship example rows with placeholder success). Records are added only by the N8-31/N8-32/N8-44 transcription after qualification, reviewed per PROMOTION_POLICY.",
+  "records": []
+}
