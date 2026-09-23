@@ -1,0 +1,25 @@
+{
+  "record": "N8-40 FORMAL COMPLETION: integration closure of the retained state (yaml gate: public DX and compatibility ownership unchanged; selected default still needs final qualification)",
+  "recorded_utc": "SET_AT_COMMIT",
+  "yaml_gate_disposition": {
+    "gate_1_public_dx_and_compatibility_unchanged": {
+      "status": "SATISFIED",
+      "evidence": [
+        "tests/optimization_v8/policy/test_legacy_env_parity.py: every legacy SOLWEIG_LIGHT_LW_BACKEND value resolves byte-compatibly; the src env-read surface equals the frozen dx baseline with the ONE self-validating exclusion (vendored N8-20 build driver, build-time-only); no qualified rows ship anywhere under the policy dir; shipped template pending+inert; policy module does no IO at import or pure resolve (audit-hook proof)",
+        "tests/optimization_v8/dx + installed suites: no-env API/CLI/import surfaces against installed wheel and source origins (see the N8-50 freeze record's local run results)",
+        "integration suite test_lw_dispatch.py: routed-vs-legacy bitwise parity over adversarial packed inputs; decline-before-launch and serial/degenerate semantics pinned",
+        "seven public workflows, CLI defaults, TIFF schemas, chronology: unchanged by construction -- the shipped state resolves row A (legacy Numba kernels) exactly as main"
+      ]
+    },
+    "gate_2_selected_default_still_needs_final_qualification": {
+      "status": "SATISFIED-VACUOUSLY-AND-EXPLICITLY",
+      "statement": "N8-32 selected NO default candidate (numba_improvement_only_native_goal_open; evidence/selection/n8_32_selection_record.json): the shipped default IS main's row-A behavior, which is not a new default and needs no new qualification; the native default's qualification campaign is explicitly NOT STARTED (selection record, qualification_campaign_disposition). Nothing selected remains unqualified -- nothing was selected."
+    }
+  },
+  "retained_state": {
+    "wired": "N8-40 staged region dispatch + N8-40b public seam + N8-41 vendored machinery, all inert in shipped state (empty registry fail-closed to row A)",
+    "deferred_review_notes": "N1 docstring overstatement CLOSED at freeze touch (intro paragraph now states the selector runs every routed call; correction paragraph retained); N4 test comment intentionally retained per its disposition; N2/N3 died with n841-7 vendoring as recorded"
+  },
+  "selection_reference": "evidence/selection/n8_32_selection_record.json (APPROVE-WITH-NOTES, commit 4761c4d6)",
+  "status": "FORMALLY COMPLETE -- retained state frozen by N8-50"
+}

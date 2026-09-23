@@ -1,17 +1,21 @@
 """N8-23: gates that CANNOT be tested yet, recorded as labelled skips.
 
-These skips are the honest record of this packet's boundary.  The current
-branch (perf/native-optimization @ 16cdc56c) contains no packaged native
-artifact -- native wheels arrive with N8-41 -- and the companion
-distribution / upstream collision channels belong to N8-41/42.  None of
-these may be faked as passes (DX_CONTRACT.md gate discipline; PACKAGING_AND_
-DISTRIBUTION.md 'local install tests, not just wheel existence').
+These skips are the honest record of this packet's boundary.  The branch
+now carries the N8-41 candidate-wheel MACHINERY (staged generation,
+vendored ``_native_dispatch`` package), but no qualified native artifact
+exists: the N8-32 selection (``numba_improvement_only_native_goal_open``,
+``evidence/selection/n8_32_selection_record.json``) left native promotion
+incomplete, the shipped qualification registry is empty, and these
+channels gate a native default that was never authorized.  None of these
+may be faked as passes (DX_CONTRACT.md gate discipline;
+PACKAGING_AND_DISTRIBUTION.md 'local install tests, not just wheel
+existence').
 
-When N8-41 lands, these tests are replaced by the real channels: the
-no-env gates in test_installed_noenv_gates.py are already
-origin-parametrized (``SOLWEIG_DX_PACKAGE_ORIGIN=subprocess:<python>``
-capture, fresh-venv fixtures) so they rerun unchanged against a native
-wheel's venv.
+The no-env gates in test_installed_noenv_gates.py are origin-parametrized
+(``SOLWEIG_DX_PACKAGE_ORIGIN=subprocess:<python>`` capture, fresh-venv
+fixtures) so they rerun unchanged against a native wheel's venv if a
+future, newly-evidenced campaign reopens promotion (see the selection
+record's flip conditions).
 """
 
 from __future__ import annotations

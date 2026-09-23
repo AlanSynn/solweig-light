@@ -14,10 +14,11 @@
 
 The selection policy is N8-22's ``resolve_lw_backend`` (records-blind; every
 non-legacy row is disabled until a qualified record exists). This module is
-the only caller of the experiment machinery from ``src``, and in the shipped
-state (empty qualification registry) every call is decided without touching
-any of it: env unset -> registry [absent] -> row A -> ``None`` -> the
-caller's legacy loop, byte-identical to the unwired driver.
+the only caller of the experiment machinery from ``src``. In the shipped
+state (empty qualification registry) every call resolves env unset ->
+registry [absent] -> row A -> ``None`` -> the caller's legacy loop,
+byte-identical to the unwired driver; the selector itself DOES run on
+every routed call (see below) -- only the execution machinery is untouched.
 
 Staged expert migration (n840-6 decision, deliberate per DX_CONTRACT): an
 explicit ``SOLWEIG_LIGHT_LW_BACKEND=native|ispc`` request is served by the

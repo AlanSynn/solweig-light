@@ -1,0 +1,11 @@
+{
+  "record": "N8-44 disposition: NO default certificate issued -- promotion rejected as inapplicable (no qualified native default candidate)",
+  "recorded_utc": "SET_AT_COMMIT",
+  "authority": "N8-32 selection (evidence/selection/n8_32_selection_record.json) + N8-42/N8-43 unavailable-state records",
+  "yaml_gate_disposition": {
+    "gate_criteria_not_loosened": "AFFIRMED POSITIVELY: no promotion criterion was loosened at any point. The only threshold amended in this packet was the tier-B MEASUREMENT window (loadavg < 2.0 -> < 5.0, amendment_2026-09-23T0817Z), recorded and reviewer-verified PRE-RESULTS (zero tier-B timed records existed; n8_30_review_n8_13_tierB R-B4), before any candidate had failed. All PROMOTION_POLICY gates are untouched and none was evaluated, because no candidate reached them.",
+    "gate_actual_platform_native_vs_fallback_scope_explicit": "explicit: on this platform the shipped state is fallback-only (row A Numba) by fail-closed selection; native execution exists only in the N8-31 harness cells (parity-proven, INFORMATIONAL/NON-PROMOTION). No platform is claimed native-qualified; the qualification registry ships empty."
+  },
+  "decision": "REJECT PROMOTION (inapplicable): per the goal contract, 'if native cannot beat Numba end-to-end, retain improvements but leave native promotion incomplete.' Tier B measured native C losing end-to-end to the parallel A label in 3/3 mixes at the production block; the selection applied the pre-registered branch numba_improvement_only_native_goal_open. No certificate is issued; none is draftable without a qualified candidate.",
+  "status": "NO-CERTIFICATE (promotion incomplete by measured decision, honestly recorded)"
+}

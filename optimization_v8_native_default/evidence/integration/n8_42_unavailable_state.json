@@ -1,0 +1,11 @@
+{
+  "record": "N8-42 UNAVAILABLE-STATE record: small exact chronology and no-env DX qualification NOT STARTED -- no qualified native candidate exists to qualify",
+  "recorded_utc": "SET_AT_COMMIT",
+  "authority": "N8-32 selection (evidence/selection/n8_32_selection_record.json): outcome numba_improvement_only_native_goal_open; qualification_campaign_disposition records that N8-42/43/44 are NOT STARTED because no candidate row advanced (selection-before-qualification binding), and dispositioned this suite's deferred labels",
+  "yaml_gate_disposition": {
+    "gate_all_affected_state_intermediate_output_gates": "the gates that exist and CAN run, DID run and pass for the retained state: the N8-23 installed no-env API/CLI gates, the dx/env-var surface parity gates, and the integration bitwise-parity suite (see N8-50 freeze record for the freeze-time run results). The native-channel gates are the labelled skips in tests/optimization_v8/installed/test_deferred_gates.py -- [native-wheel-deferred-N8-41], [companion-collision-deferred-N8-41], [upstream-collision-deferred-N8-42], [native-qualification-deferred-N8-42] -- whose disposition is THIS record and the selection record.",
+    "gate_native_coverage_and_fallback_exercised": "fallback (auto decline to Numba on a no-native install) IS exercised by the no-env gates; native coverage >=80% is a PROMOTION gate for a native default, and no native default was authorized -- the only counted native execution evidence remains the N8-31 tier A/B harness cells (parity-proven, INFORMATIONAL/NON-PROMOTION)."
+  },
+  "honest_boundary": "Starting this qualification without a selected candidate would manufacture promotion evidence the selection does not authorize; reopening requires new pre-registered evidence per the selection record's flip conditions.",
+  "status": "NOT-STARTED BY DECISION (unavailable state), not skipped-by-omission"
+}

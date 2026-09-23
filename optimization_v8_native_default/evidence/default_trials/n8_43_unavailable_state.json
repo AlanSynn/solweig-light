@@ -1,0 +1,11 @@
+{
+  "record": "N8-43 UNAVAILABLE-STATE record: frozen installed-default paired comparison NOT STARTED -- there is no installed native default to compare",
+  "recorded_utc": "SET_AT_COMMIT",
+  "authority": "N8-32 selection (evidence/selection/n8_32_selection_record.json): no candidate advanced to qualification (qualification_campaign_disposition); N8-42 is an unavailable-state record by the same decision",
+  "yaml_gate_disposition": {
+    "gate_ordinary_defaults_included": "the ordinary default (row A legacy Numba, main-parity) IS the shipped state and was measured as arm A0 in BOTH N8-31 tiers (B=128 ambient, B=1024 amended quiet window) with parity and min-of-9 -- the comparison machinery ran to completion; what does not exist is a native DEFAULT arm to pair against it in an installed campaign",
+    "gate_matches_A0_and_strongest_B_plus_full_boundary": "A0 vs B1 (strongest equivalent-layout Numba) vs C1 boundaries are exactly the N8-31 tier record content (uniform composition, R-SEL-1-corrected B1, both accountings archived)"
+  },
+  "honest_boundary": "The frozen N8-42/43 campaign cells (pre-selection freeze, task n8-43-freeze) remain frozen for any future reopened campaign; running them now without a candidate would produce a campaign record with no default to promote.",
+  "status": "NOT-STARTED BY DECISION (unavailable state), not skipped-by-omission"
+}
