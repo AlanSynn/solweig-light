@@ -18,7 +18,7 @@ together (the region-shadowing bug class the n8-rev-n8-14 delta review
 closed; see also the region_test_helpers.py pattern). Tests and experiment
 scripts import THIS module; conftest.py keeps only the pytest fixture.
 
-Puts the experiment dirs on sys.path, imports the module under test, and
+Imports the module under test (the packaged one since N8-41 vendoring;
 READ-ONLY reuses two frozen modules:
 
 * the N8-04 adversarial input constructor
@@ -38,17 +38,17 @@ from pathlib import Path
 import numpy as np
 
 _REPO = Path(__file__).resolve().parents[3]
+# N8-41 vendoring: lw_native_aosoa / direct_aosoa are imported from the
+# package (solweig_light._native_dispatch); no experiment dir goes on
+# sys.path anymore. The reference suite stays a sys.path entry (the
+# frozen oracle modules are read in place, never moved).
 _NATIVE_DIR = _REPO / 'experiments' / 'optimization_v8' / 'native'
-_LAYOUT_DIR = _REPO / 'experiments' / 'optimization_v8' / 'layout'
 _PACKAGING_DIR = _REPO / 'experiments' / 'optimization_v8' / 'packaging'
 _REFERENCE_DIR = _REPO / 'tests' / 'optimization_v8' / 'reference'
+if str(_REFERENCE_DIR) not in sys.path:
+    sys.path.insert(0, str(_REFERENCE_DIR))
 
-for _p in (str(_NATIVE_DIR), str(_LAYOUT_DIR), str(_PACKAGING_DIR),
-           str(_REFERENCE_DIR)):
-    if _p not in sys.path:
-        sys.path.insert(0, _p)
-
-import lw_native_aosoa  # noqa: E402  (module under test)
+from solweig_light._native_dispatch import lw_native_aosoa  # noqa: E402  (module under test)
 
 # Read-only reuse of the frozen N8-04 adversarial grid constructor.
 _spec = importlib.util.spec_from_file_location(
@@ -62,7 +62,7 @@ _pin_args = lw_identity_grid._pin_args
 
 from lw_reference_oracle import (F32, bitwise_equal, kernel_pair,  # noqa: E402
                                  lw_primary_reference, u32)
-import direct_aosoa as da  # noqa: E402  (N8-11 producer, read-only)
+from solweig_light._native_dispatch import direct_aosoa as da  # noqa: E402  (N8-11 producer, read-only)
 
 _PARALLEL, SERIAL = kernel_pair()
 

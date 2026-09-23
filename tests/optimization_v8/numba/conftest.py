@@ -26,11 +26,13 @@ from pathlib import Path
 
 import numba
 
+# N8-41 vendoring: lw_b_control is imported from the package
+# (solweig_light._native_dispatch); only the FROZEN reference suite
+# stays on sys.path (read in place, never moved).
 _HERE = Path(__file__).resolve().parent
-for _entry in (_HERE.parents[2] / 'experiments' / 'optimization_v8' / 'numba',
-               _HERE.parents[0] / 'reference'):
-    if str(_entry) not in sys.path:
-        sys.path.insert(0, str(_entry))
+_REFERENCE = _HERE.parents[0] / 'reference'
+if str(_REFERENCE) not in sys.path:
+    sys.path.insert(0, str(_REFERENCE))
 
 LW_TEST_THREADS = max(1, min(4, numba.config.NUMBA_NUM_THREADS))
 numba.set_num_threads(LW_TEST_THREADS)

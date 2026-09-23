@@ -107,8 +107,10 @@ class _NativeHandleReduce:
     """
 
     def __init__(self, **prepare_kwargs):
-        from loader.native_handle import prepare_native_handle
-        self._handle = prepare_native_handle(**prepare_kwargs)
+        # N8-41 vendoring: the N8-10 handle ships in this package (the
+        # maintainer-tree copy resolved the bare ``loader`` namespace).
+        from solweig_light._native_dispatch import native_handle
+        self._handle = native_handle.prepare_native_handle(**prepare_kwargs)
 
     @property
     def handle(self):
@@ -169,7 +171,9 @@ class AosoaBConsumer:
     mode = ExecutionMode.SELF_PARALLEL
 
     def __init__(self, args: Mapping[str, Any], width: int = 8):
-        from lw_b_control import lw_primary_b
+        # N8-41 vendoring: the N8-12 consumer ships in this package (the
+        # maintainer-tree copy resolved the bare experiment name).
+        from solweig_light._native_dispatch.lw_b_control import lw_primary_b
         self._lw_primary_b = lw_primary_b
         self._args = dict(args)
         self._width = width

@@ -12,8 +12,9 @@
 #General Public License for more details.
 """N8-22 legacy-DX parity pins: today's observable behavior is unchanged.
 
-The selector exists in experiments/ only; these tests pin that its
-existence changes nothing a user can observe:
+The selector lives in the vendored ``solweig_light._native_dispatch``
+package (N8-41); these tests pin that its existence changes nothing a
+user can observe:
 
 * every legacy ``SOLWEIG_LIGHT_LW_BACKEND`` value keeps its CURRENT
   ``cylinder_longwave._lw_kernel`` resolution behavior (identity for
@@ -40,10 +41,11 @@ from pathlib import Path
 import pytest
 
 REPO = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(REPO / 'experiments' / 'optimization_v8' / 'policy'))
+# N8-41 vendoring: the policy module under test is the packaged one;
+# only the dx helper module stays on sys.path (read in place).
 sys.path.insert(0, str(REPO / 'tests' / 'optimization_v8' / 'dx'))
 
-import lw_default_policy as policy  # noqa: E402
+from solweig_light._native_dispatch import lw_default_policy as policy  # noqa: E402
 
 import solweig_light.radiation.cylinder_longwave as cyl  # noqa: E402
 from solweig_light.backends import native_lw  # noqa: E402
@@ -188,18 +190,19 @@ def test_importing_solweig_light_never_pulls_the_policy_module():
 NO_IO_PROBE = textwrap.dedent('''
     import json, sys
 
-    # Preload every stdlib module the policy module touches so the audit
-    # window below sees only the module under test.
+    # Preload every stdlib module the policy module touches, plus the
+    # package parents, so the audit window below sees only the module
+    # under test (N8-41 vendoring: it imports from the package).
     import __future__, hashlib, os, platform, threading, dataclasses
     import pathlib
+    import solweig_light._native_dispatch
 
     EVENTS = []
     def hook(event, args):
         EVENTS.append((event, args))
 
-    sys.path.insert(0, sys.argv[1])
     sys.addaudithook(hook)
-    import lw_default_policy as policy
+    from solweig_light._native_dispatch import lw_default_policy as policy
 
     # Pure resolve: injected env + injected empty registry -> no file, no
     # process, no network may be touched (today's auto path is A).
@@ -225,10 +228,8 @@ NO_IO_PROBE = textwrap.dedent('''
 
 
 def test_policy_module_does_no_io_at_import_or_pure_resolve(tmp_path):
-    proc = subprocess.run(
-        [sys.executable, '-c', NO_IO_PROBE,
-         str(REPO / 'experiments' / 'optimization_v8' / 'policy')],
-        capture_output=True, text=True, cwd=str(REPO))
+    proc = subprocess.run([sys.executable, '-c', NO_IO_PROBE],
+                          capture_output=True, text=True, cwd=str(REPO))
     assert proc.returncode == 0, proc.stderr
     assert json.loads(proc.stdout)['stray'] == '[]'
 

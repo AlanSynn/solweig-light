@@ -12,8 +12,9 @@
 #General Public License for more details.
 """N8-22 policy-selector test bootstrap.
 
-Puts the experiments dirs on sys.path (the policy module under test + the
-N8-21 artifacts loader it can consult lazily) and provides the fabricated
+N8-41 vendoring: the policy module under test and the N8-21 loader it can
+consult lazily are imported from the package (same module identity the
+dispatch binds). Provides the fabricated
 evidence tree / genuine staged-artifact fixtures.  Pure builders live in
 ``policy_test_helpers`` (unique module name; a bare ``conftest`` import
 would collide with sibling suites in one pytest session).
@@ -36,17 +37,18 @@ from pathlib import Path
 import pytest
 
 REPO = Path(__file__).resolve().parents[3]
-_POLICY = REPO / 'experiments' / 'optimization_v8' / 'policy'
-_ARTIFACTS = REPO / 'experiments' / 'optimization_v8' / 'artifacts'
+# N8-41 vendoring: lw_default_policy / installed_loader are imported
+# from the package (same module identity the dispatch binds). Only the
+# suite's own directory stays on sys.path (the uniquely-named helpers
+# module) plus the packaging PATH constant for the staged proof
+# generation (a file path, not an import route).
 _PACKAGING = REPO / 'experiments' / 'optimization_v8' / 'packaging'
-_LOADER = REPO / 'experiments' / 'optimization_v8' / 'loader'
 
-for _p in (_POLICY, _ARTIFACTS, _PACKAGING, _LOADER,
-           Path(__file__).resolve().parent):
+for _p in (Path(__file__).resolve().parent,):
     if str(_p) not in sys.path:
         sys.path.insert(0, str(_p))
 
-import lw_default_policy as policy  # noqa: E402  (module under test)
+from solweig_light._native_dispatch import lw_default_policy as policy  # noqa: E402  (module under test)
 from policy_test_helpers import (  # noqa: E402  (fabricated builders)
     COMMIT, make_promotion_record, write_json)
 
@@ -183,7 +185,7 @@ def make_package(tmp_path, staged_generation):
 def genuine_loaded_outcome(make_package, staged_identity):
     """A GENUINE N8-21 LoadOutcome for the staged artifact (loaded through
     the real loader's resolution + gating, in a fake installed package)."""
-    import installed_loader  # noqa: E402  (N8-21)
+    from solweig_light._native_dispatch import installed_loader  # noqa: E402  (N8-21)
     installed_loader.reset_for_tests()
     name, _ = make_package()
     outcome = installed_loader.attempt_load(name)

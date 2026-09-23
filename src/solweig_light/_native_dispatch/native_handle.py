@@ -214,7 +214,12 @@ def _resolve_artifact_dir(explicit) -> str:
     not by mkdir -- prepare never creates anything."""
     if explicit is not None:
         return str(Path(os.fspath(explicit)))
-    env = os.environ.get('SOLWEIG_LIGHT_NATIVE_CACHE')
+    # N8-41 vendoring: the override is read through the package's single
+    # env-read site (backends.native_lw, frozen DX env-read surface). The
+    # non-mutating reader is used, NOT _cache_dir(), because prepare never
+    # creates anything (no mkdir side effect, unlike _cache_dir).
+    from solweig_light.backends.native_lw import _native_cache_env
+    env = _native_cache_env()
     if env:
         return str(Path(env))
     return str(Path.home() / '.cache' / 'solweig-light' / 'native')

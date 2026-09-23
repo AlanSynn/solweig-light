@@ -24,7 +24,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-import direct_aosoa as da
+from solweig_light._native_dispatch import direct_aosoa as da
 from solweig_light.geometry.visibility import VisibilityBuilder
 from solweig_light.geometry.visibility_compiled import _decode, _descriptor
 from solweig_light.radiation.cylinder_longwave import _longwave_primary_serial

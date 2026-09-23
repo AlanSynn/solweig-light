@@ -26,8 +26,8 @@ import pytest
 from native_test_helpers import (F32, adversarial_inputs, run_native,
                                  to_aosoa)
 
-import lw_native_aosoa
-from lw_native_aosoa import (NativeArtifactError, NativeExecutionError,
+from solweig_light._native_dispatch import lw_native_aosoa
+from solweig_light._native_dispatch.lw_native_aosoa import (NativeArtifactError, NativeExecutionError,
                              UnsupportedInput, primary_aosoa)
 
 B, P = 9, 5          # one full gang + a 1-lane tail gang
@@ -364,9 +364,13 @@ def test_manifest_records_isa_and_fp_audit(generation_dir):
 
 
 def test_evidence_audit_json_exists_and_passes(generation_dir):
-    from pathlib import Path
-    evidence = Path(lw_native_aosoa.__file__).parent / 'evidence'
-    if not evidence.is_dir():
+    # N8-41 vendoring: the module now ships inside the package, so the
+    # evidence archive no longer sits beside it -- resolve the maintainer
+    # tree anchor the package documents (experiments/optimization_v8).
+    from solweig_light._native_dispatch import experiments_dir
+    try:
+        evidence = experiments_dir('native', 'evidence')
+    except FileNotFoundError:
         pytest.skip('canonical staging not used in this session')
     audits = sorted(evidence.glob('build_audit_*.json'))
     assert audits, 'no archived build audit JSON'

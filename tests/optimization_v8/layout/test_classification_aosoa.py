@@ -22,7 +22,7 @@ tests pin actual both-false cells on record.
 import numpy as np
 import pytest
 
-import direct_aosoa as da
+from solweig_light._native_dispatch import direct_aosoa as da
 from solweig_light.radiation.patch_radiation import _class_coefficients, _classes, patch_geometry
 
 

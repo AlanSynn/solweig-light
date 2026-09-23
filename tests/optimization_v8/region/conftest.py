@@ -23,5 +23,5 @@ import region_test_helpers  # noqa: F401  (bootstrap + thread pinning)
 
 def pytest_sessionfinish(session, exitstatus):
     # Never leak region-owner threads across the suite.
-    from region import reset_pools_for_tests
+    from solweig_light._native_dispatch.region import reset_pools_for_tests
     reset_pools_for_tests()

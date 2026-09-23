@@ -19,9 +19,9 @@ import pytest
 from test_typed_graph_identity import adversarial_inputs
 
 from region_test_helpers import LW_TEST_THREADS
-from region import (ExecutionMode, RegionPool, execute_regions, execute_serial,
+from solweig_light._native_dispatch.region import (ExecutionMode, RegionPool, execute_regions, execute_serial,
                     plan_regions)
-from region.consumers import (AosoaBConsumer, DenseKernelConsumer,
+from solweig_light._native_dispatch.region.consumers import (AosoaBConsumer, DenseKernelConsumer,
                               dense_to_aosoa)
 from region_case import (aosoa_case, b_consumer, fresh_output,
                          oracle_consumer, outputs_bitwise_equal)
@@ -113,7 +113,7 @@ def test_mode_is_a_parallelism_class_not_a_backend_id():
     the thread-budget rule -- that misdeclaration is a consumer-contract
     violation the owner cannot detect, like lying about thread safety
     anywhere else. The B arm therefore declares SELF_PARALLEL.)"""
-    from region.consumers import _ORDERED
+    from solweig_light._native_dispatch.region.consumers import _ORDERED
     n = 256
     dense, aosoa = aosoa_case(n, 61, 1)
     plan = plan_regions(n, block_pixels=128, region_blocks=2)
@@ -144,7 +144,7 @@ def test_mode_is_a_parallelism_class_not_a_backend_id():
 
 
 def _native_ready():
-    from loader.native_handle import (NativeHandleError,
+    from solweig_light._native_dispatch.native_handle import (NativeHandleError,
                                       prepare_native_handle)
     try:
         prepare_native_handle()
@@ -160,8 +160,8 @@ def test_region_execution_adds_no_handle_registry_growth():
     """Routed registry-bound note: workers are threads sharing one pid
     and NativeHandle.execute writes no registry entries, so fanout over
     many blocks/regions leaves the N8-10 registry size unchanged."""
-    from loader.native_handle import prepare_native_handle, registry_snapshot
-    from region.consumers import DenseKernelConsumer, native_handle_reduce
+    from solweig_light._native_dispatch.native_handle import prepare_native_handle, registry_snapshot
+    from solweig_light._native_dispatch.region.consumers import DenseKernelConsumer, native_handle_reduce
     reduce_block = native_handle_reduce()
     args = adversarial_inputs(512, 61, 6)
     plan = plan_regions(512, block_pixels=128, region_blocks=2)
@@ -181,8 +181,8 @@ def test_region_execution_adds_no_handle_registry_growth():
 def test_native_execution_error_propagates_through_region():
     """An ADMITTED native failure after launch (NativeExecutionError) is
     never hidden or converted by the region owner."""
-    from loader.native_handle import NativeExecutionError
-    from region.consumers import DenseKernelConsumer, native_handle_reduce
+    from solweig_light._native_dispatch.native_handle import NativeExecutionError
+    from solweig_light._native_dispatch.region.consumers import DenseKernelConsumer, native_handle_reduce
 
     class FailingHandle:
         def __init__(self, inner, fail_at):

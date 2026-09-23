@@ -20,9 +20,9 @@ import numpy as np
 import pytest
 from test_typed_graph_identity import adversarial_inputs
 
-from region import (RegionPool, ScratchShapeError, ScratchSlot,
+from solweig_light._native_dispatch.region import (RegionPool, ScratchShapeError, ScratchSlot,
                     execute_regions, execute_serial, plan_regions)
-from region.consumers import DenseKernelConsumer
+from solweig_light._native_dispatch.region.consumers import DenseKernelConsumer
 from region_case import (aosoa_case, b_consumer, fresh_output,
                          oracle_reduce, outputs_bitwise_equal)
 
@@ -146,7 +146,7 @@ def test_poisoned_scratch_does_not_change_results():
 def test_read_before_write_would_see_poison():
     """Canary liveness: a consumer that READS the frame before writing
     would observe the poison -- proves the previous test has teeth."""
-    from region import ExecutionMode
+    from solweig_light._native_dispatch.region import ExecutionMode
     from region_case import ProbeConsumer
 
     class ReadOnly(ProbeConsumer):

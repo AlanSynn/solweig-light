@@ -22,9 +22,9 @@ records -- onto one of three rows:
   (``solweig_light.radiation.cylinder_longwave._longwave_primary`` /
   ``..._serial``) -- the shipped default and the FAIL-CLOSED target;
 * ``B``  Numba AoSoA consumer
-  (``experiments/optimization_v8/numba/lw_b_control.lw_primary_b``);
+  (``solweig_light._native_dispatch.lw_b_control.lw_primary_b``);
 * ``C``  native AoSoA consumer
-  (``experiments/optimization_v8/native/lw_native_aosoa.primary_aosoa``).
+  (``solweig_light._native_dispatch.lw_native_aosoa.primary_aosoa``).
 
 THE LAW (packet gate): every non-legacy row ships DISABLED.  B/C activate
 only on an explicit qualification record whose referenced evidence still
@@ -98,7 +98,7 @@ wires; a pending, never-activatable template ships under ``templates/``::
         "kernel_sha256": "<64 hex>",             # cross-wires are malformed
         "dylib_sha256": "<64 hex>"
         # row B instead: {"kind": "python-module",
-        #                "module_path": "experiments/optimization_v8/numba/lw_b_control.py",
+        #                "module_path": "src/solweig_light/_native_dispatch/lw_b_control.py",
         #                "module_sha256": "<64 hex>"}
       },
       "promotion_record": {               # PROMOTION_POLICY gates, re-verified
@@ -155,8 +155,8 @@ ROW_C = 'C'
 ROW_ENTRIES = {
     ROW_A: 'solweig_light.radiation.cylinder_longwave._longwave_primary'
            '(_serial)',
-    ROW_B: 'experiments/optimization_v8/numba/lw_b_control.lw_primary_b',
-    ROW_C: 'experiments/optimization_v8/native/lw_native_aosoa.primary_aosoa',
+    ROW_B: 'solweig_light._native_dispatch.lw_b_control.lw_primary_b',
+    ROW_C: 'solweig_light._native_dispatch.lw_native_aosoa.primary_aosoa',
 }
 
 # Legacy recognized expert values (exact set _lw_kernel dispatches on,
@@ -363,11 +363,10 @@ def _default_attempt_load():
 
     Only reached when a C record is actually a candidate (or the expert
     path needs the outcome); with the shipped empty registry the auto path
-    never touches the filesystem beyond reading the registry itself."""
-    artifacts = REPO_ROOT / 'experiments' / 'optimization_v8' / 'artifacts'
-    if str(artifacts) not in sys.path:
-        sys.path.insert(0, str(artifacts))
-    import installed_loader  # noqa: E402  (lazy; N8-21)
+    never touches the filesystem beyond reading the registry itself.
+    N8-41 vendoring: the loader ships in this package (the maintainer-tree
+    copy was resolved through a repo-relative sys.path bootstrap)."""
+    from solweig_light._native_dispatch import installed_loader  # noqa: E402  (lazy; N8-21)
     return installed_loader.attempt_load()
 
 

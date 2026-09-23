@@ -25,7 +25,7 @@ import pytest
 from solweig_light.geometry.visibility import PackedVisibility, _EncodedPatch
 from solweig_light.geometry.visibility_compiled import _decode, _descriptor
 
-import direct_aosoa as da
+from solweig_light._native_dispatch import direct_aosoa as da
 from native_test_helpers import (F32, SERIAL, _pin_args, adversarial_inputs,
                                  aosoa_rows, bitwise_equal,
                                  lw_primary_reference, run_native, to_aosoa,
@@ -339,7 +339,7 @@ def test_caller_out_bitwise(generation_dir):
 
 
 def lw_call(feed, B, out):
-    import lw_native_aosoa
+    from solweig_light._native_dispatch import lw_native_aosoa
     return lw_native_aosoa.primary_aosoa(
         feed['sh'], feed['vs'], feed['vb'], feed['sun'], feed['shade'],
         feed['solid'], feed['sine'], feed['cosine'], feed['directions'],

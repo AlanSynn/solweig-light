@@ -29,7 +29,7 @@ the B valid rows then also proves padding lanes are never read.
 import numpy as np
 import pytest
 
-import lw_b_control as bc
+from solweig_light._native_dispatch import lw_b_control as bc
 from lw_reference_oracle import (F32, bitwise_equal, kernel_pair,
                                  lw_primary_reference, u32)
 # Frozen adversarial grid + discriminators (READ-ONLY imports).

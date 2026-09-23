@@ -22,7 +22,7 @@ import threading
 import pytest
 from solweig_light.runtime import RuntimeOptions, runtime_options
 
-from region import (MAX_POOL_BUDGET_SLOTS, ExecutionMode, ForkedRegionPool,
+from solweig_light._native_dispatch.region import (MAX_POOL_BUDGET_SLOTS, ExecutionMode, ForkedRegionPool,
                     PoolRegistryBound, PoolSessionConflict, RegionPool,
                     ClosedRegionPool, execute_regions, plan_regions,
                     reset_pools_for_tests, resolve_budget, shared_pool)
@@ -193,7 +193,7 @@ def test_registry_bound_is_loud():
 
 
 def _live_tracked():
-    import region.region_pool as rp
+    import solweig_light._native_dispatch.region.region_pool as rp
     with rp._POOLS_LOCK:
         return list(rp._LIVE_POOLS)
 
@@ -222,7 +222,7 @@ def test_closed_pools_leave_the_live_list():
             pool = shared_pool(2)
             pool.close()
             assert all(p is not pool for p in _live_tracked())
-            from region import shutdown_all_pools
+            from solweig_light._native_dispatch.region import shutdown_all_pools
             shutdown_all_pools()
             tracked = _live_tracked()
             assert not tracked            # everything closed -> empty

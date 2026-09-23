@@ -41,8 +41,8 @@ import numpy as np
 import pytest
 
 import build_native
-import installed_loader
-import native_handle
+from solweig_light._native_dispatch import installed_loader
+from solweig_light._native_dispatch import native_handle
 
 REAL_PACKAGE = installed_loader.PACKAGE
 REPO = Path(__file__).resolve().parents[3]

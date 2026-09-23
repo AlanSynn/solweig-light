@@ -21,7 +21,7 @@ import pytest
 from test_typed_graph_identity import adversarial_inputs
 
 from region_test_helpers import LW_TEST_THREADS
-from region import RegionPool, execute_regions, execute_serial, plan_regions
+from solweig_light._native_dispatch.region import RegionPool, execute_regions, execute_serial, plan_regions
 from region_case import (aosoa_case, b_consumer, fresh_output,
                          oracle_consumer, oracle_whole, outputs_bitwise_equal)
 
@@ -63,7 +63,7 @@ def test_parallel_equals_serial_and_whole_call(n, region_blocks, budget,
 def test_b_self_parallel_composition(n, region_blocks, seed):
     """B-arm gate: SELF_PARALLEL region execution == serial composition ==
     one whole lw_primary_b call, bitwise (W-aligned blocks)."""
-    from lw_b_control import lw_primary_b
+    from solweig_light._native_dispatch.lw_b_control import lw_primary_b
     dense, aosoa = aosoa_case(n, 61, seed)
     plan = plan_regions(n, block_pixels=B, region_blocks=region_blocks)
     serial_out = fresh_output(n)
@@ -93,7 +93,7 @@ def test_b_self_parallel_composition(n, region_blocks, seed):
 
 
 def native_available():
-    from loader.native_handle import prepare_native_handle, \
+    from solweig_light._native_dispatch.native_handle import prepare_native_handle, \
         NativeHandleError
     try:
         prepare_native_handle()
@@ -109,7 +109,7 @@ def test_c_native_fanout_composition(n, region_blocks):
     if not native_available():
         pytest.skip('native artifact unavailable in this environment '
                     '(auto-decline is the sanctioned planner behavior)')
-    from region.consumers import native_handle_reduce, DenseKernelConsumer
+    from solweig_light._native_dispatch.region.consumers import native_handle_reduce, DenseKernelConsumer
     from test_typed_graph_identity import adversarial_inputs
     reduce_block = native_handle_reduce()
     args = adversarial_inputs(n, 61, 2)
@@ -151,7 +151,7 @@ def test_all_three_arms_agree_bitwise(seed):
     execute_serial(plan, b_consumer(aosoa), outs['B'])
     assert outputs_bitwise_equal(outs['A'], outs['B'])
     if native_available():
-        from region.consumers import native_handle_reduce, \
+        from solweig_light._native_dispatch.region.consumers import native_handle_reduce, \
             DenseKernelConsumer
         reduce_block = native_handle_reduce()
         outs['C'] = fresh_output(n)

@@ -20,7 +20,7 @@ checking the FIRST violated rule wins on multi-violation inputs.
 import numpy as np
 import pytest
 
-import lw_b_control as bc
+from solweig_light._native_dispatch import lw_b_control as bc
 from lw_reference_oracle import F32
 
 from test_b_control_bitexact import b_call, pack_aosoa, pack_bool

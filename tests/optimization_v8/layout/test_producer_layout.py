@@ -24,7 +24,7 @@ import threading
 import numpy as np
 import pytest
 
-import direct_aosoa as da
+from solweig_light._native_dispatch import direct_aosoa as da
 from solweig_light.geometry.visibility import (LazyDiffVisibility, PackedVisibility,
                                                VisibilityBuilder, _EncodedPatch)
 from solweig_light.geometry.visibility_compiled import _decode, _descriptor, decode_block

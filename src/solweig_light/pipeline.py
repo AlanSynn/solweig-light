@@ -307,9 +307,11 @@ def _run_tile(base_path, preprocess_dir, selected_date_str, tile, paths, flags, 
             _cyl_lw.set_demand(_previous_lw_demand)
             # N8-40: release the bounded region owner's threads between
             # tiles. No-op unless this process dispatched a region route
-            # (the machinery is repo-checkout-only and lazily imported).
+            # (the machinery is vendored under the package and lazily
+            # imported; N8-41 moved it in from the repo-only bootstrap).
             try:
-                from region import shutdown_all_pools as _shutdown_pools
+                from solweig_light._native_dispatch.region import \
+                    shutdown_all_pools as _shutdown_pools
             except ImportError:
                 pass
             else:

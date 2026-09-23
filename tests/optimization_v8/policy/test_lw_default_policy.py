@@ -27,7 +27,7 @@ import pytest
 from policy_test_helpers import (make_declined_outcome, make_loaded_outcome,
                                  make_promotion_record, write_json)
 
-import lw_default_policy as policy
+from solweig_light._native_dispatch import lw_default_policy as policy
 
 
 # ---------------------------------------------------------------------------
@@ -98,7 +98,7 @@ def test_qualified_b_record_activates_row_b(evidence, tmp_path):
     """Row B pins the consumer module digest: a byte-identical copy of the
     real module under the evidence root satisfies the anchor."""
     import hashlib
-    module_rel = 'experiments/optimization_v8/numba/lw_b_control.py'
+    module_rel = 'src/solweig_light/_native_dispatch/lw_b_control.py'
     real = policy.REPO_ROOT / module_rel
     module_copy = tmp_path / module_rel
     module_copy.parent.mkdir(parents=True)
@@ -117,7 +117,7 @@ def test_qualified_b_record_activates_row_b(evidence, tmp_path):
 
 def test_c_precedes_b_when_both_qualified(evidence, tmp_path):
     import hashlib
-    module_rel = 'experiments/optimization_v8/numba/lw_b_control.py'
+    module_rel = 'src/solweig_light/_native_dispatch/lw_b_control.py'
     real = policy.REPO_ROOT / module_rel
     module_copy = tmp_path / module_rel
     module_copy.parent.mkdir(parents=True)
@@ -336,7 +336,7 @@ def test_b1_adv2_row_c_with_fully_valid_module_identity_declines(evidence):
     Before the binding, this ACTIVATED row C with handle=None (a native
     row with zero verified artifact)."""
     import hashlib
-    module_rel = 'experiments/optimization_v8/numba/lw_b_control.py'
+    module_rel = 'src/solweig_light/_native_dispatch/lw_b_control.py'
     real = policy.REPO_ROOT / module_rel
     module_copy = evidence.root / module_rel
     module_copy.parent.mkdir(parents=True, exist_ok=True)
@@ -435,7 +435,7 @@ def test_expert_declined_raises_taxonomy_loudly(evidence):
 def test_expert_declined_even_with_qualified_b_records(evidence, tmp_path):
     """The selector never swaps an explicit expert request for a qualified
     B row (or silent A): expert resolution is records-blind."""
-    module_rel = 'experiments/optimization_v8/numba/lw_b_control.py'
+    module_rel = 'src/solweig_light/_native_dispatch/lw_b_control.py'
     real = policy.REPO_ROOT / module_rel
     import hashlib
     b_record = evidence.row_record(row='B', artifact_identity={

@@ -20,19 +20,11 @@ consumer, not the feed. Padding lanes are poisoned after production to
 prove they are never read; the producer's uninitialized padding is
 exercised by construction (np.empty).
 """
-import sys
-from pathlib import Path
-
 import numpy as np
 import pytest
 
-_HERE = Path(__file__).resolve().parent
-_LAYOUT = _HERE.parents[2] / 'experiments' / 'optimization_v8' / 'layout'
-if str(_LAYOUT) not in sys.path:
-    sys.path.insert(0, str(_LAYOUT))
-
-import direct_aosoa as da
-import lw_b_control as bc
+from solweig_light._native_dispatch import direct_aosoa as da
+from solweig_light._native_dispatch import lw_b_control as bc
 from lw_reference_oracle import F32, bitwise_equal, lw_primary_reference
 from solweig_light.geometry.visibility import VisibilityBuilder
 from solweig_light.geometry.visibility_compiled import _decode, _descriptor

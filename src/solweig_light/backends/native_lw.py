@@ -46,8 +46,20 @@ GANG = 8  # neon-i32x8; lane width matched to the reviewed layout control W=8
 _ISPC_FALLBACK = '/opt/homebrew/bin/ispc'
 
 
+def _native_cache_env():
+    """The legacy native-cache override, read HERE only.
+
+    N8-41 vendoring: this module is the package's single env-read site for
+    the variable (the DX env-read surface is frozen module-by-module), so
+    the vendored dispatch machinery (solweig_light._native_dispatch
+    .native_handle) resolves the same override through this reader instead
+    of reading the environment itself.
+    """
+    return os.environ.get('SOLWEIG_LIGHT_NATIVE_CACHE')
+
+
 def _cache_dir():
-    env = os.environ.get('SOLWEIG_LIGHT_NATIVE_CACHE')
+    env = _native_cache_env()
     base = Path(env) if env else Path.home() / '.cache' / 'solweig-light' / 'native'
     base.mkdir(parents=True, exist_ok=True)
     return base

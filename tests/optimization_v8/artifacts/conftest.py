@@ -12,8 +12,9 @@
 #GNU General Public License for more details.
 """N8-21 installed-artifact loader test bootstrap.
 
-Puts the experiments dirs on sys.path (the artifacts module under test +
-the N8-20 packaging driver + the N8-10 loader it reuses) and provides
+N8-41 vendoring: the loader and the N8-10 handle are imported from the
+package; the N8-20 packaging driver stays the one experiments-dir sys.path
+entry (it is not vendored). Provides
 fake INSTALLED package trees in tmp: the staged proof generation is
 copied into ``<tmp>/<pkg>/backends/native_generated/<gen>/`` so
 resolution goes through the real importlib.resources machinery, never
@@ -32,15 +33,19 @@ from pathlib import Path
 import pytest
 
 REPO = Path(__file__).resolve().parents[3]
-_ARTIFACTS = REPO / 'experiments' / 'optimization_v8' / 'artifacts'
+# N8-41 vendoring: installed_loader / native_handle are imported from
+# the package. The N8-20 build driver is NOT vendored (packet build
+# infrastructure, own review cycle) so the experiments packaging dir
+# stays a sys.path entry for the tests' bare ``import build_native``;
+# this is the one deliberate remaining experiments-dir append (shared
+# with tests/optimization_v8/packaging/), surfaced in the N8-41
+# vendoring record.
 _PACKAGING = REPO / 'experiments' / 'optimization_v8' / 'packaging'
-_LOADER = REPO / 'experiments' / 'optimization_v8' / 'loader'
 
-for _p in (str(_ARTIFACTS), str(_PACKAGING), str(_LOADER)):
-    if _p not in sys.path:
-        sys.path.insert(0, _p)
+if str(_PACKAGING) not in sys.path:
+    sys.path.insert(0, str(_PACKAGING))
 
-import installed_loader  # noqa: E402  (module under test)
+from solweig_light._native_dispatch import installed_loader  # noqa: E402  (module under test)
 
 STAGE_DIR = _PACKAGING / 'stage'
 

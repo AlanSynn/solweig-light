@@ -25,8 +25,8 @@ import numpy as np
 from lw_reference_oracle import lw_primary_reference
 from test_typed_graph_identity import adversarial_inputs
 
-from region import ExecutionMode
-from region.consumers import DenseKernelConsumer, AosoaBConsumer, \
+from solweig_light._native_dispatch.region import ExecutionMode
+from solweig_light._native_dispatch.region.consumers import DenseKernelConsumer, AosoaBConsumer, \
     dense_to_aosoa
 
 F32 = np.float32

@@ -17,7 +17,7 @@ import threading
 import numpy as np
 import pytest
 
-from region import (ExecutionMode, RegionPool, execute_regions,
+from solweig_light._native_dispatch.region import (ExecutionMode, RegionPool, execute_regions,
                     execute_serial, plan_regions)
 from region_case import ProbeConsumer, fresh_output
 
@@ -91,7 +91,7 @@ def test_first_error_is_canonical_not_wallclock():
 def test_unsupported_input_passes_through_unchanged():
     """UnsupportedInput must keep its TYPE (a TypeError) so the real
     dispatcher's per-block fallback decision is unchanged."""
-    from lw_b_control import UnsupportedInput
+    from solweig_light._native_dispatch.lw_b_control import UnsupportedInput
     boom = UnsupportedInput('sh: gang mismatch')
     plan = plan_regions(8 * 4, block_pixels=8)
     pool = RegionPool(2)
@@ -106,7 +106,7 @@ def test_unsupported_input_passes_through_unchanged():
 
 
 def test_native_loud_error_never_becomes_fallback():
-    from loader.native_handle import NativeExecutionError
+    from solweig_light._native_dispatch.native_handle import NativeExecutionError
     boom = NativeExecutionError('admitted native invocation failed')
     plan = plan_regions(8 * 4, block_pixels=8)
     pool = RegionPool(2)
@@ -223,7 +223,7 @@ def test_structural_failure_before_any_block():
 def test_close_during_active_session_is_refused():
     plan = plan_regions(8 * 4, block_pixels=8)
     pool = RegionPool(2)
-    from region import RegionExecutorError
+    from solweig_light._native_dispatch.region import RegionExecutorError
 
     class Closer(ProbeConsumer):
         def consume(self, payload, ctx):

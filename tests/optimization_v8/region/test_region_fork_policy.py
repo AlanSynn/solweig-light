@@ -30,7 +30,7 @@ import threading
 import numpy as np
 import pytest
 
-from region import (ForkedRegionPool, RegionPool, execute_regions,
+from solweig_light._native_dispatch.region import (ForkedRegionPool, RegionPool, execute_regions,
                     execute_serial, plan_regions, shared_pool)
 from region_case import ProbeConsumer, fresh_output, outputs_bitwise_equal
 

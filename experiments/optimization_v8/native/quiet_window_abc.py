@@ -52,15 +52,16 @@ import numpy as np
 
 _MODULE_DIR = Path(__file__).resolve().parent
 for _p in (str(_MODULE_DIR),
-           str(_MODULE_DIR.parents[2] / 'tests' / 'optimization_v8' / 'native'),
-           str(_MODULE_DIR.parent / 'layout')):
+           str(_MODULE_DIR.parents[2] / 'tests' / 'optimization_v8' / 'native')):
     if _p not in sys.path:
         sys.path.insert(0, _p)
 
 from native_test_helpers import adversarial_inputs, pack_mask  # noqa: E402
 from lw_reference_oracle import kernel_pair  # noqa: E402
-import direct_aosoa as da  # noqa: E402
-import lw_native_aosoa  # noqa: E402
+# N8-41 vendoring: the producer/consumer ship in the package now (the
+# bare experiment-dir imports and the layout sys.path entry are gone).
+from solweig_light._native_dispatch import direct_aosoa as da  # noqa: E402
+from solweig_light._native_dispatch import lw_native_aosoa  # noqa: E402
 from solweig_light.geometry.visibility import PackedVisibility, _EncodedPatch
 from solweig_light.geometry.visibility_compiled import decode_block
 

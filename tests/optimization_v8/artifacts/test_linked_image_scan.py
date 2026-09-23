@@ -47,7 +47,7 @@ from pathlib import Path
 import pytest
 
 import build_native
-import installed_loader  # noqa: F401  (conftest bootstrap ordering)
+from solweig_light._native_dispatch import installed_loader  # noqa: F401  (conftest bootstrap ordering)
 
 STAGE_DIR = (Path(__file__).resolve().parents[3] / 'experiments'
              / 'optimization_v8' / 'packaging' / 'stage')

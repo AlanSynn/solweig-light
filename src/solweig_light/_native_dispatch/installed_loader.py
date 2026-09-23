@@ -80,18 +80,42 @@ import threading
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 
-# Sibling experiment modules (maintainer tree layout; the packaged wheel
-# integration at N8-41 will vendor this logic under the package).
-_SIBLINGS = (
-    Path(__file__).resolve().parents[1] / 'loader',
-    Path(__file__).resolve().parents[1] / 'packaging',
-)
-for _sib in _SIBLINGS:
-    if str(_sib) not in sys.path:
-        sys.path.insert(0, str(_sib))
+# N8-41 vendoring: the N8-10 execution/lifetime module ships in this
+# package (the maintainer-tree copy resolved the bare ``native_handle``
+# name through the sibling sys.path bootstrap).
+from solweig_light._native_dispatch import native_handle  # noqa: E402
 
-import build_native  # noqa: E402  (N8-20: verify_generation, constants)
-import native_handle  # noqa: E402  (N8-10: handle, taxonomy, locks)
+# The N8-20 build driver stays maintainer-tree infrastructure (its own
+# review/delta cycle, n841-1) and is NOT vendored. Resolution is DEFERRED
+# to first use: the wheel-only installed gates import every module of the
+# package, and an installed wheel must import THIS module cleanly (it has
+# no maintainer tree to anchor to until the packaged resolution lands with
+# install_assets, n841-3). The first real use of the gates resolves the
+# driver through the repo anchor -- the sys.path insertion keeps
+# ``sys.modules['build_native']`` ONE module object shared with the
+# packaging/artifact test suites that import it by bare name -- and a
+# wheel that somehow reaches the gates fails LOUDLY here with the anchor
+# path named, never with a silent behavioral drift.
+_BUILD_NATIVE: list = []
+
+
+def _build_native():
+    """The N8-20 build driver (verify_generation + versioned constants),
+    resolved once, on first use."""
+    if not _BUILD_NATIVE:
+        packaging = Path(__file__).resolve().parents[3] \
+            / 'experiments' / 'optimization_v8' / 'packaging'
+        if not packaging.is_dir():
+            raise ImportError(
+                f'solweig_light._native_dispatch.installed_loader requires '
+                f'the N8-20 build driver under {packaging} (repo-checkout '
+                f'anchor; the packaged resolution lands with the N8-41 '
+                f'install_assets work)')
+        if str(packaging) not in sys.path:
+            sys.path.insert(0, str(packaging))
+        import build_native
+        _BUILD_NATIVE.append(build_native)
+    return _BUILD_NATIVE[0]
 
 # ---------------------------------------------------------------------------
 # Loader compiled-in expectations (BUILD_DESIGN section 4 / section 8.3)
@@ -102,21 +126,32 @@ GENERATION_ROOT_PARTS = ('backends', 'native_generated')
 
 # Single source of truth: the builder's versioned constants ARE the
 # loader's expectations; a wheel built against different values cannot
-# pass this gate (that is the point).
-LOADER_ABI_VERSION = build_native.ABI_VERSION                      # 1
-LOADER_WRAPPER_ABI = build_native.WRAPPER_ABI_LAYOUT_VERSION       # lw-region-abi-1
-EXPECTED_PACKAGE_NAME = build_native.PACKAGE_NAME                  # 'solweig-light'
+# pass this gate (that is the point). They resolve lazily from the build
+# driver (module __getattr__, PEP 562) for the same deferred-resolution
+# reason as _build_native above; the gate path reads them off the driver
+# object directly.
 EXPECTED_SYMBOLS = frozenset(('lw_primary_f32', 'lw_primary_f64'))
+
+
+def __getattr__(name):
+    if name == 'LOADER_ABI_VERSION':
+        return _build_native().ABI_VERSION
+    if name == 'LOADER_WRAPPER_ABI':
+        return _build_native().WRAPPER_ABI_LAYOUT_VERSION
+    if name == 'EXPECTED_PACKAGE_NAME':
+        return _build_native().PACKAGE_NAME
+    if name == 'QUALIFIED_MATH_PROFILES':
+        return {(_build_native().MATH_PROFILE_ID, False, 'disabled',
+                 'default')}
+    raise AttributeError(f'{__name__!r} has no attribute {name!r}')
 
 # Qualified (target -> gang) rows of the versioned allow-list; unknown
 # cells use Numba (ARCHITECTURE.md 'Automatic planning').
 QUALIFIED_TARGETS = {'neon-i32x8': 8}
 
 # Math profiles this loader is qualified to execute (the B7 numerical
-# contract).  Anything else in a wheel is a packaging defect.
-QUALIFIED_MATH_PROFILES = {
-    (build_native.MATH_PROFILE_ID, False, 'disabled', 'default'),
-}
+# contract): resolved lazily from the build driver -- see __getattr__.
+# Anything else in a wheel is a packaging defect.
 
 STATUS_LOADED = 'loaded'
 STATUS_ABSENT = 'declined-absent'
@@ -414,9 +449,12 @@ def _gate_candidate(cand_real: Path, package: str) -> LoadOutcome:
 
     # -- content verification: schema, generation-name derivation, hashes,
     #    sizes, Mach-O structural walk, FMA re-audit (N8-20, reused) -------
+    # Loader expectations, read off the resolved driver (single source of
+    # truth; identical to the lazy module attributes above).
+    driver = _build_native()
     try:
-        verified = build_native.verify_generation(cand_real)
-    except build_native.VerifyFailure as exc:
+        verified = driver.verify_generation(cand_real)
+    except driver.VerifyFailure as exc:
         return _corrupt(package, f'content verification failed: {exc}')
     except _VALIDATOR_FAILURE_SIGNALS as exc:
         # Review note N1: the reused validator has non-typed failure
@@ -429,16 +467,17 @@ def _gate_candidate(cand_real: Path, package: str) -> LoadOutcome:
 
     # -- ABI gate: speakable by THIS loader ---------------------------------
     abi = verified.get('abi') or {}
-    if abi.get('abi_version') != LOADER_ABI_VERSION:
+    if abi.get('abi_version') != driver.ABI_VERSION:
         return _corrupt(package, f'artifact abi_version '
                                  f'{abi.get("abi_version")!r} != loader '
-                                 f'abi_version {LOADER_ABI_VERSION!r} '
+                                 f'abi_version {driver.ABI_VERSION!r} '
                                  f'(wheel built against a different ABI)')
-    if abi.get('wrapper_abi_layout_version') != LOADER_WRAPPER_ABI:
+    if abi.get('wrapper_abi_layout_version') \
+            != driver.WRAPPER_ABI_LAYOUT_VERSION:
         return _corrupt(package, f'wrapper ABI layout '
                                  f'{abi.get("wrapper_abi_layout_version")!r}'
                                  f' != loader expectation '
-                                 f'{LOADER_WRAPPER_ABI!r}')
+                                 f'{driver.WRAPPER_ABI_LAYOUT_VERSION!r}')
     if abi.get('python_c_api') is not False:
         return _corrupt(package, 'artifact declares a Python C API '
                                  'dependency; the qualified surface is a '
@@ -448,20 +487,22 @@ def _gate_candidate(cand_real: Path, package: str) -> LoadOutcome:
                                  f'{sorted(abi.get("exported_symbols") or ())}'
                                  f' != the qualified surface '
                                  f'{sorted(EXPECTED_SYMBOLS)}')
-    if verified.get('package') != EXPECTED_PACKAGE_NAME:
+    if verified.get('package') != driver.PACKAGE_NAME:
         return _corrupt(package, f'manifest package '
                                  f'{verified.get("package")!r} != '
-                                 f'{EXPECTED_PACKAGE_NAME!r}')
+                                 f'{driver.PACKAGE_NAME!r}')
 
     # -- math profile gate: qualified allow-list ----------------------------
     mp = verified.get('math_profile') or {}
     row = (mp.get('id'), mp.get('fast_math'), mp.get('fma_contraction'),
            mp.get('math_lib'))
-    if row not in QUALIFIED_MATH_PROFILES:
+    qualified_profiles = {(driver.MATH_PROFILE_ID, False, 'disabled',
+                           'default')}
+    if row not in qualified_profiles:
         return _corrupt(package, f'math profile {mp.get("id")!r} is '
                                  f'outside the loader qualified allow-list '
                                  f'{sorted(r[0] for r in
-                                           QUALIFIED_MATH_PROFILES)}')
+                                           qualified_profiles)}')
 
     # -- target/gang gate ----------------------------------------------------
     target = (verified.get('build') or {}).get('target')

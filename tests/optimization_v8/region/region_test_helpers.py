@@ -28,12 +28,11 @@ from pathlib import Path
 
 import numba
 
+# N8-41 vendoring: the region package / consumers / lw_b_control are
+# imported from the package (solweig_light._native_dispatch); only the
+# FROZEN reference suite stays on sys.path (read in place, never moved).
 _HERE = Path(__file__).resolve().parent
-_EXPERIMENTS = _HERE.parents[2] / 'experiments' / 'optimization_v8'
-for _entry in (_EXPERIMENTS,
-               _EXPERIMENTS / 'numba',
-               _EXPERIMENTS / 'loader',
-               _HERE.parents[0] / 'reference',
+for _entry in (_HERE.parents[0] / 'reference',
                _HERE):
     if str(_entry) not in sys.path:
         sys.path.insert(0, str(_entry))

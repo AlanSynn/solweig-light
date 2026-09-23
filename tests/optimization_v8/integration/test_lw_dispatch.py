@@ -50,15 +50,14 @@ lcyl_arguments = _v6.lcyl_arguments
 lcyl_patches = _v6.lcyl_patches
 packed = _v6.packed
 
-# The PRODUCTION bootstrap, then the bare policy import -- the SAME module
-# identity the dispatch itself binds (policy suite imports it bare too).
-dispatch._bootstrap()
+# N8-41 vendoring: the machinery and the policy module ship in the
+# package -- the SAME module identity the dispatch itself binds.
 _HELPERS = Path(__file__).resolve().parent.parent / 'policy'
 if str(_HELPERS) not in sys.path:
     sys.path.insert(0, str(_HELPERS))
-import lw_default_policy as policy  # noqa: E402
+from solweig_light._native_dispatch import lw_default_policy as policy  # noqa: E402
 from policy_test_helpers import COMMIT, make_promotion_record, write_json  # noqa: E402
-import installed_loader  # noqa: E402  (N8-21; genuine loaded outcome)
+from solweig_light._native_dispatch import installed_loader  # noqa: E402  (N8-21; genuine loaded outcome)
 
 _REPO = Path(__file__).resolve().parents[3]
 _STAGE = _REPO / 'experiments' / 'optimization_v8' / 'native' / 'stage'
@@ -74,7 +73,7 @@ def _shipped_env(monkeypatch):
     monkeypatch.delenv('SOLWEIG_LIGHT_LW_BACKEND', raising=False)
     policy.reset_for_tests()
     yield
-    import region.region_pool as rp
+    import solweig_light._native_dispatch.region.region_pool as rp
     rp.reset_pools_for_tests()  # the region suite's own teardown hygiene
     policy.reset_for_tests()
 
@@ -105,7 +104,7 @@ def args(rng, channels):
 @pytest.fixture()
 def region_spy(monkeypatch):
     """Record every execute_regions call, then run the real executor."""
-    import region.region_pool as rp
+    import solweig_light._native_dispatch.region.region_pool as rp
     calls = []
     real = rp.execute_regions
 
@@ -277,7 +276,7 @@ def test_lane_misaligned_block_pixels_decline(args, region_spy,
     """A qualified row still declines (pre-launch) when the driver's block
     size is not lane-aligned; the trusted legacy loop serves the call."""
     row_record = _write_evidence(tmp_path)
-    module_rel = 'experiments/optimization_v8/numba/lw_b_control.py'
+    module_rel = 'src/solweig_light/_native_dispatch/lw_b_control.py'
     real = _REPO / module_rel
     module_copy = tmp_path / module_rel
     module_copy.parent.mkdir(parents=True)
@@ -298,7 +297,7 @@ def test_lane_misaligned_block_pixels_decline(args, region_spy,
 def test_row_b_qualified_record_routes_region(args, region_spy, monkeypatch,
                                               tmp_path):
     row_record = _write_evidence(tmp_path)
-    module_rel = 'experiments/optimization_v8/numba/lw_b_control.py'
+    module_rel = 'src/solweig_light/_native_dispatch/lw_b_control.py'
     real = _REPO / module_rel
     module_copy = tmp_path / module_rel
     module_copy.parent.mkdir(parents=True)
@@ -353,9 +352,9 @@ def test_dense_channel_declines_before_launch(monkeypatch, tmp_path, rng,
     args = lcyl_arguments(rng, rows=_ROWS, cols=_COLS)  # dense mats
     record = _write_evidence(tmp_path)(row='B', artifact_identity={
         'kind': 'python-module',
-        'module_path': 'experiments/optimization_v8/numba/lw_b_control.py',
+        'module_path': 'src/solweig_light/_native_dispatch/lw_b_control.py',
         'module_sha256': hashlib.sha256(
-            (_REPO / 'experiments/optimization_v8/numba/lw_b_control.py')
+            (_REPO / 'src/solweig_light/_native_dispatch/lw_b_control.py')
             .read_bytes()).hexdigest()})
     _inject_registry(monkeypatch, tmp_path, [record])
     legacy, routed = _run_pair(**args)
@@ -371,9 +370,9 @@ def test_dense_channel_declines_before_launch(monkeypatch, tmp_path, rng,
 def test_region_pool_reuse_and_shutdown(args, monkeypatch, tmp_path):
     """Two routed calls share ONE pool per budget (registry growth bound),
     and shutdown_all_pools empties the live set."""
-    import region.region_pool as rp
+    import solweig_light._native_dispatch.region.region_pool as rp
     row_record = _write_evidence(tmp_path)
-    module_rel = 'experiments/optimization_v8/numba/lw_b_control.py'
+    module_rel = 'src/solweig_light/_native_dispatch/lw_b_control.py'
     real = _REPO / module_rel
     module_copy = tmp_path / module_rel
     module_copy.parent.mkdir(parents=True)

@@ -13,7 +13,7 @@
 """N8-14 planner invariants: dispatch size decoupled from the block grid."""
 import pytest
 
-from region import plan_regions
+from solweig_light._native_dispatch.region import plan_regions
 
 
 def spans_of(total, block):

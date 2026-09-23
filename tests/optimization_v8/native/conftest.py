@@ -12,7 +12,7 @@
 #GNU General Public License for more details.
 """N8-13 native-consumer test bootstrap: pytest fixtures ONLY.
 
-Shared helpers (sys.path bootstrap, frozen-module reuse, AoSoA packing)
+Shared helpers (frozen-module reuse, AoSoA packing; the helpers module
 live in native_test_helpers.py -- uniquely named so combined test-tree
 collection cannot shadow another package's conftest (N-D2 repair, same
 class as the region bug the n8-rev-n8-14 delta review closed). Importing
@@ -27,7 +27,7 @@ from pathlib import Path
 import pytest
 
 from native_test_helpers import _NATIVE_DIR, _PACKAGING_DIR  # noqa: F401
-import lw_native_aosoa  # noqa: F401  (side effect: import under test)
+from solweig_light._native_dispatch import lw_native_aosoa  # noqa: F401  (side effect: import under test)
 
 
 @pytest.fixture(scope='session')

@@ -13,7 +13,8 @@
 """N8-10 loader test bootstrap.
 
 Puts the experiments loader dir and the frozen N8-04 reference dir on
-sys.path, imports the module under test, and READ-ONLY reuses the N8-04
+sys.path (frozen reference oracle), imports the module under test, and
+READ-ONLY reuses the N8-04
 adversarial input constructor from
 tests/optimization_v8/reference/test_typed_graph_identity.py via importlib
 under a distinct module name -- nothing under tests/reference/ or
@@ -28,14 +29,15 @@ from pathlib import Path
 import pytest
 
 _REPO = Path(__file__).resolve().parents[3]
-_LOADER_DIR = _REPO / 'experiments' / 'optimization_v8' / 'loader'
+# N8-41 vendoring: native_handle is imported from the package
+# (solweig_light._native_dispatch); only the FROZEN reference suite
+# stays on sys.path.
 _REFERENCE_DIR = _REPO / 'tests' / 'optimization_v8' / 'reference'
 
-for _p in (str(_LOADER_DIR), str(_REFERENCE_DIR)):
-    if _p not in sys.path:
-        sys.path.insert(0, _p)
+if str(_REFERENCE_DIR) not in sys.path:
+    sys.path.insert(0, str(_REFERENCE_DIR))
 
-import native_handle  # noqa: E402  (the module under test)
+from solweig_light._native_dispatch import native_handle  # noqa: E402  (the module under test)
 
 # Read-only reuse of the frozen N8-04 adversarial grid constructor.
 _spec = importlib.util.spec_from_file_location(

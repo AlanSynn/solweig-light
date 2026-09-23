@@ -83,7 +83,12 @@ _MAX_PATCHES = lw_native.MAX_PATCHES
 
 WIDTH = 8                      # lane width this consumer is compiled for
 _MODULE_DIR = Path(__file__).resolve().parent
-_DEFAULT_STAGE = _MODULE_DIR / 'stage'
+# N8-41 vendoring: the default staging root stays the maintainer-tree N8-13
+# stage (evidence durability; the dev-build artifacts staged there are what
+# the tests and the staged-expert route load). The installed-artifact home
+# is the N8-21 loader, which activates with the wheels-time expert flip.
+_DEFAULT_STAGE = _MODULE_DIR.parents[2] / 'experiments' / 'optimization_v8' \
+    / 'native' / 'stage'
 
 
 class NativeArtifactError(RuntimeError):
@@ -144,7 +149,13 @@ def load_generation(generation_dir=None):
     if cached is not None:
         return cached
     import sys
-    packaging = str(Path(__file__).resolve().parents[2] / 'packaging')
+    # N8-41 vendoring: build_native stays maintainer-tree infrastructure
+    # (not vendored; see installed_loader for the full rationale). The old
+    # maintainer-tree expression resolved this dir only via the test
+    # harness bootstrap; the vendored module anchors it explicitly so
+    # sys.modules['build_native'] stays one shared object.
+    from solweig_light._native_dispatch import experiments_dir
+    packaging = str(experiments_dir('packaging'))
     if packaging not in sys.path:
         sys.path.insert(0, packaging)
     from build_native import verify_generation

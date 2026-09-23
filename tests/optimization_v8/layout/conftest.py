@@ -10,14 +10,12 @@
 #but WITHOUT ANY WARRANTY; without even the implied warranty of
 #MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 #GNU General Public License for more details.
-"""N8-11 layout-test bootstrap: import the experiment module by path.
+"""N8-11 layout-test bootstrap.
+
+N8-41 vendoring: direct_aosoa is imported from the package
+(solweig_light._native_dispatch); this suite needs no sys.path
+bootstrap anymore.
 
 All kernels here are serial (no prange, no set_num_threads, no
 NUMBA_NUM_THREADS export), so the v5 thread-cap hazard does not apply.
 """
-import sys
-from pathlib import Path
-
-_LAYOUT = str(Path(__file__).resolve().parents[3] / 'experiments' / 'optimization_v8' / 'layout')
-if _LAYOUT not in sys.path:
-    sys.path.insert(0, _LAYOUT)

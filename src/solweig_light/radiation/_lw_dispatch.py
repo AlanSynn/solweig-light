@@ -26,6 +26,17 @@ reaches this module. The N8-22 expert route (installed artifact loader with
 loud taxonomy errors) activates with the N8-41 wheels, when installed
 artifacts actually exist to load.
 
+The shipped state (empty qualification registry) DOES run the selector on
+every routed call: ``resolve_lw_backend`` re-reads the shipped registry
+file and re-derives its decision per driver call -- only the execution
+machinery is untouched, because an empty registry fails closed to row A
+before any of it is imported. The machinery itself is vendored under
+``solweig_light._native_dispatch`` (N8-41, n841-7/n841-8); there is no
+sys.path bootstrap anymore, and a broken selector module propagates its
+import error instead of quietly resolving to row A. (Registry CONTENT
+that is malformed rather than absent is the different failure the N8-22
+taxonomy already governs: it fails closed to row A.)
+
 Decline semantics: a producer/admission decline BEFORE launch (e.g.
 ``produce_blocks_aosoa`` returns ``None`` for a non-admitted channel, or
 the caller's block size is not lane-aligned) returns ``None`` and the
@@ -37,21 +48,12 @@ This module reads NO environment variables: the expert-env intercept lives
 in the caller seam (``cylinder_longwave._lw_region_route``), keeping the
 package's env-read surface exactly as frozen (DX parity gate).
 
-The dispatch borrows the experiment modules through a sys.path bootstrap
-(repo checkout only; an installed wheel has no ``experiments/`` tree and
-resolves to row A). Vendoring these modules under the package is N8-41's
-obligation (n841-6); the bootstrap paths are appended at lowest priority so
-they can never shadow a real package.
-
 Memory note: a routed call materializes the whole-scene AoSoA visibility
 (3x uint32 [G,P,W]) plus directly-classified sun/shade masks (2x bool
 [G,P,W]) once per call -- the producer cost the N8-31 frozen protocol
 accounts per block size. Scope limits for qualified rows live in the
 qualification records, not here.
 """
-from pathlib import Path
-import sys
-
 import numpy as np
 
 #: Frozen 17-argument signature order (N8-04 contract; mirrored by
@@ -65,31 +67,6 @@ _ORDERED = ('sh', 'vs', 'vb', 'sun', 'shade', 'solid', 'sine', 'cosine',
 _GANG_SLICED = ('sh', 'vs', 'vb', 'sun', 'shade')
 
 _LANE_WIDTH = 8
-
-_BOOTSTRAP_SUFFIXES = ('', 'native', 'layout', 'numba', 'policy', 'artifacts',
-                       'loader')
-_BOOTSTRAPPED = False
-
-
-def _experiment_roots():
-    """Repo-checkout experiment dirs; empty in an installed wheel."""
-    root = Path(__file__).resolve().parents[3] / 'experiments' / 'optimization_v8'
-    if not root.is_dir():
-        return ()
-    return tuple(root / suffix for suffix in _BOOTSTRAP_SUFFIXES
-                 if (root / suffix).is_dir())
-
-
-def _bootstrap():
-    """Append the experiment dirs to sys.path (once, lowest priority)."""
-    global _BOOTSTRAPPED
-    if _BOOTSTRAPPED:
-        return
-    for path in _experiment_roots():
-        text = str(path)
-        if text not in sys.path:
-            sys.path.append(text)
-    _BOOTSTRAPPED = True
 
 
 def region_route(values, geometry, solar_gate, prepared, total, block_pixels,
@@ -108,11 +85,11 @@ def region_route(values, geometry, solar_gate, prepared, total, block_pixels,
     if total < 1 or block_pixels < _LANE_WIDTH \
             or block_pixels % _LANE_WIDTH:
         return None  # empty/degenerate or lane-misaligned: trusted legacy
-    try:
-        _bootstrap()
-        import lw_default_policy
-    except ImportError:
-        return None  # machinery absent (installed wheel pre-N8-41): row A
+    # Vendored with the machinery (n841-7): the selector module is part of
+    # the package, so it is simply imported -- a broken selector is a loud
+    # failure, never a silent row-A resolution (pre-vendoring the
+    # ImportError of an absent machinery tree declined quietly to A).
+    from solweig_light._native_dispatch import lw_default_policy
     selection = lw_default_policy.resolve_lw_backend()
     if selection.row not in ('B', 'C'):
         return None  # auto fail-closed / legacy rows: unchanged behavior
@@ -126,7 +103,7 @@ def _execute_row(row, values, geometry, solar_gate, prepared, total,
     """Produce the whole-scene AoSoA state, then dispatch through the ONE
     bounded region owner. Producer declines return None (pre-launch);
     everything after the first native launch is loud."""
-    import direct_aosoa as da
+    from solweig_light._native_dispatch import direct_aosoa as da
 
     patches = geometry.altitude.size
     aosoa = da.produce_blocks_aosoa(values['shmat'], values['vegshmat'],
@@ -151,12 +128,12 @@ def _execute_row(row, values, geometry, solar_gate, prepared, total,
                 surface_sun=sun_surface, surface_sh=shade_surface,
                 lup=values['Lup'].reshape(-1), reflection_factor=factor)
 
-    from region.region_plan import plan_regions
-    from region.region_pool import execute_regions
+    from solweig_light._native_dispatch.region.region_plan import plan_regions
+    from solweig_light._native_dispatch.region.region_pool import execute_regions
     plan = plan_regions(total, block_pixels=block_pixels)
     output = np.empty((7, total), dtype=np.float32)
     if row == 'B':
-        from region.consumers import AosoaBConsumer
+        from solweig_light._native_dispatch.region.consumers import AosoaBConsumer
         consumer = AosoaBConsumer(args, width=_LANE_WIDTH)
     else:
         consumer = AosoaNativeCConsumer(args, width=_LANE_WIDTH)
@@ -180,8 +157,9 @@ class AosoaNativeCConsumer:
     mode = None  # bound at __init__; ExecutionMode import stays lazy
 
     def __init__(self, args, width=_LANE_WIDTH):
-        from region.region_pool import ExecutionMode
-        from lw_native_aosoa import primary_aosoa
+        from solweig_light._native_dispatch.region.region_pool import ExecutionMode
+        from solweig_light._native_dispatch import lw_native_aosoa
+        primary_aosoa = lw_native_aosoa.primary_aosoa
         self.mode = ExecutionMode.BLOCK_FANOUT
         self._primary_aosoa = primary_aosoa
         self._args = dict(args)

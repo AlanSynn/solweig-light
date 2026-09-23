@@ -40,7 +40,7 @@ import numpy as np
 import pytest
 from numpy import float32 as F32
 
-import native_handle
+from solweig_light._native_dispatch import native_handle
 import lw_reference_oracle as oracle
 from lw_identity_grid import adversarial_inputs, kernel_pair
 
