@@ -19,6 +19,15 @@ class as the region bug the n8-rev-n8-14 delta review closed). Importing
 the helpers module here keeps the side effects (sys.path, module under
 test) identical for any test that still relies on conftest having run.
 """
+
+import pytest
+
+pytest.skip(
+    'archived with the N8 native row and qualification machinery '
+    '(n8_32 selection closed N9 F3 NATIVE_LOSS; archived at N9 F4 '
+    'closed_cpu_only): research copies preserved under '
+    'experiments/optimization_v8/native_dispatch/',
+    allow_module_level=True)
 import shutil
 import subprocess
 import sys

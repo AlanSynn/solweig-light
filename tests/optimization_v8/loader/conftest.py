@@ -20,6 +20,15 @@ tests/optimization_v8/reference/test_typed_graph_identity.py via importlib
 under a distinct module name -- nothing under tests/reference/ or
 tests/optimization_v8/reference/ is modified.
 """
+
+import pytest
+
+pytest.skip(
+    'archived with the N8 native row and qualification machinery '
+    '(n8_32 selection closed N9 F3 NATIVE_LOSS; archived at N9 F4 '
+    'closed_cpu_only): research copies preserved under '
+    'experiments/optimization_v8/native_dispatch/',
+    allow_module_level=True)
 import importlib.util
 import os
 import shutil

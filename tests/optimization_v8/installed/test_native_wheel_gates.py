@@ -1,5 +1,7 @@
 #SOLWEIG-GPU: GPU-accelerated SOLWEIG model for urban thermal comfort simulation
 #Copyright (C) 2022–2025 Harsh Kamath and Naveen Sudharsan
+from __future__ import annotations
+
 import pytest
 pytest.skip(
     'archived with the N8 native row and qualification machinery '
@@ -47,7 +49,6 @@ Skip labels (never fake-pass):
   [native-wheel-build-unavailable] the candidate wheel build/install failed
   (wheelhouse/uv labels inherit from the shared session fixtures)
 """
-from __future__ import annotations
 
 import json
 import os
