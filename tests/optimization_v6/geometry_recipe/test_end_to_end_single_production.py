@@ -41,7 +41,7 @@ from scene_fixtures import DATE, REPO, SRC, build_scene
 
 PROBE_DIR = Path(__file__).resolve().parent
 CENSUS_DIR = REPO / 'tests' / 'optimization_v6' / 'geometry_census'
-EVIDENCE = REPO / 'optimization_v6_continue' / 'evidence' / 'recipe'
+EVIDENCE = REPO / 'development/optimization_v6_continue' / 'evidence' / 'recipe'
 COMMIT = 'e7a2d6ec8594b234820e7783e0ca26d821de7f3d'
 
 for entry in (str(SRC), str(CENSUS_DIR)):

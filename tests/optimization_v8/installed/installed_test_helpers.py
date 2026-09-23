@@ -20,7 +20,7 @@ import subprocess
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-EVIDENCE_DIR = REPO_ROOT / "optimization_v8_native_default" / "evidence" / "installed"
+EVIDENCE_DIR = REPO_ROOT / "development/optimization_v8_native_default" / "evidence" / "installed"
 SCENE = REPO_ROOT / "tests" / "reference" / "state_sequence_original_cpu" / "scene"
 
 # The no-env contract: the child sees none of these backend controls, and

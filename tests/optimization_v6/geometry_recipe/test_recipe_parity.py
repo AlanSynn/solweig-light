@@ -35,7 +35,7 @@ from scene_fixtures import REPO, SRC, build_scene, field_bits, fields_equal, ref
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-EVIDENCE = REPO / 'optimization_v6_continue' / 'evidence' / 'recipe'
+EVIDENCE = REPO / 'development/optimization_v6_continue' / 'evidence' / 'recipe'
 COMMIT = 'e7a2d6ec8594b234820e7783e0ca26d821de7f3d'
 INPUT_NAMES = ('Building_DSM', 'Trees', 'DEM')
 

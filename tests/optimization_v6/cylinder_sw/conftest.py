@@ -53,7 +53,7 @@ def assert_bitwise(actual, expected, context):
         assert np.array_equal(got.view(np.uint32), want.view(np.uint32)), f'{context}/{name}: bits differ'
 
 
-PROTOCOL = json.loads((Path(__file__).resolve().parents[3] / 'benchmarks/protocols/comparison_v1.json').read_text())
+PROTOCOL = json.loads((Path(__file__).resolve().parents[3] / 'development/benchmarks/protocols/comparison_v1.json').read_text())
 
 
 def assert_within_original_budget(actual, expected, context):

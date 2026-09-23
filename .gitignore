@@ -7,52 +7,52 @@ __pycache__/
 build/
 dist/
 tests/fixtures/generated/
-reports/runs/
+development/reports/runs/
 
 # Reports retain concise provenance, protocols, source snapshots, and summaries.
 # Generated rasters, array dumps, compiled caches, and local environments stay
 # local; reproduction prerequisites and limits are documented in
 # docs/evidence_storage.md.
-reports/**/*.tif
-reports/**/*.tiff
-reports/**/*.npy
-reports/**/*.npz
-reports/**/*.nbc
-reports/**/*.nbi
-reports/**/*.pstats
-reports/**/*.dylib
-reports/**/*.so
-reports/**/*.whl
-reports/**/*.zip
-reports/**/*.tar
-reports/**/*.tar.gz
-reports/**/venv/
-reports/**/.venv/
-reports/**/__pycache__/
-reports/**/.pytest_cache/
-reports/**/jit/
-reports/**/geometry_cache/
-reports/**/.solweig-light/
-reports/**/output_folder/
-reports/**/processed_inputs/
-reports/**/tmp_*/
-reports/**/test_*current
+development/reports/**/*.tif
+development/reports/**/*.tiff
+development/reports/**/*.npy
+development/reports/**/*.npz
+development/reports/**/*.nbc
+development/reports/**/*.nbi
+development/reports/**/*.pstats
+development/reports/**/*.dylib
+development/reports/**/*.so
+development/reports/**/*.whl
+development/reports/**/*.zip
+development/reports/**/*.tar
+development/reports/**/*.tar.gz
+development/reports/**/venv/
+development/reports/**/.venv/
+development/reports/**/__pycache__/
+development/reports/**/.pytest_cache/
+development/reports/**/jit/
+development/reports/**/geometry_cache/
+development/reports/**/.solweig-light/
+development/reports/**/output_folder/
+development/reports/**/processed_inputs/
+development/reports/**/tmp_*/
+development/reports/**/test_*current
 
 # The official UTCI source bundle is a frozen input, not a generated output.
-!reports/characterization/p8_utci_official_source/UTCI_Program_Code.zip
+!development/reports/characterization/p8_utci_official_source/UTCI_Program_Code.zip
 
 # A few retained diagnostic captures contain millions of sampling rows.  Their
 # parent reports and manifests remain visible; these raw samples are local-only.
-reports/characterization/p8_portable_profile_v1/m1_admission/large/*_monitor/
-reports/characterization/p8_portable_profile_v1/cura_pipeline/large_results/remote_evidence/*/samples.json
-reports/characterization/p8_portable_profile_v1/cura_pipeline/large_results/final_verification_staging/evidence/*/samples.json
-reports/cura_p8_20260919T1215Z_a7c3/final_remote_cleanup/whole_tree_inventory.json
-reports/characterization/p8_portable_math_review/cura_glibc_audit/evidence/glibc_2.39.orig.tar.xz
-reports/characterization/local_cpu_optimization_v1/e0/admission/dense1024/monitor_retry1/samples.json
-reports/characterization/local_cpu_optimization_v1/e0/admission/vegetation1024/monitor/samples.json
+development/reports/characterization/p8_portable_profile_v1/m1_admission/large/*_monitor/
+development/reports/characterization/p8_portable_profile_v1/cura_pipeline/large_results/remote_evidence/*/samples.json
+development/reports/characterization/p8_portable_profile_v1/cura_pipeline/large_results/final_verification_staging/evidence/*/samples.json
+development/reports/cura_p8_20260919T1215Z_a7c3/final_remote_cleanup/whole_tree_inventory.json
+development/reports/characterization/p8_portable_math_review/cura_glibc_audit/evidence/glibc_2.39.orig.tar.xz
+development/reports/characterization/local_cpu_optimization_v1/e0/admission/dense1024/monitor_retry1/samples.json
+development/reports/characterization/local_cpu_optimization_v1/e0/admission/vegetation1024/monitor/samples.json
 
 # N8: local build outputs and profiling scratch stay local (reproducible from
 # pinned source + manifest via tools/optimization_v8; evidence_storage policy).
-optimization_v8_native_default/evidence/profile/work/
-experiments/optimization_v8/native/stage/**/*.dylib
-experiments/optimization_v8/packaging/stage/**/*.dylib
+development/optimization_v8_native_default/evidence/profile/work/
+development/experiments/optimization_v8/native/stage/**/*.dylib
+development/experiments/optimization_v8/packaging/stage/**/*.dylib

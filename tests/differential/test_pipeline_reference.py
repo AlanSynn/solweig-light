@@ -12,7 +12,7 @@ from solweig_light.pipeline import files_by_key, run_tile
 
 ROOT = Path(__file__).resolve().parents[2]
 REFERENCE = ROOT / 'tests/reference/small_original_cpu/scene'
-PROTOCOL = json.loads((ROOT / 'benchmarks/protocols/comparison_v1.json').read_text())
+PROTOCOL = json.loads((ROOT / 'development/benchmarks/protocols/comparison_v1.json').read_text())
 
 
 @pytest.mark.parametrize('case,cold', [('small', False), ('small', True), ('raw', True)] +

@@ -8,7 +8,7 @@ import numpy as np
 import pytest
 
 
-PATH = Path(__file__).resolve().parents[2] / "tools/capture_exact_pipeline.py"
+PATH = Path(__file__).resolve().parents[2] / "development/tools/capture_exact_pipeline.py"
 SPEC = importlib.util.spec_from_file_location("exact_pipeline_trace", PATH)
 trace = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(trace)

@@ -10,7 +10,7 @@ The behavioral baseline is `nvnsudharsan/SOLWEIG-GPU` commit:
 
 The handoff documents are a source-inspection specification, not evidence that numerical equivalence or speedups have already been demonstrated. Treat all proposed tolerances and performance targets as provisional until P0 characterizes the real upstream baselines and freezes the comparison protocol.
 
-The implementation is complete only when Section 13 of `SOLWEIG_LIGHT_IMPLEMENTATION_PLAN.md` is satisfied. A prototype, isolated optimized kernel, import-compatible stub, or partial API is not completion.
+The implementation is complete only when Section 13 of `development/plans/SOLWEIG_LIGHT_IMPLEMENTATION_PLAN.md` is satisfied. A prototype, isolated optimized kernel, import-compatible stub, or partial API is not completion.
 
 ---
 
@@ -21,8 +21,8 @@ The implementation is complete only when Section 13 of `SOLWEIG_LIGHT_IMPLEMENTA
 Before changing code in a fresh worktree or fresh root task, read:
 
 1. this `AGENTS.md`;
-2. `SOLWEIG_LIGHT_IMPLEMENTATION_PLAN.md`;
-3. `TASKS.yaml`.
+2. `development/plans/SOLWEIG_LIGHT_IMPLEMENTATION_PLAN.md`;
+3. `development/plans/TASKS.yaml`.
 
 Do this once to establish the product contract and current work-package state. Do **not** blindly reread the full plan or full task file before every edit, test, or delegated subtask.
 
@@ -33,7 +33,7 @@ Use progressive disclosure:
 - Read only the plan sections relevant to the current work package or failure.
 - Read only the source files needed to understand the code path being changed.
 - Reopen the full plan only when the scope, compatibility contract, numerical policy, release criteria, or work-package boundary is uncertain.
-- Reopen `TASKS.yaml` when choosing the next dependency-ready task, changing milestone status, or validating a gate.
+- Reopen `development/plans/TASKS.yaml` when choosing the next dependency-ready task, changing milestone status, or validating a gate.
 - Do not scan the whole repository for a small local change unless evidence indicates the issue crosses module boundaries.
 - Do not reload large documents merely to reassure yourself that they still exist.
 
@@ -198,7 +198,7 @@ Do not replace the model with an isotropic shortcut, lookup approximation, surro
 
 ## 6. Required execution order
 
-Respect dependency order from `TASKS.yaml`.
+Respect dependency order from `development/plans/TASKS.yaml`.
 
 ### P0 — baseline and executable contract
 
@@ -498,7 +498,7 @@ For every completed milestone or significant checkpoint, record:
 - deviations or unresolved scientific questions;
 - next dependency-ready task.
 
-Update `TASKS.yaml` milestone status only when its stated gate is actually satisfied. `planned`, `implemented`, `tested`, `verified`, `benchmarked`, and `complete` are not synonyms.
+Update `development/plans/TASKS.yaml` milestone status only when its stated gate is actually satisfied. `planned`, `implemented`, `tested`, `verified`, `benchmarked`, and `complete` are not synonyms.
 
 Do not mark unavailable GPU verification, unexecuted benchmarks, skipped end-to-end paths, or planned optional workflows as complete.
 
@@ -506,7 +506,7 @@ Do not mark unavailable GPU verification, unexecuted benchmarks, skipped end-to-
 
 ## 18. Definition of done
 
-Do not declare the repository complete until all requirements in Section 13 of `SOLWEIG_LIGHT_IMPLEMENTATION_PLAN.md` are satisfied, including at minimum:
+Do not declare the repository complete until all requirements in Section 13 of `development/plans/SOLWEIG_LIGHT_IMPLEMENTATION_PLAN.md` are satisfied, including at minimum:
 
 - all seven public workflows are operational, not stubs;
 - the core own-met TIFF path runs without Torch/CUDA;

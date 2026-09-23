@@ -119,7 +119,7 @@ admission domain fall back to the Numba kernel before launch; the shared
 library is built on demand into `~/.cache/solweig-light/native` (override
 with `SOLWEIG_LIGHT_NATIVE_CACHE`); a missing ISPC toolchain fails loudly
 rather than silently falling back. Evidence:
-`optimization_v7_backends/evidence/`.
+`development/optimization_v7_backends/evidence/`.
 
 ## Documentation
 
@@ -144,9 +144,10 @@ kept its own packet with rules, evidence, and a terminal record:
   attempt → n9 final), what landed in `src/` per era with commit anchors,
   and which records are provenance vs. measurement. If you want to know why
   a given line of `src/` looks the way it does, start there.
-- **`optimization_v4/` … `optimization_n9_final/`** — the campaign packets
-  themselves (strategy catalogs, dossiers, evidence, selection and merge
-  manifests). `optimization_n9_final/FINAL_SELECTION.json` is the terminal
+- **`development/optimization_v4/` … `development/optimization_n9_final/`** —
+  the campaign packets themselves (strategy catalogs, dossiers, evidence,
+  selection and merge manifests).
+  `development/optimization_n9_final/FINAL_SELECTION.json` is the terminal
   decision record of the whole line.
 - **`tests/optimization_v5/` … `tests/optimization_v8/`** — the gate tests
   each campaign shipped with its changes.
@@ -171,19 +172,22 @@ candidate runtime.
 
 Correctness-first: the P0–P6 port gates passed independent review (P6: 3,029
 core, 78 optional, 34 forcing-only installed tests, no skips — see
-[progress](docs/progress.md) and the per-phase reports under `reports/`).
+[progress](docs/progress.md) and the per-phase reports under
+`development/reports/`).
 A local exact optimization matrix (1,024-pixel-block, four-thread setting;
 1.627 median paired ratio in the primary geometry-warm cell) passed
 independent promotion review and installed-wheel verification — local
 Apple M1 Pro candidate-to-candidate evidence, not an original-upstream
-speedup claim; see [the report](reports/local_cpu_optimization.md).
+speedup claim; see
+[the report](development/reports/local_cpu_optimization.md).
 
 Still open before a release: the full original-upstream and tuned-CPU
 matrix (P7/P8), larger 2048/default-3600 or explicit memory-limit coverage,
 multi-day execution, final-source Linux evidence and hosted CI. Four
 approved inherited scientific exceptions remain failed and documented; they
-do not close the remaining release gates. `TASKS.yaml` and
-`SOLWEIG_LIGHT_IMPLEMENTATION_PLAN.md` carry the completion gates.
+do not close the remaining release gates. `development/plans/TASKS.yaml` and
+`development/plans/SOLWEIG_LIGHT_IMPLEMENTATION_PLAN.md` carry the
+completion gates.
 
 ## Credits and license
 

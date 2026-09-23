@@ -12,7 +12,7 @@ ROOT=Path(__file__).resolve().parents[2]
 
 
 def test_all_pinned_flags_defaults_types_and_requirements():
-    snapshot=json.loads((ROOT/'reports/contract_snapshot.json').read_text())['cli']['flags']
+    snapshot=json.loads((ROOT/'development/reports/contract_snapshot.json').read_text())['cli']['flags']
     parser=cli.build_parser()
     actions={flag:action for action in parser._actions for flag in action.option_strings if flag!='--help' and flag!='-h'}
     expected_flags={flag for record in snapshot for flag in record['flags']}

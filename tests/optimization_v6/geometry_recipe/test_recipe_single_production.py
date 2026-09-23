@@ -37,7 +37,7 @@ if str(SRC) not in sys.path:
 from solweig_light.cache import GeometryStore  # noqa: E402
 from solweig_light.geometry.recipe import guarded_producer, numerical_geometry_recipe  # noqa: E402
 
-EVIDENCE = REPO / 'optimization_v6_continue' / 'evidence' / 'recipe'
+EVIDENCE = REPO / 'development/optimization_v6_continue' / 'evidence' / 'recipe'
 COMMIT = 'e7a2d6ec8594b234820e7783e0ca26d821de7f3d'
 
 

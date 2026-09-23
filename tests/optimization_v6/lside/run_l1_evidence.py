@@ -28,7 +28,7 @@ import numpy as np
 
 REPO = Path(__file__).resolve().parents[3]
 SRC = REPO / 'src'
-EVIDENCE = REPO / 'optimization_v6_continue' / 'evidence' / 'lside'
+EVIDENCE = REPO / 'development/optimization_v6_continue' / 'evidence' / 'lside'
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 

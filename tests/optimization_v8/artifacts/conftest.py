@@ -49,7 +49,7 @@ REPO = Path(__file__).resolve().parents[3]
 # this is the one deliberate remaining experiments-dir append (shared
 # with tests/optimization_v8/packaging/), surfaced in the N8-41
 # vendoring record.
-_PACKAGING = REPO / 'experiments' / 'optimization_v8' / 'packaging'
+_PACKAGING = REPO / 'development/experiments' / 'optimization_v8' / 'packaging'
 
 if str(_PACKAGING) not in sys.path:
     sys.path.insert(0, str(_PACKAGING))

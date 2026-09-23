@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 from osgeo import gdal
 
-SPEC = importlib.util.spec_from_file_location('p7_pair_harness', Path(__file__).resolve().parents[2] / 'tools/benchmark_p7_pipeline.py')
+SPEC = importlib.util.spec_from_file_location('p7_pair_harness', Path(__file__).resolve().parents[2] / 'development/tools/benchmark_p7_pipeline.py')
 HARNESS = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(HARNESS)
 gdal.UseExceptions()
@@ -84,7 +84,7 @@ def test_missing_artifact_and_rule(tmp_path):
 
 
 def test_accepted_baseline_and_mismatch(tmp_path):
-    accepted = Path(__file__).resolve().parents[2] / 'reports/characterization/p7_p6_baseline/src'
+    accepted = Path(__file__).resolve().parents[2] / 'development/reports/characterization/p7_p6_baseline/src'
     assert HARNESS.validate_baseline(accepted)['passed']
     with pytest.raises(ValueError, match='Supplied baseline differs'):
         HARNESS.validate_baseline(tmp_path)
@@ -113,7 +113,7 @@ def repaired_packet(tmp_path, request):
     import json
     import shutil
     root=Path(__file__).resolve().parents[2]
-    snapshot=root/'reports/characterization'/request.param
+    snapshot=root/'development/reports/characterization'/request.param
     manifest=json.loads((snapshot/'manifest.json').read_text())
     source=snapshot/'src'; candidate=root/'src'
     ref=tmp_path/'evidence.json'; ref.write_text('{}')

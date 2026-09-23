@@ -77,9 +77,9 @@ timestamps and metadata retain the compatibility contract.
 
 P6 passed its installed-wheel and robustness gate. The initial
 process-tree measurements are recorded in
-[`reports/p6_runtime_measurements.md`](../reports/p6_runtime_measurements.md);
+[`reports/p6_runtime_measurements.md`](../development/reports/p6_runtime_measurements.md);
 they cover the frozen small-scene workloads and do not establish a universal
-memory bound. The later [local CPU optimization report](../reports/local_cpu_optimization.md)
+memory bound. The later [local CPU optimization report](../development/reports/local_cpu_optimization.md)
 records the independently reviewed warm, geometry-cold and first-use local
 matrix. The exact source is integrated and passed the final installed-wheel
 checks. These settings were selected on the M1 Pro; the fastest configuration

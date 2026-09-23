@@ -42,8 +42,8 @@ _REPO = Path(__file__).resolve().parents[3]
 # package (solweig_light._native_dispatch); no experiment dir goes on
 # sys.path anymore. The reference suite stays a sys.path entry (the
 # frozen oracle modules are read in place, never moved).
-_NATIVE_DIR = _REPO / 'experiments' / 'optimization_v8' / 'native'
-_PACKAGING_DIR = _REPO / 'experiments' / 'optimization_v8' / 'packaging'
+_NATIVE_DIR = _REPO / 'development/experiments' / 'optimization_v8' / 'native'
+_PACKAGING_DIR = _REPO / 'development/experiments' / 'optimization_v8' / 'packaging'
 _REFERENCE_DIR = _REPO / 'tests' / 'optimization_v8' / 'reference'
 if str(_REFERENCE_DIR) not in sys.path:
     sys.path.insert(0, str(_REFERENCE_DIR))

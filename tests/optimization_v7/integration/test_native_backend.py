@@ -27,7 +27,7 @@ import pytest
 from solweig_light.radiation import cylinder_longwave as cyl
 
 ROOT = Path(__file__).resolve().parents[3]
-CAPTURES = ROOT / 'optimization_v7_backends/evidence/captures'
+CAPTURES = ROOT / 'development/optimization_v7_backends/evidence/captures'
 MANIFEST = json.loads((CAPTURES / 'b7_02_capture_manifest.json').read_text())
 FIXTURES = np.load(CAPTURES / 'b7_02_fixtures.npz')
 

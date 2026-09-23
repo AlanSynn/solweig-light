@@ -13,11 +13,11 @@ from osgeo import gdal
 
 ROOT = Path(__file__).resolve().parents[2]
 SPEC = importlib.util.spec_from_file_location(
-    "p7_serial_variant_harness", ROOT / "tools/run_p7_serial_variant.py"
+    "p7_serial_variant_harness", ROOT / "development/tools/run_p7_serial_variant.py"
 )
 HARNESS = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(HARNESS)
-PROTOCOL_PATH = ROOT / "benchmarks/protocols/p7_persistent_jit_serial_variant/protocol.json"
+PROTOCOL_PATH = ROOT / "development/benchmarks/protocols/p7_persistent_jit_serial_variant/protocol.json"
 
 
 def protocol():
@@ -281,7 +281,7 @@ def test_source_fixture_harness_guard_detects_snapshot_change(tmp_path):
     sources = {"baseline": baseline, "candidate": candidate}
     guards = {
         "protocol_sha256": HARNESS.digest(protocol_copy),
-        "harness_sha256": HARNESS.digest(ROOT / "tools/run_p7_serial_variant.py"),
+        "harness_sha256": HARNESS.digest(ROOT / "development/tools/run_p7_serial_variant.py"),
         "comparison_utility_sha256": HARNESS.digest(ROOT / value["comparison"]["utility"]),
         "sources": {name: HARNESS.tree_inventory(path) for name, path in sources.items()},
         "fixtures": {name: HARNESS.fixture_inventory(case) for name, case in value["fixtures"].items()},

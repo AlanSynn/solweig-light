@@ -13,7 +13,7 @@ from solweig_light.geometry.visibility import PackedVisibility, LazyDiffVisibili
 
 ROOT = Path(__file__).resolve().parents[1] / 'reference/state_sequence_original_cpu'
 MANIFEST = json.loads((ROOT / 'boundaries/manifest.json').read_text())
-PROTOCOL = json.loads((ROOT.parents[2] / 'benchmarks/protocols/comparison_v1.json').read_text())
+PROTOCOL = json.loads((ROOT.parents[2] / 'development/benchmarks/protocols/comparison_v1.json').read_text())
 
 
 def load(event):

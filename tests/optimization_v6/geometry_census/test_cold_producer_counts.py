@@ -45,7 +45,7 @@ import pytest
 REPO = Path(__file__).resolve().parents[3]
 SRC = REPO / 'src'
 PROBE_DIR = Path(__file__).resolve().parent
-EVIDENCE = REPO / 'optimization_v6_continue' / 'evidence' / 'census'
+EVIDENCE = REPO / 'development/optimization_v6_continue' / 'evidence' / 'census'
 COMMIT = 'e7a2d6ec8594b234820e7783e0ca26d821de7f3d'
 MET_SOURCE = REPO / 'tests' / 'reference' / 'small_original_cpu' / 'scene' / 'met.txt'
 DATE = '2020-07-18'

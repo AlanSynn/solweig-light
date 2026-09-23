@@ -42,9 +42,9 @@ nine genuine chronological TIFF cases and zero skips. All three installed-wheel
 records verify the same final wheel against the worktree source.
 
 The final records are
-[`p5_installed_verification.json`](../reports/p5_installed_verification.json),
-[`p5_optional_installed_verification.json`](../reports/p5_optional_installed_verification.json)
-and [`p5_forcing_extra_verification.json`](../reports/p5_forcing_extra_verification.json).
+[`p5_installed_verification.json`](../development/reports/p5_installed_verification.json),
+[`p5_optional_installed_verification.json`](../development/reports/p5_optional_installed_verification.json)
+and [`p5_forcing_extra_verification.json`](../development/reports/p5_forcing_extra_verification.json).
 These bind executed JUnit results to the installed wheel, source files,
 environment and reference manifests. The forcing-only gate verifies the
 `forcing` extra without Torch, rasterio, GeoPandas or acquisition clients;

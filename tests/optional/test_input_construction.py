@@ -9,7 +9,7 @@ from solweig_light.inputs import construction as inputs
 ROOT=Path(__file__).resolve().parents[2]
 
 def harness():
-    spec=importlib.util.spec_from_file_location('input_fixture',ROOT/'tools/characterize_inputs.py')
+    spec=importlib.util.spec_from_file_location('input_fixture',ROOT/'development/tools/characterize_inputs.py')
     module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
     return module
 
@@ -112,7 +112,7 @@ def test_original_reference_provenance():
     reference=ROOT/'tests/reference/inputs_original_cpu'
     manifest=json.loads((reference/'manifest.json').read_text())
     source=ROOT/'.upstream/SOLWEIG-GPU/solweig_gpu/create_inputs.py'
-    collector=ROOT/'tools/characterize_inputs.py'
+    collector=ROOT/'development/tools/characterize_inputs.py'
     sha=lambda data:hashlib.sha256(data).hexdigest()
     assert manifest['upstream_commit']=='0d7fe742abeeddd890dd58fc76ed7f78bd47faec'
     assert manifest['source_sha256']=='38b570dac030463b4801d5c10ff52dd9d2ea661820c9b1f34b13a1fb33206149'

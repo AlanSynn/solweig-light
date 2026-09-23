@@ -38,7 +38,7 @@ SOURCE_OBSERVATION = "source_observation"
 RUNTIME_INTROSPECTION = "runtime_introspection"
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-EVIDENCE_DIR = REPO_ROOT / "optimization_v8_native_default" / "evidence" / "dx_baseline"
+EVIDENCE_DIR = REPO_ROOT / "development/optimization_v8_native_default" / "evidence" / "dx_baseline"
 MAIN_SURFACE_PATH = EVIDENCE_DIR / "main_surface.json"
 BRANCH_SURFACE_PATH = EVIDENCE_DIR / "branch_surface.json"
 
