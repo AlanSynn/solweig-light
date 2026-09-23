@@ -18,7 +18,7 @@ from pathlib import Path
 import pytest
 
 REPO = Path(__file__).resolve().parents[3]
-PACKAGING = REPO / "experiments" / "optimization_v8" / "packaging"
+PACKAGING = REPO / "development/experiments" / "optimization_v8" / "packaging"
 B7_KERNEL = REPO / "src" / "solweig_light" / "backends" / "native" / \
     "lw_primary.ispc"
 
