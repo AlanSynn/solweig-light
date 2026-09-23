@@ -1,5 +1,15 @@
 # F1R: CPU-only closure plan (applied only if native loses F3)
 
+> **STATUS 2026-09-23: superseded in part by `f4_release_disposition.md`.**
+> F3 ended NATIVE_LOSS, but the continuous measurement promoted stream row B
+> (H=1) to the DEFAULT for admitted non-raw channels — so this plan's removal
+> of the whole dispatch seam (R1/R2/R4) and its tri-state boolean restoration
+> (§2) DO NOT APPLY. Sections still in force: §1 R6/R7 (native package-data,
+> setup.py), §3 preserve list, §5 wheel/sdist exclusions (minus registry
+> repointing), §6 commit sequencing. The F3-informed disposition, audit of the
+> integrator's decision shape, and the revised removal/preserve/test tables
+> live in `f4_release_disposition.md`.
+
 Release-owner plan for packet optimization_n9_final. Preconditions: F3 selects
 `closed_cpu_only` (or native cannot be qualified). Applies to source branched
 from `perf/native-optimization` @ 7abe526a (or the F3-qualified forward commit);
