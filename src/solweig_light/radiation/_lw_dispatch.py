@@ -49,11 +49,16 @@ This module reads NO environment variables: the expert-env intercept lives
 in the caller seam (``cylinder_longwave._lw_region_route``), keeping the
 package's env-read surface exactly as frozen (DX parity gate).
 
-Memory note: a routed call materializes the whole-scene AoSoA visibility
-(3x uint32 [G,P,W]) plus directly-classified sun/shade masks (2x bool
-[G,P,W]) once per call -- the producer cost the N8-31 frozen protocol
-accounts per block size. Scope limits for qualified rows live in the
-qualification records, not here.
+Memory note (N9-F1S): a routed call is a BOUNDED STREAM. The whole-scene
+AoSoA materialization (3x uint32 [G,P,W] + 2x bool [G,P,W] -- 2142 MiB
+at N=1024^2) is gone: ``_native_dispatch.lw_stream`` mints one immutable
+``InvocationPlan`` per call (admission + lease + descriptors pinned
+pre-launch), allocates H bounded ``BlockSlot`` buffers at the block
+capacity (~14*B*P payload bytes per slot), and produces/classifies each
+region inside the consumer's ``produce``. Scope limits for qualified
+rows live in the qualification records, not here. The whole-scene
+consumers below are retained untouched for measurement/comparison until
+integrator cleanup.
 """
 import numpy as np
 
@@ -101,44 +106,32 @@ def region_route(values, geometry, solar_gate, prepared, total, block_pixels,
 
 def _execute_row(row, values, geometry, solar_gate, prepared, total,
                  block_pixels, factor, sun_surface, shade_surface):
-    """Produce the whole-scene AoSoA state, then dispatch through the ONE
-    bounded region owner. Producer declines return None (pre-launch);
-    everything after the first native launch is loud."""
-    from solweig_light._native_dispatch import direct_aosoa as da
+    """Run the bounded stream (N9-F1S): plan, H slots, regions, join.
 
-    patches = geometry.altitude.size
-    aosoa = da.produce_blocks_aosoa(values['shmat'], values['vegshmat'],
-                                    values['vbshvegshmat'], 0, total,
-                                    patches, width=_LANE_WIDTH)
-    if aosoa is None:
-        return None  # non-admitted channel: trusted legacy, before launch
-    sun_a, shade_a = da.classify_block_aosoa(
-        values['solar_altitude'], values['solar_azimuth'], geometry,
-        values['asvf'], 0, total, active=solar_gate, prepared=prepared,
-        width=_LANE_WIDTH)
-    if sun_a is None:
-        return None  # retained per-patch classification route: legacy
-
-    args = dict(zip(_ORDERED, (*aosoa, sun_a, shade_a)))
-    args.update(solid=values['steradian'], sine=geometry.sine,
-                cosine=geometry.cosine,
-                directions=geometry.longwave_cardinal_cosine,
-                gate=geometry.reflection_cardinal, solar_gate=solar_gate,
-                sky_down=values['Lsky_down'][:, 2],
-                sky_side=values['Lsky_side'][:, 2],
-                surface_sun=sun_surface, surface_sh=shade_surface,
-                lup=values['Lup'].reshape(-1), reflection_factor=factor)
-
-    from solweig_light._native_dispatch.region.region_plan import plan_regions
-    from solweig_light._native_dispatch.region.region_pool import execute_regions
-    plan = plan_regions(total, block_pixels=block_pixels)
-    output = np.empty((7, total), dtype=np.float32)
-    if row == 'B':
-        from solweig_light._native_dispatch.region.consumers import AosoaBConsumer
-        consumer = AosoaBConsumer(args, width=_LANE_WIDTH)
-    else:
-        consumer = AosoaNativeCConsumer(args, width=_LANE_WIDTH)
-    execute_regions(plan, consumer, output)
+    The InvocationPlan is minted ONCE per call -- channel admission,
+    classification admission and the full range contract are validated
+    PRE-LAUNCH; any decline returns None and the caller keeps its
+    trusted legacy loop. Everything after the first launch is loud. The
+    leaf lease held by the plan is released after the region join.
+    """
+    from solweig_light._native_dispatch import lw_stream
+    stream = lw_stream.plan_invocation(
+        row, values, geometry, solar_gate, prepared, total, block_pixels,
+        factor, sun_surface, shade_surface, width=_LANE_WIDTH)
+    if stream is None:
+        return None  # non-admitted channels / table / misaligned blocks
+    try:
+        output = np.empty((7, total), dtype=np.float32)
+        if row == 'B':
+            consumer = lw_stream.AosoaBStreamConsumer(stream)
+        else:
+            consumer = lw_stream.AosoaCStreamConsumer(stream)
+        from solweig_light._native_dispatch.region.region_plan import plan_regions
+        from solweig_light._native_dispatch.region.region_pool import execute_regions
+        execute_regions(plan_regions(total, block_pixels=block_pixels),
+                        consumer, output)
+    finally:
+        stream.close()
     return output
 
 
