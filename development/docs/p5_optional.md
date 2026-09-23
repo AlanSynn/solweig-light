@@ -38,7 +38,7 @@ The core environment excludes Torch, xarray and acquisition clients. The clean
 forcing-only installation excludes Torch, rasterio, GeoPandas and acquisition
 clients while executing real NetCDF-to-metfile and public preprocessing tests.
 Optional tests use the frozen environment described in
-[`optional_environment.md`](optional_environment.md); their known native import
+[`optional_environment.md`](../../docs/optional_environment.md); their known native import
 and rasterio warnings remain visible.
 
 ## Reference classes and exercised behavior
@@ -50,12 +50,12 @@ collected in the isolated original oracle, never generated from the candidate.
 
 | Packet | Evidence and scope |
 | --- | --- |
-| [`forcing_original_cpu`](../tests/reference/forcing_original_cpu/manifest.json) | Original CPU forcing behavior, including the original WRF failure. Local ERA5/UHI conversion tests cover variables, units, masks, spatial sampling and timestamps. |
-| [`public_forcing_original_cpu`](../tests/reference/public_forcing_original_cpu/manifest.json) | Public preprocessing integration against real local files, including time-coordinate variants, forcing selection and daylight-saving behavior. Patched WRF cases retain separate labels. |
-| [`wrf_patched_cpu`](../tests/reference/wrf_patched_cpu/manifest.json) | Explicit `wrf_timestamp_v1` repaired reference; successful WRF comparisons apply to this versioned policy. |
-| [`wind_original_cpu`](../tests/reference/wind_original_cpu/manifest.json) | Original directional wind generation, including twelve directions, geometry processing, precedence and raster metadata. |
-| [`public_roughness_original_cpu`](../tests/reference/public_roughness_original_cpu/manifest.json) | Public roughness workflow generates and consumes all directional outputs through local preprocessing. |
-| [`inputs_original_cpu`](../tests/reference/inputs_original_cpu/manifest.json) | Unchanged AST-extracted original local helpers, with import/bootstrap statements excluded. This is helper evidence, not an unmodified full-module execution. |
+| [`forcing_original_cpu`](../../tests/reference/forcing_original_cpu/manifest.json) | Original CPU forcing behavior, including the original WRF failure. Local ERA5/UHI conversion tests cover variables, units, masks, spatial sampling and timestamps. |
+| [`public_forcing_original_cpu`](../../tests/reference/public_forcing_original_cpu/manifest.json) | Public preprocessing integration against real local files, including time-coordinate variants, forcing selection and daylight-saving behavior. Patched WRF cases retain separate labels. |
+| [`wrf_patched_cpu`](../../tests/reference/wrf_patched_cpu/manifest.json) | Explicit `wrf_timestamp_v1` repaired reference; successful WRF comparisons apply to this versioned policy. |
+| [`wind_original_cpu`](../../tests/reference/wind_original_cpu/manifest.json) | Original directional wind generation, including twelve directions, geometry processing, precedence and raster metadata. |
+| [`public_roughness_original_cpu`](../../tests/reference/public_roughness_original_cpu/manifest.json) | Public roughness workflow generates and consumes all directional outputs through local preprocessing. |
+| [`inputs_original_cpu`](../../tests/reference/inputs_original_cpu/manifest.json) | Unchanged AST-extracted original local helpers, with import/bootstrap statements excluded. This is helper evidence, not an unmodified full-module execution. |
 
 The original WRF filter compares the `(datetime, domain)` tuple returned by its
 filename parser with a datetime and raises `TypeError`. The one-line
@@ -64,7 +64,7 @@ element zero only at that comparison. Candidate behavior follows this explicit
 repair. Tuple ordering, inclusive endpoints and the subsequent meteorological
 calculations retain upstream semantics. The observed duplicate-domain/hour
 shape failure remains recorded and tested; it is not repaired or counted as a
-successful WRF conversion. See [`model_deviations.md`](model_deviations.md).
+successful WRF conversion. See [`model_deviations.md`](../../docs/model_deviations.md).
 
 Input tests execute real clipping, reprojection, grid alignment, polygon
 rasterization, WorldCover remapping, DSM addition, tree cleanup and NetCDF

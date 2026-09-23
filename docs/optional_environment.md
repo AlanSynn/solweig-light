@@ -35,7 +35,7 @@ execute against real files.
 ## Final P5 installed-wheel verification
 
 The evidence summary and exact gate commands are in
-[`p5_optional.md`](p5_optional.md). Final-source installed-wheel runs passed 58
+[`p5_optional.md`](../development/docs/p5_optional.md). Final-source installed-wheel runs passed 58
 optional tests in 16.69 seconds and 34 clean forcing-extra tests in 4.75 seconds
 with zero skips. The final core run passed 2,881 tests in 220.53 seconds, with
 nine genuine chronological TIFF cases and zero skips. All three installed-wheel

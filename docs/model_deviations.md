@@ -12,7 +12,7 @@ proof of numerical equivalence.
 - Outcome: preprocessing, walls/aspect and standalone SVF finish; importing
   `utci_process` imports `calculate_wbgt`, which requires `numba.vectorize`.
   It raises `ModuleNotFoundError: No module named 'numba'` before simulation.
-- Evidence: `reports/runs/initial_cpu/{stderr.log,outcome.json,measurement.json}`.
+- Evidence: `development/reports/runs/initial_cpu/{stderr.log,outcome.json,measurement.json}`.
 - Treatment: add Numba to the isolated reference environment and rerun unmodified
   source. This is an environment repair, not a patched numerical reference.
 
@@ -44,7 +44,7 @@ float32 and float64 scenes. Reproducer:
 .venv-oracle/bin/python tools/characterize_geometry.py --run reports/runs/geometry_characterization/reproduction --report reports/geometry_reproduction.json
 ```
 
-`reports/geometry_characterization.json` records 126 successful function
+`development/reports/geometry_characterization.json` records 126 successful function
 executions (four patch tables and 122 shadow cases), source/environment hashes,
 input/output NPZ hashes and the independent checks. Successful execution is not
 the same as a passed scientific expectation.
@@ -66,7 +66,7 @@ the same as a passed scientific expectation.
 
 The complete 24-step original CPU capture contains float32 raster outputs, but
 `CI`, `I0`, `radI`, and `radD` do not have one fixed dtype across day/night.
-`reports/boundary_capture_verification.json` records the observed sets. Preserve
+`development/reports/boundary_capture_verification.json` records the observed sets. Preserve
 the executed promotions in the correctness-first port; treating every scalar as
 float64 is not established equivalent. The read-only capture left all nineteen
 standalone TIFFs unchanged and passed 23 consecutive state handoff checks.
@@ -81,7 +81,7 @@ this is a compatibility repair, not a change to the polynomial or meteorology.
 The direct `utci_polynomial` function has a different contract and retains its
 characterized float64/mixed evaluation. Evidence and original exceptions are in
 `tests/reference/utci_original_cpu/manifest.json` and
-`reports/utci_compiled_characterization.json`.
+`development/reports/utci_compiled_characterization.json`.
 
 The compiled calculator currently optimizes the characterized finite float32
 profile and sentinel positions. Other values retain the full NumPy evaluator;
@@ -173,7 +173,7 @@ case. Inputs and all 18 geometry-export fields passed their original gates.
 
 The preserved P6 and P7 optimized TIFF outputs were exactly equal on this
 failing scene, locating the defect before either P7 optimization. Evidence is
-under `reports/characterization/p7_real_diagnosis`. The narrow repair now covers
+under `development/reports/characterization/p7_real_diagnosis`. The narrow repair now covers
 both compiled and retained fallback paths. It passed 186 ground-view checks,
 682 radiation/state/delay checks and five resume checks; all 17 first-daytime
 GVF fields match original bitwise, and the full diagnosed 24-hour scene passes
@@ -199,13 +199,13 @@ receiver sums and angles match original exactly. Zero/nonfinite scalar cases
 retain their original masks and signed-zero behavior. Array-valued low-level
 inputs retain the earlier NumPy path.
 
-Evidence: `reports/characterization/p7_real_diagnosis/svf_weights`, with
+Evidence: `development/reports/characterization/p7_real_diagnosis/svf_weights`, with
 original source/environment provenance in
 `tests/reference/p7_svf_annulus_original_cpu/manifest.json`. The targeted
 gate passed 37 tests. Both final repaired variants subsequently passed all
 seven complete scene gates and 18 geometry export fields per scene; the
 source-bound aggregate is
-`reports/characterization/p7_repair_v2_correctness/gate.json`. This resolves
+`development/reports/characterization/p7_repair_v2_correctness/gate.json`. This resolves
 the characterized failures without loosening any existing tolerance; it does
 not establish bitwise equivalence for every possible scene or platform.
 Geometry and checkpoint identities include the changed source files, so
@@ -213,7 +213,7 @@ pre-repair caches are not silently reused.
 
 ## Independent UMEP ground-view precision discrepancy (Cura P8)
 
-On the two 9×11 synthetic land-cover cases, unchanged UMEP returns float64 `gvfSum`, while pinned original SOLWEIG-GPU CPU and candidate return identical float32 sums. The independent UMEP comparison exceeds its predeclared 1e-6 absolute gate in 12/99 cells, maximum 1.7106533043431682e-6. The normalized field passes. All 17 candidate fields pass their unchanged comparison against original Torch; sums and normalized values are exact. This is an inherited precision difference, not permission to relax the independent gate or silently change compatibility arithmetic. The independent tests remain failed; their narrowly scoped compatibility-release exception is now user-approved (see below). Evidence and isolated environment provenance: `reports/cura_p8_20260919T1215Z_a7c3/upstream_cpu_ground_view_diagnostic.md` and its linked raw artifacts.
+On the two 9×11 synthetic land-cover cases, unchanged UMEP returns float64 `gvfSum`, while pinned original SOLWEIG-GPU CPU and candidate return identical float32 sums. The independent UMEP comparison exceeds its predeclared 1e-6 absolute gate in 12/99 cells, maximum 1.7106533043431682e-6. The normalized field passes. All 17 candidate fields pass their unchanged comparison against original Torch; sums and normalized values are exact. This is an inherited precision difference, not permission to relax the independent gate or silently change compatibility arithmetic. The independent tests remain failed; their narrowly scoped compatibility-release exception is now user-approved (see below). Evidence and isolated environment provenance: `development/reports/cura_p8_20260919T1215Z_a7c3/upstream_cpu_ground_view_diagnostic.md` and its linked raw artifacts.
 
 ### Inherited option-2 SVF azimuth initialization truncation (Cura P8)
 
@@ -226,7 +226,7 @@ truncation shortens four initializer loops. The consumer still reads declared
 band lengths, crossing initialization-band boundaries and reading four trailing
 zero slots. Full upstream/candidate azimuth arrays are identical.
 
-Evidence: `reports/cura_p8_20260919T1215Z_a7c3/admission/admission_manifest.json`,
+Evidence: `development/reports/cura_p8_20260919T1215Z_a7c3/admission/admission_manifest.json`,
 key `svf_initializer_execution`, SHA-256
 `9e639c5ef62a83b12e676e62cd7a073c70672023ff68301e857e71c75ab2c6fd`.
 The manifest records source hashes, actual Torch/NumPy versions and commands.
@@ -245,12 +245,12 @@ not establish physical correctness.
 
 Dense1024 original-CPU admission fails the frozen TMRT gate: maximum absolute difference 0.04949951171875 °C versus 0.01 °C. The first material difference appears at output band 8. At cell [36,185], float32 SVF 0.749999940395355 produces ASVF bits 1057360531 from the Cura candidate NumPy expression and 1057360530 from original Torch CPU. The one-ULP difference moves patches across a strict shade boundary; upstream equality belongs to neither sun nor shade. Four building patches each add 0.0809573158621788 W/m² reflected shade shortwave in the candidate. The minimal fixture reproduces the reflected-energy difference. Serial and compiled candidate radiation agree given the same ASVF bits, so this is input transcendental parity, not evidence of a compiled radiation accumulation defect.
 
-Source-provenanced fixture and reproducer: `reports/cura_p8_20260919T1215Z_a7c3/admission/p8_1024/dense_kref_diagnostic/rootcause_report.json` (SHA-256 `abd67a4d42ffdf0b7f5e4ce7277d6883a20a6a6d3a46d5eb83b11d589bb87fa2`). Independent M1 characterization in `reports/characterization/p8_asvf_parity_review/review.json` covers 411,685 inputs: float32 sqrt matches original, current acos has 5,108 finite one-ULP mismatches, and float64 acos cast to float32 has 6,903. At the Cura hotspot input, all tested M1 expressions already match original. Thus increased precision is not a universal compatibility repair. Backend characterization is ongoing. No threshold shift, input clipping, blanket nextafter, or relaxed tolerance is authorized by this diagnosis; no ASVF repair has been applied.
+Source-provenanced fixture and reproducer: `development/reports/cura_p8_20260919T1215Z_a7c3/admission/p8_1024/dense_kref_diagnostic/rootcause_report.json` (SHA-256 `abd67a4d42ffdf0b7f5e4ce7277d6883a20a6a6d3a46d5eb83b11d589bb87fa2`). Independent M1 characterization in `development/reports/characterization/p8_asvf_parity_review/review.json` covers 411,685 inputs: float32 sqrt matches original, current acos has 5,108 finite one-ULP mismatches, and float64 acos cast to float32 has 6,903. At the Cura hotspot input, all tested M1 expressions already match original. Thus increased precision is not a universal compatibility repair. Backend characterization is ongoing. No threshold shift, input clipping, blanket nextafter, or relaxed tolerance is authorized by this diagnosis; no ASVF repair has been applied.
 
 
 ### Isolated repair evidence (not production)
 
-The subsequent standalone-MKL snapshot experiment passes unchanged dense/vegetation1024 full-field gates; exact ASVF and actual per-patch classifier preflights are recorded in `reports/cura_p8_20260919T1215Z_a7c3/admission/p8_1024/mkl_pipeline_experiment/result_summary.json`. Both sqrt and acos, then classifier raster/scalar trig, require the original backend and promotion order. The earlier vectorized mask oracle is rejected because its scalar dtypes did not match actual invocation. No scientific threshold or source behavior was corrected; this is a candidate compatibility repair. Production integration awaits the dependency design decision, and M1 validation remains separate.
+The subsequent standalone-MKL snapshot experiment passes unchanged dense/vegetation1024 full-field gates; exact ASVF and actual per-patch classifier preflights are recorded in `development/reports/cura_p8_20260919T1215Z_a7c3/admission/p8_1024/mkl_pipeline_experiment/result_summary.json`. Both sqrt and acos, then classifier raster/scalar trig, require the original backend and promotion order. The earlier vectorized mask oracle is rejected because its scalar dtypes did not match actual invocation. No scientific threshold or source behavior was corrected; this is a candidate compatibility repair. Production integration awaits the dependency design decision, and M1 validation remains separate.
 
 
 ## Approved compatibility-release exception: inherited SVF and UMEP failures

@@ -130,15 +130,15 @@ rather than silently falling back. Evidence:
 | [compatibility](docs/compatibility.md) | SOLWEIG-GPU compatibility surface, companion distribution |
 | [runtime](docs/runtime.md), [cache policy](docs/cache_policy.md) | tiling/threads behavior, cache and restart semantics |
 | [optional environment](docs/optional_environment.md) | ERA5/WRF/forcing extras |
-| [performance](docs/performance.md), [provenance](docs/provenance.md) | measurement records and evidence storage rules |
-| [progress](docs/progress.md) | port log: P0–P8 phase gates, what passed when |
+| [performance](development/docs/performance.md), [provenance](docs/provenance.md) | measurement records and evidence storage rules |
+| [progress](development/docs/progress.md) | port log: P0–P8 phase gates, what passed when |
 
 ## How this was developed
 
 The full optimization history is recorded, not narrated — every campaign
 kept its own packet with rules, evidence, and a terminal record:
 
-- **[docs/optimization_campaigns.md](docs/optimization_campaigns.md)** — the
+- **[docs/optimization_campaigns.md](development/docs/optimization_campaigns.md)** — the
   map: each campaign (v4 process discipline → v5/C5 fused-kernel era →
   v6/C6 demand-specific radiation era → v7 ISPC backends → v8 native-default
   attempt → n9 final), what landed in `src/` per era with commit anchors,
@@ -172,7 +172,7 @@ candidate runtime.
 
 Correctness-first: the P0–P6 port gates passed independent review (P6: 3,029
 core, 78 optional, 34 forcing-only installed tests, no skips — see
-[progress](docs/progress.md) and the per-phase reports under
+[progress](development/docs/progress.md) and the per-phase reports under
 `development/reports/`).
 A local exact optimization matrix (1,024-pixel-block, four-thread setting;
 1.627 median paired ratio in the primary geometry-warm cell) passed

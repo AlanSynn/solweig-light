@@ -1,6 +1,6 @@
 # Portable math profile v1 — design and admission policy
 
-Status: integrated into the development runtime after two-platform review; release and renewed performance qualification remain incomplete. The admission policy below was declared before integration and remains unchanged. The user explicitly authorized developing a versioned CPU-native portable math profile against the validated original SLEEF reference, with Cura disagreements retained. The separate approved SVF/UMEP release exceptions do not waive this profile's numerical gates. This document and `reports/characterization/p8_portable_profile_v1/policy.json` predeclare the implementation contract and admission gates before production integration.
+Status: integrated into the development runtime after two-platform review; release and renewed performance qualification remain incomplete. The admission policy below was declared before integration and remains unchanged. The user explicitly authorized developing a versioned CPU-native portable math profile against the validated original SLEEF reference, with Cura disagreements retained. The separate approved SVF/UMEP release exceptions do not waive this profile's numerical gates. This document and `development/reports/characterization/p8_portable_profile_v1/policy.json` predeclare the implementation contract and admission gates before production integration.
 
 ## Reference amendment and scope
 
@@ -54,7 +54,7 @@ Independent reviewer must check actual scalar promotion/dispatch, license attrib
 
 ## Integration evidence and limits
 
-The user-authorized profile is now copied into the development package from the hash-bound isolated snapshot. `reports/characterization/p8_portable_profile_v1/integration/promotion.json` records exact before/after hashes. The semantic ID is unchanged across M1 and Linux; implementation/runtime fingerprints differ by supported environment. Permanent profile/domain/cache/checkpoint/FMA regressions are included in installed-wheel CI.
+The user-authorized profile is now copied into the development package from the hash-bound isolated snapshot. `development/reports/characterization/p8_portable_profile_v1/integration/promotion.json` records exact before/after hashes. The semantic ID is unchanged across M1 and Linux; implementation/runtime fingerprints differ by supported environment. Permanent profile/domain/cache/checkpoint/FMA regressions are included in installed-wheel CI.
 
 Both hosts passed the full45,172-input,24-timestep,153-patch actual-call categorical corpus and14,400 layout/thread variants. OriginalSLEEF dense1024 and vegetation1024 captures, both installed candidates, and direct Linux/M1 comparisons passed unchanged all-field/schema/mask gates. NewLinuxcandidate comparisons with originalCuraMKL also passed those final-output gates; historical pre-profile failures and strict-boundary differences remain separately recorded, without a universalMKLparity claim. Source, wheels, raw artifacts and reports are under the profile directory.
 

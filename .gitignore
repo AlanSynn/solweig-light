@@ -12,7 +12,7 @@ development/reports/runs/
 # Reports retain concise provenance, protocols, source snapshots, and summaries.
 # Generated rasters, array dumps, compiled caches, and local environments stay
 # local; reproduction prerequisites and limits are documented in
-# docs/evidence_storage.md.
+# development/docs/evidence_storage.md.
 development/reports/**/*.tif
 development/reports/**/*.tiff
 development/reports/**/*.npy
@@ -52,7 +52,7 @@ development/reports/characterization/local_cpu_optimization_v1/e0/admission/dens
 development/reports/characterization/local_cpu_optimization_v1/e0/admission/vegetation1024/monitor/samples.json
 
 # N8: local build outputs and profiling scratch stay local (reproducible from
-# pinned source + manifest via tools/optimization_v8; evidence_storage policy).
+# pinned source + manifest via development/tools/optimization_v8; evidence_storage policy).
 development/optimization_v8_native_default/evidence/profile/work/
 development/experiments/optimization_v8/native/stage/**/*.dylib
 development/experiments/optimization_v8/packaging/stage/**/*.dylib

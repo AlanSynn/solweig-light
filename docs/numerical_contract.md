@@ -1,7 +1,7 @@
 # Numerical contract under P0 characterization
 
 Status: **frozen P0 comparison proposal; not yet validated for optimization**.
-The machine-readable authority is `benchmarks/protocols/comparison_v1.json`,
+The machine-readable authority is `development/benchmarks/protocols/comparison_v1.json`,
 covering 96 named component return fields with units and context-sensitive rules.
 No candidate result has been
 used to select or relax these budgets. The original plan's final-output budgets
@@ -11,13 +11,13 @@ must not be relaxed in response to a candidate failure.
 
 Evidence anchors:
 
-- `reports/geometry_characterization.json`: float32/float64 patch and shadow
+- `development/reports/geometry_characterization.json`: float32/float64 patch and shadow
   cases, actual value sets, and separately recorded analytic failures.
-- `reports/boundary_capture_verification.json`: component dtypes and carried
+- `development/reports/boundary_capture_verification.json`: component dtypes and carried
   state across one full day/night sequence.
-- `reports/initial_repeatability.json`, `reports/capture_noninterference.json`:
+- `development/reports/initial_repeatability.json`, `development/reports/capture_noninterference.json`:
   same-host exact TIFF checks. These do not measure cross-platform differences.
-- `reports/upstream_cpu_tuning.json`: once complete, exact TIFF checks at three
+- `development/reports/upstream_cpu_tuning.json`: once complete, exact TIFF checks at three
   native-thread configurations. This cannot establish intermediate-state
   thread invariance without separately captured runs.
 
@@ -62,12 +62,12 @@ universal-device claim is established.
 
 The original proposal remains unchanged; verification is family- and fixture-
 specific. P2 wall/UTCI and P3 shadow/SVF comparisons have passed their recorded
-local gates (`reports/p2_installed_verification.json`,
-`reports/p3_installed_verification.json`). The pending entries above must not be
+local gates (`development/reports/p2_installed_verification.json`,
+`development/reports/p3_installed_verification.json`). The pending entries above must not be
 read as permission to relax a failed optimization or as completed broad
 scientific calibration.
 
-P4 GVF sensitivity: `reports/p4_gvf_sensitivity.json` records a zero-error
+P4 GVF sensitivity: `development/reports/p4_gvf_sensitivity.json` records a zero-error
 unperturbed original replay and coherent signed/checkerboard perturbations of
 all dimensionless GVF fields by 1e-6. Maximum TMRT change across the 24-step
 scene was 0.00006103515625 C. This supports the proposed GVF budget for that
