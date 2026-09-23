@@ -48,6 +48,88 @@ set is complete. `optimization_v5_claude/evidence/v5_hypothetical_throughput.jso
 is an **uncalibrated analytical projection** (`solweig_executed: false`) — it
 is retained for provenance only and is NOT a measurement.
 
+## What changed in src — traceable map
+
+The line that became main carries five recorded change eras after the P0–P8
+port log in `docs/progress.md`. Every work item below is recoverable from
+history by its ID (`git log --grep <id> --oneline`), has its own record set
+inside the campaign packet, and ships gate tests under `tests/optimization_v*`.
+Net deltas: `bfd9915e..dca2035c` = 40 src commits, 20 files, +5801/−212
+(C5+C6 eras); `dca2035c..3d6a1be3` = 13 src commits (v7/v8/N9 eras).
+
+### Era 1 — C5 work items (v5 campaign; ran on `perf/claude-glm53-cpu-v5-{rt,rad,gvf,ray}`, landed on `perf/cpu-optimization`)
+
+| item | what landed in src | commit anchors |
+|---|---|---|
+| P01 | fused ordered packed-visibility decode into shortwave/longwave reductions; **default OFF** behind `SOLWEIG_LIGHT_FUSED_RAD` (tile version measured-rejected) | `a343fe20`, `77d567ef`+fix `a5b05fdd`, `ba024eeb`, `611deaff`, `39b3fab0` |
+| G02 | GVF direction-invariant source hoisting out of the 18-direction loop (exact) | `8933c4ae`, `8c50de62` |
+| G03 | fused GVF row-block gather+postprocess route, L2 bitwise-identical, measured ~3.6x stage win; full path kept as diagnostic | `b42035c7`, `137489e2`, `143f1f54` (+aliasing gates `c987cbb8`) |
+| S02 | persistent bounded worker-process pool for tile scheduling | `8b3252ca`, `23c77804` |
+| S07 | checkpoint digest IO: hash stored bytes at write time; stored-bytes band digest law | `9b0d010f`, `bf99def0`, `fd3392c7`, `0ecb9042` |
+| R01a | guarded absorption exit in pixel-major sky trace | `b66fea64` |
+
+Records: `optimization_v5_claude/` (dossiers `F/G/P/R/S/V/X.md`,
+`TASKS_CLAUDE.yaml`, `evidence/` census→freeze→handover, `CHANGELOG_V5.md` —
+note the changelog covers the operational packet, the items above are the src
+execution), gate tests `tests/optimization_v5/`.
+
+### Era 2 — C6 work items (v6 continuation; ran on `perf/cpu-optimization`, tip `dca2035c`)
+
+| item | what landed in src | commit anchors |
+|---|---|---|
+| C6-10 | common numerical geometry recipe shared by producer paths (service + pipeline integration) | `443ee2b7`, `47cda54f` |
+| C6-20 | anisotropic Lside demand-specific specialization + exact fast path | `2304449d`, `0358497a` |
+| C6-21 | cylinder longwave primary-output kernel + demand dispatcher | `eea97fbd`, `02c0efa4` |
+| C6-22 | cylinder shortwave narrow-scratch specialization | `99681b53`, `15dfbf2a` |
+| C6-30/31 | GVF per-step source-expression preparation + typed block postprocess kernel | `986c5a09`, `d7eb148d`, `6f8325aa`, `61c76a17` |
+| C6-40/50 | prepared multi-channel visibility decoder; wired via C6-70h, later **declined by default** behind an opt-in gate | `4b83452b`, `58d7fe23`, `46450c75` |
+| C6-42 | private phase memory admission W1 (api) + W3 (`GDAL_CACHEMAX`); W2 deferred | `e318c226`, `717a7e72` |
+| C6-70a–k | wiring/integration series across engine, pipeline, api | `47cda54f`..`db5928fe`, `78d242a6`, `3f3e8b8d` |
+| C6-81 (+R04/G06) | patch-classification exact tables | `dca2035c` (reviews `ae37d96b`, `371b21ef`) |
+
+Records: `optimization_v6_continue/` (eight numbered dossiers
+`01_measurement…08_residual_strategy_register.md`, per-area `evidence/`
+(cyl_lw, cyl_sw, decoder, gvf_prep, gvf_post, r04_patchclasses, …),
+`SOURCE_AUDIT.md` claim boundaries, `THROUGHPUT.md` denominator discipline),
+gate tests `tests/optimization_v6/`.
+
+### Era 3 — v7 backends (B7 items; ISPC C_native opt-in expert backend)
+
+- `cceec6d5` B7-40/41/42/50: C_native ISPC optional backend, env-gated via
+  `SOLWEIG_LIGHT_LW_BACKEND`, bitwise-verified, default untouched. B7-30 drjit
+  exploration remains as committed evidence/probe lessons only.
+- Records: `optimization_v7_backends/` (`B7_53_HANDOVER.md`, dossiers,
+  `evidence/trials/` distilled records), gate tests `tests/optimization_v7/`.
+
+### Era 4 — v8 native default attempt (N8 items; closed `numba_improvement_only`)
+
+- `53397af6` N8 waves 1–2 + N8-40 machinery (policy-selected region dispatch,
+  wired **inert** in shipped state); `194cb973` N8-41 vendoring into
+  `solweig_light._native_dispatch`; `3079d69a` qualification registry in
+  wheels; `a19e22db` N8-40b public seam at H=1; `5d020fd3` native wheel gates;
+  `b4a4c5ba` N8-40 completion + N8-42/43/44 unavailable-state closure.
+- Outcome: native default NOT earned on measurement; selection
+  `numba_improvement_only` (`evidence/handover/n8_60_handover.json`).
+- Records: `optimization_v8_native_default/`, gate tests
+  `tests/optimization_v8/` (still the home of the installed-wheel gates).
+
+### Era 5 — N9 FINAL (F0–F7; closed `closed_cpu_only`)
+
+- `e04a8ece`+`410bee47` F1D/F1M mode-specialized packed decode + A-plus
+  comparator + classifier scratch-reuse contract; `06ddbd7b`+`07114fdc` F1S
+  bounded stream dispatch (replaces whole-scene materialization);
+  `1581d882` F4 behavior: bounded stream row B as the **shipped longwave
+  default** (thread_budget pinned 1, all-raw structural guard); `08d05cef`
+  F4 removal/packaging: N8 native row + qualification machinery archived
+  repo-only under `experiments/optimization_v8/native_dispatch/`.
+- Terminal selection, gate table, and merge manifest:
+  `optimization_n9_final/FINAL_SELECTION.json` + `MERGE_MANIFEST.json`.
+
+v4 produced **no src change** — it is the operational/validation-discipline
+packet (strategy catalog, L0–L4 test discipline, ledger templates;
+`CHANGELOG_V4.md`). The later operational packets (v5/v6/v7/v8) each carry
+their own process docs alongside the src records above.
+
 ## Measured-vs-provenance discipline (from the N9 close)
 
 - F6 run 2 (`optimization_n9_final/evidence/f6_final_vs_main_timed_20260923T171623Z.json`
