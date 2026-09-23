@@ -1,0 +1,110 @@
+{
+  "packet": "optimization_n9_final",
+  "purpose": "final bounded native decision and merge-ready CPU fallback",
+  "created": "2026-09-23",
+  "source_branch": "perf/native-optimization",
+  "source_sha_reviewed": "7abe526aae2f97e689b1a1e4ae183e5370f29aa1",
+  "target_branch": "main",
+  "target_sha_reviewed": "14e888760727583ef782a4dc0e7a5c7c6e6ff9d1",
+  "executed_here": {
+    "packet_unit_tests": 17,
+    "isolated_decoder_probe": true,
+    "solweig_pipeline": false,
+    "target_m1_native": false,
+    "remote_writes": false
+  },
+  "files": {
+    "ANALYSIS_KO.md": {
+      "bytes": 6511,
+      "sha256": "5bddf9c53ca04f8a7092cab2b3ea6cab259ab3c74272d8edf07126955573887e"
+    },
+    "CLAUDE_CODE_EXECUTION_PROMPT.md": {
+      "bytes": 7477,
+      "sha256": "4edc16134f264738b63aee12f4cb7da1c3bd54167d850198985313b56d69717f"
+    },
+    "DECISION_CONTRACT.md": {
+      "bytes": 2528,
+      "sha256": "f66d63c56e484b1d69e2e51efbce5bd3b8ec76c370221a8b9556cc129928fbe1"
+    },
+    "DELEGATION.md": {
+      "bytes": 2372,
+      "sha256": "213faae3d108584d06bf73225d5c8d5d91276ebfd2026a1b0a09a913cc8a2a41"
+    },
+    "LAST_ATTEMPT.md": {
+      "bytes": 8736,
+      "sha256": "fdc837416e470ff1ac74efd10e2e74fa4e35ef41044ffbab6f78f5a72e26feab"
+    },
+    "MEASUREMENT.md": {
+      "bytes": 6642,
+      "sha256": "b065830ad508d03d60280e4ded7204d3a388c17a23a6cfa84800c81517f978c8"
+    },
+    "MERGE_SCOPE.md": {
+      "bytes": 6393,
+      "sha256": "0307980ffd2d6cc82de6a7fca0de03595a0d2eb6069cdae34a83d0cb0a21253b"
+    },
+    "PLAN.md": {
+      "bytes": 5509,
+      "sha256": "219300be0e80eec337e9a93e2646f8109f9dc918297edef5c2b53ff22c4cb8c8"
+    },
+    "README_KO.md": {
+      "bytes": 3440,
+      "sha256": "39e24f65eef1db2e3c346d0ceee63808627d864aafe84b6af0def81aab473464"
+    },
+    "SOURCES.md": {
+      "bytes": 2326,
+      "sha256": "7ed82cb27a6befe00a818cd62d2ccef324cf529b3ce4438b3b14925e447d48b6"
+    },
+    "START_HERE.txt": {
+      "bytes": 3987,
+      "sha256": "95e7e81fbef2eddfda8a83cd103138f3fba6863995145c588c79bde1da5a000e"
+    },
+    "TASKS.yaml": {
+      "bytes": 2186,
+      "sha256": "5b4d6bc7b81a16cbef4a248c5ce832776efaa78357241fd58a1899d07a71f340"
+    },
+    "evidence/PROBE_SCOPE.md": {
+      "bytes": 1577,
+      "sha256": "680d9502b6788eae7b5b4bb999c57b3aee18ed9fb8794e75142b6383ed724a55"
+    },
+    "evidence/decoder_probe_result.json": {
+      "bytes": 6110,
+      "sha256": "d198533f74204976f453098b390e14ad22f42e9b92ea56c3fa6ff0a5c6cf8021"
+    },
+    "evidence/decoder_probe_result_v2.json": {
+      "bytes": 8631,
+      "sha256": "feb3a2c552594d76c99e9b45e15a3e00808941267e65544af26d3e9b41007039"
+    },
+    "evidence/n8_attribution.json": {
+      "bytes": 1553,
+      "sha256": "275bd15fb9c2c3b299d29b402d3a53a30d12bb7b696796a078f2d6b842e4da65"
+    },
+    "evidence/packet_tests.txt": {
+      "bytes": 1342,
+      "sha256": "cc56d87d258bc8365aef4abe6ef4ba94b1b442cb79934f85f2a90ae1f324cf46"
+    },
+    "probes/LICENSE": {
+      "bytes": 35149,
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
+    },
+    "probes/decoder_probe.py": {
+      "bytes": 12385,
+      "sha256": "b53767f4540f3a21520d5cd5105ba1c061849506c623885280b2212203012f5a"
+    },
+    "probes/decoder_probe_initial.py": {
+      "bytes": 9218,
+      "sha256": "41a784e46f468cdfed128ae6c1e2abb5dd85718ab0b91fb70355f7aadd9284d5"
+    },
+    "tests/test_packet.py": {
+      "bytes": 4015,
+      "sha256": "d5ff9262961d079a90d89bb3343935f340f29b6712ce013135f91a72f0637ae0"
+    },
+    "tools/check_final_record.py": {
+      "bytes": 3275,
+      "sha256": "6df1ecd87d55bd3b43396e902a9249156888bcb0d309ae66b2d2a34c39b17c53"
+    },
+    "tools/cost_model.py": {
+      "bytes": 2990,
+      "sha256": "5a6f733f12f5131630f5e9f4b9b483b59eb2f0290d7ef75cc9180624c72e1b86"
+    }
+  }
+}

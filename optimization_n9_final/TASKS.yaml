@@ -1,0 +1,89 @@
+schema: solweig.final-task-dag.v1
+source_branch: perf/native-optimization
+target_branch: main
+terminal_outcomes:
+- closed_native_qualified
+- closed_cpu_only
+- blocked_no_safe_merge
+dependency_rule: Dependencies resolve on completed/rejected/unavailable with recorded
+  disposition. Native rejection never skips F4-F7 CPU-only closure.
+tasks:
+- id: F0
+  owner: inventory_owner
+  depends_on: []
+  goal: Pin source/main, active code paths, N8 accounting and bounded protocol
+  status: not_started
+  evidence: []
+- id: F1D
+  owner: producer_owner
+  depends_on:
+  - F0
+  goal: Literal-mode decoder and equally optimized Numba controls
+  status: not_started
+  evidence: []
+- id: F1M
+  owner: producer_owner
+  depends_on:
+  - F0
+  goal: Exact direct mask output and scratch-reuse correctness
+  status: not_started
+  evidence: []
+- id: F1S
+  owner: stream_owner
+  depends_on:
+  - F0
+  goal: Prepared ownership and bounded producer/consumer slots
+  status: not_started
+  evidence: []
+- id: F1R
+  owner: release_owner
+  depends_on:
+  - F0
+  goal: Prepare main-diff inclusion map and CPU-only cleanup independently of native
+  status: not_started
+  evidence: []
+- id: F2
+  owner: independent_reviewer
+  depends_on:
+  - F1D
+  - F1M
+  - F1S
+  goal: Review one combined candidate and one causal correction set
+  status: not_started
+  evidence: []
+- id: F3
+  owner: performance_owner
+  depends_on:
+  - F2
+  goal: Continuous actual wrapper and small pipeline comparison; terminal native choice
+  status: not_started
+  evidence: []
+- id: F4
+  owner: integrator
+  depends_on:
+  - F3
+  - F1R
+  goal: Apply selected native-or-CPU release scope, forward cleanup and package
+  status: not_started
+  evidence: []
+- id: F5
+  owner: independent_reviewer
+  depends_on:
+  - F4
+  goal: Verify installed no-env selected product and main delta safety
+  status: not_started
+  evidence: []
+- id: F6
+  owner: performance_owner
+  depends_on:
+  - F5
+  goal: Final scoped main comparison and optional one frozen large confirmation
+  status: not_started
+  evidence: []
+- id: F7
+  owner: integrator
+  depends_on:
+  - F6
+  goal: Emit terminal manifests, rehearse merge, no remote changes
+  status: not_started
+  evidence: []
