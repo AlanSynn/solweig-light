@@ -9,7 +9,7 @@ import numpy as np
 import pytest
 
 
-TOOLS = Path(__file__).resolve().parents[2] / "tools"
+TOOLS = Path(__file__).resolve().parents[2] / "development" / "tools"
 sys.path.insert(0, str(TOOLS))
 import run_exact_cpu_pairs as harness
 
