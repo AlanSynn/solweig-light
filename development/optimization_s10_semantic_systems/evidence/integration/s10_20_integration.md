@@ -1,12 +1,19 @@
 # S10-20: integrate first wave + actual small chronology
 
-Date: 2026-10-14. Branch `perf/s10-semantic-systems` at `4506a2e9`.
-Machine-readable companions: `integration_commit.json` (provenance, state,
-deviations) and `l2_results.json` (the two comparison_v1 differentials + pool
-bitwise verdict) in this directory. Raw harness, mode outputs, and logs live
-outside git under
+Date: 2026-10-14. Branch `perf/s10-semantic-systems`, evidence produced at
+`4506a2e9`. Machine-readable companions: `integration_commit.json`
+(provenance, state, deviations) and `l2_results.json` (the two comparison_v1
+differentials + pool bitwise verdict) in this directory. Raw harness, mode
+outputs, and logs live outside git under
 `/storage/scratch1/1/dsynn6/solweig-light-s10-raw/integration/`
-(sha256s in `integration_commit.json`; archived to Dropbox `s10/`).
+(harness/probe sha256s in `integration_commit.json`;
+archived to Dropbox `Alan Synn/Research/solweig-light/s10/
+s10_s20_integration.tar.gz`, sha256
+`0befebe8d74338dd77e7485f8052f6c1c332855e61bf5770bb7582e24481fdcf`,
+plus `s10_s20_first_multitile_refusal.txt`). The archive holds scripts +
+JSON outputs + logs; the copied golden inputs and output TIFF trees are
+excluded (regenerable: `s10_integration_run.py <mode>`, determinism proven
+by the two independent run24 executions).
 
 ## What ran
 
@@ -102,8 +109,12 @@ First attempt with the 5.5e9 budget raised
 `ResourceAdmissionError` **before any worker spawned** ("requested 2
 concurrent phase jobs but only 1 fit: the 2 largest reservations sum to
 8,625,995,928 B against a 5,070,503,270 B reservation base") — C6-42
-`policy='reject'` public semantics, correct by design; message retained in
-`multitile_err.log`. The rerun used the documented remedy (explicit budget
+`policy='reject'` public semantics, correct by design. The message is
+recorded verbatim in `integration_commit.json` (`run_D_multitile.
+refusal_record`) and in the uploaded transcript capture
+`s10_s20_first_multitile_refusal.txt`; the successful rerun overwrote the
+raw stderr log, which is disclosed in the capture. The rerun used the
+documented remedy (explicit budget
 9.6e9, disclosed) and completed both tiles concurrently. Tile 0_0 is
 **bitwise-identical** to run B's in-process tile on all 10 products × 24
 bands (uint32 views for floats): pool scheduling and subprocess isolation
