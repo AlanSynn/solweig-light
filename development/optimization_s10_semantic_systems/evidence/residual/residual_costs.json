@@ -1,0 +1,347 @@
+{
+  "task": "S10-21",
+  "head": "17574b4e1b6e6abf24a87a9e4c318405f8ffc8a2",
+  "method": "wrapper-timed perf_counter, 1 warmup + 3 timed in-process; 256 MiB GDAL cap + 5.5e9 budget (census deviations); workers=1/threads=1; landcover golden tile (32x35, 24 steps)",
+  "disjoint_framing": "Amdahl complete-boundary accounting (THROUGHPUT.md): calc = sum(stage call spans) + body_residual; tile = calc + pipeline buckets + startup_residual. Fractions are shares of the measured spans, NOT composable speedups; overlapping candidates share the combined implementation cost. dpc is nested INSIDE the Lcyl_v2022a_by_demand span (cylinder_longwave.py:466 calls the dpc primary), so its cost is inside that stage, not additive.",
+  "measurement": {
+    "tile_total_s": 1.1676,
+    "tile_totals_s": [
+      1.2933,
+      1.0937,
+      1.1158
+    ],
+    "calc_s": 0.7087,
+    "workload": "landcover golden tile 32x35, 24 steps, workers=1/threads=1",
+    "noise": "shared-host loadavg ~17-20; per-rep spread disclosed in tile_totals_s; shares are robust, absolute wall not a claim"
+  },
+  "disjoint_fractions": {
+    "calc_stage_sum_s": 0.665,
+    "body_residual_s": 0.0437,
+    "body_residual_pct_calc": 6.2,
+    "noncalc_wrapped_s": 0.2411,
+    "startup_residual_s": 0.2179,
+    "startup_residual_pct_tile": 18.7,
+    "note": "calc = stage_sum + body_residual; tile = calc + noncalc_wrapped + startup_residual; disjoint by call span"
+  },
+  "calc_stages": {
+    "gvf_2018a": {
+      "calls_per_run": 4,
+      "s": 0.2238,
+      "pct_calc": 31.6,
+      "pct_tile": 19.2
+    },
+    "Lcyl_v2022a_by_demand": {
+      "calls_per_run": 8,
+      "s": 0.1994,
+      "pct_calc": 28.1,
+      "pct_tile": 17.1
+    },
+    "Kside_veg_v2022a": {
+      "calls_per_run": 4,
+      "s": 0.1758,
+      "pct_calc": 24.8,
+      "pct_tile": 15.1
+    },
+    "Lside_veg_v2022a": {
+      "calls_per_run": 8,
+      "s": 0.0363,
+      "pct_calc": 5.1,
+      "pct_tile": 3.1
+    },
+    "define_patch_characteristics": {
+      "calls_per_run": 0,
+      "s": 0.0,
+      "pct_calc": 0.0,
+      "pct_tile": 0.0
+    },
+    "shadowingfunction_wallheight_23": {
+      "calls_per_run": 4,
+      "s": 0.0122,
+      "pct_calc": 1.7,
+      "pct_tile": 1.0
+    },
+    "anilum_packed": {
+      "calls_per_run": 4,
+      "s": 0.0174,
+      "pct_calc": 2.5,
+      "pct_tile": 1.5
+    }
+  },
+  "pipeline_buckets": {
+    "GeometryCache": {
+      "calls_per_run": 0,
+      "s": 0.0,
+      "pct_calc": 0.0,
+      "pct_tile": 0.0
+    },
+    "isobaric_wet_bulb_temperature_from_rh": {
+      "calls_per_run": 0,
+      "s": 0.0003,
+      "pct_calc": 0.0,
+      "pct_tile": 0.0
+    },
+    "TransactionalOutputs.restore": {
+      "calls_per_run": 0,
+      "s": 0.0,
+      "pct_calc": 0.0,
+      "pct_tile": 0.0
+    },
+    "ForcingTimeline.at": {
+      "calls_per_run": 8,
+      "s": 0.0002,
+      "pct_calc": 0.0,
+      "pct_tile": 0.0
+    },
+    "SimulationState.accept": {
+      "calls_per_run": 8,
+      "s": 0.0002,
+      "pct_calc": 0.0,
+      "pct_tile": 0.0
+    },
+    "utci_calculator_uniform": {
+      "calls_per_run": 8,
+      "s": 0.0095,
+      "pct_calc": 1.3,
+      "pct_tile": 0.8
+    },
+    "black_globe_temperature": {
+      "calls_per_run": 8,
+      "s": 0.0022,
+      "pct_calc": 0.3,
+      "pct_tile": 0.2
+    },
+    "TransactionalOutputs.write": {
+      "calls_per_run": 8,
+      "s": 0.0566,
+      "pct_calc": 8.0,
+      "pct_tile": 4.8
+    },
+    "TransactionalOutputs.checkpoint": {
+      "calls_per_run": 8,
+      "s": 0.172,
+      "pct_calc": 24.3,
+      "pct_tile": 14.7
+    }
+  },
+  "reading_for_selection": {
+    "ranked_exact_residual_candidates": [
+      {
+        "candidate": "Lside compiled twin",
+        "disjoint_share": "5.1% of calc (~3.1% of tile)",
+        "status": "top remaining exact CPU candidate; mechanical A-plus/T01-pattern decode; register row 4"
+      },
+      {
+        "candidate": "S07/S09 export+checkpoint",
+        "disjoint_share": "write 4.8% + checkpoint 14.7% of tile; checkpoint fsync/flush-bound at this scale (split in the post-G02 census) so bytes-scaled ceiling here ~1.5-2%; production-scale evidence still owed",
+        "status": "conditional; D08 forbids interval change"
+      },
+      {
+        "candidate": "startup residual decomposition",
+        "disjoint_share": "18.7% of tile UNWRAPPED (geometry load/verify, metdata, publication, interpreter); must be decomposed before any candidate can be valued",
+        "status": "measurement gap, not a candidate"
+      }
+    ],
+    "exhausted": "gvf 31.6% + Lcyl 28.1% + Kside 24.8% = 84.5% of calc all on their proven compiled routes (engagement pinned); kernel-internal exactness-frozen lineages (C5/C6/N8/N9) \u2014 diminishing returns per the register",
+    "r03_verified_in_place": "anilum_packed kernel measured 2.5% of calc (the Python loop was 11.1% pre-R03); body residual collapsed 8.6% -> 6.2%"
+  },
+  "per_run_accumulators": [
+    {
+      "GeometryCache": [
+        1,
+        3e-05
+      ],
+      "isobaric_wet_bulb_temperature_from_rh": [
+        1,
+        0.00035
+      ],
+      "TransactionalOutputs.restore": [
+        1,
+        0.0
+      ],
+      "ForcingTimeline.at": [
+        24,
+        0.00016
+      ],
+      "Lcyl_v2022a_by_demand": [
+        24,
+        0.31222
+      ],
+      "Solweig_2022a_calc": [
+        24,
+        0.82243
+      ],
+      "SimulationState.accept": [
+        24,
+        0.00024
+      ],
+      "utci_calculator_uniform": [
+        24,
+        0.00991
+      ],
+      "black_globe_temperature": [
+        24,
+        0.00217
+      ],
+      "TransactionalOutputs.write": [
+        24,
+        0.05626
+      ],
+      "TransactionalOutputs.checkpoint": [
+        24,
+        0.23415
+      ],
+      "anilum_packed": [
+        14,
+        0.01721
+      ],
+      "shadowingfunction_wallheight_23": [
+        14,
+        0.01215
+      ],
+      "gvf_2018a": [
+        14,
+        0.22296
+      ],
+      "Kside_veg_v2022a": [
+        14,
+        0.17507
+      ],
+      "Lside_veg_v2022a": [
+        24,
+        0.03915
+      ]
+    },
+    {
+      "GeometryCache": [
+        1,
+        1e-05
+      ],
+      "isobaric_wet_bulb_temperature_from_rh": [
+        1,
+        0.00036
+      ],
+      "TransactionalOutputs.restore": [
+        1,
+        0.0
+      ],
+      "ForcingTimeline.at": [
+        24,
+        0.00016
+      ],
+      "Lcyl_v2022a_by_demand": [
+        24,
+        0.18352
+      ],
+      "Solweig_2022a_calc": [
+        24,
+        0.68514
+      ],
+      "SimulationState.accept": [
+        24,
+        0.00022
+      ],
+      "utci_calculator_uniform": [
+        24,
+        0.00946
+      ],
+      "black_globe_temperature": [
+        24,
+        0.00208
+      ],
+      "TransactionalOutputs.write": [
+        24,
+        0.05467
+      ],
+      "TransactionalOutputs.checkpoint": [
+        24,
+        0.17054
+      ],
+      "anilum_packed": [
+        14,
+        0.01717
+      ],
+      "shadowingfunction_wallheight_23": [
+        14,
+        0.0118
+      ],
+      "gvf_2018a": [
+        14,
+        0.22255
+      ],
+      "Kside_veg_v2022a": [
+        14,
+        0.1716
+      ],
+      "Lside_veg_v2022a": [
+        24,
+        0.03516
+      ]
+    },
+    {
+      "GeometryCache": [
+        1,
+        2e-05
+      ],
+      "isobaric_wet_bulb_temperature_from_rh": [
+        1,
+        0.00034
+      ],
+      "TransactionalOutputs.restore": [
+        1,
+        0.0
+      ],
+      "ForcingTimeline.at": [
+        24,
+        0.00017
+      ],
+      "Lcyl_v2022a_by_demand": [
+        24,
+        0.19943
+      ],
+      "Solweig_2022a_calc": [
+        24,
+        0.70869
+      ],
+      "SimulationState.accept": [
+        24,
+        0.00025
+      ],
+      "utci_calculator_uniform": [
+        24,
+        0.0095
+      ],
+      "black_globe_temperature": [
+        24,
+        0.00219
+      ],
+      "TransactionalOutputs.write": [
+        24,
+        0.05658
+      ],
+      "TransactionalOutputs.checkpoint": [
+        24,
+        0.17201
+      ],
+      "anilum_packed": [
+        14,
+        0.01744
+      ],
+      "shadowingfunction_wallheight_23": [
+        14,
+        0.01224
+      ],
+      "gvf_2018a": [
+        14,
+        0.2238
+      ],
+      "Kside_veg_v2022a": [
+        14,
+        0.17582
+      ],
+      "Lside_veg_v2022a": [
+        24,
+        0.03626
+      ]
+    }
+  ]
+}

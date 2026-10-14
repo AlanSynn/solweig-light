@@ -25,6 +25,19 @@ to `evidence/` (distilled) and `/storage/scratch1/1/dsynn6/solweig-light-s10-raw
 | 12 | T02 | typed execution plan (profile->kernel planning) | amortizes Python type checks; needed at scale of T01 use | folds into T01 design | cold JIT | fold into T01 |
 
 Notes:
+- S10-21 residual profile + joint resource comparison COMPLETE (2026-10-14,
+  evidence/residual/): disjoint stage costs at HEAD re-rank the residuals —
+  Lside twin 5.1% calc (~3.1% tile) is the top exact candidate; S07/S09
+  ceiling here ~1.5-2% (checkpoint fsync-bound); startup residual 18.7% of
+  tile is UNWRAPPED (measurement gap before any candidate can be valued
+  there); gvf+Lcyl+Kside 84.5% of calc pinned on compiled routes. R03
+  verified in place (anilum kernel 2.5% calc vs 11.1% loop; body residual
+  8.6% -> 6.2%). t(W,H) portfolio (4 same-content tiles, cpu_budget 4,
+  alternating x3, fresh process per run): 4x1 < 2x2 < 1x4 in ALL 9 runs
+  (medians 13.0/17.7/33.6 s; direction robust, magnitudes
+  contention-affected); D07 recording list satisfied (admitted workers,
+  estimates, PIDs, probe-child numba/GDAL masks = requested H exactly).
+  Raw archived s10_s21_residual.tar.gz sha256 fb22af79...
 - S10-20 integration COMPLETE (2026-10-14, evidence/integration/): four real
   full-pipeline runs at HEAD — (A) pure-default run ADMITS the 24-step golden
   tile on this host (estimate 0.81 GB vs 2.74 GB default budget view; the
