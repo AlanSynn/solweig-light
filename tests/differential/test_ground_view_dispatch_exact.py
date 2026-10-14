@@ -123,7 +123,19 @@ def test_dispatch_preserves_every_field_mutation_and_error(
                 assert len(actual) == len(expected) == 17
                 for expected_field, actual_field in zip(expected, actual, strict=True):
                     exact(expected_field, actual_field)
-        assert calls == ["gvf_2018a_parallel" if threads > 1 else "gvf_2018a"]
+        # Route pin (S10-33, independent-review ruling): the accepted GVF
+        # architecture is the prepared route (C6-30 multi-thread; S10 G01
+        # single-thread with the exact serial delegate for guard-declined
+        # inputs). An admitted call is served without reaching the legacy
+        # entries (calls == []); a declined single-thread call delegates to
+        # the serial entry; the parallel entry remains the only multi-thread
+        # legacy call. Cross-count misuse stays forbidden. Bit-exactness of
+        # every returned field and the decline/exception behavior are
+        # asserted above and unchanged.
+        if threads > 1:
+            assert calls in ([], ["gvf_2018a_parallel"]), calls
+        else:
+            assert calls in ([], ["gvf_2018a"]), calls
         assert direct_inputs.keys() == dispatched_inputs.keys()
         for key in direct_inputs:
             exact(direct_inputs[key], dispatched_inputs[key])
