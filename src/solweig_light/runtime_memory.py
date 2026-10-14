@@ -52,6 +52,7 @@ from .runtime import (
     DTYPE64_RESERVED_PLANES,
     LIVE_FULL_PLANE_EQUIVALENTS,
     ResourceAdmissionError,
+    _container_memory_limit_bytes,
     _physical_memory_bytes,
 )
 
@@ -483,15 +484,26 @@ def _resolved_gdal_cache(gdal_cache_bytes: int | None) -> int:
 
 
 def default_gdal_cache_bytes() -> int:
-    """Per-process GDAL block cache: 5% of probed physical RAM.
+    """Per-process GDAL block cache: 5% of the probed memory view.
 
-    Matches the unset-``GDAL_CACHEMAX`` default (M2 §5).  If the probe fell
-    back to its 1 GiB floor the charge is correspondingly small, which is a
-    documented limitation, not an admission relaxation: callers that set
+    Matches the unset-``GDAL_CACHEMAX`` default (M2 §5) on ordinary hosts.
+    S10 S03b: when a finite cgroup limit exists the view is the most
+    restrictive of physical RAM and that limit, so the cap applied to worker
+    children (``runtime._child_environment``) and the per-worker admission
+    charge are both derived from the same container-correct number.  Without
+    this, a job inside a small container on a large host both applies and
+    charges a multi-gigabyte cache the container cannot hold, and the
+    default run is refused everywhere.  If the probe fell back to its
+    1 GiB floor the charge is correspondingly small, which is a documented
+    limitation, not an admission relaxation: callers that set
     ``GDAL_CACHEMAX`` explicitly should pass ``gdal_cache_bytes``.
     """
+    view = _physical_memory_bytes()
+    limit = _container_memory_limit_bytes()
+    if limit is not None and 0 < limit < view:
+        view = limit
     numerator, denominator = DEFAULT_GDAL_CACHE_RATIO
-    return (_physical_memory_bytes() * numerator) // denominator
+    return (view * numerator) // denominator
 
 
 def legacy_estimate_total_bytes(shape: TileShapeDescriptor) -> int:
