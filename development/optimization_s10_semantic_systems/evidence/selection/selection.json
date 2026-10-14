@@ -1,0 +1,101 @@
+{
+  "schema": 1,
+  "task": "S10-30 held-out paired application campaign",
+  "date": "2026-10-14",
+  "protocol": "evidence/trials/protocol_frozen.json (frozen before any candidate timing run)",
+  "raw": "evidence/trials/raw_trials.jsonl (47 records, one per run/refusal/probe) + raw payloads in /storage/scratch1/1/dsynn6/solweig-light-s10-raw/trials/ (archived to Dropbox 'Alan Synn/Research/solweig-light/s10/s10_s30_trials.tar.gz', sha256 66c32ef4fba1501d8c4d08f72ab68e0fd228e64fe20b43d49a3c2debc448d952)",
+  "sources": {
+    "A_baseline": "b3e5ca59a1080f02eda5ccda5e35a66af07e4bfa (main, READ-ONLY; executed from throwaway worktree, PYTHONPATH methodology, solweig_light.__file__ verified per run; git head re-derived in-harness)",
+    "B_candidate": "c245ea60f32b2ca93191ea00f48a4f6085a60a2b (S10-26 freeze; branch HEAD 631a54fd carries evidence-only commits — per-run empty product-source diff recorded in every B record)"
+  },
+  "cells": {
+    "P1": {
+      "config": "landcover golden 32x35, 24 steps, run_tile pure defaults",
+      "pairs_1_3": {"A_s": [58.489, 47.074, 46.062], "B_s": [68.017, 56.198, 35.533],
+                    "ratios_B_over_A": [1.163, 1.194, 0.771], "median": 1.163},
+      "causal_retry_pairs_4_6": {"A_s": [54.863, 51.251, 26.640], "B_s": [19.455, 23.345, 26.785],
+                                  "ratios_B_over_A": [0.354, 0.455, 1.005], "median": 0.456},
+      "verdict": "original set noise-inconclusive (ratios span both directions); the single predeclared causal retry resolves direction to the candidate (2/3 decisively faster); no demonstrated regression"
+    },
+    "P2": {
+      "config": "no-landcover scalar control, run_tile pure defaults",
+      "pairs_1_3": {"A_s": [42.181, 201.893, 73.478], "B_s": [305.601, 49.097, 70.120],
+                    "ratios_B_over_A": [7.246, 0.243, 0.955], "median": 0.954},
+      "verdict": "median ~parity within noise; outputs BITWISE identical A vs B on this cell (T01 route flip does not touch base; worst_max_abs 0.0)"
+    },
+    "P3": {
+      "config": "landcover_normalized golden, run_tile pure defaults",
+      "pairs_1_3": {"A_s": [78.110, 145.738, 86.122], "B_s": [64.189, 45.577, 39.873],
+                    "ratios_B_over_A": [0.822, 0.313, 0.463], "median": 0.463},
+      "verdict": "candidate faster in 3/3 pairs"
+    },
+    "P4a": {
+      "config": "2-tile pool (run_utci_tiles workers=2/threads=1/cpu=2), predeclared budget 9.6e9",
+      "matched_pair_status": "UNEVALUABLE: main (pre-S03b) refuses the predeclared 9.6e9 budget — admission charges 5%-of-physical GDAL cache (~18.8 GB/worker -> 21.07 GB estimate per job, 42.13 GB for 2 concurrent; C6-42 policy='reject', by design). Recorded as a first-class S03b ops finding (A_refused_at9.6e9.json, 3 occurrences + 24e9 refusal).",
+      "B_walls_at_predeclared_budget": [23.704, 63.210, 50.818],
+      "A_directional_probe": {"budget": 44e9, "wall_s": 87.098,
+                               "note": "options-asymmetric, EXCLUDED from gate arithmetic; demonstrates main functions once admitted (refusal is purely admission arithmetic)"},
+      "coverage_evidence": "pool tile 0_0 BITWISE-identical to the P1 in-process outputs on BOTH arms (10 files x 24 bands each, uint32 views)"
+    },
+    "P4b": {
+      "config": "48-step halfhourly chronology, run_tile workers=1, matched TRIALS_48_BUDGET=24e9 on BOTH arms (5.5e9 precedent refused by main's pre-S03b estimate; matched override keeps the pair options-identical)",
+      "pairs_1_3": {"A_s": [113.787, 90.256, 63.005], "B_s": [86.696, 58.535, 41.145],
+                    "ratios_B_over_A": [0.762, 0.648, 0.652], "median": 0.653},
+      "verdict": "candidate faster in 3/3 pairs (1.53x median)"
+    }
+  },
+  "gates": {
+    "geomean_application_speedup_min_1_10": {
+      "geomean_ratio_B_over_A": 0.7611, "speedup_A_over_B": 1.314,
+      "cells_in_geomean": ["P1", "P2", "P3", "P4b"],
+      "result": "PASS",
+      "note": "original predeclared 3-pair medians; P1's inconclusive original set is resolved by its retry (0.456) reported alongside, never folded into the aggregate"
+    },
+    "no_protected_regression_max_ratio_1_03": {
+      "result": "PASS after retry resolution",
+      "detail": "P1 original median 1.163 exceeded the bound but was noise-inconclusive (opposite directions across pairs; B won pair 3 by 24%); the predeclared single causal retry resolved it to 0.456 (B faster). No cell demonstrates a regression. P2 parity 0.954."
+    },
+    "eligible_route_coverage_min_0_8_zero_references": {
+      "result": "PASS",
+      "P1": 1.0, "P2": 1.0, "P3": 1.0,
+      "detail": "prepared GVF 14/14 daytime per LC cell with 0 serial delegates (P2: observed 14 as well — the predeclared 'no gvf demand surface on base' expectation was wrong; recorded as observed per protocol; ratio unaffected); Lcyl 24/24 + dpc 24/24 primary, 0 references; aniLum packed 14/14 admitted, 0 declines; Lside 24 demanded = 17 dispatch primary + 7 upstream fast, 0 reference; Kside 14"
+    },
+    "outputs_within_frozen_comparison_v1_budgets": {
+      "result": "PASS",
+      "worst_by_cell": {"P1": 4.58e-4, "P2": 0.0, "P3": 4.58e-4, "P4a": 4.58e-4, "P4b": 2.75e-4},
+      "budget_ref": "Ldown atol 0.05; the 4.58e-4/2.75e-4 magnitudes are the documented T01 route-flip effect (S10-20 integration)"
+    },
+    "cold_first_use": {"A_s": 44.437, "B_s": 43.678, "note": "fresh numba function caches (NUMBA_CACHE_DIR); OS page cache not controlled (predeclared); cold ~= warm walls under this contention"}
+  },
+  "noise_disclosure": {
+    "host": "shared 4-CPU cgroup login node; loadavg 12-16 for the entire campaign window (no quiet window occurred; the protocol's quiet-window L2 rerun ran anyway and is labeled non-quiet)",
+    "wall_channel": "full-entry walls are 5-10x the historical compute magnitudes with 7x within-arm bursts minutes apart (e.g. B 305.6 s then 49.1 s); the wall gate therefore rests on the predeclared paired-median aggregate plus the retry arm, NOT on any single rep",
+    "priming": "one untimed priming run per arm (JIT cold-cache absorption in the fresh A worktree), kind='prime', excluded from all gates"
+  },
+  "diagnostics_not_gates": {
+    "startup_residual_decomposition_both_sides": {
+      "method": "s10_trials_residual_profile.py (verbatim port of the S10-21 profiler; src root parameterized; 1 warmup + 3 timed in-process reps, wrapper spans)",
+      "A_main": {"tile_total_s": 3.2363, "calc_s": 2.7181, "startup_residual_s": 0.1445, "startup_residual_pct_tile": 4.5},
+      "B_candidate": {"tile_total_s": 1.0926, "calc_s": 0.7033, "startup_residual_s": 0.1327, "startup_residual_pct_tile": 12.2},
+      "findings": [
+        "in-process warm tile spans reproduce the cumulative claim at freeze: 3.2363 -> 1.0926 s = 2.96x",
+        "startup residual is ~0.13-0.14 s ABSOLUTE on both sides — the branch does not remove it; it is a constant tax that now reads as 12.2% of the candidate's smaller tile (S10-22 ride-along question answered; a startup-focused candidate remains future opportunity, not a regression)",
+        "per-stage attribution: Lcyl demand 1.485->0.219 s, gvf 0.884->0.229 s, Lside 0.0338->0.0086 s, Kside 0.169->0.174 s (untouched, as expected), anilum_packed 0.0178 s (candidate only; R03 is branch-only so main's anilum work sits inside containing spans)",
+        "A-side stage spans nest (dpc inside Lcyl_by_demand on main) so stage_sum exceeds calc there — per-stage spans remain individually valid; ROUTE_COUNTS remain the authoritative route evidence (engine-level dpc patch shows 0 on the candidate because demand dispatches via patch_radiation)"
+      ]
+    },
+    "l2_lside_rerun_non_quiet": {
+      "method": "s10_trials_lside_l2.py (verbatim port; candidate tree only, twin-on vs kill-switch, fresh process per run, isolated output dir; S10-23 records untouched)",
+      "pairs": [{"rep": 1, "twin": 24.169, "kill": 17.256}, {"rep": 2, "twin": 24.970, "kill": 37.003}, {"rep": 3, "twin": 21.683, "kill": 23.720}],
+      "engagement": "twin: 17 primary + 7 upstream fast, 0 reference in every run; kill-switch: 17 reference, 0 primary in every run",
+      "verdict": "engagement evidence reproduces exactly; walls noise-bound at loadavg 14-16, consistent with the ~24 ms mechanistic effect being invisible under this contention (as disclosed at S10-23)"
+    },
+    "s03b_semantic_asymmetry": "pure-default cells run each side under its own shipped default view: main applies/charges 5%-of-physical GDAL cache (~18.8 GB/process), candidate the container-correct min(physical, cgroup) (~3.4 GB). This is S03b's reviewed intended change; P2's bitwise-identical outputs confirm no numerical effect, and the P4a refusal is its ops benefit."
+  },
+  "decision": {
+    "s10_30_verdict": "gates met -> qualified_exact_cpu track proceeds to S10-31 installed-wheel DX checks; final terminal state at S10-34",
+    "basis": "predeclared gate arithmetic on the paired-median aggregate (geomean 1.314 >= 1.10), no demonstrated protected regression after the single allowed retry resolution, 100% eligible-route coverage with zero reference fallbacks on production profiles, and all outputs within the frozen comparison_v1 budgets (P2 bitwise)",
+    "corroboration": "in-process warm spans (2.96x, methodology-matched to S10-21) independently support material compute gain that the contention-dominated wall channel only directionally resolves",
+    "honest_limits": "wall absolute magnitudes are contention-dominated on this host/window; the P4a matched pair is unevaluable (main refuses the predeclared budget — S03b finding); no quiet window occurred; the L2 quiet-window condition (loadavg<8) was never met, so that leg ran non-quiet and is labeled as such"
+  }
+}

@@ -25,6 +25,40 @@ to `evidence/` (distilled) and `/storage/scratch1/1/dsynn6/solweig-light-s10-raw
 | 12 | T02 | typed execution plan (profile->kernel planning) | amortizes Python type checks; needed at scale of T01 use | folds into T01 design | cold JIT | fold into T01 |
 
 Notes:
+- S10-30 held-out paired application campaign COMPLETE (2026-10-14,
+  evidence/trials/protocol_frozen.json frozen before any candidate timing;
+  evidence/trials/raw_trials.jsonl 47 records; evidence/selection/
+  selection.json): sources A=main b3e5ca59 (throwaway worktree, PYTHONPATH
+  methodology, in-harness head verification) vs B=freeze c245ea60 (per-run
+  empty product-source diff vs branch HEAD). GATES: geomean paired-median
+  B/A 0.7611 -> speedup 1.314 >= 1.10 PASS (P1 1.163 noise-inconclusive ->
+  the single predeclared causal retry resolved it to 0.456, B faster 2/3;
+  P2 0.954 parity with BITWISE-identical outputs; P3 0.463 and P4b-48step
+  0.653 candidate 3/3 each); eligible-route coverage 100% P1-P3 with ZERO
+  reference fallbacks (P2's prepared-GVF expectation corrected by
+  observation: the route engages on base too, 14/14, 0 serial); all
+  crosschecks within frozen comparison_v1 budgets (worst 4.58e-4 = the
+  documented T01 magnitude; P2 exact 0.0); P4a pool tile bitwise-identical
+  to P1 in-process outputs on BOTH arms. FINDINGS: (1) main (pre-S03b)
+  REFUSES the predeclared 9.6e9 pool budget — 5%-of-physical GDAL cache
+  charge ~18.8 GB/worker -> 21.07 GB/job, 42.13 GB for 2 concurrent (C6-42
+  reject, first-class S03b ops finding; A completes at 44e9 probe, 87.1 s,
+  options-asymmetric, gate-excluded) — P4a matched pair unevaluable;
+  (2) pure-default cells run under each side's shipped default view (S03b
+  semantic asymmetry, disclosed; no numerical effect per P2 bitwise).
+  DIAGNOSTICS: in-process warm tile spans at freeze: A 3.2363 s vs B
+  1.0926 s = 2.96x (cumulative claim reproduced; per-stage Lcyl 1.485->
+  0.219, gvf 0.884->0.229, Lside 0.034->0.009, Kside unchanged);
+  startup residual ~0.13-0.14 s ABSOLUTE both sides (branch does not
+  remove it; now 12.2% of the smaller tile — future opportunity, not a
+  regression); L2 twin rerun (non-quiet, loadavg 14-16): engagement split
+  exact both directions, walls noise-bound as disclosed at S10-23.
+  NOISE DISCLOSURE: no quiet window occurred; walls 5-10x historical
+  compute with 7x within-arm bursts; the wall gate rests on the
+  predeclared paired-median aggregate + retry, corroborated by the
+  in-process spans. VERDICT: gates met -> qualified_exact_cpu track
+  proceeds to S10-31 DX; final terminal state at S10-34. Raw archived to
+  Dropbox s10/ (sha256 sidecar).
 - S10-23 residual implementation COMPLETE (2026-10-14, evidence/residual/
   s10_23_lside_dispatch_twin.md + residual_parity.json): the selected "Lside
   compiled twin" pivoted to an EXACT DISPATCH TWIN on probe evidence (all 24
