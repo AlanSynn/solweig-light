@@ -25,6 +25,49 @@ to `evidence/` (distilled) and `/storage/scratch1/1/dsynn6/solweig-light-s10-raw
 | 12 | T02 | typed execution plan (profile->kernel planning) | amortizes Python type checks; needed at scale of T01 use | folds into T01 design | cold JIT | fold into T01 |
 
 Notes:
+- S10-32/33/34 CAMPAIGN CLOSED — TERMINAL STATE qualified_exact_cpu (2026-10-14,
+  FINAL_DECISION.json + MERGE_MANIFEST.json + evidence/{target,merge,reviews/final}/):
+  S10-32: actual target UNAVAILABLE -> actual_target_status 'unverified' as a
+  separate decision field (no real 24-tile 1024^2/24-step corpus exists on this
+  host — documented search in evidence/target/target_status.json; zero of the 1+1
+  allowed large runs spent; fabrication from motif scenes forbidden). S10-33:
+  independent final review COMPLETE (evidence/reviews/final/{final_review_notes,
+  verdict}.json) — verdict **approve_with_notes**, terminal state recommendation
+  **qualified_exact_cpu**; reviewer INDEPENDENTLY re-executed: the S10-30 gate
+  arithmetic from the 47 raw records (geomean ratio 0.7611 -> 1.314x recomputed
+  exactly; retry-only protected-regression pass disclosed as minor finding F2 with
+  the conservative original median kept), wheel structure + Requires-Dist identity
+  re-derived from the artifact, merge rehearsal re-done in its own detached
+  worktree (merged tree d215f7db reproduced; main untouched), failset set-equality,
+  the 8-ID step-3 delta, a failing delta case re-run, target-availability spot
+  checks, wheelhouse sha256s, Dropbox listings. ROUTE-PIN RULING (update_pin, the
+  material finding): test_ground_view_dispatch_exact.py pins the LEGACY
+  serial/parallel GVF entries — a contract superseded by the accepted prepared
+  route on main itself since C6-30 (main carries 20 route-pin failures at
+  budget-4/10 TODAY, re-proven in a main worktree; byte-identical test file, all
+  17 fields bit-exact before the route assert fires). S10 G01 extended the same
+  route to threads==1, adding 8 same-category budget-1 pins. Per the ruling, the
+  route expectation was updated in the SEPARATE DISCLOSED COMMIT de706808
+  (assertion only; every exactness/decline assertion unchanged; 30-case gvf matrix
+  + full step-3 set 52/52 green in BOTH the checkout and installed-wheel
+  contexts). Required checks: GitHub CI unavailable (no push authorized — stays
+  unavailable per BRANCH_AND_CI); local surrogates at the decision tip: CI smoke
+  set 68/68 (installed wheel, guard active), full-matrix steps 1/2/4 failure sets
+  byte-identical to main's accepted pre-existing sets (landcover goldens 2/2 in
+  every context), S10 suite 83/83 (canonical order; a non-canonical arg order
+  exposes an order-dependent Lside warning-test sensitivity — both tests pass in
+  isolation, as a file, and in canonical order; disclosed), installed-DX suite 7/7
+  twice. S10-34: FINAL_DECISION.json (separate fields: campaign_closed,
+  improvement_demonstrated, optimized_backend=false, actual_target_status=
+  'unverified', merge_ready=true) + MERGE_MANIFEST.json (rehearsal at e2cac709,
+  tree identity proven, post-rehearsal delta = the ruled test commit + evidence
+  only; product-source diff vs the c245ea60 freeze still empty at publication).
+  NO push/PR/merge/release performed or authorized by this campaign; integration
+  is a human decision; a moved main requires dependency-closure redo +
+  re-rehearsal. Volatile raw lists archived to Dropbox s10/s10_s33_failsets.tar.gz
+  (+sha256). Findings carried into the decision: api/cli admission blocks + host
+  LD_PRELOAD shim (environmental), GitHub CI unavailability, actual-target
+  unverified, P4a unevaluable pair, retry-only regression pass (F2).
 - S10-31 clean installed DX COMPLETE (2026-10-14, tests/optimization_s10/
   installed/ + evidence/installed/{installed_results,wheel_manifest}.json):
   7/7 gates pass at HEAD 94a358a9 with the S10-26 freeze proven intact

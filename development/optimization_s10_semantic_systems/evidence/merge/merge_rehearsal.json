@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "task": "S10-33 merge rehearsal (detached worktree; no push/PR/merge/release)",
+  "date": "2026-10-14",
+  "rehearsed_at_branch_tip": "e2cac7094f34812cae1bb82f7f2f9a0b757e017c",
+  "method": "git worktree add --detach <raw>/merge_rehearsal_s33 b3e5ca59; git merge --no-ff --no-commit <tip>; git write-tree; git merge --abort; worktree removed",
+  "main_sha_of_record": "b3e5ca59a1080f02eda5ccda5e35a66af07e4bfa",
+  "merge_base": "b3e5ca59a1080f02eda5ccda5e35a66af07e4bfa",
+  "merge_base_is_main_tip": true,
+  "automatic_merge": true,
+  "conflicts": [],
+  "merged_tree_sha": "d215f7db62ee59629cf99caed68646bbde6f2ccc",
+  "candidate_tree_sha": "d215f7db62ee59629cf99caed68646bbde6f2ccc",
+  "tree_identity_proven": true,
+  "diff_vs_main_stat": "116 files changed, 14044 insertions(+), 29 deletions(-)",
+  "merge_aborted": true,
+  "main_ref_untouched_after": "b3e5ca59a1080f02eda5ccda5e35a66af07e4bfa",
+  "fast_forward_note": "main b3e5ca59 is the branch's ancestor, so the eventual integration is a fast-forward; --no-ff was used in the rehearsal to exercise full merge-commit construction and tree identity anyway",
+  "post_rehearsal_delta_policy": "the S10-34 decision commit (FINAL_DECISION.json, MERGE_MANIFEST.json, final review record) lands after this rehearsal; its diff vs the rehearsed tip is asserted to touch only evidence/REGISTER paths (no src/pyproject.toml), recorded in MERGE_MANIFEST.json",
+  "product_source_freeze": {
+    "sha": "c245ea60f32b2ca93191ea00f48a4f6085a60a2b",
+    "proof": "git diff --quiet c245ea60 HEAD -- src pyproject.toml empty (re-proven at the S10-31 suite runs 6 and 7)"
+  }
+}
