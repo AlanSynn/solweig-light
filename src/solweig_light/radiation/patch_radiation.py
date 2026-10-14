@@ -120,7 +120,7 @@ def _uniform_tgwall(value):
 
 # S10 route probes (diagnostic): per-call counters for the primary/reference
 # split.  Single-writer increments under the GIL; tests are the only readers.
-ROUTE_COUNTS={'define_patch_characteristics_primary':0,'define_patch_characteristics_reference':0,'Lcyl_v2022a_primary':0,'Lcyl_v2022a_reference':0}
+ROUTE_COUNTS={'define_patch_characteristics_primary':0,'define_patch_characteristics_reference':0,'Lcyl_v2022a_primary':0,'Lcyl_v2022a_reference':0,'Lside_veg_v2022a_primary':0,'Lside_veg_v2022a_reference':0}
 
 
 def _block(channel,start,stop,patches):
@@ -1172,3 +1172,62 @@ def _model2(geometry,esky):
         patch_emissivity[geometry.band_membership[index]]=esky_band[index:index+1]
     normalized=e._divide(patch_emissivity,np.sum(patch_emissivity))
     return normalized,esky_band
+
+
+def Lside_veg_v2022a(*args,**kwargs):
+    """S10-23 exact dispatch twin of the anisotropic ``Lside_veg_v2022a`` slice.
+
+    S10-23 recon (residual argument probe on the landcover golden, sha256 in
+    the task evidence) showed every call that reaches the NumPy body carries
+    ``anisotropic_longwave == 1``: the body executes its full transcendental
+    prologue and per-direction wall chains, then discards everything except
+    ``Lground = Lup*0.5`` (pipeline_demand rule R-A).  The C6-20 fast path
+    computes exactly that result bitwise, but its regime clause requires the
+    default np.seterr state, and the daytime pipeline leaks
+    ``divide/invalid='ignore'`` (engine.py:333), so the guarded path is
+    defeated wholesale and the body runs needlessly.
+
+    This dispatch certifies the identical removed-operation domain
+    (``pipeline_demand._anisotropic_domain``) and admits the demanded result
+    under any regime whose deviations from default are silenced
+    divide/invalid channels: with ``divide='ignore'`` the replicated ``log``
+    cannot warn, ``invalid`` has no emitters inside the certified svf bounds,
+    and over/under must stay at their defaults because the domain bounds do
+    not exclude tiny-svf polynomial underflow (pinned by
+    tests/optimization_v6/lside).  Raise regimes, out-of-domain inputs and
+    every ``anisotropic_longwave != 1`` call decline to the serial reference,
+    which owns the original warnings, errors and values.
+    ``SOLWEIG_LIGHT_LSIDE_DISPATCH=0`` routes every call to the reference.
+    """
+    if os.environ.get('SOLWEIG_LIGHT_LSIDE_DISPATCH') == '0':
+        ROUTE_COUNTS['Lside_veg_v2022a_reference'] += 1
+        return _reference('Lside_veg_v2022a')(*args,**kwargs)
+    from . import engine as e
+    from .pipeline_demand import (_anisotropic_domain,
+                                  _demanded_anisotropic_result,
+                                  _replicate_log_warnings)
+    reference=_reference('Lside_veg_v2022a')
+    values=inspect.signature(reference).bind(*args,**kwargs).arguments
+    ordered=tuple(values[name] for name in values)
+    def decline():
+        ROUTE_COUNTS['Lside_veg_v2022a_reference'] += 1
+        return reference(*args,**kwargs)
+    regime=np.geterr()
+    if regime['over'] != 'warn' or regime['under'] != 'ignore':
+        return decline()
+    if regime['divide'] == 'raise' or regime['invalid'] == 'raise':
+        return decline()
+    domain=_anisotropic_domain(ordered)
+    if not domain.ok:
+        return decline()
+    if regime['divide'] == 'warn' and domain.log_dirs:
+        try:
+            _replicate_log_warnings((values['svfE'],values['svfS'],values['svfW'],values['svfN']),
+                                    domain.log_dirs)
+        except Exception:
+            # A warning filter promoted the replicated warning to an error;
+            # the reference owns the raised error and its original site.
+            return decline()
+    ROUTE_COUNTS['Lside_veg_v2022a_primary'] += 1
+    return _demanded_anisotropic_result(values['LupE'],values['LupS'],
+                                        values['LupW'],values['LupN'])

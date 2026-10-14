@@ -1792,6 +1792,14 @@ def Kside_veg_v2022a(radI, radD, radG, shadow, svfS, svfW, svfN, svfE, svfEveg, 
     return compiled(radI, radD, radG, shadow, svfS, svfW, svfN, svfE, svfEveg, svfSveg, svfWveg, svfNveg, azimuth, altitude, psi, t, albedo, F_sh, KupE, KupS, KupW, KupN, cyl, lv, anisotropic_diffuse, diffsh, rows, cols, asvf, shmat, vegshmat, vbshvegshmat, block_pixels=get_runtime_options().block_pixels, parallel=get_runtime_options().threads_per_worker > 1)
 
 
+_serial_Lside_veg_v2022a = Lside_veg_v2022a
+
+def Lside_veg_v2022a(svfS, svfW, svfN, svfE, svfEveg, svfSveg, svfWveg, svfNveg, svfEaveg, svfSaveg, svfWaveg, svfNaveg, azimuth, altitude, Ta, Tw, SBC, ewall, Ldown, esky, t, F_sh, CI, LupE, LupS, LupW, LupN, anisotropic_longwave):
+    """Dispatch the anisotropic wall-longwave slice inside its certified domain."""
+    from .patch_radiation import Lside_veg_v2022a as compiled
+    return compiled(svfS, svfW, svfN, svfE, svfEveg, svfSveg, svfWveg, svfNveg, svfEaveg, svfSaveg, svfWaveg, svfNaveg, azimuth, altitude, Ta, Tw, SBC, ewall, Ldown, esky, t, F_sh, CI, LupE, LupS, LupW, LupN, anisotropic_longwave)
+
+
 _serial_define_patch_characteristics = define_patch_characteristics
 
 def define_patch_characteristics(solar_altitude, solar_azimuth, patch_altitude, patch_azimuth, steradian, asvf, shmat, vegshmat, vbshvegshmat, Lsky_down, Lsky_side, Lsky, Lup, Ta, Tgwall, ewall, rows, cols):

@@ -3,6 +3,14 @@
   "head": "894f803d2d645860f11022e781352b053fba0333",
   "method": "wrapper-timed perf_counter, 1 warmup + 3 timed in-process; 256 MiB GDAL cap + 5.5e9 budget (census deviations); workers=1/threads=1; landcover golden tile (32x35, 24 steps)",
   "calls_per_run_note": "raw final-rep per-run call counts",
+  "s10_23_correction": {
+    "corrects": "calc_stages.Lside_veg_v2022a.calls_per_run = 24",
+    "fresh_process_truth": "17 serial body calls + 7 upstream C6-20 fast-path calls per run (verified twice: s10_lside_argprobe.py and s10_lside_l2.py e2e; evidence/residual/residual_parity.json)",
+    "mechanism": "this S10-21 harness ran 1 warmup + 3 timed reps in ONE process; engine.py:333 leaks np.seterr(divide='ignore', invalid='ignore') globally at the first daytime step, so reps 2-4 fail the R-A guard regime clause on all 24 calls; the S10-23 in-process harness reproduces exactly this (leaked regime at every rep start, 24 body calls on the B side)",
+    "time_basis": "0.0363 s was measured on the 24-call in-process profile; S10-23 wrapper-timed span 0.0339 s median / 24 calls (1.39-1.43 ms/call) confirms the time was real; fresh-process removable service is ~17 x 1.4 ms = ~24 ms (~2.0% of calc, ~1.2% of tile)",
+    "impact": "selection ranking unchanged; frozen S10-21 numbers above are NOT rewritten",
+    "date": "2026-10-14"
+  },
   "disjoint_framing": "Amdahl complete-boundary accounting (THROUGHPUT.md): calc = sum(stage call spans) + body_residual; tile = calc + pipeline buckets + startup_residual. Fractions are shares of the measured spans, NOT composable speedups; overlapping candidates share the combined implementation cost. dpc is nested INSIDE the Lcyl_v2022a_by_demand span (cylinder_longwave.py:466 calls the dpc primary), so its cost is inside that stage, not additive.",
   "measurement": {
     "tile_total_s": 1.1676,

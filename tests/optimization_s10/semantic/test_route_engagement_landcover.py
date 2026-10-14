@@ -11,7 +11,14 @@ asserts every admitted S10 route actually fires on it:
   every daytime step (14/14 on the July golden date);
 - G01: engine.gvf_2018a routes every timestep (24/24) through
   prepared_gvf_step with the serial delegate never used (the production
-  f64-Tg / (1,1)-f64-Tgwall profile is admitted, not delegated).
+  f64-Tg / (1,1)-f64-Tgwall profile is admitted, not delegated);
+- S10-23: every Lside call lands on an exact non-body path — the seven
+  night steps take the C6-20 demanded fast path upstream and the rest are
+  admitted by the dispatch twin (primary); the serial reference is never
+  used on this profile.  The exact primary/fast-path split depends on the
+  ambient np.seterr state (engine.py:333 leaks divide/invalid='ignore'
+  after the first daytime step), so the pin asserts total coverage and
+  zero fallbacks rather than a fixed split.
 """
 import shutil
 from pathlib import Path
@@ -61,9 +68,14 @@ def test_landcover_golden_routes_engage(prepared_inputs, monkeypatch):
 
     lcyl_before = patch_radiation.ROUTE_COUNTS['Lcyl_v2022a_primary']
     dpc_before = patch_radiation.ROUTE_COUNTS['define_patch_characteristics_primary']
+    lside_primary_before = patch_radiation.ROUTE_COUNTS['Lside_veg_v2022a_primary']
+    lside_reference_before = patch_radiation.ROUTE_COUNTS['Lside_veg_v2022a_reference']
+    monkeypatch.delenv('SOLWEIG_LIGHT_LSIDE_DISPATCH', raising=False)
     run_tile(prepared.parent, prepared, '2020-07-18', '0_0', paths, flags)
     lcyl_after = patch_radiation.ROUTE_COUNTS['Lcyl_v2022a_primary']
     dpc_after = patch_radiation.ROUTE_COUNTS['define_patch_characteristics_primary']
+    lside_primary_after = patch_radiation.ROUTE_COUNTS['Lside_veg_v2022a_primary']
+    lside_reference_after = patch_radiation.ROUTE_COUNTS['Lside_veg_v2022a_reference']
 
     # 24 hourly steps. GVF and its longwave demand run on the 14 daytime
     # steps only; the longwave primaries additionally admit the 10 night
@@ -72,3 +84,12 @@ def test_landcover_golden_routes_engage(prepared_inputs, monkeypatch):
     assert counts['serial'] == 0, 'G01: the exact delegate must stay unused on this profile'
     assert lcyl_after - lcyl_before == 24, 'T01: Lcyl primary on every step incl. night'
     assert dpc_after - dpc_before == 24, 'T01: dpc primary on every step incl. night'
+    # S10-23: all 24 Lside calls take an exact non-body route (demanded fast
+    # path upstream or the certified dispatch twin); the serial reference
+    # must never fire on the production profile.
+    lside_primary = lside_primary_after - lside_primary_before
+    lside_reference = lside_reference_after - lside_reference_before
+    assert lside_primary + lside_reference == 24, \
+        'S10-23: every Lside call must be accounted by the dispatch counters'
+    assert lside_reference == 0, \
+        'S10-23: the serial reference must stay unused on the production profile'

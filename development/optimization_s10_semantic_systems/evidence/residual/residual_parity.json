@@ -1,0 +1,111 @@
+{
+  "task": "S10-23",
+  "title": "Selected residual exact CPU implementation: Lside exact dispatch twin",
+  "date": "2026-10-14",
+  "head": "321edb94b2f984ae46d84364e14b1252249b3629",
+  "branch": "perf/s10-semantic-systems",
+  "tree_state": "changes uncommitted at measurement time (4 modified files + untracked tests/optimization_s10/residual/); full porcelain in the retained run JSONs",
+  "design_pivot": {
+    "selected_in_s10_22": "Lside COMPILED twin (njit ordered-expression decode of the NumPy body)",
+    "implemented": "EXACT DISPATCH twin: a dispatch-level fast path that reuses the C6-20 demanded result (Lup*0.5) under an extended, certified seterr regime",
+    "evidence_that_forced_the_pivot": "s10_lside_argprobe.py (sha256 f6c07ac0...) profiled all 24 per-run Lside calls on the landcover golden: every call carries anisotropic_longwave==1; regime split 7 calls default / 17 calls {divide:'ignore', invalid:'ignore'} (leaked from engine.py:333, never restored); the C6-20 fast path already returns the bitwise-exact demanded result but is defeated wholesale by clause 1 (np.geterr() != default)",
+    "njit_variant_explicitly_rejected": "no aniso==0 traffic exists in production (24/24 aniso==1), so a budget-qualified compiled kernel adds JIT surface without demand; the dispatch twin is bitwise-exact on the whole admitted domain (values AND warnings), stronger than the budget-qualified standard, at a fraction of the implementation risk"
+  },
+  "patches": [
+    {
+      "file": "src/solweig_light/radiation/pipeline_demand.py",
+      "change": "behavior-preserving extraction of the domain half of _guard_anisotropic into _anisotropic_domain (regime clause stays in _guard_anisotropic); docstrings cross-reference the S10-23 admission rule and the underflow escape"
+    },
+    {
+      "file": "src/solweig_light/radiation/patch_radiation.py",
+      "change": "Lside_veg_v2022a dispatch twin + ROUTE_COUNTS entries (primary/reference); admission rule: kill switch, over=='warn' AND under=='ignore', divide/invalid != 'raise', _anisotropic_domain ok, log-warning replication only when divide=='warn' and log_dirs nonempty; everything else declines to _reference('Lside_veg_v2022a') == engine._serial_Lside_veg_v2022a (verbatim original body)"
+    },
+    {
+      "file": "src/solweig_light/radiation/engine.py",
+      "change": "_serial_Lside_veg_v2022a capture of the original body + public-name wrapper forwarding to the patch_radiation dispatch (the _reference search skips the patch_radiation module by __module__ guard, so no recursion)"
+    },
+    {
+      "file": "tests/optimization_s10/semantic/test_route_engagement_landcover.py",
+      "change": "standing E2E pin extended: every Lside call on the landcover golden must be accounted (primary + reference == 24) and the serial reference must stay unused (reference == 0); split-agnostic because the ambient seterr regime decides fast-path vs twin"
+    },
+    {
+      "file": "tests/optimization_s10/residual/test_lside_twin.py",
+      "change": "new L1 suite (21 tests): bitwise parity under default AND leaked regimes, night profile, demanded-result identity, discarded-work inputs, caller non-mutation, decline matrix (aniso=0, out-of-domain svf with warning parity, NaN svf, non-broadcastable Tw), default-regime log replication, promoted-warning fallback, under='warn' fallback pin, kill switch, FULL_DIAGNOSTICS + production-demand routes, wiring, call styles"
+    }
+  ],
+  "admission_rule": {
+    "admit": "SOLWEIG_LIGHT_LSIDE_DISPATCH != '0' AND over=='warn' AND under=='ignore' AND divide not in {'raise'} AND invalid not in {'raise'} AND _anisotropic_domain(args).ok AND (divide != 'warn' OR log_dirs empty OR _replicate_log_warnings succeeds)",
+    "returned_result": "_demanded_anisotropic_result(LupE, LupS, LupW, LupN) — the same _operate(np.multiply, LupX, 0.5) the body's anisotropic branch performs",
+    "everything_else": "decline to the verbatim original body (bitwise trivially; warnings owned by the original site)",
+    "underflow_pin": "under != 'ignore' declines: the removed Lvikt polynomial underflows on tiny svf (C6-20 pin: svf=1e-20 under under='warn' MUST fall back); the domain bounds do not exclude that escape",
+    "production_regimes_admitted": "default {divide:warn, invalid:warn, over:warn, under:ignore} (night steps 0-6) AND leaked {divide:ignore, invalid:ignore, over:warn, under:ignore} (steps 7-23) — the two regimes the probe observed on all 24 calls"
+  },
+  "l1_differential": {
+    "suite": "tests/optimization_s10/residual/test_lside_twin.py",
+    "result": "21/21 passed",
+    "standard": "bit-level (dtype + tobytes) on the whole admitted domain, not comparison_v1 budgets — the twin claims exactness and the reference IS the original body, so declines are bitwise by construction",
+    "warning_parity": "recorded warning lists (category + message) must be equal between dispatch and reference on every decline-with-warnings case and on the default-regime replication case"
+  },
+  "regression_gates": {
+    "tests_optimization_s10": "80/80 passed (incl. extended route-engagement pin)",
+    "c6_20_warning_contract_and_v8_seam": "107 passed, 1 failed — pre-existing: test_kernel_primary_matches_full_route_invariance (NaN payload column 7) proven failing at clean HEAD via a throwaway git worktree at 321edb94 (IDENTICAL failure; worktree removed after)",
+    "landcover_differential": "2/2 passed ([landcover-False], [landcover_normalized-False])",
+    "full_differential_tree": "706 failures — failure set byte-identical to clean HEAD 321edb94 (worktree proven; zero new failures)"
+  },
+  "e2e_engagement": {
+    "harness": "s10_lside_l2.py e2e (fresh process, default env)",
+    "result": "24 lside_veg_v2022a_demanded calls = 7 upstream C6-20 fast path + 17 dispatch fallback; ROUTE_COUNTS Lside_veg_v2022a_primary=17, reference=0; the serial body never executes on the production profile",
+    "wall_s_contention_only": 8.4127
+  },
+  "l2_paired_fresh_process": {
+    "harness": "s10_lside_l2.py l2run/collect; fresh process per run, alternating A/B x3; A = twin active, B = SOLWEIG_LIGHT_LSIDE_DISPATCH=0",
+    "A_walls_s": [7.293, 6.717, 6.756],
+    "B_walls_s": [16.866, 7.454, 8.976],
+    "median_a_s": 6.756,
+    "median_b_s": 8.976,
+    "paired_b_over_a": [2.313, 1.11, 1.329],
+    "engagement": "A primary 17 / reference 0 in all runs; B primary 0 / reference 17 in all runs",
+    "disclosure": "host loadavg ~11-17 (co-tenant contention); B rep 1 is a contention outlier; direction (A faster) holds in all 3 pairs but magnitudes are not resolvable at this noise floor; B is slower than A because it executes the removed body 17x (~24 ms) plus scheduling noise — wall deltas (0.7-9.6 s) are 1-2 orders above the mechanistic effect and must NOT be read as the effect size"
+  },
+  "l2_inprocess_span_measurement": {
+    "harness": "s10_lside_l2_inproc.py; one warm process, kill-switch toggle per rep, 2 warmups, 6 alternating timed reps; engine._serial_Lside_veg_v2022a wrapper-timed with the real signature lent to the shim (a var-args shim breaks the dispatch's signature binding and forces wholesale decline — safe for callers, useless for measurement)",
+    "B_body_span_s_per_rep": [0.03388, 0.03327, 0.03436],
+    "B_body_span_median_s": 0.03388,
+    "B_per_call_ms": [1.412, 1.386, 1.432],
+    "A_body_span_s": [0.0, 0.0, 0.0],
+    "A_body_calls": [0, 0, 0],
+    "A_routes_per_rep": "primary 24 / reference 0 in all reps",
+    "B_routes_per_rep": "primary 0 / reference 24 in all reps",
+    "walls_b_median_s": 5.2033,
+    "walls_a_median_s": 5.7385,
+    "claim": "the twin removes the ENTIRE measured body span: 24 calls x ~1.4 ms = ~34 ms/run in this process (24 calls because the leaked seterr regime persists in-process, so night steps decline too — corroborating the S10-21 correction below); fresh process removes 17 body calls (~24 ms)",
+    "wall_disclosure": "in-process walls are flat within noise (34 ms effect vs ~1 s contention swings at loadavg 13.8-14.8); the wall is not the claim, the wrapper-timed span is",
+    "s10_21_corroboration": "measured span ~34 ms / 24 calls matches residual_costs.json Lside entry 0.0363 s @ 24 calls — the S10-21 time basis was real; only the fresh-process call count differs (17 body + 7 upstream fast)"
+  },
+  "cost_record_correction": {
+    "corrects": "evidence/residual/residual_costs.json calc_stages.Lside_veg_v2022a.calls_per_run = 24",
+    "fresh_process_truth": "17 serial body calls + 7 upstream C6-20 fast-path calls per run (verified twice: argprobe + e2e)",
+    "mechanism": "S10-21's harness ran 1 warmup + 3 timed reps in ONE process; engine.py:333 leaks np.seterr(divide='ignore', invalid='ignore') globally, so reps 2-4 fail the R-A guard regime clause on all 24 calls; the in-process S10-23 harness reproduces exactly this (errstate at every rep start = leaked regime; 24 body calls on the B side)",
+    "impact": "stage time 0.0363 s was measured on the 24-call in-process profile; the fresh-process removable service is ~17 x 1.4 ms = ~24 ms (~2.0% of calc, ~1.2% of tile); selection ranking unchanged (still the top exact candidate; S10-22 selected it on these shares)"
+  },
+  "raw_artifacts_sha256": {
+    "s10_lside_argprobe.py": "f6c07ac0066201b1af86d9562183e4476c59c800b7874f81d5156657c86b3a0b",
+    "s10_lside_l2.py": "3b3af30678f9489dc8ada185e678103f3bb13126b6692110ee11c98ef3a860a2",
+    "s10_lside_l2_inproc.py": "04771e03c746dcf749375581ed0bcb7111f579453b777e18ed16ee02e95ced7a",
+    "lside_argprofile.json": "f25f51ef800840cfba4f5ad1e4a9b6cc412cc5d8e705fb9320ca6c3fc4731197",
+    "lside_e2e.json": "de16e7db939611715fe1176519105b6ca825d6f5e0e7a67a7de2b95b8b8b421d",
+    "lside_l2_collect.json": "db55409f550d2297fde0d06fd1dfc7f61d3655f47051d3cf1249836747dd4e36",
+    "lside_l2_inproc.json": "7cc259fd9be168ba1f7e1495208b88ab6bddb5254f346a531ea5605b563ebc9c",
+    "archive": "Dropbox 'Alan Synn/Research/solweig-light/s10/s10_s23_lside_dispatch.tar.gz' (raw evidence policy; bulk artifacts never committed); tarball sha256 90af6bc22100ab76b8c499604bafc48b7c370cbd17f866a8614eb0c0e425532f, uploaded 2026-10-14 and re-downloaded to verify byte identity; contents = the 13 files listed above"
+  },
+  "verification_plan_coverage": {
+    "s10_22_plan": [
+      "L1 kernel differential vs _reference — EXCEEDED: bit-level parity on the whole admitted domain (budgets not needed; exactness claimed and proven)",
+      "ordered-FP proof — SATISFIED by identity: the returned result is the same _operate multiply the body performs, so byte parity is the contract (no re-ordered arithmetic exists to prove)",
+      "decline matrix — DONE (21-test suite incl. caller-mutation and alias-adjacent checks per the S10-14 fixture pattern)",
+      "L2 paired tile benchmark — DONE under contention, disclosed; quiet-window discipline deferred to the S10-30 held-out campaign rerun",
+      "E2E engagement pin — DONE fresh-process + STANDING test in tests/optimization_s10/semantic/",
+      "full gates — DONE (80/80, 2/2, 107+1 pre-existing, differential failure set identical to HEAD)"
+    ]
+  }
+}

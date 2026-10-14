@@ -211,10 +211,30 @@ def _guard_anisotropic(args):
     those are the only admitted-domain positions where a removed operation
     (``log(1 - svf)``) can emit a floating point warning, and the fast path
     re-executes that original operation for them.
+
+    Only the default warning regime is certified here.  The daytime pipeline
+    leaks ``np.seterr(divide='ignore', invalid='ignore')`` (engine.py:333),
+    which defeats this clause wholesale; the S10-23 dispatch twin
+    (patch_radiation.Lside_veg_v2022a) reuses ``_anisotropic_domain`` to
+    certify the same inputs under regimes where the ambient state already
+    silences every warning the removed operations can emit.
+    """
+    if np.geterr() != _ERR_DEFAULT:
+        return _GuardResult(False)
+    return _anisotropic_domain(args)
+
+
+def _anisotropic_domain(args):
+    """Domain/bounds half of :func:`_guard_anisotropic` (no regime clause).
+
+    Certifies that every removed operation stays free of floating point
+    effects the demanded result would not reproduce, independent of the
+    ambient ``np.seterr`` state; the caller owns the regime decision.  The
+    underflow escape (tiny svf in the removed Lvikt polynomial) is NOT
+    excluded by these bounds, so regimes with a non-default ``under``
+    channel must not admit the fast path.
     """
     try:
-        if np.geterr() != _ERR_DEFAULT:
-            return _GuardResult(False)
         (
             svfS, svfW, svfN, svfE, svfEveg, svfSveg, svfWveg, svfNveg,
             svfEaveg, svfSaveg, svfWaveg, svfNaveg,
