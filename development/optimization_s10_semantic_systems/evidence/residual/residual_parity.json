@@ -18,7 +18,7 @@
     },
     {
       "file": "src/solweig_light/radiation/patch_radiation.py",
-      "change": "Lside_veg_v2022a dispatch twin + ROUTE_COUNTS entries (primary/reference); admission rule: kill switch, over=='warn' AND under=='ignore', divide/invalid != 'raise', _anisotropic_domain ok, log-warning replication only when divide=='warn' and log_dirs nonempty; everything else declines to _reference('Lside_veg_v2022a') == engine._serial_Lside_veg_v2022a (verbatim original body)"
+      "change": "Lside_veg_v2022a dispatch twin + ROUTE_COUNTS entries (primary/reference); admission rule (post review R1/R5 closures): kill switch, over=='warn' AND under=='ignore', divide/invalid in {'warn','ignore'}, _anisotropic_domain ok, bind failures decline to the reference, log-warning replication only when divide=='warn' and log_dirs nonempty; everything else declines to _reference('Lside_veg_v2022a') == engine._serial_Lside_veg_v2022a (verbatim original body)"
     },
     {
       "file": "src/solweig_light/radiation/engine.py",
@@ -34,22 +34,24 @@
     }
   ],
   "admission_rule": {
-    "admit": "SOLWEIG_LIGHT_LSIDE_DISPATCH != '0' AND over=='warn' AND under=='ignore' AND divide not in {'raise'} AND invalid not in {'raise'} AND _anisotropic_domain(args).ok AND (divide != 'warn' OR log_dirs empty OR _replicate_log_warnings succeeds)",
+    "admit": "SOLWEIG_LIGHT_LSIDE_DISPATCH != '0' AND over=='warn' AND under=='ignore' AND divide in {'warn','ignore'} AND invalid in {'warn','ignore'} AND _anisotropic_domain(args).ok AND (divide != 'warn' OR log_dirs empty OR _replicate_log_warnings succeeds)",
     "returned_result": "_demanded_anisotropic_result(LupE, LupS, LupW, LupN) — the same _operate(np.multiply, LupX, 0.5) the body's anisotropic branch performs",
-    "everything_else": "decline to the verbatim original body (bitwise trivially; warnings owned by the original site)",
+    "everything_else": "decline to the verbatim original body (bitwise trivially; warnings owned by the original site); bind failures on malformed calls decline too (review R5), and the public engine wrapper's own verbatim signature raises before routing",
     "underflow_pin": "under != 'ignore' declines: the removed Lvikt polynomial underflows on tiny svf (C6-20 pin: svf=1e-20 under under='warn' MUST fall back); the domain bounds do not exclude that escape",
+    "redirected_channels_pin": "divide/invalid 'call'/'print'/'log' decline (review R1 closure): they redirect rather than silence, so the ambient state does not own the removed warnings — admission would swallow user-observable FP-error handling",
+    "dtype_qualification": "review R2: the domain does not constrain dtype, so non-f32/f64 in-domain inputs (e.g. float16) are admitted exactly as by the shipped C6-20 guard and swallow removed-chain over/invalid warnings there too — shared C6-20 heritage, not widened by S10-23; for f32/f64 the reviewer's static bound analysis + extreme-bounds probe found zero over/invalid emitters",
     "production_regimes_admitted": "default {divide:warn, invalid:warn, over:warn, under:ignore} (night steps 0-6) AND leaked {divide:ignore, invalid:ignore, over:warn, under:ignore} (steps 7-23) — the two regimes the probe observed on all 24 calls"
   },
   "l1_differential": {
     "suite": "tests/optimization_s10/residual/test_lside_twin.py",
-    "result": "21/21 passed",
-    "standard": "bit-level (dtype + tobytes) on the whole admitted domain, not comparison_v1 budgets — the twin claims exactness and the reference IS the original body, so declines are bitwise by construction",
+    "result": "24/24 passed (21 original + 2 review-R1 regime-matrix cases + 1 review-R5 malformed-call case)",
+    "standard": "bit-level (dtype + tobytes) on the whole admitted domain, not comparison_v1 budgets — the twin claims exactness and the reference IS the original body, so declines are bitwise by construction; warning parity holds for the characterized float32/float64 domain (review R2 qualification above)",
     "warning_parity": "recorded warning lists (category + message) must be equal between dispatch and reference on every decline-with-warnings case and on the default-regime replication case"
   },
   "regression_gates": {
-    "tests_optimization_s10": "80/80 passed (incl. extended route-engagement pin)",
-    "c6_20_warning_contract_and_v8_seam": "107 passed, 1 failed — pre-existing: test_kernel_primary_matches_full_route_invariance (NaN payload column 7) proven failing at clean HEAD via a throwaway git worktree at 321edb94 (IDENTICAL failure; worktree removed after)",
-    "landcover_differential": "2/2 passed ([landcover-False], [landcover_normalized-False])",
+    "tests_optimization_s10": "83/83 passed (incl. extended route-engagement pin; re-run after review closures)",
+    "c6_20_warning_contract_and_v8_seam": "107 passed, 1 failed — pre-existing: test_kernel_primary_matches_full_route_invariance (NaN payload column 7) proven failing at clean HEAD via a throwaway git worktree at 321edb94 (IDENTICAL failure; worktree removed after; re-confirmed post-closure with the reviewer's PYTHONPATH methodology caveat noted)",
+    "landcover_differential": "2/2 passed ([landcover-False], [landcover_normalized-False]; re-run post-closure)",
     "full_differential_tree": "706 failures — failure set byte-identical to clean HEAD 321edb94 (worktree proven; zero new failures)"
   },
   "e2e_engagement": {
@@ -88,6 +90,26 @@
     "mechanism": "S10-21's harness ran 1 warmup + 3 timed reps in ONE process; engine.py:333 leaks np.seterr(divide='ignore', invalid='ignore') globally, so reps 2-4 fail the R-A guard regime clause on all 24 calls; the in-process S10-23 harness reproduces exactly this (errstate at every rep start = leaked regime; 24 body calls on the B side)",
     "impact": "stage time 0.0363 s was measured on the 24-call in-process profile; the fresh-process removable service is ~17 x 1.4 ms = ~24 ms (~2.0% of calc, ~1.2% of tile); selection ranking unchanged (still the top exact candidate; S10-22 selected it on these shares)"
   },
+  "review": {
+    "reviewer": "independent residual-round reviewer (S10-25); not an author; deliverables in evidence/reviews/residual/ (residual_reviews.json, product_scope_review.json, residual_review_notes.md), head reviewed 91e37d53",
+    "verdicts": {
+      "s10_22_selection": "approved",
+      "s10_23_implementation": "approved_with_notes",
+      "s10_24_disposition": "approved (no implementation; not-eligible consistent with PLAN.md and the DAG's unavailable/rejected completion condition)"
+    },
+    "independent_rederivation": "exactness read from the full retained body + 20+ adversarial probes (extreme bounds, strided, read-only, mixed dtypes, NaN Lup admitted, NaN svf/empty declined, 4 aniso forms); warning-regime analysis (shipped C6-20 swallow precedent confirmed by probe; f32/f64 bounds exclude all over/invalid emitters); route split + in-process spans re-executed with identical substance; all sha256s recomputed; additive-only correction verified by diff; pre-existing failure re-proven at base via worktree (with PYTHONPATH methodology caveat)",
+    "findings_and_closures": {
+      "R1_minor": "divide/invalid redirected channels ('call'/'print'/'log') were admitted while unsilenced — CLOSED by tightening the admission rule to {'warn','ignore'} (+ regime-matrix cases divide/invalid='call'; docstring updated); restores the pre-S10-23 observable contract",
+      "R2_minor": "non-f32/f64 in-domain dtypes swallow removed-chain warnings, pre-existing via the shipped C6-20 guard (probe: guard admits the same float16 case) — CLOSED as documentation qualification: claim wording corrected to 'values bitwise on the whole admitted domain; warning parity for the characterized float32/float64 domain'; product behavior left identical to shipped C6-20 by design",
+      "R3_note": "stale FULL_DIAGNOSTICS/untouched-public-name contract text in pipeline_demand.py — CLOSED: header + demanded docstring updated to describe the certified twin and the exact admitted regimes",
+      "R4_note": "Dropbox path slip 's10/residual/' vs 's10/' — CLOSED: REGISTER note + this file's companion doc corrected",
+      "R5_note": "malformed-call TypeError origin — CLOSED as recommended: bind wrapped in try/except TypeError -> decline; test pins that the public wrapper's verbatim signature owns it before routing and the direct-dispatch path declines (reference raises)",
+      "R6_note": "S10-24 DAG status field drift — CLOSED in the REGISTER S10-25 closure note (the packet yaml is the frozen static record; its per-task statuses were never updated for any shipped task, so S10-24's terminal disposition is recorded in the living register referencing residual_selection.json)",
+      "R7_note": "S10-22 verification-plan wording superseded — no action (met or exceeded everywhere, as the reviewer states)"
+    },
+    "gates_after_closures": "L1 24/24; tests/optimization_s10 83/83; v6 lside + cylinder + v8 seam 107 passed + 1 pre-existing (cause-matched); landcover 2/2 — all re-run on the closure commit",
+    "harness_rerun_note": "the reviewer's re-execution of s10_lside_l2.py e2e and s10_lside_l2_inproc.py rewrote the two raw JSONs with same-substance values (author originals preserved inside the Dropbox tarball; reviewer values recorded in their deliverables)"
+  },
   "raw_artifacts_sha256": {
     "s10_lside_argprobe.py": "f6c07ac0066201b1af86d9562183e4476c59c800b7874f81d5156657c86b3a0b",
     "s10_lside_l2.py": "3b3af30678f9489dc8ada185e678103f3bb13126b6692110ee11c98ef3a860a2",
@@ -98,8 +120,7 @@
     "lside_l2_inproc.json": "7cc259fd9be168ba1f7e1495208b88ab6bddb5254f346a531ea5605b563ebc9c",
     "archive": "Dropbox 'Alan Synn/Research/solweig-light/s10/s10_s23_lside_dispatch.tar.gz' (raw evidence policy; bulk artifacts never committed); tarball sha256 90af6bc22100ab76b8c499604bafc48b7c370cbd17f866a8614eb0c0e425532f, uploaded 2026-10-14 and re-downloaded to verify byte identity; contents = the 13 files listed above"
   },
-  "verification_plan_coverage": {
-    "s10_22_plan": [
+  "verification_plan_coverage": {    "s10_22_plan": [
       "L1 kernel differential vs _reference — EXCEEDED: bit-level parity on the whole admitted domain (budgets not needed; exactness claimed and proven)",
       "ordered-FP proof — SATISFIED by identity: the returned result is the same _operate multiply the body performs, so byte parity is the contract (no re-ordered arithmetic exists to prove)",
       "decline matrix — DONE (21-test suite incl. caller-mutation and alias-adjacent checks per the S10-14 fixture pattern)",

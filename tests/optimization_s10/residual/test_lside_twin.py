@@ -197,6 +197,24 @@ def test_decline_non_broadcastable_tw(counter_delta):
     assert counter_delta() == {'primary': 0, 'reference': 1}
 
 
+def test_malformed_call_owned_by_reference(counter_delta):
+    """A missing argument raises TypeError owned by the original site, not by
+    the twin's signature binding (review finding R5). Through the public
+    engine wrapper the wrapper's own verbatim signature raises before the
+    twin is consulted; through the dispatch directly the bind failure
+    declines and the reference raises."""
+    args = args_of(make_case())[:-1]
+    with pytest.raises(TypeError):
+        engine.Lside_veg_v2022a(*args)
+    assert counter_delta() == {'primary': 0, 'reference': 0}, \
+        'the wrapper signature owns it before any routing'
+    with pytest.raises(TypeError):
+        patch_radiation.Lside_veg_v2022a(*args)
+    with pytest.raises(TypeError):
+        engine._serial_Lside_veg_v2022a(*args)
+    assert counter_delta() == {'primary': 0, 'reference': 1}
+
+
 def test_replication_under_default_regime(counter_delta):
     """svf == 1 under the default regime: dispatch replicates the log warning."""
     case = make_case()
@@ -233,6 +251,8 @@ def test_promoted_warning_falls_back_to_original_site(counter_delta):
     (dict(divide='raise'), True),
     (dict(invalid='raise'), True),
     (dict(under='warn'), True),
+    (dict(divide='call'), True),
+    (dict(invalid='call'), True),
     (dict(divide='ignore', invalid='ignore'), False),
     (dict(divide='ignore'), False),
 ))

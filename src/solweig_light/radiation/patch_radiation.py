@@ -1189,14 +1189,16 @@ def Lside_veg_v2022a(*args,**kwargs):
 
     This dispatch certifies the identical removed-operation domain
     (``pipeline_demand._anisotropic_domain``) and admits the demanded result
-    under any regime whose deviations from default are silenced
-    divide/invalid channels: with ``divide='ignore'`` the replicated ``log``
-    cannot warn, ``invalid`` has no emitters inside the certified svf bounds,
-    and over/under must stay at their defaults because the domain bounds do
-    not exclude tiny-svf polynomial underflow (pinned by
-    tests/optimization_v6/lside).  Raise regimes, out-of-domain inputs and
-    every ``anisotropic_longwave != 1`` call decline to the serial reference,
-    which owns the original warnings, errors and values.
+    only under regimes whose divide/invalid channels are silenced or remain
+    at their default warn state: with ``divide='ignore'`` the replicated
+    ``log`` cannot warn, with ``divide='warn'`` it is replicated exactly, and
+    ``invalid`` has no f32/f64 emitters inside the certified svf bounds
+    (review finding R2 qualifies the dtype surface; see
+    evidence/residual/s10_23_lside_dispatch_twin.md).  Redirected channels
+    (``'call'/'print'/'log'``), ``'raise'`` regimes, over/under off their
+    defaults, out-of-domain inputs and every ``anisotropic_longwave != 1``
+    call decline to the serial reference, which owns the original warnings,
+    errors and values (review findings R1/R5).
     ``SOLWEIG_LIGHT_LSIDE_DISPATCH=0`` routes every call to the reference.
     """
     if os.environ.get('SOLWEIG_LIGHT_LSIDE_DISPATCH') == '0':
@@ -1207,15 +1209,21 @@ def Lside_veg_v2022a(*args,**kwargs):
                                   _demanded_anisotropic_result,
                                   _replicate_log_warnings)
     reference=_reference('Lside_veg_v2022a')
-    values=inspect.signature(reference).bind(*args,**kwargs).arguments
-    ordered=tuple(values[name] for name in values)
     def decline():
         ROUTE_COUNTS['Lside_veg_v2022a_reference'] += 1
         return reference(*args,**kwargs)
+    try:
+        values=inspect.signature(reference).bind(*args,**kwargs).arguments
+    except TypeError:
+        # A malformed call (missing/extra arguments) is owned by the
+        # original site, like every other decline (review finding R5).
+        return decline()
+    ordered=tuple(values[name] for name in values)
     regime=np.geterr()
     if regime['over'] != 'warn' or regime['under'] != 'ignore':
         return decline()
-    if regime['divide'] == 'raise' or regime['invalid'] == 'raise':
+    if regime['divide'] not in ('warn', 'ignore') or \
+            regime['invalid'] not in ('warn', 'ignore'):
         return decline()
     domain=_anisotropic_domain(ordered)
     if not domain.ok:

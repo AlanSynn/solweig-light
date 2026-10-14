@@ -51,17 +51,25 @@ Three coordinated pieces (all behavior-preserving by construction):
      its tiny-svf underflow escape is NOT excluded by the domain bounds, so a
      non-default `under` channel must never admit; this preserves the C6-20
      tier pin `svf=1e-20 under under='warn' → fallback`);
-   - `divide`/`invalid` not `'raise'` (a promoted raise is owned by the
-     original site, matching the C6-20 tier-B contract);
-   - `_anisotropic_domain(args).ok`;
+   - `divide`/`invalid` in `{'warn', 'ignore'}` (a promoted raise is owned by
+     the original site, matching the C6-20 tier-B contract; redirected
+     channels `'call'/'print'/'log'` decline too — review finding R1: they
+     redirect rather than silence, so admission would swallow user-visible
+     FP-error handling the pre-S10-23 guard let through);
+   - `_anisotropic_domain(args).ok` (a malformed-call bind failure declines
+     as well — review R5 — and the public engine wrapper's verbatim
+     signature raises before routing);
    - when `divide == 'warn'` and `log_dirs` nonempty, the log warnings are
      replicated via the existing `_replicate_log_warnings` (any failure →
      decline).
 
    Admitted result: `_demanded_anisotropic_result(LupE, LupS, LupW, LupN)` —
    the same `_operate(np.multiply, LupX, 0.5)` the body's anisotropic branch
-   performs. **No re-ordered arithmetic exists to prove: byte parity is the
-   contract on the whole admitted domain.**
+   performs. **No re-ordered arithmetic exists to prove: values are
+   bit-identical on the whole admitted domain; warning parity holds for the
+   characterized float32/float64 domain** (review R2: non-f32/f64 in-domain
+   dtypes are admitted exactly as by the shipped C6-20 guard and swallow
+   removed-chain warnings there too — shared heritage, not widened here).
 3. `engine._serial_Lside_veg_v2022a` capture + public-name wrapper forwarding
    to the dispatch. The `_reference` search skips the patch_radiation module
    by its `__module__` guard, so there is no recursion; the reference is the
@@ -75,8 +83,8 @@ ignore regime (steps 7–23). Everything else declines to the body.
 
 | Gate | Result |
 | --- | --- |
-| L1 twin suite (`tests/optimization_s10/residual/test_lside_twin.py`) | 21/21 — bit-level parity (dtype+tobytes) under default AND leaked regimes; night profile; demanded-result identity; discarded-work inputs; caller non-mutation; decline matrix (aniso=0, out-of-domain svf **with warning parity**, NaN svf, non-broadcastable Tw → original ValueError); default-regime log replication; promoted-warning fallback; `under='warn'` fallback pin; kill switch; FULL_DIAGNOSTICS + production-demand routes; wiring; call styles |
-| `tests/optimization_s10` | 80/80 (incl. extended standing E2E pin) |
+| L1 twin suite (`tests/optimization_s10/residual/test_lside_twin.py`) | 24/24 — bit-level parity (dtype+tobytes) under default AND leaked regimes; night profile; demanded-result identity; discarded-work inputs; caller non-mutation; decline matrix (aniso=0, out-of-domain svf **with warning parity**, NaN svf, non-broadcastable Tw → original ValueError, `divide`/`invalid` `'raise'` **and `'call'`** [R1], malformed call owned by the reference [R5]); default-regime log replication; promoted-warning fallback; `under='warn'` fallback pin; kill switch; FULL_DIAGNOSTICS + production-demand routes; wiring; call styles |
+| `tests/optimization_s10` | 83/83 (incl. extended standing E2E pin; re-run after review closures) |
 | C6-20 warning-contract + cylinder + v8 seam | 107 passed, 1 failed — **pre-existing** (`test_kernel_primary_matches_full_route_invariance`, NaN payload column 7), proven failing at clean HEAD 321edb94 in a throwaway worktree (identical failure; worktree removed) |
 | Landcover differential goldens | 2/2 (`[landcover-False]`, `[landcover_normalized-False]`) |
 | Full `tests/differential` tree | 706 failures — **byte-identical failure set to clean HEAD** (worktree-proven; zero new) |
@@ -126,5 +134,42 @@ selection ranking is unaffected (Lside remained the top exact candidate).
   instrumentation that patches `_serial_*`, but instrumentation must lend
   the real signature (`__signature__`) if it wants the fast path measurable.
 - Raw artifacts (probe, L2 harnesses, retained JSONs) are archived to Dropbox
-  `Alan Synn/Research/solweig-light/s10/residual/` with sha256s in
-  `residual_parity.json`.
+  `Alan Synn/Research/solweig-light/s10/s10_s23_lside_dispatch.tar.gz` (+ 
+  `.sha256` sidecar) with sha256s in `residual_parity.json`.
+
+## 7. Independent review (S10-25) and closures
+
+Reviewer: independent (not an author); head reviewed `91e37d53`. Deliverables:
+`evidence/reviews/residual/` (`residual_reviews.json`,
+`product_scope_review.json`, `residual_review_notes.md`).
+
+| Task | Verdict |
+| --- | --- |
+| S10-22 selection | approved |
+| S10-23 implementation | approved_with_notes |
+| S10-24 disposition | approved (no implementation; not-eligible per PLAN.md) |
+
+The reviewer re-derived the exactness claim from the full retained body,
+probed 20+ adversarial in-domain cases (all bitwise), confirmed the C6-20
+swallow precedent and the f32/f64 bound analysis, re-executed both harnesses
+(same substance), recomputed every sha256, verified the cost correction
+additive-only, and re-proved the pre-existing failure at base. Findings and
+closures (details in `residual_parity.json` → `review`):
+
+- **R1 (minor)** — redirected `divide`/`invalid` channels admitted while
+  unsilenced. **Closed**: admission tightened to `{'warn','ignore'}` +
+  regime-matrix cases; product rule is now strictly narrower than the
+  reviewed commit.
+- **R2 (minor)** — non-f32/f64 dtype warning swallow, pre-existing via the
+  shipped C6-20 guard. **Closed** as claim-wording qualification (values
+  bitwise everywhere; warning parity for f32/f64); product behavior
+  deliberately left identical to shipped C6-20.
+- **R3/R4/R5 (notes)** — stale contract text, Dropbox path slip, bind-time
+  TypeError origin: **all closed** (docstrings updated, paths corrected, bind
+  declines to the reference).
+- **R6/R7 (notes)** — S10-24 disposition recorded in the REGISTER S10-25
+  closure note; S10-22 plan wording: no action (met or exceeded).
+
+Gates re-run on the closure state: L1 24/24, `tests/optimization_s10` 83/83,
+v6 lside + cylinder + v8 seam 107 passed + 1 pre-existing (cause-matched),
+landcover differential 2/2.

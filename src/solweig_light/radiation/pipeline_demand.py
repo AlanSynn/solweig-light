@@ -9,21 +9,26 @@
 # computes only the demanded operations with bitwise equality to the original.
 #
 # Contract (DESIGN_AUTHORITY.md #6, dossiers/09, dossiers/10):
-#   * The public function ``Lside_veg_v2022a`` stays untouched and is used
-#     verbatim for FULL_DIAGNOSTICS and for every input outside the proved
-#     admitted domain (original fallback).
+#   * The public name ``Lside_veg_v2022a`` resolves to the S10-23 dispatch
+#     twin (patch_radiation), which preserves values and warnings on its
+#     certified domain; the verbatim original body stays addressable as
+#     ``engine._serial_Lside_veg_v2022a`` and is used for every input
+#     outside the twin's certified domain (original fallback).
 #   * Omitted diagnostics are ``NOT_REQUESTED`` sentinels in the demand
 #     profile, never zero arrays.
 #   * Warning/failure behavior: inside the admitted domain the only floating
 #     point effect of the removed operations is the ``log(1 - svf)``
 #     divide-by-zero at pixels where ``svf == 1`` (real SVF rasters contain
-#     such pixels).  The fast path re-executes exactly that original
+#     such pixels).  The fast paths re-execute exactly that original
 #     ``subtract``+``log`` pair per affected direction so the warning class,
 #     message and per-call count match the original; if it raises (warning
 #     filters promoting to errors) the original function is called so the
-#     raised error comes from the original site.  All other error regimes
-#     (np.seterr non-default, strict warning filters) fall back to the
-#     original function.
+#     raised error comes from the original site.  The C6-20 guard admits the
+#     default np.seterr regime; the S10-23 twin additionally admits the
+#     regime leaked by engine.py:333 (divide/invalid 'ignore') and any other
+#     divide/invalid state in {'warn', 'ignore'}; all other error regimes
+#     (strict warning filters, non-default over/under, redirected or raise
+#     channels) fall back to the original function.
 """Private pipeline radiation demand profiles and the anisotropic Lside path."""
 from __future__ import annotations
 
@@ -351,7 +356,9 @@ def lside_veg_v2022a_demanded(svfS, svfW, svfN, svfE, svfEveg, svfSveg, svfWveg,
                               LupN, anisotropic_longwave, demand=None):
     """Demand-dispatching drop-in for ``Lside_veg_v2022a``.
 
-    ``FULL_DIAGNOSTICS`` (default) calls the untouched original function.
+    ``FULL_DIAGNOSTICS`` (default) calls the original body through the S10-23
+    dispatch twin when the certified domain holds (values and warnings
+    preserved bitwise) and otherwise verbatim.
     ``PIPELINE_CYLINDER_ANISOTROPIC`` takes the guarded R-A fast path when the
     admitted domain holds and otherwise falls back to the original function,
     preserving every warning, failure and alias contract bit-for-bit.
