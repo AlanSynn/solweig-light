@@ -10,7 +10,7 @@
           "    plan_phase_admission(",
           "  File \"/tmp/s10_31_work/wheelenv/lib/python3.12/site-packages/solweig_light/runtime_memory.py\", line 931, in plan_phase_admission",
           "    raise ResourceAdmissionError(",
-          "solweig_light.runtime.ResourceAdmissionError: simulation job 0_0 (16x16, patches=153) needs about 4,310,409,420 B but only 1,899,746,918 B of the 2,329,243,648 B budget remains after parent (429,496,730 B) and writer queue (0 B); queueing cannot make this phase fit. Reduce the tile shape, cap GDAL_CACHEMAX, or use supported disk-backed execution with an explicit live-array inventory"
+          "solweig_light.runtime.ResourceAdmissionError: simulation job 0_0 (16x16, patches=153) needs about 4,310,409,420 B but only 1,899,632,230 B of the 2,329,128,960 B budget remains after parent (429,496,730 B) and writer queue (0 B); queueing cannot make this phase fit. Reduce the tile shape, cap GDAL_CACHEMAX, or use supported disk-backed execution with an explicit live-array inventory"
         ],
         "stdout_tail": [
           "Wind coefficient not used; skipping WindCoeff tiles.",
@@ -29,7 +29,7 @@
           "    plan_phase_admission(",
           "  File \"/tmp/s10_31_work/wheelenv/lib/python3.12/site-packages/solweig_light/runtime_memory.py\", line 931, in plan_phase_admission",
           "    raise ResourceAdmissionError(",
-          "solweig_light.runtime.ResourceAdmissionError: simulation job 0_0 (16x16, patches=153) needs about 4,310,409,420 B but only 1,916,171,878 B of the 2,345,668,608 B budget remains after parent (429,496,730 B) and writer queue (0 B); queueing cannot make this phase fit. Reduce the tile shape, cap GDAL_CACHEMAX, or use supported disk-backed execution with an explicit live-array inventory"
+          "solweig_light.runtime.ResourceAdmissionError: simulation job 0_0 (16x16, patches=153) needs about 4,310,409,420 B but only 1,863,769,702 B of the 2,293,266,432 B budget remains after parent (429,496,730 B) and writer queue (0 B); queueing cannot make this phase fit. Reduce the tile shape, cap GDAL_CACHEMAX, or use supported disk-backed execution with an explicit live-array inventory"
         ],
         "stdout_tail": [
           "Wind coefficient not used; skipping WindCoeff tiles.",
@@ -48,7 +48,7 @@
           "    plan_phase_admission(",
           "  File \"/tmp/s10_31_work/wheelenv/lib/python3.12/site-packages/solweig_light/runtime_memory.py\", line 931, in plan_phase_admission",
           "    raise ResourceAdmissionError(",
-          "solweig_light.runtime.ResourceAdmissionError: simulation job 0_0 (16x16, patches=153) needs about 4,310,409,420 B but only 1,912,823,398 B of the 2,342,320,128 B budget remains after parent (429,496,730 B) and writer queue (0 B); queueing cannot make this phase fit. Reduce the tile shape, cap GDAL_CACHEMAX, or use supported disk-backed execution with an explicit live-array inventory"
+          "solweig_light.runtime.ResourceAdmissionError: simulation job 0_0 (16x16, patches=153) needs about 4,310,409,420 B but only 1,849,386,598 B of the 2,278,883,328 B budget remains after parent (429,496,730 B) and writer queue (0 B); queueing cannot make this phase fit. Reduce the tile shape, cap GDAL_CACHEMAX, or use supported disk-backed execution with an explicit live-array inventory"
         ],
         "stdout_tail": [
           "Wind coefficient not used; skipping WindCoeff tiles.",
@@ -70,7 +70,7 @@
           "    plan_phase_admission(",
           "  File \"/tmp/s10_31_work/wheelenv/lib/python3.12/site-packages/solweig_light/runtime_memory.py\", line 931, in plan_phase_admission",
           "    raise ResourceAdmissionError(",
-          "solweig_light.runtime.ResourceAdmissionError: simulation job 0_0 (16x16, patches=153) needs about 4,310,409,420 B but only 1,912,411,750 B of the 2,341,908,480 B budget remains after parent (429,496,730 B) and writer queue (0 B); queueing cannot make this phase fit. Reduce the tile shape, cap GDAL_CACHEMAX, or use supported disk-backed execution with an explicit live-array inventory"
+          "solweig_light.runtime.ResourceAdmissionError: simulation job 0_0 (16x16, patches=153) needs about 4,310,409,420 B but only 1,850,730,086 B of the 2,280,226,816 B budget remains after parent (429,496,730 B) and writer queue (0 B); queueing cannot make this phase fit. Reduce the tile shape, cap GDAL_CACHEMAX, or use supported disk-backed execution with an explicit live-array inventory"
         ],
         "stdout_tail": [
           "Wind coefficient not used; skipping WindCoeff tiles.",
@@ -94,35 +94,35 @@
       "PYTHONPATH",
       "SOLWEIG_NO_NET_LOG"
     ],
-    "loadavg_at_run": "16.78",
+    "loadavg_at_run": "16.68",
     "no_net_events": [
       {
         "detail": {
-          "pid": 2132186
+          "pid": 2265101
         },
         "kind": "guard_installed",
-        "t": 1791993386.7142818
+        "t": 1791994328.2499816
       },
       {
         "detail": {
-          "pid": 2132194
+          "pid": 2272807
         },
         "kind": "guard_installed",
-        "t": 1791993411.82771
+        "t": 1791994352.9017653
       },
       {
         "detail": {
-          "pid": 2132219
+          "pid": 2276634
         },
         "kind": "guard_installed",
-        "t": 1791993433.6177566
+        "t": 1791994374.5231628
       },
       {
         "detail": {
-          "pid": 2132227
+          "pid": 2276646
         },
         "kind": "guard_installed",
-        "t": 1791993435.4867842
+        "t": 1791994376.2058337
       }
     ],
     "no_net_log": "/tmp/s10_31_work/api_scratch/no_net_events.jsonl",
@@ -169,7 +169,7 @@
           "    plan_phase_admission(",
           "  File \"/tmp/s10_31_work/wheelenv/lib/python3.12/site-packages/solweig_light/runtime_memory.py\", line 931, in plan_phase_admission",
           "    raise ResourceAdmissionError(",
-          "solweig_light.runtime.ResourceAdmissionError: simulation job 0_0 (16x16, patches=153) needs about 4,310,409,420 B but only 1,907,244,646 B of the 2,336,741,376 B budget remains after parent (429,496,730 B) and writer queue (0 B); queueing cannot make this phase fit. Reduce the tile shape, cap GDAL_CACHEMAX, or use supported disk-backed execution with an explicit live-array inventory"
+          "solweig_light.runtime.ResourceAdmissionError: simulation job 0_0 (16x16, patches=153) needs about 4,310,409,420 B but only 1,837,946,470 B of the 2,267,443,200 B budget remains after parent (429,496,730 B) and writer queue (0 B); queueing cannot make this phase fit. Reduce the tile shape, cap GDAL_CACHEMAX, or use supported disk-backed execution with an explicit live-array inventory"
         ],
         "stdout_tail": [
           "Wind coefficient not used; skipping WindCoeff tiles.",
@@ -188,7 +188,7 @@
           "    plan_phase_admission(",
           "  File \"/tmp/s10_31_work/wheelenv/lib/python3.12/site-packages/solweig_light/runtime_memory.py\", line 931, in plan_phase_admission",
           "    raise ResourceAdmissionError(",
-          "solweig_light.runtime.ResourceAdmissionError: simulation job 0_0 (16x16, patches=153) needs about 4,310,409,420 B but only 1,916,153,446 B of the 2,345,650,176 B budget remains after parent (429,496,730 B) and writer queue (0 B); queueing cannot make this phase fit. Reduce the tile shape, cap GDAL_CACHEMAX, or use supported disk-backed execution with an explicit live-array inventory"
+          "solweig_light.runtime.ResourceAdmissionError: simulation job 0_0 (16x16, patches=153) needs about 4,310,409,420 B but only 1,855,598,182 B of the 2,285,094,912 B budget remains after parent (429,496,730 B) and writer queue (0 B); queueing cannot make this phase fit. Reduce the tile shape, cap GDAL_CACHEMAX, or use supported disk-backed execution with an explicit live-array inventory"
         ],
         "stdout_tail": [
           "Wind coefficient not used; skipping WindCoeff tiles.",
@@ -207,7 +207,7 @@
           "    plan_phase_admission(",
           "  File \"/tmp/s10_31_work/wheelenv/lib/python3.12/site-packages/solweig_light/runtime_memory.py\", line 931, in plan_phase_admission",
           "    raise ResourceAdmissionError(",
-          "solweig_light.runtime.ResourceAdmissionError: simulation job 0_0 (16x16, patches=153) needs about 4,310,409,420 B but only 1,908,606,566 B of the 2,338,103,296 B budget remains after parent (429,496,730 B) and writer queue (0 B); queueing cannot make this phase fit. Reduce the tile shape, cap GDAL_CACHEMAX, or use supported disk-backed execution with an explicit live-array inventory"
+          "solweig_light.runtime.ResourceAdmissionError: simulation job 0_0 (16x16, patches=153) needs about 4,310,409,420 B but only 1,851,778,662 B of the 2,281,275,392 B budget remains after parent (429,496,730 B) and writer queue (0 B); queueing cannot make this phase fit. Reduce the tile shape, cap GDAL_CACHEMAX, or use supported disk-backed execution with an explicit live-array inventory"
         ],
         "stdout_tail": [
           "Wind coefficient not used; skipping WindCoeff tiles.",
@@ -229,7 +229,7 @@
           "    plan_phase_admission(",
           "  File \"/tmp/s10_31_work/wheelenv/lib/python3.12/site-packages/solweig_light/runtime_memory.py\", line 931, in plan_phase_admission",
           "    raise ResourceAdmissionError(",
-          "solweig_light.runtime.ResourceAdmissionError: simulation job 0_0 (16x16, patches=153) needs about 4,310,409,420 B but only 1,910,302,310 B of the 2,339,799,040 B budget remains after parent (429,496,730 B) and writer queue (0 B); queueing cannot make this phase fit. Reduce the tile shape, cap GDAL_CACHEMAX, or use supported disk-backed execution with an explicit live-array inventory"
+          "solweig_light.runtime.ResourceAdmissionError: simulation job 0_0 (16x16, patches=153) needs about 4,310,409,420 B but only 1,852,737,126 B of the 2,282,233,856 B budget remains after parent (429,496,730 B) and writer queue (0 B); queueing cannot make this phase fit. Reduce the tile shape, cap GDAL_CACHEMAX, or use supported disk-backed execution with an explicit live-array inventory"
         ],
         "stdout_tail": [
           "Wind coefficient not used; skipping WindCoeff tiles.",
@@ -252,35 +252,35 @@
       "PYTHONPATH",
       "SOLWEIG_NO_NET_LOG"
     ],
-    "loadavg_at_run": "17.81",
+    "loadavg_at_run": "17.52",
     "no_net_events": [
       {
         "detail": {
-          "pid": 2132235
+          "pid": 2276654
         },
         "kind": "guard_installed",
-        "t": 1791993437.3754005
+        "t": 1791994378.033925
       },
       {
         "detail": {
-          "pid": 2132247
+          "pid": 2281050
         },
         "kind": "guard_installed",
-        "t": 1791993462.0808136
+        "t": 1791994403.1707616
       },
       {
         "detail": {
-          "pid": 2132288
+          "pid": 2281111
         },
         "kind": "guard_installed",
-        "t": 1791993483.9063613
+        "t": 1791994424.8464286
       },
       {
         "detail": {
-          "pid": 2132301
+          "pid": 2281119
         },
         "kind": "guard_installed",
-        "t": 1791993485.703236
+        "t": 1791994426.5277367
       }
     ],
     "no_net_log": "/tmp/s10_31_work/cli_scratch/no_net_events.jsonl",
@@ -309,7 +309,7 @@
     "resource-tuned-profile DX: explicitly out of scope by contract ('a resource-tuned profile is not unchanged-default DX proof'); all gates here run shipped defaults"
   ],
   "mode_label": "wheel + source install of the S10 candidate (qualified_exact_cpu track); no native backend exists on this line",
-  "session_loadavg": "16.17",
+  "session_loadavg": "15.92",
   "source_gate": {
     "status": "passed"
   },
@@ -330,7 +330,7 @@
   "wheel": {
     "build_method": "pip wheel <checkout> --no-deps --no-build-isolation in a fresh uv venv seeded with setuptools setuptools-84.0.0-py3-none-any.whl; no network, pyproject.toml untouched",
     "built_from": "/storage/scratch1/1/dsynn6/solweig-light",
-    "git_head": "94a358a97ad393ef0ee3e7ea4a5f2ad708bf83da",
+    "git_head": "33007e76bfc0ac5d837b6c9db510b87734d79651",
     "name": "solweig_light-0.1.0.dev0-py3-none-any.whl",
     "path": "/tmp/s10_31_work/dist/solweig_light-0.1.0.dev0-py3-none-any.whl",
     "product_source_identity": {
@@ -342,7 +342,7 @@
         "pyproject.toml"
       ]
     },
-    "sha256": "e645f049c8c1f49e2397d8a474ff0f447cef6918637aa0fc91d6d46dd6da24f9",
+    "sha256": "6728b6cbf5f3f431be0780595e33996ec743aa9aad289fc6dcdd0a18c5889912",
     "sha256_note": "per-build value: zip member timestamps are not normalized by pip; content is reproducible from the recorded tree, the digest is run-scoped"
   },
   "wheel_gate": {
@@ -487,7 +487,7 @@
         ]
       }
     },
-    "git_head": "94a358a97ad393ef0ee3e7ea4a5f2ad708bf83da",
+    "git_head": "33007e76bfc0ac5d837b6c9db510b87734d79651",
     "product_source_identity": {
       "command": "git diff --quiet <freeze> HEAD -- src pyproject.toml",
       "freeze_sha": "c245ea60f32b2ca93191ea00f48a4f6085a60a2b",
@@ -506,7 +506,7 @@
     "wheel": {
       "name": "solweig_light-0.1.0.dev0-py3-none-any.whl",
       "pure": true,
-      "sha256_run_scoped": "e645f049c8c1f49e2397d8a474ff0f447cef6918637aa0fc91d6d46dd6da24f9"
+      "sha256_run_scoped": "6728b6cbf5f3f431be0780595e33996ec743aa9aad289fc6dcdd0a18c5889912"
     }
   },
   "wheel_venv": {

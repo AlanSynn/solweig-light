@@ -127,7 +127,7 @@
       ]
     }
   },
-  "git_head": "94a358a97ad393ef0ee3e7ea4a5f2ad708bf83da",
+  "git_head": "33007e76bfc0ac5d837b6c9db510b87734d79651",
   "product_source_identity": {
     "command": "git diff --quiet <freeze> HEAD -- src pyproject.toml",
     "freeze_sha": "c245ea60f32b2ca93191ea00f48a4f6085a60a2b",
@@ -146,6 +146,6 @@
   "wheel": {
     "name": "solweig_light-0.1.0.dev0-py3-none-any.whl",
     "pure": true,
-    "sha256_run_scoped": "e645f049c8c1f49e2397d8a474ff0f447cef6918637aa0fc91d6d46dd6da24f9"
+    "sha256_run_scoped": "6728b6cbf5f3f431be0780595e33996ec743aa9aad289fc6dcdd0a18c5889912"
   }
 }
