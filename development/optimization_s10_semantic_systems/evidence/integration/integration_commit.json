@@ -1,0 +1,250 @@
+{
+  "task": "S10-20",
+  "title": "Integrate first wave + actual small chronology",
+  "head": "4506a2e9a89dfeccacb0ef23fcbfe094e4eb9a36",
+  "harness": {
+    "path_outside_git": "/storage/scratch1/1/dsynn6/solweig-light-s10-raw/integration/s10_integration_run.py",
+    "sha256": "4231202fbe4d9e603a5c4470d6e1ff048fda80c1d8f21abc5683e9864015b21b",
+    "admission_probe": {
+      "path_outside_git": "/storage/scratch1/1/dsynn6/solweig-light-s10-raw/integration/s10_default_probe.py",
+      "sha256": "13c1d586db49b0187955a75bbe4bc9bf093f175e6f3d1d3e0162468a01b9e2ac"
+    }
+  },
+  "environment": {
+    "host": "PACE login-class node, 4-core cgroup, loadavg 17.7-20.3 during runs (co-tenant CPU contention; wall times are not performance claims)",
+    "python": "repo .venv (conda libgdal 3.13 + locked deps)",
+    "env_hygiene": "run24/run48/multitile assert empty SOLWEIG_LIGHT_* at process start; recorded solweig_env_at_start: {} in every mode output; oracle48 sets its two kill-switch env vars programmatically"
+  },
+  "run_A_default": {
+    "claim": "The pure default path (no env, no runtime options) admits and completes the 24-step landcover golden tile at this HEAD on this host: job estimate 809,673,344 B vs resolved default budget view 2,744,623,104 B (4% of the container-correct 68,719,476,736 B view; S03b). The S03b host-demo refusal was a larger-estimate scenario; the default outcome is estimate-dependent, not a fixed host verdict.",
+    "admission_probe": {
+      "physical_memory_bytes": 403779805184,
+      "container_limit_bytes": 68719476736,
+      "default_gdal_cache_bytes": 3435973836,
+      "cgroup_current_bytes": null,
+      "outcome": "completed",
+      "admission": {
+        "estimates": [
+          809673344
+        ],
+        "active_workers": 1,
+        "resolved_memory_budget_bytes": 2734442496,
+        "workers": 1,
+        "threads_per_worker": 1,
+        "cpu_budget": 1
+      }
+    },
+    "note": "Default options on this host: workers=1, threads_per_worker=1, cpu_budget=1. run24 pins exactly this execution config."
+  },
+  "run_B_run24": {
+    "config": "workers=1, threads_per_worker=1, cpu_budget=1, memory_budget_bytes=5.5e9 (explicit budget = only deviation)",
+    "wall_times_s_contention_only": [
+      8.482729104929604,
+      7.6702933490742,
+      6.5604612859897316
+    ],
+    "comparison_vs_stored_goldens": {
+      "Kdown_0_0.tif": {
+        "rule": {
+          "atol": 0.05,
+          "rtol": 1e-05
+        },
+        "worst": {
+          "max_abs": 0.00018310546875,
+          "band": 13,
+          "row": 9,
+          "col": 30
+        }
+      },
+      "Kup_0_0.tif": {
+        "rule": {
+          "atol": 0.05,
+          "rtol": 1e-05
+        },
+        "worst": {
+          "max_abs": 3.0517578125e-05,
+          "band": 15,
+          "row": 12,
+          "col": 9
+        }
+      },
+      "Ldown_0_0.tif": {
+        "rule": {
+          "atol": 0.05,
+          "rtol": 1e-05
+        },
+        "worst": {
+          "max_abs": 0.000457763671875,
+          "band": 16,
+          "row": 2,
+          "col": 9
+        }
+      },
+      "Lup_0_0.tif": {
+        "rule": {
+          "atol": 0.05,
+          "rtol": 1e-05
+        },
+        "worst": {
+          "max_abs": 0.00018310546875,
+          "band": 15,
+          "row": 14,
+          "col": 9
+        }
+      },
+      "Shadow_0_0.tif": {
+        "rule": {},
+        "worst": {
+          "max_abs": 0.0,
+          "band": 24,
+          "row": 0,
+          "col": 0
+        }
+      },
+      "TMRT_0_0.tif": {
+        "rule": {
+          "max_abs": 0.01
+        },
+        "worst": {
+          "max_abs": 6.103515625e-05,
+          "band": 16,
+          "row": 7,
+          "col": 16
+        }
+      },
+      "Ta_0_0.tif": {
+        "rule": {},
+        "worst": {
+          "max_abs": 0.0,
+          "band": 24,
+          "row": 0,
+          "col": 0
+        }
+      },
+      "UTCI_0_0.tif": {
+        "rule": {
+          "max_abs": 0.02
+        },
+        "worst": {
+          "max_abs": 4.9591064453125e-05,
+          "band": 16,
+          "row": 31,
+          "col": 28
+        }
+      },
+      "WBGT_0_0.tif": {
+        "rule": {
+          "max_abs": 0.02
+        },
+        "worst": {
+          "max_abs": 5.7220458984375e-05,
+          "band": 17,
+          "row": 7,
+          "col": 14
+        }
+      },
+      "Wind_0_0.tif": {
+        "rule": {},
+        "worst": {
+          "max_abs": 0.0,
+          "band": 24,
+          "row": 0,
+          "col": 0
+        }
+      }
+    },
+    "determinism_note": "Two independent run24 executions (03:5x) produced identical per-file worst max_abs and coordinates (compare24 re-verified the second execution from disk)."
+  },
+  "run_C_run48_oracle48": {
+    "chronology": "48 half-hourly steps: disclosed extension of the real golden metfile (each hourly row duplicated at imin=30, identical forcing); 48 rows are the chronology (pipeline.py:104 loadtxt, no date filter); timestepdec becomes 0.5 h",
+    "candidate": {
+      "routes": "all accepted S10 routes at defaults (T01 primary, G01/G02 prepared GVF, R03 packed aniLum)",
+      "gvf_counts": {
+        "prepared": 30,
+        "serial": 0
+      },
+      "route_counts": {
+        "define_patch_characteristics_primary": 48,
+        "define_patch_characteristics_reference": 0,
+        "Lcyl_v2022a_primary": 48,
+        "Lcyl_v2022a_reference": 0
+      },
+      "wall_s_contention_only": 14.827923848992214
+    },
+    "oracle": {
+      "forcing": "SOLWEIG_LIGHT_ANILUM_PACKED=0 (R03), SOLWEIG_LIGHT_GVF_PREPARE=0 (G01/G02 -> serial delegate), patch_radiation._uniform_tgwall -> decline (T01 primaries fall back to the serial reference: main's census-documented behavior; all four admission sites resolve the name from patch_radiation at call time)",
+      "gvf_counts": {
+        "prepared": 30,
+        "serial": 30
+      },
+      "route_counts": {
+        "define_patch_characteristics_primary": 0,
+        "define_patch_characteristics_reference": 48,
+        "Lcyl_v2022a_primary": 0,
+        "Lcyl_v2022a_reference": 48
+      },
+      "wall_s_contention_only": 21.360876380000263,
+      "engagement_interpretation": "prepared=30 counts CALLS entering prepared_gvf_step (the engine wrapper calls it unconditionally); with the toggle off all 30 delegated to the serial route (serial=30 vs candidate serial=0)"
+    },
+    "config": "both sides workers=1, threads_per_worker=1, cpu_budget=1, memory_budget_bytes=5.5e9 (matched execution config)",
+    "no_stored_goldens_note": "no original-CPU goldens exist for the 48-step chronology; the forced-reference full-pipeline run is the oracle (the upstream oracle environment does not exist on this host)"
+  },
+  "run_D_multitile": {
+    "config": "run_utci_tiles workers=2, threads_per_worker=1, cpu_budget=2",
+    "disclosed_deviations": [
+      "memory_budget_bytes=9.6e9 (default-admissible base refused 2x4.313e9 B phase reservations; policy reject is by design)",
+      "second tile is a byte-copy of the golden tile (same-content tile)"
+    ],
+    "tiles": {
+      "0_0": 10,
+      "1_1": 10
+    },
+    "bands_per_file": 24,
+    "wall_s_contention_only": 13.50831902702339,
+    "refusal_record": "first attempt with memory_budget_bytes=5.5e9 raised ResourceAdmissionError before any worker spawned: \"requested 2 concurrent phase jobs but only 1 fit: the 2 largest reservations sum to 8,625,995,928 B against a 5,070,503,270 B reservation base\" (C6-42 policy=reject, by design; retained in multitile_err.log)"
+  },
+  "schema_contracts": {
+    "run48": {
+      "Kdown_0_0.tif": {
+        "bands": 48,
+        "dtype": "Float32"
+      },
+      "Kup_0_0.tif": {
+        "bands": 48,
+        "dtype": "Float32"
+      },
+      "Ldown_0_0.tif": {
+        "bands": 48,
+        "dtype": "Float32"
+      },
+      "Lup_0_0.tif": {
+        "bands": 48,
+        "dtype": "Float32"
+      },
+      "Shadow_0_0.tif": {
+        "bands": 48,
+        "dtype": "Float32"
+      },
+      "TMRT_0_0.tif": {
+        "bands": 48,
+        "dtype": "Float32"
+      },
+      "Ta_0_0.tif": {
+        "bands": 48,
+        "dtype": "Float32"
+      },
+      "UTCI_0_0.tif": {
+        "bands": 48,
+        "dtype": "Float32"
+      },
+      "WBGT_0_0.tif": {
+        "bands": 48,
+        "dtype": "Float32"
+      },
+      "Wind_0_0.tif": {
+        "bands": 48,
+        "dtype": "Float32"
+      }
+    }
+  }
+}

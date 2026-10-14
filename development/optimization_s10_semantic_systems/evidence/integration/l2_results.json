@@ -1,0 +1,252 @@
+{
+  "task": "S10-20",
+  "head": "4506a2e9a89dfeccacb0ef23fcbfe094e4eb9a36",
+  "protocol": "development/benchmarks/protocols/comparison_v1.json (frozen)",
+  "comparisons": {
+    "run24_vs_stored_original_cpu_goldens": {
+      "steps": 24,
+      "result": "PASS",
+      "files": {
+        "Kdown_0_0.tif": {
+          "rule": {
+            "atol": 0.05,
+            "rtol": 1e-05
+          },
+          "worst": {
+            "max_abs": 0.00018310546875,
+            "band": 13,
+            "row": 9,
+            "col": 30
+          }
+        },
+        "Kup_0_0.tif": {
+          "rule": {
+            "atol": 0.05,
+            "rtol": 1e-05
+          },
+          "worst": {
+            "max_abs": 3.0517578125e-05,
+            "band": 15,
+            "row": 12,
+            "col": 9
+          }
+        },
+        "Ldown_0_0.tif": {
+          "rule": {
+            "atol": 0.05,
+            "rtol": 1e-05
+          },
+          "worst": {
+            "max_abs": 0.000457763671875,
+            "band": 16,
+            "row": 2,
+            "col": 9
+          }
+        },
+        "Lup_0_0.tif": {
+          "rule": {
+            "atol": 0.05,
+            "rtol": 1e-05
+          },
+          "worst": {
+            "max_abs": 0.00018310546875,
+            "band": 15,
+            "row": 14,
+            "col": 9
+          }
+        },
+        "Shadow_0_0.tif": {
+          "rule": {},
+          "worst": {
+            "max_abs": 0.0,
+            "band": 24,
+            "row": 0,
+            "col": 0
+          }
+        },
+        "TMRT_0_0.tif": {
+          "rule": {
+            "max_abs": 0.01
+          },
+          "worst": {
+            "max_abs": 6.103515625e-05,
+            "band": 16,
+            "row": 7,
+            "col": 16
+          }
+        },
+        "Ta_0_0.tif": {
+          "rule": {},
+          "worst": {
+            "max_abs": 0.0,
+            "band": 24,
+            "row": 0,
+            "col": 0
+          }
+        },
+        "UTCI_0_0.tif": {
+          "rule": {
+            "max_abs": 0.02
+          },
+          "worst": {
+            "max_abs": 4.9591064453125e-05,
+            "band": 16,
+            "row": 31,
+            "col": 28
+          }
+        },
+        "WBGT_0_0.tif": {
+          "rule": {
+            "max_abs": 0.02
+          },
+          "worst": {
+            "max_abs": 5.7220458984375e-05,
+            "band": 17,
+            "row": 7,
+            "col": 14
+          }
+        },
+        "Wind_0_0.tif": {
+          "rule": {},
+          "worst": {
+            "max_abs": 0.0,
+            "band": 24,
+            "row": 0,
+            "col": 0
+          }
+        }
+      }
+    },
+    "run48_vs_forced_reference_oracle": {
+      "steps": 48,
+      "result": "PASS",
+      "files": {
+        "Kdown_0_0.tif": {
+          "rule": {
+            "atol": 0.05,
+            "rtol": 1e-05
+          },
+          "worst": {
+            "max_abs": 0.0,
+            "band": 48,
+            "row": 0,
+            "col": 0
+          }
+        },
+        "Kup_0_0.tif": {
+          "rule": {
+            "atol": 0.05,
+            "rtol": 1e-05
+          },
+          "worst": {
+            "max_abs": 0.0,
+            "band": 48,
+            "row": 0,
+            "col": 0
+          }
+        },
+        "Ldown_0_0.tif": {
+          "rule": {
+            "atol": 0.05,
+            "rtol": 1e-05
+          },
+          "worst": {
+            "max_abs": 0.000274658203125,
+            "band": 36,
+            "row": 31,
+            "col": 27
+          }
+        },
+        "Lup_0_0.tif": {
+          "rule": {
+            "atol": 0.05,
+            "rtol": 1e-05
+          },
+          "worst": {
+            "max_abs": 0.0001220703125,
+            "band": 23,
+            "row": 27,
+            "col": 27
+          }
+        },
+        "Shadow_0_0.tif": {
+          "rule": {},
+          "worst": {
+            "max_abs": 0.0,
+            "band": 48,
+            "row": 0,
+            "col": 0
+          }
+        },
+        "TMRT_0_0.tif": {
+          "rule": {
+            "max_abs": 0.01
+          },
+          "worst": {
+            "max_abs": 6.103515625e-05,
+            "band": 40,
+            "row": 0,
+            "col": 6
+          }
+        },
+        "Ta_0_0.tif": {
+          "rule": {},
+          "worst": {
+            "max_abs": 0.0,
+            "band": 48,
+            "row": 0,
+            "col": 0
+          }
+        },
+        "UTCI_0_0.tif": {
+          "rule": {
+            "max_abs": 0.02
+          },
+          "worst": {
+            "max_abs": 6.4849853515625e-05,
+            "band": 25,
+            "row": 23,
+            "col": 8
+          }
+        },
+        "WBGT_0_0.tif": {
+          "rule": {
+            "max_abs": 0.02
+          },
+          "worst": {
+            "max_abs": 5.53131103515625e-05,
+            "band": 40,
+            "row": 24,
+            "col": 33
+          }
+        },
+        "Wind_0_0.tif": {
+          "rule": {},
+          "worst": {
+            "max_abs": 0.0,
+            "band": 48,
+            "row": 0,
+            "col": 0
+          }
+        }
+      }
+    },
+    "multitile_tile_0_0_bitwise_vs_run24": {
+      "result": "PASS",
+      "all_bitwise": true,
+      "files": {
+        "Kdown_0_0.tif": true,
+        "Kup_0_0.tif": true,
+        "Ldown_0_0.tif": true,
+        "Lup_0_0.tif": true,
+        "Shadow_0_0.tif": true,
+        "TMRT_0_0.tif": true,
+        "Ta_0_0.tif": true,
+        "UTCI_0_0.tif": true,
+        "WBGT_0_0.tif": true,
+        "Wind_0_0.tif": true
+      }
+    }
+  },
+  "reading": "Ldown/Lup/TMRT/UTCI/WBGT worst deltas are the documented T01 <=2-ulp Lcyl field deltas propagating through the full pipeline (evidence/t01_l1_kernel_differential.md); Kdown/Kup/Shadow/Ta/Wind exact in both differentials; every file within its frozen budget with 2-3 orders of magnitude of headroom."
+}

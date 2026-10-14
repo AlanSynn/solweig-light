@@ -25,6 +25,23 @@ to `evidence/` (distilled) and `/storage/scratch1/1/dsynn6/solweig-light-s10-raw
 | 12 | T02 | typed execution plan (profile->kernel planning) | amortizes Python type checks; needed at scale of T01 use | folds into T01 design | cold JIT | fold into T01 |
 
 Notes:
+- S10-20 integration COMPLETE (2026-10-14, evidence/integration/): four real
+  full-pipeline runs at HEAD — (A) pure-default run ADMITS the 24-step golden
+  tile on this host (estimate 0.81 GB vs 2.74 GB default budget view; the
+  default outcome is estimate-dependent — refines, not contradicts, the S03b
+  demo); (B) 24-step golden vs stored original-CPU goldens PASS all ten
+  products (worst: Ldown 4.58e-04 vs atol 0.05; TMRT 6.1e-05 vs 0.01;
+  Ta/Wind/Shadow exact), run-to-run deterministic; (C) 48-step half-hourly
+  chronology (disclosed metfile extension, timestepdec 0.5 h) candidate vs
+  forced-reference oracle (R03/G01 kill switches + T01 admission decline —
+  main's census-documented fallback) PASS with route engagement proven both
+  sides (candidate: prepared 30/30 daytime, primaries 48/48; oracle: serial
+  30/30, reference 48/48); (D) 2-tile worker pool: 5.5 GB budget refusal of
+  2 concurrent phase reservations recorded (C6-42 reject, by design), rerun
+  at 9.6 GB completes concurrently and tile 0_0 is BITWISE-identical to the
+  in-process run B (10 files × 24 bands). Machine-readable:
+  evidence/integration/integration_commit.json + l2_results.json. Gates:
+  S10 59/59, landcover differential 2/2.
 - S10-15 wave-1 independent review COMPLETE (2026-10-14, evidence/reviews/
   wave1/): no blockers — R03/S03b approved, T01/G01+G02/S10-14 approved
   with notes; all seven deferrals (rows 6-12) agreed. Review follow-ups
