@@ -1561,9 +1561,20 @@ def Solweig_2022a_calc(i, dsm, scale, rows, cols, svf, svfN, svfW, svfE, svfS, s
             patchchoice = 1
             zenDeg = _operate(np.multiply, zen, _divide(180, np.pi))
             lv, pc_, pb_ = Perez_v3(zenDeg.item(), azimuth.item(), radD, radI, jday.item(), patchchoice, patch_option)
-            aniLum = _zeros((rows, cols))
-            for idx in range(lv.shape[0]):
-                aniLum += _operate(np.multiply, diffsh[:, :, idx], lv[idx, 2])
+            # S10 R03: the retained per-patch Python plane decode runs only
+            # when the packed-stream route declines; admitted scenes keep the
+            # per-pixel ascending patch accumulation in float32, so aniLum is
+            # bitwise. SOLWEIG_LIGHT_ANILUM_PACKED=0 stands down.
+            from ..runtime import get_runtime_options
+            from .patch_radiation import anilum_packed
+            packed = anilum_packed(diffsh, lv, rows * cols,
+                                   parallel=get_runtime_options().threads_per_worker > 1)
+            if packed is None:
+                aniLum = _zeros((rows, cols))
+                for idx in range(lv.shape[0]):
+                    aniLum += _operate(np.multiply, diffsh[:, :, idx], lv[idx, 2])
+            else:
+                aniLum = packed.reshape(rows, cols)
             dRad = _operate(np.multiply, aniLum, radD)
         else:
             dRad = _operate(np.multiply, radD, svfbuveg)

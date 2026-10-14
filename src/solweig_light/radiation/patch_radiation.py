@@ -635,6 +635,76 @@ def _shortwave_fused_serial(sh_flat,sh_off,sh_modes,vs_flat,vs_off,vs_modes,vb_f
                         out[row,16+direction]=np.float32(out[row,16+direction]+b)
     return out
 
+@njit(cache=True, fastmath=False, parallel=True)
+def _anilum_packed_parallel(dsh_flat,dsh_off,dsh_modes,dveg_flat,dveg_off,dveg_modes,lum,total):
+    out=np.empty(total,dtype=np.float32)
+    for pixel in prange(total):
+        acc=np.float32(0)
+        for patch in range(lum.shape[0]):
+            d_v=_decode_at(dsh_flat,dsh_off,dsh_modes,patch,pixel)
+            t_v=_decode_at(dveg_flat,dveg_off,dveg_modes,patch,pixel)
+            difference=np.float32(np.float32(1)-t_v)
+            product=np.float32(difference*np.float32(1-.03))
+            d_v=np.float32(d_v-product)
+            acc=np.float32(acc+np.float32(d_v*lum[patch]))
+        out[pixel]=acc
+    return out
+
+@njit(cache=True, fastmath=False)
+def _anilum_packed_serial(dsh_flat,dsh_off,dsh_modes,dveg_flat,dveg_off,dveg_modes,lum,total):
+    out=np.empty(total,dtype=np.float32)
+    for pixel in range(total):
+        acc=np.float32(0)
+        for patch in range(lum.shape[0]):
+            d_v=_decode_at(dsh_flat,dsh_off,dsh_modes,patch,pixel)
+            t_v=_decode_at(dveg_flat,dveg_off,dveg_modes,patch,pixel)
+            difference=np.float32(np.float32(1)-t_v)
+            product=np.float32(difference*np.float32(1-.03))
+            d_v=np.float32(d_v-product)
+            acc=np.float32(acc+np.float32(d_v*lum[patch]))
+        out[pixel]=acc
+    return out
+
+def anilum_packed(diffuse,lv,total,parallel):
+    """Ordered packed-stream daytime diffuse sum; None selects the retained loop.
+
+    S10 R03: the anisotropic branch accumulates ``aniLum`` one Python plane
+    decode per Perez patch (``diffsh[:, :, idx]``), 153 plane decodes per
+    daytime step on the census profile. This route decodes the same packed
+    leaves inside the kernel with the aplus decoder the proven fused kernels
+    use and keeps each pixel's patch accumulation in the baseline's ascending
+    order with the same float32 multiply, so admitted scenes are bitwise.
+
+    Declines (the exact retained loop then runs unchanged): lazy leaves
+    outside the two admitted packed implementations, weight profiles whose
+    multiply would leave float32, ternary patches (their reserved-code
+    contract belongs to the Python indexer, which raises the original
+    IndexError), and the SOLWEIG_LIGHT_ANILUM_PACKED=0 stand-down.
+    """
+    if os.environ.get('SOLWEIG_LIGHT_ANILUM_PACKED') == '0':
+        return None
+    from ..geometry.visibility import LazyDiffVisibility
+    if not isinstance(diffuse,LazyDiffVisibility):
+        return None
+    leaves=_packed_leaves(diffuse,allow_lazy=True)
+    if leaves is None:
+        return None
+    weights=np.asarray(lv)
+    if weights.ndim!=2 or weights.dtype!=np.float32 or weights.shape[0]<1 or weights.shape[1]<3:
+        return None
+    rows,cols,patches=diffuse.shape
+    if total!=rows*cols or weights.shape[0]!=patches:
+        return None
+    from ..geometry.visibility_compiled import _fused_descriptor
+    dsh=_fused_descriptor(leaves[0])
+    dveg=_fused_descriptor(leaves[1])
+    if (dsh[2]==2).any() or (dveg[2]==2).any():
+        return None
+    with _fused_guard(leaves,0,total,patches):
+        lum=np.ascontiguousarray(weights[:,2])
+        kernel=_anilum_packed_parallel if parallel else _anilum_packed_serial
+        return kernel(*dsh,*dveg,lum,total)
+
 def Kside_veg_v2022a(*args,block_pixels=128,parallel=True,**kwargs):
     from . import engine as e
     reference=_reference('Kside_veg_v2022a')
