@@ -618,5 +618,5 @@
     }
   ],
   "no_multiply_counting": "t(W,H) is the measured wall of the whole batch through the public pool path at the same cpu_budget=4; no per-worker time was divided or summed into a batch claim (D07). Batch time includes barriers: pool spawn, chronological stage execution inside each worker, and export publication.",
-  "head": "17574b4e1b6e6abf24a87a9e4c318405f8ffc8a2"
+  "head": "894f803d2d645860f11022e781352b053fba0333"
 }

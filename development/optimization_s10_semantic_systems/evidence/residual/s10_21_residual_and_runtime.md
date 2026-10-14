@@ -21,16 +21,16 @@ Disjoint accounting — calc 0.709 s:
 
 | stage | calls/run | % calc | route |
 |---|---|---|---|
-| gvf_2018a | 2 | 31.6% | prepared (C6-30 + G01/G02) |
-| Lcyl_v2022a_by_demand | 4 | 28.1% | primary + N9 stream; **dpc nested inside** |
-| Kside_veg_v2022a | 2 | 24.8% | compiled primary |
-| Lside_veg_v2022a | 4 | 5.1% | NumPy `_operate` body (no compiled twin) |
-| anilum_packed | 2 | 2.5% | R03 packed kernel |
-| shadowingfunction_wallheight_23 | 2 | 1.7% | exact_23 |
+| gvf_2018a | 14 | 31.6% | prepared (C6-30 + G01/G02) |
+| Lcyl_v2022a_by_demand | 24 | 28.1% | primary + N9 stream; **dpc nested inside** |
+| Kside_veg_v2022a | 14 | 24.8% | compiled primary |
+| Lside_veg_v2022a | 24 | 5.1% | NumPy `_operate` body (no compiled twin) |
+| anilum_packed | 14 | 2.5% | R03 packed kernel |
+| shadowingfunction_wallheight_23 | 14 | 1.7% | exact_23 |
 | body residual | — | 6.2% | — |
 
-(Runs are 24 steps; the calls/run column shows the 3-rep accumulator divided
-by 3.) Two structural notes: `define_patch_characteristics` fires 24/24
+(Per-run call counts are the final timed rep's raw counts; the shares are
+final-rep shares — corrected per review finding F1.) Two structural notes: `define_patch_characteristics` fires 24/24
 **nested inside** the Lcyl demand span (cylinder_longwave.py:466), so its
 cost is inside that stage — not additive; and R03 is verified in-place — the
 packed kernel is 2.5% of calc where the retained Python loop was 11.1%

@@ -25,6 +25,14 @@ to `evidence/` (distilled) and `/storage/scratch1/1/dsynn6/solweig-light-s10-raw
 | 12 | T02 | typed execution plan (profile->kernel planning) | amortizes Python type checks; needed at scale of T01 use | folds into T01 design | cold JIT | fold into T01 |
 
 Notes:
+- Wave-2 independent review COMPLETE (2026-10-14, evidence/reviews/wave2/):
+  S10-20 + S10-21 approved_with_notes, NO blockers. Reviewer independently
+  re-ran compare24/compare48 from disk (byte-identical), re-verified
+  multitile bitwise with its own checker, audited multiply-counting (dpc
+  nesting confirmed), reproduced the 9-run t(W,H) ordering, matched all
+  harness/archive sha256s, re-ran gates (59/59 + 2/2). Five minor findings
+  (doc numeric errors, derivation labels, provenance/retention notes) — all
+  closed same day; no measurement claim changed.
 - S10-21 residual profile + joint resource comparison COMPLETE (2026-10-14,
   evidence/residual/): disjoint stage costs at HEAD re-rank the residuals —
   Lside twin 5.1% calc (~3.1% tile) is the top exact candidate; S07/S09

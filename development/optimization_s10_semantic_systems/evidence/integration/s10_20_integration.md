@@ -30,7 +30,7 @@ Four real full-pipeline runs at HEAD, each in its own process:
 
 The pure default run (no env, no options) **admitted and completed** the
 24-step golden tile: job estimate `809,673,344 B` against a resolved default
-budget view of `2,744,623,104 B` (4% of the container-correct
+budget view of `2,744,442,496 B` (4% of the container-correct
 `68,719,476,736 B` view; S03b). The admission probe
 (`s10_default_probe.py`, wrapping `runtime.plan_admission`) recorded the
 decision inputs verbatim. Default options on this host are
@@ -63,10 +63,13 @@ verbatim (schema/metadata/nodata exact, nonfinite masks equal, frozen
 | Wind | 0 (exact) | — |
 
 Two independent `run24` executions produced identical worst values and
-coordinates (`compare24` re-verified the second execution from disk):
-run-to-run determinism on this path. Wall times (8.5/7.7/6.6 s at loadavg
-≈ 19-20) are contention artifacts, not performance claims — the quiet-window
-rerun is S10-30.
+coordinates (`compare24` re-verified the second execution from disk — and
+re-verified again, byte-identical, by the independent wave-2 review): the
+equality of the first pair is an in-session observation (only the second
+execution's outputs are retained; review finding F5 — future determinism
+claims retain per-execution compare JSONs). Wall times (8.5/7.7/6.6 s at
+loadavg ≈ 19-20) are contention artifacts, not performance claims — the
+quiet-window rerun is S10-30.
 
 ## Run C: 48-step real chronology with a forced-reference oracle
 

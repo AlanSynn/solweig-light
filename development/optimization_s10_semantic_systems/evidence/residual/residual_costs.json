@@ -1,7 +1,8 @@
 {
   "task": "S10-21",
-  "head": "17574b4e1b6e6abf24a87a9e4c318405f8ffc8a2",
+  "head": "894f803d2d645860f11022e781352b053fba0333",
   "method": "wrapper-timed perf_counter, 1 warmup + 3 timed in-process; 256 MiB GDAL cap + 5.5e9 budget (census deviations); workers=1/threads=1; landcover golden tile (32x35, 24 steps)",
+  "calls_per_run_note": "raw final-rep per-run call counts",
   "disjoint_framing": "Amdahl complete-boundary accounting (THROUGHPUT.md): calc = sum(stage call spans) + body_residual; tile = calc + pipeline buckets + startup_residual. Fractions are shares of the measured spans, NOT composable speedups; overlapping candidates share the combined implementation cost. dpc is nested INSIDE the Lcyl_v2022a_by_demand span (cylinder_longwave.py:466 calls the dpc primary), so its cost is inside that stage, not additive.",
   "measurement": {
     "tile_total_s": 1.1676,
@@ -25,25 +26,25 @@
   },
   "calc_stages": {
     "gvf_2018a": {
-      "calls_per_run": 4,
+      "calls_per_run": 14,
       "s": 0.2238,
       "pct_calc": 31.6,
       "pct_tile": 19.2
     },
     "Lcyl_v2022a_by_demand": {
-      "calls_per_run": 8,
+      "calls_per_run": 24,
       "s": 0.1994,
       "pct_calc": 28.1,
       "pct_tile": 17.1
     },
     "Kside_veg_v2022a": {
-      "calls_per_run": 4,
+      "calls_per_run": 14,
       "s": 0.1758,
       "pct_calc": 24.8,
       "pct_tile": 15.1
     },
     "Lside_veg_v2022a": {
-      "calls_per_run": 8,
+      "calls_per_run": 24,
       "s": 0.0363,
       "pct_calc": 5.1,
       "pct_tile": 3.1
@@ -55,13 +56,13 @@
       "pct_tile": 0.0
     },
     "shadowingfunction_wallheight_23": {
-      "calls_per_run": 4,
+      "calls_per_run": 14,
       "s": 0.0122,
       "pct_calc": 1.7,
       "pct_tile": 1.0
     },
     "anilum_packed": {
-      "calls_per_run": 4,
+      "calls_per_run": 14,
       "s": 0.0174,
       "pct_calc": 2.5,
       "pct_tile": 1.5
@@ -69,55 +70,55 @@
   },
   "pipeline_buckets": {
     "GeometryCache": {
-      "calls_per_run": 0,
+      "calls_per_run": 1,
       "s": 0.0,
       "pct_calc": 0.0,
       "pct_tile": 0.0
     },
     "isobaric_wet_bulb_temperature_from_rh": {
-      "calls_per_run": 0,
+      "calls_per_run": 1,
       "s": 0.0003,
       "pct_calc": 0.0,
       "pct_tile": 0.0
     },
     "TransactionalOutputs.restore": {
-      "calls_per_run": 0,
+      "calls_per_run": 1,
       "s": 0.0,
       "pct_calc": 0.0,
       "pct_tile": 0.0
     },
     "ForcingTimeline.at": {
-      "calls_per_run": 8,
+      "calls_per_run": 24,
       "s": 0.0002,
       "pct_calc": 0.0,
       "pct_tile": 0.0
     },
     "SimulationState.accept": {
-      "calls_per_run": 8,
+      "calls_per_run": 24,
       "s": 0.0002,
       "pct_calc": 0.0,
       "pct_tile": 0.0
     },
     "utci_calculator_uniform": {
-      "calls_per_run": 8,
+      "calls_per_run": 24,
       "s": 0.0095,
       "pct_calc": 1.3,
       "pct_tile": 0.8
     },
     "black_globe_temperature": {
-      "calls_per_run": 8,
+      "calls_per_run": 24,
       "s": 0.0022,
       "pct_calc": 0.3,
       "pct_tile": 0.2
     },
     "TransactionalOutputs.write": {
-      "calls_per_run": 8,
+      "calls_per_run": 24,
       "s": 0.0566,
       "pct_calc": 8.0,
       "pct_tile": 4.8
     },
     "TransactionalOutputs.checkpoint": {
-      "calls_per_run": 8,
+      "calls_per_run": 24,
       "s": 0.172,
       "pct_calc": 24.3,
       "pct_tile": 14.7

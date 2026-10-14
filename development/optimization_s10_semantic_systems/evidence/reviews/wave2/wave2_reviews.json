@@ -1,0 +1,70 @@
+{
+  "reviewer": "independent S10-20/S10-21 reviewer (not an author)",
+  "date": "2026-10-14",
+  "head_reviewed": "894f803d2d645860f11022e781352b053fba0333",
+  "verdicts": [
+    {
+      "task": "S10-20",
+      "verdict": "approved_with_notes",
+      "rationale": "Census trap cleared from raw data and mechanism: run48_out.json vs oracle48_out.json show candidate prepared=30/serial=0 with dpc+Lcyl primaries 48/0, oracle prepared=30/serial=30 with references 0/48; the counting wrappers bite because engine.gvf_2018a resolves prepared_gvf_step and ground_view.gvf_2018a by in-function import (engine.py ~1779-1781) and the _uniform_tgwall decline bites at all four admission sites (patch_radiation.py:1076/:1134 module globals; cylinder_longwave.py:371/:435 in-function imports). compare24 and compare48 re-run from disk by this reviewer: PASS with worst values and coordinates byte-identical to l2_results.json/integration_commit.json. Multitile bitwise claim independently re-verified (10 files x 24 bands, uint32 views, all equal). Refusal record matches the transcript capture verbatim; multitile_err.log overwrite is disclosed. Gates re-run green (59/59, landcover 2/2). Findings F2/F3 (two prose/summary numeric errors) and F4/F5 (provenance/disclosure gaps) are text-level; no measurement claim depends on them."
+    },
+    {
+      "task": "S10-21",
+      "verdict": "approved_with_notes",
+      "rationale": "Multiply-counting audit clean: dpc is genuinely nested inside the Lcyl span (cylinder_longwave.py:466 calls define_patch_characteristics_primary inside Lcyl_v2022a_primary, reached via the wrapped Lcyl_v2022a_by_demand entry at engine.py:1664), and the harness's separate engine.define_patch_characteristics wrapper recorded 0 calls, so nothing is double-counted; gvf_prepared imports only engine helpers (_operate/_array/_zeros/_divide), the dpc primary body calls no wrapped stage, and Lside/anilum/shadow fire at calc top level (sibling spans). All residual JSON values are a faithful copy of raw residual_profile_out.json; arithmetic re-verified (calc 0.7087 s = stage_sum 0.665 + body 0.0437; tile 1.1676 = calc + 0.2411 + 0.2179). t(W,H): ordering 4x1 < 2x2 < 1x4 holds in all 9 raw_runs (15.4/13.0/12.7 vs 24.9/17.6/17.7 vs 43.3/33.6/28.3), medians/spreads/paired ratios reproduce exactly, no minima cherry-picked, verdict wording matches THROUGHPUT.md (direction robust, magnitudes contention-affected, 'not an SLA'). D07 list items all present (options echo, admitted workers 1/2/4, worker PIDs, estimates 809673344 x4, probe-child numba/GDAL context NUMBA_NUM_THREADS=H, omp layer, affinity 4 CPUs, GDAL cache 3435134976). Finding F1 is a doc-only numeric error in the calls/run column (JSON and raw data are correct); F4 is a provenance note."
+    }
+  ],
+  "findings": [
+    {
+      "id": "F1",
+      "severity": "minor",
+      "task": "S10-21",
+      "claim": "s10_21_residual_and_runtime.md stage table: 'calls/run' 2/4/2/4/2/2 (gvf/Lcyl/Kside/Lside/anilum/shadow) with note 'the calls/run column shows the 3-rep accumulator divided by 3'.",
+      "evidence": "True per-run call counts (residual_profile_out.json per_run_accumulators, identical in all 3 reps): gvf 14, Lcyl 24, Kside 14, Lside 24, anilum 14, shadow 14. The repo JSON's calls_per_run 4/8/4/8/4/4 is floor(last-run count / TIMED=3), itself a mislabeled derivation; the doc's 2/4/2/4/2/2 matches neither (it is half the JSON value). The stated derivation is doubly wrong: the harness reset()s the accumulator before each rep, so it never holds a 3-rep sum. Also note the shares table is computed from the FINAL rep only (calc_s 0.7087 = rep-3 calc; rep-1 calc was 0.82243, which would give gvf 27.1%/Lcyl 38.0%/Kside 21.3%), while tile_total_s is the mean of the 3 reps.",
+      "recommended_fix": "Correct the doc column to the true per-run counts (14/24/14/24/14/14) or to the JSON field with an accurate derivation note; state that the shares are final-rep shares; fix the harness's calls_per_run derivation (or drop it, per_run_accumulators already carries the truth) before the next profile run. No percentage or S10-22 selection decision changes: rankings are stable across reps and the JSON/raw data are correct."
+    },
+    {
+      "id": "F2",
+      "severity": "minor",
+      "task": "S10-20",
+      "claim": "Run A: 'job estimate 809,673,344 B against a resolved default budget view of 2,744,623,104 B' (s10_20_integration.md:33-34 and integration_commit.json run_A_default.claim).",
+      "evidence": "default_probe_out.json admission.resolved_memory_budget_bytes = 2734442496 (2,744,442,496 B) — the value also embedded verbatim in integration_commit.json's own admission block. The prose/claim string differs by 180,608 B and matches no raw artifact. Estimate 809,673,344 and the ~4%-of-container framing are correct.",
+      "recommended_fix": "Correct the number to 2,744,442,496 B in s10_20_integration.md and run_A_default.claim."
+    },
+    {
+      "id": "F3",
+      "severity": "minor",
+      "task": "S10-20",
+      "claim": "l2_results.json 'reading': 'Kdown/Kup/Shadow/Ta/Wind exact in both differentials'.",
+      "evidence": "In run24_vs_stored_original_cpu_goldens (l2_results.json files block, and this reviewer's compare24 re-run) Kdown worst = 1.83e-04 and Kup = 3.05e-05 — within budget, not exact. Exact holds for Shadow/Ta/Wind in both differentials and for Kdown/Kup in the run48-vs-oracle differential only.",
+      "recommended_fix": "Reword to 'Shadow/Ta/Wind exact in both differentials; Kdown/Kup exact in the 48-step oracle differential and within budget vs the stored goldens'."
+    },
+    {
+      "id": "F4",
+      "severity": "minor",
+      "task": "S10-20+S10-21",
+      "claim": "Provenance: all S10-20 raw mode outputs record dirty:true with no disclosure of what was dirty; the S10-21 residual harness takes 'head' from sys.argv[1] (self-reported, not git-derived) and records no dirty flag at all.",
+      "evidence": "run24_out.json/run48_out.json/oracle48_out.json/multitile_out_clean.json all carry dirty:true; s10_residual_profile.py:167 ('head': sys.argv[1]); residual_profile_out.json head=17574b4e. Low materiality: every value claim was re-verified green by this reviewer at 894f803d, and 894f803d touches no product code vs 17574b4e (evidence/REGISTER only).",
+      "recommended_fix": "For S10-30 quiet-window reruns, record the full 'git status --porcelain' output (or run from a clean tree) and derive head via git rev-parse inside the harness."
+    },
+    {
+      "id": "F5",
+      "severity": "minor",
+      "task": "S10-20",
+      "claim": "'Two independent run24 executions produced identical worst values and coordinates' (run-to-run determinism).",
+      "evidence": "Only the second execution's outputs survive on disk (output_run24 overwritten); no per-execution worst-value artifact from execution 1 is retained, so the equality is an in-session observation, not independently verifiable from disk. The retained execution IS verified: this reviewer's compare24 re-run reproduced every worst value and coordinate exactly. The stderr overwrite is disclosed; the output overwrite of execution 1 is not explicitly called out.",
+      "recommended_fix": "Retain per-execution compare JSONs (e.g. compare24_exec{1,2}.json) for future determinism claims; optionally note the output-tree overwrite alongside the stderr-overwrite disclosure."
+    }
+  ],
+  "gates_rerun": {
+    "compare24_from_disk": "PASS (exit 0) — all 10 files; worst values and coordinates identical to l2_results.json/integration_commit.json (e.g. Ldown 4.57763671875e-04 @ band16 r2 c9; TMRT 6.103515625e-05 @ band16 r7 c16; Shadow/Ta/Wind 0.0)",
+    "compare48_from_disk": "PASS (exit 0) — all 10 files; identical to stored evidence (Ldown 2.74658203125e-04 @ b36 r31 c27; Lup 1.220703125e-04 @ b23 r27 c27; TMRT 6.103515625e-05; UTCI 6.4849853515625e-05; WBGT 5.53131103515625e-05; Kdown/Kup/Shadow/Ta/Wind 0.0)",
+    "multitile_bitwise_independent": "PASS — reviewer-written check, not the harness: multitile output_folder/0_0 vs run24/output_run24/output_folder/0_0, 10 files x 24 bands, uint32 views, all array_equal",
+    "pytest_tests_optimization_s10": "59 passed (24.7 s)",
+    "landcover_differential": "2 passed (test_pipeline_reference.py -k landcover)",
+    "sha256_harnesses": "6/6 match: s10_integration_run.py 4231202f..., s10_default_probe.py 13c1d586..., s10_residual_profile.py cc14ea7c..., s10_runtime_portfolio.py e2873d3b..., s10_worker_context.py 8bd655d4..., s10_collect_residual.py bac887a3...",
+    "sha256_archives": "s10_s20_integration.tar.gz 0befebe8d74338dd77e7485f8052f6c1c332855e61bf5770bb7582e24481fdcf MATCH; s10_s21_residual.tar.gz fb22af79ac4a218ba2e9b53ba84aa5db4291c4fafbc9fcc15fe1591ab5d854e9 MATCH",
+    "repo_json_vs_raw": "residual_costs.json identical to residual_profile_out.json; runtime_comparison.json measurement fields (portfolio/t_WH/paired_ratios/worker_context/raw_runs) identical to portfolio_out.json, plus head/no_multiply_counting/noise_verdict additions; l2_results.json and integration_commit.json value blocks identical to compare24/compare48/run24/oracle48/multitile/default_probe raw outputs"
+  },
+  "notes": "Census-trap audit (the priority check): engagement is real on both sides. Raw counters: candidate prepared=30/serial=0, dpc primary 48/reference 0, Lcyl primary 48/reference 0; oracle prepared=30/serial=30, dpc reference 48/primary 0, Lcyl reference 48/primary 0. Mechanism verified in product code: engine.gvf_2018a (engine.py ~1775-1795) imports prepared_gvf_step and ground_view.gvf_2018a in-function at call time, so the harness's module-attribute counters bite; the T01 decline (patch_radiation._uniform_tgwall = lambda: False) is consulted at all four admission sites (patch_radiation.py:1076 and :1134 module-global references; cylinder_longwave.py:377 and :441 via in-function imports at :371/:435), each decline counting the reference route and returning the reference result. 30 prepared calls = 30 daytime half-hours of 48 (register's 'daytime' wording is consistent; 24-step run shows 14 daytime hourly gvf calls, matching Kside/shadow/anilum counts of 14/run). Wrapper placement claims verified: engine.py:1569 in-function anilum_packed import; engine.py:1664 in-function Lcyl_v2022a_by_demand import; cylinder_longwave.py:466 dpc nesting; engine shadow wrapper routes float32 to exact_23; Lside body is the NumPy _operate implementation. No SLA language anywhere; wall times consistently qualified as contention-only/co-tenant-affected (loadavg 17-20 recorded per run); same-content tile disclosed in both S10-20 (tile 1_1) and S10-21 (4 byte-copied keys); probe-child-not-tile-worker disclosed in doc, harness docstring, and D07 note; D07's 'effective masks within worker threads' is proxied by the disclosed probe child (acceptable; optionally capture numba state inside a real tile worker at S10-30). Noise discipline clean: fresh process per run, frozen alternating order (collect loop rep-outer/config-inner matches the documented A,B,C x3), all 9 raw runs + min/max/spread + paired ratios published, medians reported (no minima), verdict wording matches THROUGHPUT.md confidence rules. Comparison semantics verified verbatim against tests/differential/test_pipeline_reference.py (rule lookup, schema/metadata/nodata/dtype/nonfinite-mask asserts) and comparison_v1.json rules (Ldown atol 0.05 rtol 1e-5, TMRT 0.01, UTCI/WBGT 0.02)."
+}

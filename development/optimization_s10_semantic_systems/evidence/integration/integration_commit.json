@@ -1,7 +1,7 @@
 {
   "task": "S10-20",
   "title": "Integrate first wave + actual small chronology",
-  "head": "4506a2e9a89dfeccacb0ef23fcbfe094e4eb9a36",
+  "head": "894f803d2d645860f11022e781352b053fba0333",
   "harness": {
     "path_outside_git": "/storage/scratch1/1/dsynn6/solweig-light-s10-raw/integration/s10_integration_run.py",
     "sha256": "4231202fbe4d9e603a5c4470d6e1ff048fda80c1d8f21abc5683e9864015b21b",
@@ -16,7 +16,7 @@
     "env_hygiene": "run24/run48/multitile assert empty SOLWEIG_LIGHT_* at process start; recorded solweig_env_at_start: {} in every mode output; oracle48 sets its two kill-switch env vars programmatically"
   },
   "run_A_default": {
-    "claim": "The pure default path (no env, no runtime options) admits and completes the 24-step landcover golden tile at this HEAD on this host: job estimate 809,673,344 B vs resolved default budget view 2,744,623,104 B (4% of the container-correct 68,719,476,736 B view; S03b). The S03b host-demo refusal was a larger-estimate scenario; the default outcome is estimate-dependent, not a fixed host verdict.",
+    "claim": "The pure default path (no env, no runtime options) admits and completes the 24-step landcover golden tile at this HEAD on this host: job estimate 809,673,344 B vs resolved default budget view 2,744,442,496 B (4% of the container-correct 68,719,476,736 B view; S03b). The S03b host-demo refusal was a larger-estimate scenario; the default outcome is estimate-dependent, not a fixed host verdict.",
     "admission_probe": {
       "physical_memory_bytes": 403779805184,
       "container_limit_bytes": 68719476736,
