@@ -1762,7 +1762,15 @@ def gvf_2018a(wallsun, walls, buildings, scale, shadow, first, second, dirwalls,
         # route. SOLWEIG_LIGHT_GVF_PREPARE=0 routes every call to the
         # previous fused path bitwise.
         return prepared_gvf_step(wallsun, walls, buildings, scale, shadow, first, second, dirwalls, Tg, Tgwall, Ta, emis_grid, ewall, alb_grid, SBC, albedo_b, rows, cols, Twater, lc_grid, landcover, parallel=True, block_rows=32)
-    return serial(wallsun, walls, buildings, scale, shadow, first, second, dirwalls, Tg, Tgwall, Ta, emis_grid, ewall, alb_grid, SBC, albedo_b, rows, cols, Twater, lc_grid, landcover)
+    # S10 G01: the single-thread path joins the prepared route with the serial
+    # gather; the C6-30 differentials prove that route bitwise against both
+    # the fused baseline and the verbatim original for parallel=[False, True].
+    # Unsupported inputs (and SOLWEIG_LIGHT_GVF_PREPARE=0) delegate to the
+    # exact H=1 baseline below, so rejected calls behave as before. The
+    # baseline takes no parallel/block_rows options, so the delegate drops
+    # the kwargs prepared_gvf_step forwards for the fused route.
+    return prepared_gvf_step(wallsun, walls, buildings, scale, shadow, first, second, dirwalls, Tg, Tgwall, Ta, emis_grid, ewall, alb_grid, SBC, albedo_b, rows, cols, Twater, lc_grid, landcover, parallel=False, block_rows=32,
+                             delegate=lambda *args, **kwargs: serial(*args))
 
 
 _serial_Kside_veg_v2022a = Kside_veg_v2022a

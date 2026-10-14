@@ -100,7 +100,19 @@ def _admits(wallsun, walls, buildings, scale, shadow, first, second, dirwalls, T
     """
     from .engine import _operate
     from .ground_view import _supported
-    if not _supported((wallsun, walls, buildings, shadow, dirwalls, Tg, emis_grid, alb_grid)) or (np.asarray(Tgwall).ndim > 0 and np.asarray(Tgwall).dtype != np.float32):
+    tgwall = np.asarray(Tgwall)
+    tg = np.asarray(Tg)
+    # S10 G02: production landcover scenes carry a float64 Tg (the daytime
+    # amplitude expression promotes through the f64 landcover parameters).
+    # Tg reaches the snapshot only through the Lup expression, which is
+    # evaluated in NumPy here and float32-converted exactly as the baseline's
+    # per-direction snapshot does, so float32 and float64 are both admitted;
+    # any other dtype stays on the baseline. Tgwall reaches the snapshot only
+    # through the lwall expression, which broadcast-converts to float32
+    # afterward; a size-one array of any float dtype therefore contributes
+    # the same bits as a scalar (the S10 T01 U profile). Multi-element
+    # arrays stay float32-only, as before.
+    if not _supported((wallsun, walls, buildings, shadow, dirwalls, emis_grid, alb_grid)) or tg.dtype not in (np.float32, np.float64) or (tgwall.ndim > 0 and tgwall.size != 1 and tgwall.dtype != np.float32):
         return False
     if not np.isfinite(np.asarray(first)).all() or not np.isfinite(np.asarray(second)).all() or float(np.round(_operate(np.multiply, second, scale))) <= 0:
         return False
