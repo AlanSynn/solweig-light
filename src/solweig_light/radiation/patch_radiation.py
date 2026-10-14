@@ -101,6 +101,28 @@ def _reference(name):
     raise RuntimeError('serial radiation reference unavailable for unsupported profile')
 
 
+def _uniform_tgwall(value):
+    """Tgwall profile admission: scalars (S) and size-one arrays (U).
+
+    The standard Walls=99 landcover row makes ``Tgmaps_v1`` produce (1,1)
+    wall-parameter arrays and the daytime engine arithmetic preserves that
+    rank (the Tgampwall chain re-promotes the f32 cast to f64), so every
+    daytime landcover run arrives here with a size-one Tgwall and used to
+    fall back to the serial reference before the bounded stream.  A size-one
+    array carries one uniform value; the sun-surface coefficient keeps its
+    original shaped arithmetic and only the completed value is extracted, so
+    the kernels retain the scalar contract.  Empty arrays, multi-row wall
+    tables and true spatial fields stay on the reference.
+    """
+    array=np.asarray(value)
+    return array.ndim==0 or array.size==1
+
+
+# S10 route probes (diagnostic): per-call counters for the primary/reference
+# split.  Single-writer increments under the GIL; tests are the only readers.
+ROUTE_COUNTS={'define_patch_characteristics_primary':0,'define_patch_characteristics_reference':0,'Lcyl_v2022a_primary':0,'Lcyl_v2022a_reference':0}
+
+
 def _block(channel,start,stop,patches):
     from ..geometry.visibility import PackedVisibility, LazyDiffVisibility
     leaves=(channel.shadow,channel.vegetation) if isinstance(channel,LazyDiffVisibility) else (channel,)
@@ -979,18 +1001,26 @@ def define_patch_characteristics(*args,block_pixels=128,parallel=True,**kwargs):
     reference=_reference('define_patch_characteristics')
     values=inspect.signature(reference).bind(*args,**kwargs).arguments
     if not isinstance(values['solar_altitude'],np.ndarray):
+        ROUTE_COUNTS['define_patch_characteristics_reference']+=1
         return reference(*args,**kwargs)
-    if any(np.asarray(values[key]).ndim != 0 for key in ('Ta','Tgwall','ewall','solar_altitude','solar_azimuth')) or not _supported([values[k] for k in ('patch_altitude','patch_azimuth','steradian','asvf','Lup','Lsky_down','Lsky_side')],[values[k] for k in ('shmat','vegshmat','vbshvegshmat')]):
+    if not _uniform_tgwall(values['Tgwall']) or any(np.asarray(values[key]).ndim != 0 for key in ('Ta','ewall','solar_altitude','solar_azimuth')) or not _supported([values[k] for k in ('patch_altitude','patch_azimuth','steradian','asvf','Lup','Lsky_down','Lsky_side')],[values[k] for k in ('shmat','vegshmat','vbshvegshmat')]):
+        ROUTE_COUNTS['define_patch_characteristics_reference']+=1
         return reference(*args,**kwargs)
     rows,cols=values['rows'],values['cols']
     if not 0 < values['patch_altitude'].size <= 609:
+        ROUTE_COUNTS['define_patch_characteristics_reference']+=1
         return reference(*args,**kwargs)
+    ROUTE_COUNTS['define_patch_characteristics_primary']+=1
     geometry=patch_geometry(np.column_stack((values['patch_altitude'],values['patch_azimuth'])))
     count=geometry.altitude.size
     radians=e._array(np.pi/180.)
     ewall=e._array(values['ewall'])
     sbc=e._array(5.67051e-8)
     sun_surface=e._divide(e._operate(np.multiply,e._operate(np.multiply,ewall,sbc),e._operate(np.power,e._operate(np.add,e._operate(np.add,values['Ta'],values['Tgwall']),273.15),4)),e._array(np.pi))[()]
+    if np.ndim(sun_surface)>0:
+        # U profile: the completed coefficient value from the size-one
+        # broadcast; no arithmetic after extraction, bits and dtype unchanged.
+        sun_surface=sun_surface.reshape(-1)[0]
     shade_surface=e._divide(e._operate(np.multiply,e._operate(np.multiply,ewall,sbc),e._operate(np.power,e._operate(np.add,values['Ta'],273.15),4)),e._array(np.pi))[()]
     directions=geometry.longwave_cardinal_cosine
     azi=geometry.azimuth
@@ -1029,9 +1059,12 @@ def Lcyl_v2022a(*args,block_pixels=128,parallel=True,**kwargs):
     reference=_reference('Lcyl_v2022a')
     v=inspect.signature(reference).bind(*args,**kwargs).arguments
     if not isinstance(v['solar_altitude'],np.ndarray):
+        ROUTE_COUNTS['Lcyl_v2022a_reference']+=1
         return reference(*args,**kwargs)
-    if any(np.asarray(v[key]).ndim != 0 for key in ('esky','Ta','Tgwall','ewall','solar_altitude','solar_azimuth')) or not _supported([v[k] for k in ('sky_patches','Lup','asvf')],[v[k] for k in ('shmat','vegshmat','vbshvegshmat')]):
+    if not _uniform_tgwall(v['Tgwall']) or any(np.asarray(v[key]).ndim != 0 for key in ('esky','Ta','ewall','solar_altitude','solar_azimuth')) or not _supported([v[k] for k in ('sky_patches','Lup','asvf')],[v[k] for k in ('shmat','vegshmat','vbshvegshmat')]):
+        ROUTE_COUNTS['Lcyl_v2022a_reference']+=1
         return reference(*args,**kwargs)
+    ROUTE_COUNTS['Lcyl_v2022a_primary']+=1
     table=v['sky_patches']
     if not 0 < table.shape[0] <= 609:
         return reference(*args,**kwargs)

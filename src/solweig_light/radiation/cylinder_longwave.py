@@ -368,22 +368,30 @@ def define_patch_characteristics_primary(*args,block_pixels=128,parallel=True,**
     (the leaf's own prange carries the granted threading).
     """
     from . import engine as e
-    from .patch_radiation import _reference, _block, _class_coefficients, _classes, _supported, patch_geometry
+    from .patch_radiation import _reference, _block, _class_coefficients, _classes, _supported, _uniform_tgwall, patch_geometry, ROUTE_COUNTS
     reference=_reference('define_patch_characteristics')
     values=inspect.signature(reference).bind(*args,**kwargs).arguments
     if not isinstance(values['solar_altitude'],np.ndarray):
+        ROUTE_COUNTS['define_patch_characteristics_reference']+=1
         return reference(*args,**kwargs)
-    if any(np.asarray(values[key]).ndim != 0 for key in ('Ta','Tgwall','ewall','solar_altitude','solar_azimuth')) or not _supported([values[k] for k in ('patch_altitude','patch_azimuth','steradian','asvf','Lup','Lsky_down','Lsky_side')],[values[k] for k in ('shmat','vegshmat','vbshvegshmat')]):
+    if not _uniform_tgwall(values['Tgwall']) or any(np.asarray(values[key]).ndim != 0 for key in ('Ta','ewall','solar_altitude','solar_azimuth')) or not _supported([values[k] for k in ('patch_altitude','patch_azimuth','steradian','asvf','Lup','Lsky_down','Lsky_side')],[values[k] for k in ('shmat','vegshmat','vbshvegshmat')]):
+        ROUTE_COUNTS['define_patch_characteristics_reference']+=1
         return reference(*args,**kwargs)
     rows,cols=values['rows'],values['cols']
     if not 0 < values['patch_altitude'].size <= 609:
+        ROUTE_COUNTS['define_patch_characteristics_reference']+=1
         return reference(*args,**kwargs)
+    ROUTE_COUNTS['define_patch_characteristics_primary']+=1
     geometry=patch_geometry(np.column_stack((values['patch_altitude'],values['patch_azimuth'])))
     count=geometry.altitude.size
     radians=e._array(np.pi/180.)
     ewall=e._array(values['ewall'])
     sbc=e._array(5.67051e-8)
     sun_surface=e._divide(e._operate(np.multiply,e._operate(np.multiply,ewall,sbc),e._operate(np.power,e._operate(np.add,e._operate(np.add,values['Ta'],values['Tgwall']),273.15),4)),e._array(np.pi))[()]
+    if np.ndim(sun_surface)>0:
+        # U profile: the completed coefficient value from the size-one
+        # broadcast; no arithmetic after extraction, bits and dtype unchanged.
+        sun_surface=sun_surface.reshape(-1)[0]
     shade_surface=e._divide(e._operate(np.multiply,e._operate(np.multiply,ewall,sbc),e._operate(np.power,e._operate(np.add,values['Ta'],273.15),4)),e._array(np.pi))[()]
     directions=geometry.longwave_cardinal_cosine
     azi=geometry.azimuth
@@ -424,13 +432,16 @@ def Lcyl_v2022a_primary(*args,block_pixels=128,parallel=True,**kwargs):
     documented on ``define_patch_characteristics_primary``.
     """
     from . import engine as e
-    from .patch_radiation import _reference, _model2, _supported, patch_geometry
+    from .patch_radiation import _reference, _model2, _supported, _uniform_tgwall, ROUTE_COUNTS, patch_geometry
     reference=_reference('Lcyl_v2022a')
     v=inspect.signature(reference).bind(*args,**kwargs).arguments
     if not isinstance(v['solar_altitude'],np.ndarray):
+        ROUTE_COUNTS['Lcyl_v2022a_reference']+=1
         return reference(*args,**kwargs)
-    if any(np.asarray(v[key]).ndim != 0 for key in ('esky','Ta','Tgwall','ewall','solar_altitude','solar_azimuth')) or not _supported([v[k] for k in ('sky_patches','Lup','asvf')],[v[k] for k in ('shmat','vegshmat','vbshvegshmat')]):
+    if not _uniform_tgwall(v['Tgwall']) or any(np.asarray(v[key]).ndim != 0 for key in ('esky','Ta','ewall','solar_altitude','solar_azimuth')) or not _supported([v[k] for k in ('sky_patches','Lup','asvf')],[v[k] for k in ('shmat','vegshmat','vbshvegshmat')]):
+        ROUTE_COUNTS['Lcyl_v2022a_reference']+=1
         return reference(*args,**kwargs)
+    ROUTE_COUNTS['Lcyl_v2022a_primary']+=1
     table=v['sky_patches']
     if not 0 < table.shape[0] <= 609:
         return reference(*args,**kwargs)

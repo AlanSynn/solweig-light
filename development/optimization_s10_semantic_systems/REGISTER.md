@@ -11,7 +11,7 @@ to `evidence/` (distilled) and `/storage/scratch1/1/dsynn6/solweig-light-s10-raw
 
 | # | ID | mechanism | expected E2E effect (bound) | evidence status | risk | disposition |
 |---|----|-----------|------------------------------|-----------------|------|-------------|
-| 1 | T01 | singleton-array (U) typed longwave path; removes per-daytime-step full-raster fallback | census: 14/14 daytime steps rejected with Landcover; 1.31s/24-step serial-reference stage on 32x35 (~14% warm E2E at 1120 px, understates production share) | **CONFIRMED** (evidence/census_s10_02_route.md; trigger = Landcover raster; Tgwall (1,1) f64 at guards) | rank/dtype parity (f64 promotion via altmax; sun/shade may differ); warnings/error order | **ACCEPTED as wave-1 lead** — implement per dossier 01 |
+| 1 | T01 | singleton-array (U) typed longwave path; removes per-daytime-step full-raster fallback | census: 14/14 daytime steps rejected with Landcover; 1.31s/24-step serial-reference stage on 32x35 (~14% warm E2E at 1120 px, understates production share) | **IMPLEMENTED + L1-qualified** (evidence/census_s10_02_route.md, evidence/t01_l1_kernel_differential.md, evidence/s10_unit_suite_ab.md; landcover E2E golden passes 24/24 primary; 14 unit tests in tests/optimization_s10/semantic/) | route flip shifts LC longwave fields ≤6.1e-05 W/m² (≤2 ulp), within frozen comparison_v1 budgets (atol 0.05); pre-existing compiled-vs-reference divergence on fractional inputs documented — NOT introduced by the patch | **wave-1 accepted pending L2 paired benchmark** |
 | 2 | G01 | prepared GVF route admitted at H=1 (currently prepared only when H>1) | removes repeated preparation/alloc per step at 1 thread | census: prepared route never entered at H=1 (engine.py:1757); with LC the f64 Tgwall would also fail gvf_prepared.py:103 at H>1 | guard union + water snapshot + alias cases; T01 rank normalization may flip the f64 rejection | candidate (wave 1, after T01 design lands — T01's Tgwall normalization interacts with the guard) |
 | 3 | S03b | memory admission container mismatch: GDAL-cache charge = 5% physical RAM vs budget = cgroup headroom | unblocks default runs on container-limited hosts (correctness/ops, not speed) | census repro: default run refused in 6 GB Slurm step on 376 GB node (census_s10_02_route.md) | changes default admission semantics — needs own gate + docs | candidate (small, independent; propose after wave 1) |
 | 4 | R03 | ordered aniLum diffuse block kernel (currently one full-raster Python update per patch) | O(NP) stays, removes Python P full-raster dispatch | static; dossier 03 | decode arithmetic order, nonbinary values | candidate (independent) |
@@ -23,6 +23,15 @@ to `evidence/` (distilled) and `/storage/scratch1/1/dsynn6/solweig-light-s10-raw
 | 10 | T02 | typed execution plan (profile->kernel planning) | amortizes Python type checks; needed at scale of T01 use | folds into T01 design | cold JIT | fold into T01 |
 
 Notes:
+- Operative numerical acceptance standard (established 2026-10-13, L1
+  differential): the frozen `development/benchmarks/protocols/comparison_v1.json`
+  budgets (Lcyl/dpc fields atol 0.05 W/m² rtol 1e-5; Tmrt 0.01 °C; UTCI/WBGT
+  0.02) — the same standard all shipped compiled kernels are qualified
+  against. Bit-equality vs the engine serial reference is NOT the operative
+  bar: the shipped S-profile primary itself diverges from the reference by
+  1–2 f32 ulp on real fractional-visibility inputs (documented in
+  evidence/t01_l1_kernel_differential.md; pre-existing, in both fused and raw
+  kernel routes).
 - N9 shipped items (bounded stream row B, A-plus decode, packed visibility,
   geometry dedup, worker pools) are BASELINE A — not opportunities.
 - Rejected without new causal design: ISPC/native leaf rerun, fused decoder
