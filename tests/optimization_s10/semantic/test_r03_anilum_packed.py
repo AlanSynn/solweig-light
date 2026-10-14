@@ -144,7 +144,11 @@ def test_engine_routes_packed_on_landcover_golden(tmp_path, monkeypatch):
     import unittest.mock as mock
 
     import solweig_light.runtime_memory as runtime_memory
-    runtime_memory.default_gdal_cache_bytes = lambda: 256 * 1024 * 1024
+    # Same deviation the L2 bench harness uses: cap the GDAL cache so the
+    # small tmp-tree run admits on this host. Reverted by monkeypatch — a
+    # bare assignment here leaked into the s03b tests downstream.
+    monkeypatch.setattr(runtime_memory, 'default_gdal_cache_bytes',
+                        lambda: 256 * 1024 * 1024)
     import solweig_light.radiation.patch_radiation as pr
     from solweig_light.pipeline import files_by_key, run_tile
 

@@ -54,8 +54,11 @@ the campaign noise policy).
 
 1. Cross-tree paired (A = `c75f0174`, B = `1a3cb8e2`; 5 pairs × 2 sets,
    fresh subprocess per side, median of 3): set 1 geomean **1.047** (all
-   pairs ≥ 1.0), set 2 geomean **1.035** (8/10 pairs ≥ 1.0). Raw:
-   `paired_ab_r03.jsonl`, `paired_ab_r03_run2.jsonl`.
+   pairs ≥ 1.0), set 2 geomean **1.035** (8/10 pairs ≥ 1.0). Raw: set 2 in
+   `paired_ab_r03_run2.jsonl` (set 1 per-pair lines were overwritten by the
+   second run of the driver — a driver bug, fixed afterward; set-1 pair
+   ratios are preserved in the session record: 1.003, 1.082, 1.054, 1.075,
+   1.022).
 2. Within-process toggle (same tree, same JIT, `SOLWEIG_LIGHT_ANILUM_PACKED`
    alternated per run_tile call, 8 alternating pairs): per-pair median ratio
    **1.073**, 7/8 wins, geomean 1.082 (one 1.48 s contention outlier on both
