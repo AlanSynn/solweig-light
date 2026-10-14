@@ -1,0 +1,83 @@
+{
+  "schema": 1,
+  "task": "S10 synthetic-scale production-shape demonstration protocol (user-directed; frozen BEFORE the timed demonstration runs)",
+  "date_frozen": "2026-10-14",
+  "frozen_at_branch_tip": "1b271247 (plus this evidence-only protocol commit; product source asserted diff-empty vs c245ea60 by the demo driver before any timing)",
+  "status": "frozen_predeclared_protocol",
+  "labeling": {
+    "kind": "SYNTHETIC_SCALE_THROUGHPUT_DEMONSTRATION",
+    "not_a_real_scene_target": "The corpus is procedurally generated. BENCHMARK_PROTOCOL's 'Actual target' requires 24 distinct REAL spatial tiles; this demo NEVER claims it. 'Repeated synthetic motif performance never proves a real-scene target' applies; FINAL_DECISION.json actual_target_status remains 'unverified' and is NOT modified by this demo.",
+    "no_gate_claims": "No performance gate is claimed from this demo. Speedup numbers are observational measurements of one pass per arm. The held-out small-cell gates (1.10 geomean, 1.03 regression, 0.8 coverage) are not re-used here.",
+    "authority": "user decision 2026-10-14 ('가상의 타일이라도 만들어서 한번 진행해볼 것') as supplementary evidence for the human integration decision"
+  },
+  "corpus": {
+    "generator": "/storage/scratch1/1/dsynn6/solweig-light-s10-raw/synthetic_target/gen/generate_corpus.py (sha256 recorded in corpus_manifest.json)",
+    "manifest": "/storage/scratch1/1/dsynn6/solweig-light-s10-raw/synthetic_target/scene/corpus_manifest.json",
+    "tiles": 24,
+    "distinctness": "6 archetypes (compact_core, midrise_perimeter, lowrise_suburb, tower_park, industrial_sheds, vegetated_campus) x per-tile seeded street grids, block subdivision, building heights, and tree clusters; 24 distinct georeferenced origins on a 6x4 grid; per-tile building fraction 0.137-0.529, tree fraction 0.006-0.050, max building height 8-54 m",
+    "geometry": "1024x1024 px, 1.0 m pixel, Float32, WGS 84 / UTM 18N (the certified base fixture's CRS and physical resolution)",
+    "timesteps": 24,
+    "met": "byte-copies of the base fixture's metfile_0_0.txt (24 hourly records) per tile; identical forcing across tiles and arms by design",
+    "prime_tile": "tile 5_4, seed 1024, in a separate directory; NOT part of the 24-tile manifest; used only for untimed cache priming",
+    "storage": "raw area outside git; archived to Dropbox after the run",
+    "plan_phase4_note": "PLAN's 'do not fabricate a 24-tile corpus from two motif scenes' barred passing fabrication off as the actual target. This corpus is 24 procedurally distinct synthetic scenes, is labeled synthetic everywhere, and claims no target qualification."
+  },
+  "arms": {
+    "A_baseline": "detached worktree at b3e5ca59a1080f02eda5ccda5e35a66af07e4bfa (main of record, READ-ONLY; worktree at /storage/scratch1/1/dsynn6/solweig-light-s10-raw/freeze_main_wt, HEAD asserted by the driver), resolved via PYTHONPATH precedence",
+    "B_candidate": "the .venv editable install (branch src; driver asserts 'git diff --quiet c245ea60f32b2ca93191ea00f48a4f6085a60a2b HEAD -- src pyproject.toml' before any timing)",
+    "fresh_process_per_phase": true,
+    "origin_proof": "every phase record embeds solweig_light.__file__ (A: .../freeze_main_wt/src/..., B: .../solweig-light/src/...)"
+  },
+  "entry_and_defaults": {
+    "chain": "public API only: run_walls_aspect -> _calculate_svf(patch_option=2) -> run_utci_tiles(save_tmrt=True, all 24 tiles)",
+    "options": "PINNED SYMMETRIC PARALLEL SHAPE via the public runtime_options context: cpu_budget=24, workers=6, threads_per_worker=4, identical for both arms, recorded in every phase JSON; no env manipulation, no memory_budget_bytes override",
+    "shape_rationale": "the shipped serial default shape extrapolates to ~20 h for the A-side 24-tile run phase alone (warm 3.24 s x 936 pixel growth x 24 tiles), beyond the 21 h partition limit; the 6x4 shape follows the S10-30 P4a pool precedent (options-pinned, disclosed) and admits 6 x ~4.3 GB within the dedicated 96G allocation's default budget view",
+    "admission": "dedicated slurm allocation provides a clean cgroup view; S03b admission runs unmodified at the pinned shape; refusal would be recorded, not overridden"
+  },
+  "run_limits": {
+    "timed_passes": "exactly ONE timed pass per arm over the 24-tile manifest (walls, svf, run phases) after the untimed prime; total 6 measured phase walls + 1 crosscheck",
+    "prime": "untimed full-chain prime per arm on the isolated prime tile; excluded from all measured values (S10-30 methodology)",
+    "retry": "at most ONE causal retry per arm for an environmental crash (disclosed with cause if used); no re-arming for better numbers",
+    "timed_only_by": "perf_counter around the entry call; nothing else inside the timer"
+  },
+  "measurements": {
+    "phase_walls": "walls_aspect_s, svf_s, run_utci_tiles_s per arm (24-tile totals; serial shape means no per-tile timers inside the single public call)",
+    "ratio": "B/A per phase, observational only",
+    "crosscheck_frozen_rules": {
+      "TMRT": "Solweig_2022a_calc/Tmrt max_abs 0.01 degC (comparison_v1.json), all 24 bands of all 24 tiles, NaN masks exact, worst coordinate retained",
+      "SVF_total": "svftotal TIFF max_abs 1e-06 (comparison_v1 other_outputs SVF_all_15_fields budget)",
+      "bitwise_fraction": "reported, not gated"
+    }
+  },
+  "acceptance": [
+    "both arms complete all 24 tiles through the full chain",
+    "crosscheck verdict 'pass' under the frozen TMRT/SVF budgets",
+    "pinned options recorded identical in every phase JSON of both arms",
+    "phase walls recorded and reported as measured (no normalization, no quiet-window hunting)"
+  ],
+  "probe_provenance": {
+    "kind": "pre-protocol feasibility probes, B-side only, excluded from all demo claims",
+    "probe_1_full_scene": {
+      "job": "slurm 14051716 (cpu-small, 4 CPUs, 16G, pure serial defaults)",
+      "design": "full-scene copy: walls_aspect + calculate_svf over all 24 tiles, then the timed run over tile 0_0 only",
+      "result": "TIMEOUT at the 1:30:00 job limit with no timing JSON — the probe recorded phases only at completion (probe design flaw, disclosed; the demo harness records each phase incrementally). Epilog facts: computed throughout (cput 06:00:16 / 01:30:04 wall, no hang), MaxRSS 5,229,992K.",
+      "lesson": "the serial-default 24-tile preprocessing alone exceeds 90 min; combined with the pixel-scaled run extrapolation the serial shape cannot fit one 21 h job for both arms — motivating the pinned parallel shape"
+    },
+    "probe_2_validation": {
+      "job": "slurm 14055871 (cpu-small, 2 CPUs, 12G, pure serial defaults)",
+      "design": "64x64 crop of synthetic tile 0_0 through the full public chain",
+      "result": "PASS end-to-end: origin = branch src; resolved defaults cpu_budget=1, workers=1, threads_per_worker=1; default memory budget 6,264,778,752 B (clean allocation, no admission refusal); walls_aspect 100.803 s (numba compile-dominated, fresh cache), svf 3.619 s, run 38.382 s (24 steps, compile included); TMRT outputs written",
+      "lesson": "the synthetic corpus is importable and runnable through the public chain; the demo's input risk is retired"
+    },
+    "no_wall_estimates_claimed_from_probes": true
+  },
+  "environment": {
+    "host": "PACE compute node via sbatch (cpu-medium/cpu-small class, 24 CPUs, 385 GB; allocation recorded in slurm log; phase records embed psutil cpu/mem view)",
+    "numba_cache": "shared NUMBA_CACHE_DIR warmed by the per-arm prime; compile excluded from measured walls, disclosed here",
+    "python": "repo .venv (cp312 wheelhouse install)"
+  },
+  "post_run": {
+    "summary": "evidence/target/synthetic_scale_demo.json + REGISTER entry (append-only; FINAL_DECISION.json and the campaign closure record are NOT rewritten)",
+    "archive": "raw outputs tar.gz + sha256 to Dropbox s10/ per the evidence-storage policy"
+  }
+}
