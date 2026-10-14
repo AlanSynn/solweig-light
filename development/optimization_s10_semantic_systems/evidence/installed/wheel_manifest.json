@@ -1,0 +1,151 @@
+{
+  "built_from": "/storage/scratch1/1/dsynn6/solweig-light",
+  "console_scripts": {
+    "solweig-light": "solweig_light.cli:main"
+  },
+  "dependencies": {
+    "extras_identical": true,
+    "extras_requires_dist_normalized": {
+      "forcing": [
+        "matplotlib<4,>=3.11",
+        "netcdf4<2,>=1.7",
+        "pandas<4,>=3",
+        "shapely<3,>=2.1",
+        "xarray<2027,>=2026.7"
+      ],
+      "inputs": [
+        "cftime<2,>=1.6",
+        "earthengine-api",
+        "fiona<2,>=1.10",
+        "geemap",
+        "geopandas<2,>=1.1",
+        "geopy<3,>=2.5",
+        "netcdf4<2,>=1.7",
+        "osmnx",
+        "pandas<4,>=3",
+        "pyproj<4,>=3.7",
+        "rasterio<2,>=1.4",
+        "requests<3,>=2.34",
+        "shapely<3,>=2.1",
+        "xarray<2027,>=2026.7"
+      ],
+      "test": [
+        "build>=1.6",
+        "pytest<10,>=9"
+      ],
+      "wind": [
+        "netcdf4<2,>=1.7",
+        "rasterio<2,>=1.4",
+        "xarray<2027,>=2026.7"
+      ]
+    },
+    "main_optional_dependencies_normalized": {
+      "forcing": [
+        "matplotlib<4,>=3.11",
+        "netcdf4<2,>=1.7",
+        "pandas<4,>=3",
+        "shapely<3,>=2.1",
+        "xarray<2027,>=2026.7"
+      ],
+      "inputs": [
+        "cftime<2,>=1.6",
+        "earthengine-api",
+        "fiona<2,>=1.10",
+        "geemap",
+        "geopandas<2,>=1.1",
+        "geopy<3,>=2.5",
+        "netcdf4<2,>=1.7",
+        "osmnx",
+        "pandas<4,>=3",
+        "pyproj<4,>=3.7",
+        "rasterio<2,>=1.4",
+        "requests<3,>=2.34",
+        "shapely<3,>=2.1",
+        "xarray<2027,>=2026.7"
+      ],
+      "test": [
+        "build>=1.6",
+        "pytest<10,>=9"
+      ],
+      "wind": [
+        "netcdf4<2,>=1.7",
+        "rasterio<2,>=1.4",
+        "xarray<2027,>=2026.7"
+      ]
+    },
+    "main_pyproject_normalized": [
+      "gdal<3.14,>=3.13",
+      "numba<0.68,>=0.67",
+      "numpy<2.5,>=2.4",
+      "pytz>=2026.3",
+      "scipy<1.18,>=1.17",
+      "timezonefinder<10,>=9"
+    ],
+    "main_source": "git show b3e5ca59a1080f02eda5ccda5e35a66af07e4bfa:pyproject.toml",
+    "normalization": "lowercase name, sorted spec clauses; extras grouped by their 'extra == \"...\"' marker with that marker then stripped",
+    "runtime_identical": true,
+    "runtime_requires_dist_normalized": [
+      "gdal<3.14,>=3.13",
+      "numba<0.68,>=0.67",
+      "numpy<2.5,>=2.4",
+      "pytz>=2026.3",
+      "scipy<1.18,>=1.17",
+      "timezonefinder<10,>=9"
+    ]
+  },
+  "exclusions": {
+    "backend_scaffolding": {
+      "note": "asserted in test_built_wheel_is_pure_and_ships_no_scaffolding",
+      "patterns": [
+        "native_generated",
+        ".so",
+        ".dylib",
+        ".dll"
+      ]
+    },
+    "forbidden_prefixes": {
+      "hits": [],
+      "patterns": [
+        "tests/",
+        "development/",
+        "experiments/",
+        "captures/",
+        "handover/",
+        "docs/"
+      ]
+    },
+    "forbidden_suffixes": {
+      "hits": [],
+      "patterns": [
+        ".jsonl",
+        ".npz",
+        ".nc",
+        ".tar",
+        ".tar.gz",
+        ".log",
+        ".ipynb"
+      ]
+    }
+  },
+  "git_head": "94a358a97ad393ef0ee3e7ea4a5f2ad708bf83da",
+  "product_source_identity": {
+    "command": "git diff --quiet <freeze> HEAD -- src pyproject.toml",
+    "freeze_sha": "c245ea60f32b2ca93191ea00f48a4f6085a60a2b",
+    "identical": true,
+    "paths": [
+      "src",
+      "pyproject.toml"
+    ]
+  },
+  "record_members": 79,
+  "schema": 1,
+  "task": "S10-31 wheel manifest",
+  "top_level_packages": [
+    "solweig_light"
+  ],
+  "wheel": {
+    "name": "solweig_light-0.1.0.dev0-py3-none-any.whl",
+    "pure": true,
+    "sha256_run_scoped": "e645f049c8c1f49e2397d8a474ff0f447cef6918637aa0fc91d6d46dd6da24f9"
+  }
+}

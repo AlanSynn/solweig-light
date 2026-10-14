@@ -25,6 +25,55 @@ to `evidence/` (distilled) and `/storage/scratch1/1/dsynn6/solweig-light-s10-raw
 | 12 | T02 | typed execution plan (profile->kernel planning) | amortizes Python type checks; needed at scale of T01 use | folds into T01 design | cold JIT | fold into T01 |
 
 Notes:
+- S10-31 clean installed DX COMPLETE (2026-10-14, tests/optimization_s10/
+  installed/ + evidence/installed/{installed_results,wheel_manifest}.json):
+  7/7 gates pass at HEAD 94a358a9 with the S10-26 freeze proven intact
+  (product-source diff vs c245ea60 empty at wheel build time). Wheel: pure
+  py3-none-any, 79 RECORD members, top-level packages exactly
+  {solweig_light} (no original-upstream module names), no
+  tests/research/bulk-evidence members, no backend scaffolding tokens,
+  console script solweig-light -> solweig_light.cli:main; Requires-Dist
+  identity vs main b3e5ca59 proven for BOTH the runtime set (6 deps) and
+  the extras groups (test/forcing/wind/inputs) via a clause-sorted
+  normalizer (setuptools renders gdal<3.14,>=3.13 for >=3.13,<3.14, so raw
+  strings are not comparable). Offline wheelhouse: 12 runtime-closure
+  wheels + setuptools 84.0.0 seed repacked from unpacked uv-cache archives
+  (RECORD contents identical), all sha256s recorded; installs + pip check
+  clean with the network guard marker-proven in every child. Install
+  origin proven site-packages outside the repo (venv under /tmp, no
+  sys.path reach into the checkout); source install under a stripped PATH
+  shows no compiler activity. No-env API (thermal_comfort) and CLI
+  (console script) runs: env stripped to HOME/NUMBA_CACHE_DIR/LANG plus
+  the guard keys, zero backend controls (all 9 package-read vars absent),
+  read-only site-packages (dirs 0o555/files 0o444, restored), real 16x16
+  TIFF crop of the reference scene, full pipeline start (preprocess ->
+  walls -> SVF -> "Running Solweig ..."). BOTH RUNS REFUSED by the shipped
+  resource-admission model under the shared login node's memory view:
+  phase need 4,310,409,420 B (crop-independent, patches=153 is a model
+  constant) vs a ~2.33 GB default budget (0.5x cgroup headroom ~4.3 GB of
+  the 64 GiB slurm step cgroup, page-cache-bloated); 3 attempts + the
+  GDAL_CACHEMAX=64 diagnostic refused identically; recorded as
+  blocked_by_resource_admission (environmental, first-class, v8
+  host-memory-pressure precedent) -- the DX mechanics are proven by the
+  attempt logs; not a fake pass. Forcing page-cache reclaim in the shared
+  cgroup was explicitly rejected (OOM risk to other group users).
+  DISCLOSED DEPLOYMENT SHIM: this host's GDAL wheel is locally built; its
+  osgeo/_gdal.so DT_RPATH pins a stale pace libstdc++ lacking
+  CXXABI_1.3.15, so any process whose FIRST osgeo import precedes its
+  first numpy import cannot load _gdal (DT_RPATH outranks LD_LIBRARY_PATH).
+  The product pipeline always imports numpy first (campaign masked this);
+  the thermal_comfort/CLI entry lazily imports osgeo first and hits it --
+  identical on main (upstream code, untouched by S10, NOT a candidate
+  defect). Gate children pre-load the compatible solweig-s10-env
+  libstdc++.so.6 via LD_PRELOAD; host deployment fact, applies to a
+  baseline install identically, sets no product behavior; recorded per run
+  (deployment_shim + deployment_shim_note). Deferred with reasons:
+  host-level original-upstream import-collision gate (needs a second
+  packaged legacy distribution; structural half = the manifest top-level
+  packages check); resource-tuned-profile DX (out of scope by contract).
+  Raw wheelhouse (13 wheels, 146 MB) archived to Dropbox
+  s10/s10_s31_installed_whl.tar.gz + sha256 sidecar. Suite: 7 passed in
+  225 s (pytest tests/optimization_s10/installed).
 - S10-30 held-out paired application campaign COMPLETE (2026-10-14,
   evidence/trials/protocol_frozen.json frozen before any candidate timing;
   evidence/trials/raw_trials.jsonl 47 records; evidence/selection/
