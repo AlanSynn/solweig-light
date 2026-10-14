@@ -1,0 +1,53 @@
+{
+  "task": "S10-26",
+  "title": "Integrate residuals and freeze product source",
+  "date": "2026-10-14",
+  "freeze_head": "c245ea60f32b2ca93191ea00f48a4f6085a60a2b",
+  "freeze_branch": "perf/s10-semantic-systems (local only; not pushed)",
+  "baseline_main": "b3e5ca59a1080f02eda5ccda5e35a66af07e4bfa (READ-ONLY, untouched)",
+  "tree_state_at_freeze": "clean (only the pre-existing untracked task-packet zip solweig-s10-semantic-system-claude-packet.zip, intentionally outside the candidate)",
+  "branch_contents": {
+    "commits_over_main": 23,
+    "diffstat": "105 files changed, 11535 insertions(+), 29 deletions(-)",
+    "accepted_improvements": [
+      "T01: typed-longwave singleton-Tgwall admission (bitwise on admitted domain; L2 1.659 geomean landcover cell)",
+      "G01+G02: prepared GVF route wired at H=1 + production dtype profile admitted (root cause: f64 Tg defeated all-f32 guards on LC scenes)",
+      "R03: ordered aniLum packed-stream kernel (bitwise incl. raw payloads; L2 ~1.05x tile, cumulative ~3.0x vs main)",
+      "S03b: container-correct GDAL-cache default view (ops correctness; charge provably can only shrink)",
+      "S10-14: adversarial input/profile fixtures over the admitted routes",
+      "S10-20: wave-1 integration on real chronologies (24/48-step paths; pool tile bitwise)",
+      "S10-21/S10-22: residual profile + the one residual-round selection",
+      "S10-23: Lside exact dispatch twin (bitwise, both production regimes; review-approved)",
+      "S10-24: dispositioned not-eligible / no implementation (recorded in REGISTER per review R6 closure)",
+      "S10-25: independent review approved/approved_with_notes, findings R1-R7 closed at c245ea60"
+    ],
+    "explicitly_excluded": [
+      "njit Lside kernel variant (rejected on probe evidence: no aniso==0 demand; exactness achieved dispatch-level)",
+      "S10-24 heterogeneous region (no eligible hardware on this host)",
+      "S07/S09 system track (deferred pending production-scale evidence; register row 6)",
+      "T03/R01/T06 second-slot candidates (bounded below useful effect post-R03)",
+      "native/compiled default backend (historical rejection stands)",
+      "temporary tracing, benchmark monkeypatches, unused selectors (none present — product-scope audit clean)"
+    ]
+  },
+  "gates_at_freeze_head": {
+    "tests_optimization_s10": "83/83 passed",
+    "landcover_differential": "2/2 passed ([landcover-False], [landcover_normalized-False])",
+    "v6_lside_cylinder_v8_seam": "107 passed, 1 failed — pre-existing test_kernel_primary_matches_full_route_invariance (NaN payload column 7), cause-matched; re-proven at base in a throwaway worktree with the reviewer's PYTHONPATH methodology (editable-install shadowing avoided; solweig_light.__file__ verified inside the worktree)",
+    "tests_unit": "10 failed, 453 passed — byte-identical to the documented pre-existing baseline (wave-1/wave-2 reviews); zero new unit failures",
+    "full_differential_tree": {
+      "base_321edb94": "706 failed, 2125 passed (throwaway worktree, PYTHONPATH pointed at the worktree's src, resolution verified pre-run)",
+      "freeze_head": "706 failed, 2125 passed",
+      "failure_set_identity": "sorted FAILED lists byte-identical: sha256 1c300aa1d35d923ecffc9dc754a4cb8e9918d4df7fab20a1c30b3ee3256d57ff on BOTH sides (diff exit 0) — zero new differential failures across the residual round, closing the reviewer's caveat on the earlier proof procedure",
+      "raw_captures_sha256": {
+        "diff_base_321edb94_full.txt": "05cba019c665326d1bc6b234bdf4044bfa15dd0bc1c92ded9bf62ebbd53a5719",
+        "diff_freeze_c245ea60_full.txt": "b48e55459d3336095b801e04db8dd072afecd799d6eea5349242437cb4e252cc"
+      },
+      "duration_disclosure": "parallel runs on a contended 4-CPU host (215 s base / 225 s freeze wall; correctness runs, no timing claim)"
+    }
+  },
+  "dependency_closure": "No dependency additions or upgrades in the branch (product-scope audit: no new requirements, no new huge materializations, no unqualified framework dependencies); runtime path carries only accepted active functionality with verified guards/fallbacks and kill switches (LSIDE_DISPATCH, ANILUM_PACKED, prepared-GVF seams) — per the reviewer's product_scope_review.json verdict 'no unsafe cache key, no unused scaffolding, no unqualified activation'.",
+  "freeze_statement": "Product source is FROZEN at c245ea60 as the S10-30 held-out-campaign candidate. The freeze is a source boundary, not an excuse to avoid reporting later defects: any defect found after this point is reported against the frozen sha and fixed by a recorded follow-up, never silently patched into the candidate.",
+  "next": "S10-30 held-out paired application campaign (protocol frozen before any candidate timing run), then S10-31 installed-wheel DX, then S10-34 FINAL_DECISION.json + MERGE_MANIFEST.json",
+  "raw_artifacts": "differential captures + sorted failure lists archived to Dropbox 'Alan Synn/Research/solweig-light/s10/s10_s26_freeze.tar.gz' (sha256 sidecar alongside)"
+}
