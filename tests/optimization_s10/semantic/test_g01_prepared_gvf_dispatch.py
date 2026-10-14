@@ -5,8 +5,10 @@ the fused baseline and the verbatim original engine body for
 parallel=[False, True]; these tests cover the S10 dispatch change (engine
 routes the threads==1 path through the prepared route with the serial gather,
 delegating unsupported inputs to the exact H=1 baseline) and the _admits
-extension that admits size-one arrays of any float dtype (S10 T01 U profile;
-the production landcover Tgwall is (1,1) float64).
+extension that admits size-one arrays of any dtype (S10 T01 U profile — the
+predicate is dtype-blind; int32/int64 singletons verified bitwise vs the
+original in the wave-1 review; the production landcover Tgwall is (1,1)
+float64).
 """
 import importlib.util
 from pathlib import Path

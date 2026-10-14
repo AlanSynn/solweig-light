@@ -29,8 +29,10 @@ clocks put it at ~45%.
    The delegate drops the `parallel`/`block_rows` kwargs the prepared
    entry forwards for the fused route (the baseline takes none).
 2. **G01 Tgwall U clause** (`gvf_prepared._admits`): size-one arrays of any
-   float dtype admitted (T01 U profile); multi-element arrays remain
-   float32-only.
+   dtype admitted (T01 U profile — dtype-blind predicate; int32/int64
+   singletons verified bitwise vs the original on 2026-10-14 during the
+   wave-1 review follow-up, prepared=1/serial=0); multi-element arrays
+   remain float32-only.
 3. **G02 Tg dtype admission** (`gvf_prepared._admits`): `Tg` removed from the
    all-f32 `_supported` tuple; float32 and float64 admitted, any other dtype
    delegates. Tg reaches the snapshot only through the Lup expression,
@@ -41,8 +43,12 @@ clocks put it at ~45%.
 
 - The C6-30 differentials already prove `prepared_gvf_step` **bitwise**
   (uint32 views) against both the fused baseline and the verbatim original
-  engine body for `parallel=[False, True]` — 217 tests, all passing with the
-  change.
+  engine body for `parallel=[False, True]`. Correction (2026-10-14, wave-1
+  review): the originally recorded "217 tests" is not reproducible by any
+  suite selection; the locatable C6-30/G01 lineage (`tests/optimization_v5/
+  gvf` + `tests/optimization_v6/gvf_prepare`) is **160 tests, all passing at
+  HEAD `2c7324d9`** (re-run 2026-10-14 by both the independent reviewer and
+  the author).
 - New S10 tests (`tests/optimization_s10/semantic/
   test_g01_prepared_gvf_dispatch.py`, 14 cases): prepared ≡ original
   **bitwise** on float64-Tg scenes (water × buildings variants, caller-

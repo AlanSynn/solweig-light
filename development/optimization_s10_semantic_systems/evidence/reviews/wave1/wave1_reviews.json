@@ -1,0 +1,249 @@
+{
+  "reviewer": "glm-5.3-flash independent subagent",
+  "date": "2026-10-14",
+  "base": "b3e5ca59",
+  "head": "2c7324d954c8b7035f93531f14a086a09ef8a6bf",
+  "reviews": [
+    {
+      "task": "T01",
+      "commits": ["33ab050f", "65097719"],
+      "verdict": "approved_with_notes",
+      "findings": [
+        {
+          "severity": "minor",
+          "file": "tests/optimization_s10/semantic/test_t01_tgwall_admission.py",
+          "claim": "route engagement is load-bearing evidence",
+          "evidence": "Admission is pinned only at the function boundary (ROUTE_COUNTS deltas on direct Lcyl/dpc calls). The landcover E2E 24/24-primary figure is manual evidence (t01_l1_kernel_differential.md), not a standing assertion. I demonstrated the census trap is real for this exact pipeline: with SOLWEIG_LIGHT_ANILUM_PACKED=0 the landcover goldens still pass while only R03's E2E engagement test fails. If materials.py ever stopped producing singleton Tgwall, no standing test fails and the 1.659x silently evaporates. Recommend one standing E2E counter assertion on the landcover golden (Lcyl/dpc primary 24/24), mirroring test_engine_routes_packed_on_landcover_golden."
+        },
+        {
+          "severity": "minor",
+          "file": "src/solweig_light/radiation/patch_radiation.py",
+          "claim": "_uniform_tgwall admits size-one arrays of ANY dtype, docs/commit say float dtypes",
+          "evidence": "array.size==1 short-circuits with no dtype check: np.array([5]) (int64) is admitted. Docstring says 'A size-one array carries one uniform value' but commit G02 text says 'size-one arrays of any float dtype'. Untested beyond float. Low risk (production Tgwall is f64; non-float singletons promote like the tested f64 wrappers), but a doc/code mismatch - restrict to dtype.kind=='f' or add a test."
+        },
+        {
+          "severity": "note",
+          "file": "src/solweig_light/radiation/patch_radiation.py",
+          "claim": "guard order preserved",
+          "evidence": "Guard flip confined to Tgwall (verified by reading: short-circuit 'or' chain, other four keys unchanged). One theoretical asymmetry: np.asarray(Tgwall) is now evaluated first (inside _uniform_tgwall) where the old guard asarray'd 'Ta' first; for doubly-malformed inputs the raised error could originate at Tgwall instead of Ta. Every tested case (size-2, empty, non-array altitude) shows exact original error type/message parity - verified by execution."
+        },
+        {
+          "severity": "note",
+          "file": "development/optimization_s10_semantic_systems/evidence/t01_l2_paired_benchmark.md",
+          "claim": "1.659 geomean on the landcover protected cell",
+          "evidence": "AUDITED FOR INTERNAL CONSISTENCY ONLY (raw records on Dropbox, not locally re-runnable on this busy shared host): geomean of the five pair ratios recomputes to 1.6593; min 1.6305/max 1.7237 match the stated 1.631/1.724; medians 3.2608/1.9725 match '3.26s -> 1.97s'; removed time 3.26-1.97=1.29s matches the census attribution ~1.31s. A-side 4e76183a verified source-identical to main in src/ (only docs + a test-harness import path differ). Protocol documented (5 alternating pairs, fresh subprocess per side, warmup excluded); 'no quiet-window retry needed' not verifiable."
+        }
+      ],
+      "verified": [
+        "pytest tests/optimization_s10 -q -> 58 passed (includes 14 T01 cases)",
+        "pytest tests/differential/test_pipeline_reference.py -k landcover -q -> 2 passed",
+        "Guard-flip scoping: read full diff of cylinder_longwave.py + patch_radiation.py vs b3e5ca59; only Tgwall clause changed in both primaries; counter increments added on every reference return path (so a silent reference flip WOULD shift counters)",
+        "/tmp/s10review/exp_partition.py: U32/U64 (1,)/(1,1) admitted within frozen budgets; U route bitwise == S route; size-2 and empty arrays declined with byte-identical original ValueError messages; _uniform_tgwall admission set matches docs for float inputs",
+        "/tmp/s10review/exp_partition.py: python-float vs ndarray wrapper partition (see S10-14)",
+        "L1 doc's operative-standard claim: comparison_v1.json is present, frozen, and carries the quoted Lcyl/dpc atol 0.05 rtol 1e-5 field rules"
+      ],
+      "could_not_verify": [
+        "Dropbox raw probe/benchmark archives (sha256s quoted in commit messages) - not accessible from this host",
+        "L2 timings re-measured - audited internally only (shared host, per team-lead instruction)",
+        "tests/unit + v5-v8 A/B 'failure sets byte-identical patched/unpatched' as an A/B pair - I verified the current HEAD failure sets match the documented pre-existing categories (10F/453P unit exactly; 90 threads=10 + 48 boundary cells in the differential pair) and re-derived the one non-documented failure as a cache-state artifact (see R03 findings); I did not re-run the stashed arm"
+      ]
+    },
+    {
+      "task": "G01G02",
+      "commits": ["65097719", "612fbb13"],
+      "verdict": "approved_with_notes",
+      "findings": [
+        {
+          "severity": "minor",
+          "file": "development/optimization_s10_semantic_systems/evidence/g01_g02_prepared_gvf.md",
+          "claim": "C6-30 suite 217 pass",
+          "evidence": "Could not reconstruct a 217-item selection. Measured: tests/optimization_v6/gvf_prepare = 78 items, tests/optimization_v5/gvf = 82 items (160 combined, all passing), + tests/optimization_v6/cylinder_lw = 198 items (1 pre-existing failure, see R03/baseline check). The substantive claim (the C6-30 bitwise differentials pass on HEAD) is supported by the 160 GVF-lineage tests passing; the specific count 217 is unverifiable from the doc - state the exact selection."
+        },
+        {
+          "severity": "minor",
+          "file": "tests/optimization_s10/semantic/test_g01_prepared_gvf_dispatch.py",
+          "claim": "kill switch SOLWEIG_LIGHT_GVF_PREPARE=0 delegates to the exact H=1 baseline",
+          "evidence": "True and I verified it through the REAL env var (the standing test mocks prepared_enabled() instead of setting the env): with SOLWEIG_LIGHT_GVF_PREPARE=0 at threads=1 on an f64-Tg water scene, the delegate fired (serial=1) and outputs + caller-visible Tg were bitwise-equal to engine.gvf_2018a_numpy. Same E2E-engagement caveat as T01: dispatch is pinned at function level only; census 14/14-prepared is manual evidence."
+        },
+        {
+          "severity": "note",
+          "file": "src/solweig_light/radiation/gvf_prepared.py",
+          "claim": "size-one Tgwall of any float dtype admitted",
+          "evidence": "Code admits size-one arrays of ANY dtype (no dtype check on the size==1 branch), comment says float. Same finding as T01."
+        },
+        {
+          "severity": "note",
+          "file": "src/solweig_light/radiation/engine.py",
+          "claim": "delegate preserves the exact H=1 baseline",
+          "evidence": "Read: prepared_gvf_step's 20 positional parameters match serial's call exactly; lambda *args, **kwargs: serial(*args) drops parallel/block_rows which ground_view.gvf_2018a does not accept; decline paths (kill switch, _admits False) forward the identical positional tuple. Delegate count asserted in tests for every decline class (f16/int Tg, multi-element f64 Tgwall)."
+        },
+        {
+          "severity": "note",
+          "file": "development/optimization_s10_semantic_systems/evidence/g01_g02_prepared_gvf.md",
+          "claim": "L2 geomean 1.738, cumulative ~2.86x",
+          "evidence": "AUDITED FOR INTERNAL CONSISTENCY ONLY (raw on Dropbox): geomean of 1.6805/1.7802/1.7520/1.7875/1.6939 recomputes to 1.738; min 1.680 matches; 3.26/1.14 = 2.86 matches; A side is 65097719 which contains T01's src and not G01+G02's (verified by diff). Post-change stage shares (gvf 0.22s of ~0.75s calc) consistent with the census table."
+        }
+      ],
+      "verified": [
+        "pytest tests/optimization_s10 -q -> 58 passed (includes 14 G01 dispatch cases)",
+        "pytest tests/optimization_v6/gvf_prepare tests/optimization_v5/gvf -q -> 160 passed (C6-30/C5-22 lineage differentials, incl. prepared==fused==original bitwise on parallel=[False,True])",
+        "f64-Tg bitwise oracle tests pass at HEAD: water x buildings variants, caller-visible Tg compared on uint64 views (test_f64_tg_prepared_matches_original_bitwise)",
+        "/tmp/s10review/exp_gvf_env.py: real-env kill switch delegates serial and is bitwise vs engine.gvf_2018a_numpy (outputs + Tg)",
+        "Read _direction_snapshot/_lup_expression: prepared snapshot's f32 conversion matches the baseline per-direction snapshot; G02's 'Tg only reaches the snapshot via Lup' claim is consistent with the guard's alias exclusions (Tg may not alias walls/scale/ewall/albedo_b/landcover/buildings/shadow/alb_grid/lc_grid/dirwalls/Twater)",
+        "engine.gvf_2018a_numpy oracle provenance: alias to the pre-optimization full body exists at line 1758 BEFORE the dispatch def at 1762, and the same alias exists on main (b3e5ca59:1747) - the oracle is genuinely the original"
+      ],
+      "could_not_verify": [
+        "Dropbox raw benchmark record paired_ab_g02.jsonl (sha256 quoted)",
+        "The '217 tests' selection (see finding)",
+        "The guard-probe '14/14 rejected, sole failing input Tg:float64' figure - mechanism and tests corroborate it, but re-capturing it requires instrumenting a full E2E run, which I did not do"
+      ]
+    },
+    {
+      "task": "R03",
+      "commits": ["1a3cb8e2", "04faa6cf", "313f6a15"],
+      "verdict": "approved",
+      "findings": [
+        {
+          "severity": "note",
+          "file": "src/solweig_light/radiation/patch_radiation.py",
+          "claim": "admitted scenes bitwise; declines exact",
+          "evidence": "Independently verified against the ENGINE's own operands (not the test's replica loop): anilum_packed output is bitwise-equal (uint32 views) to the retained loop written with engine._zeros/engine._operate, on binary/raw leaves carrying NaN/-0.0/+Inf raw payloads; parallel kernel bitwise == serial; non-lazy, f64-lv, patch-count, total and narrow-lv declines all return None; ternary decline returns None and the retained loop raises the original IndexError; SOLWEIG_LIGHT_ANILUM_PACKED=0 (real env) stands down. The no-preflight design is safe because mode-2 (ternary, the only reserved-code carrier) is declined wholesale and modes {1,4} cannot encode a reserved code."
+        },
+        {
+          "severity": "note",
+          "file": "tests/optimization_s10/semantic/test_r03_anilum_packed.py",
+          "claim": "E2E engagement 14/14 is a census-trap guard",
+          "evidence": "Proven load-bearing by execution: with SOLWEIG_LIGHT_ANILUM_PACKED=0 the landcover goldens STILL PASS (2/2) while test_engine_routes_packed_on_landcover_golden FAILS (0 != 14). This is the only wave-1 route whose E2E engagement is pinned by a standing test."
+        },
+        {
+          "severity": "note",
+          "file": "development/optimization_s10_semantic_systems/evidence/r03_anilum_packed.md",
+          "claim": "~1.05x tile, cumulative ~3.0x",
+          "evidence": "AUDITED FOR INTERNAL CONSISTENCY ONLY: 1.14s post-G02 / 1.05 = 1.086s consistent with the stated ~1.09s; 3.26/1.09 = 2.99 consistent with ~3.0x; the set-1 jsonl overwrite is honestly disclosed in 313f6a15 with surviving pair ratios. 2142 = 14x153 calls and 85.3ms/0.75s = 11.1% both check out against the census."
+        },
+        {
+          "severity": "note",
+          "file": "src/solweig_light/radiation/patch_radiation.py",
+          "claim": "kill switch parsing",
+          "evidence": "SOLWEIG_LIGHT_ANILUM_PACKED only disables on exact '0', while SOLWEIG_LIGHT_GVF_PREPARE also accepts 'false'/'False'. Documents only claim '0', so behavior matches docs; cosmetic inconsistency between the two new switches."
+        }
+      ],
+      "verified": [
+        "pytest tests/optimization_s10 -q -> 58 passed (includes 9 R03 cases)",
+        "pytest tests/differential/test_pipeline_reference.py -k landcover -q -> 2 passed",
+        "/tmp/s10review/exp_anilum.py: all bitwise/decline/kill-switch checks listed in the finding",
+        "Kill-switch census-trap probe: SOLWEIG_LIGHT_ANILUM_PACKED=0 -> engagement test fails, goldens pass",
+        "Test-hygiene commit 313f6a15: the bare default_gdal_cache_bytes assignment leak is real in 1a3cb8e2 and fixed to monkeypatch in 313f6a15; tests/optimization_s10 passes in suite order at HEAD (58/58), confirming no residual pollution"
+      ],
+      "could_not_verify": [
+        "Dropbox raw paired/wip benchmark records",
+        "L2 re-measurement (shared host; audited internally only)"
+      ]
+    },
+    {
+      "task": "S03b",
+      "commits": ["22daa0b0"],
+      "verdict": "approved",
+      "findings": [
+        {
+          "severity": "note",
+          "file": "src/solweig_light/runtime_memory.py",
+          "claim": "ordinary hosts bit-identical; charge can only shrink",
+          "evidence": "View = min(physical, finite cgroup limit) <= physical always, so the 5% charge never increases: no previously-admitting configuration can newly refuse. limit is None on hosts without a finite limit (_container_memory_limit_bytes skips 'max' and >= 1<<60 sentinels - read and confirmed), and limits >= physical are ignored by the 0 < limit < view test. Verified live on this host: physical 376.05 GiB, cgroup limit 64.0 GiB, headroom 5.31 GiB; new default 3.200 GiB == 5% of min view; old formula 18.802 GiB; budget 2.653 GiB; census-config algebra 5% of 6 GiB = 322122547 exact."
+        },
+        {
+          "severity": "note",
+          "file": "src/solweig_light/runtime.py",
+          "claim": "applied child GDAL_CACHEMAX and admission charge share one number by construction",
+          "evidence": "Read the call path: runtime._child_environment imports default_gdal_cache_bytes at call time (runtime.py:680 area) and sets GDAL_CACHEMAX from it; the charge side (_resolved_gdal_cache) calls the same function when unset. Residual point-in-time caveat (probes at two moments) is pre-existing and disclosed in the evidence doc."
+        },
+        {
+          "severity": "note",
+          "file": "development/optimization_s10_semantic_systems/evidence/s03b_gdal_container_view.md",
+          "claim": "default still refuses on this host, headroom-driven",
+          "evidence": "Reproduced the numbers: charge 3.200 GiB > budget 2.653 GiB here because the budget uses cgroup HEADROOM (limit - usage) while the charge uses the limit. This asymmetry is intentional (budget must stay headroom-correct); the evidence doc says so explicitly. The s03b doc's '68.7 GB cgroup' equals the measured 64.0 GiB (GB vs GiB) - consistent."
+        }
+      ],
+      "verified": [
+        "pytest tests/optimization_s10 -q -> 58 passed (includes the 4 s03b cases: limit caps default, no-limit keeps physical, larger-limit ignored, census-config admits + no-limit ResourceAdmissionError causal guard)",
+        "/tmp/s10review/exp_s03b.py: live host probe + census algebra as quoted",
+        "Read _container_memory_limit_bytes / _container_memory_headroom_bytes / default_memory_budget_bytes in runtime.py: budget = min(physical, available, headroom) * 0.5 as the doc claims"
+      ],
+      "could_not_verify": [
+        "The s10-raw/s03b host-demo artifacts (Dropbox archive pending per the doc itself)",
+        "Behavior inside an actual 6 GB Slurm step (no such allocation from this session; the census configuration is pinned by monkeypatched probes, which is the best available here)"
+      ]
+    },
+    {
+      "task": "S10-14",
+      "commits": ["2c7324d9"],
+      "verdict": "approved_with_notes",
+      "findings": [
+        {
+          "severity": "minor",
+          "file": "development/optimization_s10_semantic_systems/evidence/s10_14_adversarial_fixtures.md",
+          "claim": "python-float Tgwall ~1 ulp apart from the ndarray set on 5/6 Lcyl fields",
+          "evidence": "Claim verified by independent execution, with one nuance the doc omits: the partition is DTYPE-CONDITIONAL. With f64 Tgwall wrappers I measure 1-2 ulp divergence on exactly 5/6 fields (Lsouth 0 ulp; 3 seeds); with f32 wrappers python-float is bit-IDENTICAL to the ndarray set (0 ulp, 3 seeds) - the coefficient arithmetic stays f32 either way (engine._operands leaves f32 + weak python float at f32; any ndarray wrapper promotes to f64 only when the wrapper is f64). The doc states the partition unconditionally. Direction is conservative (it under-claims bit-equality), so no risk to the contract, but the dtype condition should be recorded."
+        },
+        {
+          "severity": "minor",
+          "file": "tests/optimization_s10/fixtures/adversarial.py",
+          "claim": "admission helper identity",
+          "evidence": "Comment cites 'patch_radiation._is_singleton; T01 admission' - no such function exists; the helper is _uniform_tgwall. Comment drift only."
+        },
+        {
+          "severity": "note",
+          "file": "tests/optimization_s10/fixtures/test_adversarial_profiles.py",
+          "claim": "oracles come only from the original source or stated identities",
+          "evidence": "Confirmed by reading every fixture: expectations are patch_radiation._reference (engine serial lineage) or engine.gvf_2018a_numpy (verified pre-optimization body, alias predates the campaign and exists on main), or stated invariance identities (pairwise bit-equality across wrappers, alias-visibility, signbit masks). The one 'transcribed_expression' entry (anilum retained loop) is a test-local transcription of engine code - acceptable, and I separately verified it against the engine's own operands. The GVF alias fixture reproduces the aliased binding on the oracle side (avoids the snapshot-copies-away-alias trap it documents). Manifest drift-pinned by test_manifest_matches_registry (passes)."
+        }
+      ],
+      "verified": [
+        "pytest tests/optimization_s10 -q -> 58 passed (18/18 fixture items, suite order, no pollution - counters read as deltas, runtime_options restores via ContextVar token)",
+        "/tmp/s10review/exp_partition.py: independent partition measurement (f64: 1-2 ulp on 5/6 fields; f32: 0 ulp; ndarray set pairwise bitwise; python float in budget vs reference on every field)",
+        "Oracle provenance checks: _reference resolution chain, gvf_2018a_numpy alias on main and HEAD"
+      ],
+      "could_not_verify": [
+        "Nothing further - this task is self-contained in the repo and fully re-runnable"
+      ]
+    }
+  ],
+  "unselected_dispositions": [
+    {
+      "task": "S07/S09 (row 6)",
+      "disposition": "agree",
+      "reason": "Census-measured ceilings (write 4.7% tile; checkpoint 15.8% but fsync/flush-bound, bytes-scaled ceiling ~1.5-2% at benchmark scale) sit below any campaign gate; deferral pending production-scale evidence is the evidence-based call, and D08 forbids the interval change that would make it worth more."
+    },
+    {
+      "task": "kernel-internal micro-opts (row 7)",
+      "disposition": "agree",
+      "reason": "Post-G02 census shows the three top stages (76% of calc) all on proven compiled routes with 0 fallbacks; remaining work fights exactness-frozen ordered arithmetic for single-digit percent - diminishing returns is correct."
+    },
+    {
+      "task": "T03 (row 8)",
+      "disposition": "agree",
+      "reason": "Win condition (c_lookup < c_expression) is untested and the post-T01 re-profile it is deferred on has not been run; deferring is consistent with the register's own decision rule."
+    },
+    {
+      "task": "R01 (row 9)",
+      "disposition": "agree",
+      "reason": "Static dossier-only evidence, 76.5 MiB@1024^2 table pressure and error-order risk against an unmeasured consumer predicate; deferral justified."
+    },
+    {
+      "task": "T06 (row 10)",
+      "disposition": "agree",
+      "reason": "Static only (classification reuse across consumers, key-equality/lifetime risk); no measured bound; deferral justified."
+    },
+    {
+      "task": "H* (row 11)",
+      "disposition": "agree",
+      "reason": "No eligible hardware on this host; design-only is the only honest status, and the FP64-profile/DX risk note is correct."
+    },
+    {
+      "task": "T02 (row 12)",
+      "disposition": "agree",
+      "reason": "T01 shipped without a typed plan and no cold-JIT cost materialized in the L2 numbers (warmup excluded per observation), so the amortization motivation did not survive contact with evidence; 'fold into T01' is effectively 'drop', which is fine - the register row should eventually say 'dropped' rather than 'folded' to avoid implying pending work."
+    }
+  ],
+  "rerun_recommended": "true, narrowly: (1) the three L2 paired benchmarks (T01 1.659, G02 1.738, R03 ~1.05) should be re-run once on a quiet window or a second host before merge - I audited them for internal consistency only (all arithmetic checks out; raw records are on Dropbox and this host is busy/shared), and the campaign's cumulative ~3.0x claim rests entirely on them; (2) everything correctness-bearing was re-executed here and passes (tests/optimization_s10 58/58, landcover goldens 2/2, GVF lineage 160/160, tests/unit exactly matching the documented pre-existing set), so no correctness rerun is needed. Also recommended, cheap: add one standing E2E route-engagement test on the landcover golden asserting Lcyl/dpc primary 24/24 and 0 GVF serial delegates, extending the R03 pattern to T01/G01+G02."
+}

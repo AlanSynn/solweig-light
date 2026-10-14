@@ -138,7 +138,7 @@ FIXTURES = [
     {
         'id': 'lcyl_category_invariance',
         'route': 'patch_radiation.Lcyl_v2022a (primary)',
-        'input_axis': 'Tgwall typed wrappers; bit-identity set = ndarray scalar/0-d/(1,)/(1,1) (f32/f64); python float admitted but budget-only (singleton identity is not scalar equivalence — observed 1-ulp boundary)',
+        'input_axis': 'Tgwall typed wrappers; bit-identity set = ndarray scalar/0-d/(1,)/(1,1); python float admitted budget-only, partition is dtype-conditional (f64: ~1 ulp off on 5/6 fields — singleton identity is not scalar equivalence; f32: bit-identical, verified in the wave-1 review)',
         'oracle': 'original_source (patch_radiation._reference(Lcyl_v2022a)) + invariance_identity (pairwise bit-equality across the ndarray wrapper set)',
         'expectation_source': 'original_source|invariance_identity',
         'evidence_class': 'standalone_semantic_probe',

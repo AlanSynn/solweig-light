@@ -16,7 +16,7 @@ to `evidence/` (distilled) and `/storage/scratch1/1/dsynn6/solweig-light-s10-raw
 | 3 | R03 | ordered aniLum packed-stream kernel: replace 153×/daytime-step Python plane decode+accumulate with one njit ordered sweep over the admitted packed leaves | **L2: ≈1.05× tile cross-tree paired (1.035/1.047 geomeans, 8/10 pairs ≥1.0); within-process toggle 1.073 median (7/8). Cumulative vs main ≈3.0× (3.26s → ≈1.09s)** | **ACCEPTED** (evidence/r03_anilum_packed.md; kernel ≡ retained loop bitwise on uint32 views incl. NaN/-0/Inf raw payloads; ternary/weight/non-packed declines exact; kill switch; 14/14 E2E engagement; unit 8/8, S10 36/36, landcover goldens 2/2, tests/unit set unchanged) | decode arithmetic order preserved per pixel; ternary reserved-code scenes stay on the Python indexer (original IndexError) | **wave-2 complete (1a3cb8e2)**; re-profile before next rank |
 | 4 | Lside twin | compiled twin of `Lside_veg_v2022a` (pure NumPy `_operate` body, no compiled variant exists) | 4.4% of calc → ≈2–3% of tile | post-G02 census (measured); A-plus/T01 decode pattern | ordered expression decode; 0-d scalar branches (altitude/azimuth/t) | candidate (mechanical, after R03) |
 | 5 | S03b | memory admission container mismatch: GDAL-cache charge = 5% physical RAM vs budget = cgroup headroom | unblocks default runs on container-limited hosts (correctness/ops, not speed; no perf claim) | **ACCEPTED** (evidence/s03b_gdal_container_view.md; fix: `default_gdal_cache_bytes` view = min(physical, finite cgroup limit), so applied GDAL_CACHEMAX and admission charge are one number by construction; 4 unit tests incl. census-config admission flip + no-limit causal guard; S10 40/40, landcover goldens 2/2, unit memory/admission subset 12/12; host demo: default refusal on this 68.7 GB cgroup host unchanged (correct), budget-only override runs 3/3) | changes default admission semantics — own gate + docs shipped | **wave-2 complete (313f6a15 + S03b commit)**; ordinary hosts bit-identical |
-| 6 | S07/S09 | stored-stream export validation / streaming checkpoint serialization | **measured: write 4.7% tile; checkpoint 15.8% tile but fsync/flush-bound at benchmark scale — S09 ceiling here ≈1.5–2%; bytes-scaled part needs production-size scene** | post-G02 census + checkpoint split (evidence/s10_post_g02_census.md) | integrity/error-priority contracts; D08 forbids interval change | conditional — deferred pending production-scale evidence |
+| 6 | S07/S09 | stored-stream export validation / streaming checkpoint serialization | **measured: write 4.7% tile; checkpoint 15.8% tile but fsync/flush-bound at benchmark scale — S09 ceiling here ≈1.5–2%; bytes-scaled part needs production-size scene** | post-G02 census + checkpoint split (evidence/s10_post_g02_census.md); io-audit (2026-10-14): mechanism map confirms DSM/Trees/DEM sha256'd up to 9x cold with a back-to-back E→F rehash pair (pipeline.py:240→242) and a removable `_encode` getvalue copy (byte-identical streaming) — logic-derived, not measured; consistent with the measured deferral | integrity/error-priority contracts; D08 forbids interval change | conditional — deferred pending production-scale evidence |
 | 7 | gvf/Lcyl/Kside kernel-internal | the three top stages (76% of calc) are ALL on their proven compiled routes post-census | micro-opts only; exactness-frozen lineages (C5/C6/N8/N9) | post-G02 census (route counters: 0 fallbacks everywhere) | high effort, frozen ordered arithmetic | diminishing returns — not planned |
 | 8 | T03 | exact finite-mask contribution tables (NP expr -> C*P eval) | win iff c_lookup < c_expression | static; dossier 02 | nonfinite states, table pressure | deferred until post-T01 profile |
 | 9 | R01 | longwave consumer predicate cache (4-bit q) | win iff T*(decode3+predicate) > C0 | static; dossier 03 | 76.5 MiB@1024², error order | deferred |
@@ -25,6 +25,18 @@ to `evidence/` (distilled) and `/storage/scratch1/1/dsynn6/solweig-light-s10-raw
 | 12 | T02 | typed execution plan (profile->kernel planning) | amortizes Python type checks; needed at scale of T01 use | folds into T01 design | cold JIT | fold into T01 |
 
 Notes:
+- S10-15 wave-1 independent review COMPLETE (2026-10-14, evidence/reviews/
+  wave1/): no blockers — R03/S03b approved, T01/G01+G02/S10-14 approved
+  with notes; all seven deferrals (rows 6-12) agreed. Review follow-ups
+  closed same day: standing landcover-golden E2E engagement pin added for
+  T01/G01 (the review demonstrated the census trap by execution — goldens
+  pass with the aniLum kill switch on, only the E2E pin fails); G01
+  evidence count corrected (217 → locatable lineage 160, re-run green);
+  dtype-blind admission predicate documented with int32/int64 probes;
+  S10-14 python-float partition recorded as dtype-conditional. Reviewer
+  rerun recommendation: re-run the three L2 paired cells (T01/G02/R03) on
+  a quiet window before any merge — scheduled as the held-out campaign
+  (S10-30).
 - Operative numerical acceptance standard (established 2026-10-13, L1
   differential): the frozen `development/benchmarks/protocols/comparison_v1.json`
   budgets (Lcyl/dpc fields atol 0.05 W/m² rtol 1e-5; Tmrt 0.01 °C; UTCI/WBGT

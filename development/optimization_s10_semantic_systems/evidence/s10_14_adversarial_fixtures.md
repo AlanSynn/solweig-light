@@ -26,15 +26,24 @@ evidence class `standalone_semantic_probe`.
 
 ## Semantic finding recorded by the fixtures
 
-**The admitted singleton bit-identity set is the ndarray wrappers only.**
-With identical base arguments, numpy scalar, 0-d, (1,) and (1,1) Tgwall all
-give bit-identical primary outputs — but a **Python float** Tgwall (also
-admitted, also in budget vs the reference) is ~1 ulp apart from that set on
-five of six Lcyl fields. This is the SEMANTIC_CONTRACT caveat "singleton
-identity is not scalar execution equivalence" observed at the admitted
-boundary; the fixtures pin the partition instead of overclaiming. The
-production pipeline constructs Tgwall as ndarray, so no shipped behavior
-changes.
+**The admitted singleton bit-identity set is the ndarray wrappers; the
+python-float partition is dtype-conditional.** With identical base
+arguments, numpy scalar, 0-d, (1,) and (1,1) Tgwall all give bit-identical
+primary outputs. A **Python float** Tgwall (also admitted, also in budget
+vs the reference) is ~1 ulp apart from that set on five of six Lcyl fields
+**at float64**; at float32 the python float is bit-identical to the f32
+ndarray set (verified independently during the wave-1 review). This is the
+SEMANTIC_CONTRACT caveat "singleton identity is not scalar execution
+equivalence" observed at the admitted boundary; the fixtures pin the
+conservative partition (python float never bit-claimed). The production
+pipeline constructs Tgwall as ndarray, so no shipped behavior changes.
+
+**Admission predicate is dtype-blind** (wave-1 review follow-up, verified
+by probe): `_uniform_tgwall`/`_admits` admit size-one arrays of ANY dtype,
+not only floats — int32/int64 (1,1) Tgwall takes the primary/prepared
+routes and stays within frozen budgets (Lcyl max|diff| vs reference
+≤1.9e-4) / bitwise (prepared GVF). Docs were corrected to state the
+verified predicate; the code was already safe.
 
 The GVF alias fixture also fixed a fixture-level trap worth naming:
 snapshotting a scene dict (the shared test helper) silently copies away an
