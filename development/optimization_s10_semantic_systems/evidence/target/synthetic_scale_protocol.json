@@ -36,7 +36,7 @@
   },
   "run_limits": {
     "timed_passes": "exactly ONE timed pass per arm over the 24-tile manifest (walls, svf, run phases) after the untimed prime; total 6 measured phase walls + 1 crosscheck",
-    "prime": "untimed full-chain prime per arm on the isolated prime tile; excluded from all measured values (S10-30 methodology)",
+    "prime": "untimed full-chain prime per arm on the isolated prime tile; excluded from all measured values (S10-30 methodology). Prime runs at SHIPPED SERIAL DEFAULTS: the first demo submission (slurm 14056137) showed that main (pre-S03b) refuses a 1-tile run planned at active_workers=6 ('requested 6 concurrent phase jobs but only 1 fit' — the admissible count is bounded by the 1-job queue), so the parallel shape is reserved for the 24-tile measured phases where both arms admit; recorded as an observed pre-S03b admission behavior difference, not worked around on main's side.",
     "retry": "at most ONE causal retry per arm for an environmental crash (disclosed with cause if used); no re-arming for better numbers",
     "timed_only_by": "perf_counter around the entry call; nothing else inside the timer"
   },
