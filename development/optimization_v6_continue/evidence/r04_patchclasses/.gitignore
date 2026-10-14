@@ -1,3 +1,0 @@
-runs/**/run_scene/
-runs/**/numba_cache/
-__pycache__/
