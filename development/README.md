@@ -14,7 +14,8 @@ tree, and moving it changed no source file.
 
 | directory | contents |
 |---|---|
-| [optimization_v4/](optimization_v4/) … [optimization_n9_final/](optimization_n9_final/) | Six self-contained campaign packets (strategy catalogs, dossiers, evidence, selection/merge manifests). Start at [docs/optimization_campaigns.md](docs/optimization_campaigns.md) — it is the map; each packet's own terminal record supersedes anything narrated elsewhere. |
+| [optimization_v4/](optimization_v4/) … [optimization_n9_final/](optimization_n9_final/) | Six closed campaign packets (strategy catalogs, dossiers, evidence, selection/merge manifests). Start at [docs/optimization_campaigns.md](docs/optimization_campaigns.md) — it is the map; each packet's own terminal record supersedes anything narrated elsewhere. |
+| [optimization_s10_semantic_systems/](optimization_s10_semantic_systems/) | ACTIVE S10 campaign packet (semantic/system optimization portfolio). Entry point: its [START_HERE.txt](optimization_s10_semantic_systems/START_HERE.txt). |
 | [docs/](docs/) | Process records: the P0–P8 port log ([progress.md](docs/progress.md)), per-phase records (p4/p5/p6/p7_*), the exact-optimization strategy review, evidence-storage policy, source audits ([audit/](docs/audit/)) and the upstream patch ([upstream_patches/](docs/upstream_patches/)). |
 | [reports/](reports/) | Measurement and characterization archive: contract snapshot, per-phase verification records, `characterization/` raw evidence (including full wheel-staging snapshots). |
 | [benchmarks/](benchmarks/) | Frozen benchmark protocols (`comparison_v1.json` is the machine-readable numerical authority cited by [docs/numerical_contract.md](../docs/numerical_contract.md)) and per-protocol directories. |

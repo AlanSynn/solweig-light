@@ -1,0 +1,1401 @@
+{
+  "scope": "Relevant optimization classes identified in this review, not a mathematical exhaustive enumeration. Not all candidates are authorized for implementation.",
+  "candidate_count": 73,
+  "candidates": [
+    {
+      "id": "T01",
+      "title": "Singleton-array longwave typed fast path",
+      "stage": "daytime_longwave",
+      "semantic_level": "G",
+      "priority": 1,
+      "source_ids": [
+        "S03",
+        "S04",
+        "S05",
+        "S06",
+        "S07"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Add U-profile retaining singleton arithmetic during coefficient preparation, then consume verified scalar values in a matching compiled typed DAG. Do not change the public material function.",
+      "proof_and_guard": "size==1 is an admission clue, not permission for early .item(); trace every broadcast/promotion and allow different sun/shade dtypes.",
+      "cost_model": "Remove fallback dispatch and O(Td*P) full-raster Python expressions; remaining ordered work O(Td*N*P).",
+      "small_deciding_experiment": "64/128-square landcover and no-landcover 24/48-step actual traces; count scalar/singleton/field fallback and compare every radiation/state boundary.",
+      "reject_or_defer_when": "Array rank or compiler math makes parity fail; keep retained reference for unproven profiles.",
+      "overlap_or_dependency": "Foundational coverage improvement; do not double-count disappearance of _operate inside this same fallback.",
+      "dossier": "dossiers/01_typed_longwave.md"
+    },
+    {
+      "id": "T02",
+      "title": "Prepare a small typed execution plan",
+      "stage": "daytime_longwave",
+      "semantic_level": "G",
+      "priority": 1,
+      "source_ids": [
+        "S06",
+        "S07"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Resolve scalar/array promotion and input capabilities once per invocation/timestep; use a small reviewed family of kernels rather than a general compiler project.",
+      "proof_and_guard": "Static profile facts remain stable; dynamic values, ownership and errors stay at required checkpoints.",
+      "cost_model": "O(number_of_profiles) compilation and O(T) planning replace repeated Python type checks.",
+      "small_deciding_experiment": "Record typed nodes for real captures; compare profile signatures and intermediate bits against original helpers.",
+      "reject_or_defer_when": "Plan creation, specializations or cold JIT dominate savings.",
+      "overlap_or_dependency": "T01 first; no independent speedup multiplier for type checks already removed by T01.",
+      "dossier": "dossiers/01_typed_longwave.md"
+    },
+    {
+      "id": "T03",
+      "title": "Exact finite-mask contribution tables",
+      "stage": "daytime_longwave",
+      "semantic_level": "G",
+      "priority": 2,
+      "source_ids": [
+        "S06",
+        "S07"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Evaluate original ordered contribution separately for each used Boolean mask state per patch and time. Retain contribution dtype until the original accumulator addition.",
+      "proof_and_guard": "No pre-summing terms; unused states must not introduce warnings; preserve zero multiplication, mixed sun/shade precision and original patch order.",
+      "cost_model": "Expression evaluation NP -> C*P per timestep, with NP lookups/additions remaining; win if c_lookup<c_expression.",
+      "small_deciding_experiment": "Compare every contribution and prefix for actual U/S profiles, signed zero and guarded nonfinite paths; time table preparation too.",
+      "reject_or_defer_when": "Lookup traffic or branch pressure exceeds eliminated arithmetic; table state count approaches N.",
+      "overlap_or_dependency": "Evaluate after T01; two-table and one-table variants only.",
+      "dossier": "dossiers/01_typed_longwave.md"
+    },
+    {
+      "id": "T04",
+      "title": "Compute true field radiance once per timestep",
+      "stage": "daytime_longwave",
+      "semantic_level": "G",
+      "priority": 3,
+      "source_ids": [
+        "S06",
+        "S07"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "For genuinely varying wall inputs, retain array coefficient preparation once, then feed field values to an ordered compiled kernel.",
+      "proof_and_guard": "Keep full rank/broadcast contract, ndarray promotion and alias/mutation epoch; no assumed uniformity.",
+      "cost_model": "P repeated surface expression evaluations -> one evaluation plus NP loads.",
+      "small_deciding_experiment": "Small nonuniform field cases admitted by original low-level API; compare full diagnostics separately.",
+      "reject_or_defer_when": "Real production never uses field profile or implementation cost cannot repay observed coverage.",
+      "overlap_or_dependency": "Not needed to fix the standard singleton case; T01 does not depend on this.",
+      "dossier": "dossiers/01_typed_longwave.md"
+    },
+    {
+      "id": "T05",
+      "title": "Exact ASVF equivalence classes",
+      "stage": "classification",
+      "semantic_level": "G",
+      "priority": 3,
+      "source_ids": [
+        "S27",
+        "S28"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Group exact ASVF bit patterns plus every relevant input/profile and classify unique values; scatter results without quantization.",
+      "proof_and_guard": "Byte identity including sign and profile; hash collisions resolved by content; reject semantic changes in fallback.",
+      "cost_model": "Expensive evaluations NP -> UP, but scatter still NP; U is unique-state count.",
+      "small_deciding_experiment": "Measure U/N, grouping cost and scatter on actual landcover scenes before writing kernel.",
+      "reject_or_defer_when": "U near N, class construction cost or poor scatter locality.",
+      "overlap_or_dependency": "Separate from coefficient-table path already shipped.",
+      "dossier": "dossiers/02_partial_eval_classification.md"
+    },
+    {
+      "id": "T06",
+      "title": "Reuse exact classification across consumers",
+      "stage": "classification",
+      "semantic_level": "G",
+      "priority": 2,
+      "source_ids": [
+        "S06",
+        "S07",
+        "S27",
+        "S28"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Share sun/shade masks between shortwave and longwave only when actual patch order, ASVF, angles, active mask and math profile are identical.",
+      "proof_and_guard": "Full-key equality; different active masks may use a proven common superset but must preserve error behavior.",
+      "cost_model": "One classification rather than two, at extra bounded lifetime/space.",
+      "small_deciding_experiment": "Capture full keys from both real consumers; count exact overlaps and live bytes.",
+      "reject_or_defer_when": "Different tables or stage lifetime make reuse impossible or memory-heavy.",
+      "overlap_or_dependency": "May overlap T07/R04; no NP-wide persistent mask history.",
+      "dossier": "dossiers/02_partial_eval_classification.md"
+    },
+    {
+      "id": "T07",
+      "title": "Precompute exact tan32(ASVF)",
+      "stage": "classification",
+      "semantic_level": "G",
+      "priority": 2,
+      "source_ids": [
+        "S27",
+        "S28",
+        "S08"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Retain one immutable field of the original tan32 result for geometry lifetime or reuse block-local values.",
+      "proof_and_guard": "Same input layout-sensitive math profile and guards; key includes exact ASVF bytes and implementation; do not replace atan.",
+      "cost_model": "One N-element field (~4N bytes) versus repeated block tan calls across P/T consumers.",
+      "small_deciding_experiment": "Compare exact tan output at vector tails, strides and fallback domains; include preparation/memory.",
+      "reject_or_defer_when": "Already cached in selected path, cache cost not amortized or profile-dependent layout changes output.",
+      "overlap_or_dependency": "Avoid counting as new if current code already reuses it in a particular route.",
+      "dossier": "dossiers/02_partial_eval_classification.md"
+    },
+    {
+      "id": "T08",
+      "title": "Extend private demand projection across fallback",
+      "stage": "daytime_longwave",
+      "semantic_level": "G",
+      "priority": 2,
+      "source_ids": [
+        "S06",
+        "S07",
+        "S05"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Keep only live primary accumulators in a new typed fallback replacement; full public diagnostic API remains complete.",
+      "proof_and_guard": "Backward liveness includes late additions, state, errors and requested traces. Omitted values are NOT_REQUESTED, not fabricated arrays.",
+      "cost_model": "Remove diagnostic-only arithmetic and writes; primary two-pass recurrence unchanged.",
+      "small_deciding_experiment": "Demand-on/off with full reference returned fields; compare TMRT and carried state.",
+      "reject_or_defer_when": "Value assumed diagnostic influences later state or errors.",
+      "overlap_or_dependency": "Existing scalar primary reduction already does this; new only for currently uncompiled profiles.",
+      "dossier": "dossiers/01_typed_longwave.md"
+    },
+    {
+      "id": "T09",
+      "title": "Uniform-value representation by provenance",
+      "stage": "pointwise",
+      "semantic_level": "G",
+      "priority": 2,
+      "source_ids": [
+        "S05",
+        "S06"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Represent known uniform forcing/material data as (value, typed-origin) and materialize only for consumers/output requiring arrays.",
+      "proof_and_guard": "Uniformity from immutable construction or exact validation; preserve plus-zero and add-order semantics.",
+      "cost_model": "Avoid N-size preparation/loads and temp arrays; O(N) outputs still necessary when requested.",
+      "small_deciding_experiment": "Temperature and speed construction with signed zero/UHI values, output flags and mixed-dtype profiles.",
+      "reject_or_defer_when": "Uniformity check costs more than reuse or shape is observable through public return.",
+      "overlap_or_dependency": "T01 applies rank-aware mechanism to a specific high-value case.",
+      "dossier": "dossiers/02_partial_eval_classification.md"
+    },
+    {
+      "id": "T10",
+      "title": "Low-entropy field category coefficient evaluation",
+      "stage": "pointwise",
+      "semantic_level": "G",
+      "priority": 3,
+      "source_ids": [
+        "S03",
+        "S05",
+        "S06"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Use exact material/forcing state tuples to prepare per-category expressions once; retain gather by material label.",
+      "proof_and_guard": "Current material map performs value-based successive replacement, not always clean ID lookup; reproduce its actual result before reindexing.",
+      "cost_model": "NF expensive evaluations -> UF+N gather, U=unique tuples.",
+      "small_deciding_experiment": "Small crafted classes with output values equal to later class IDs; exact final mapped arrays.",
+      "reject_or_defer_when": "Unsafe alias/value-replacement behavior or few repetitions.",
+      "overlap_or_dependency": "Do not silently fix inherited landcover mapping quirks.",
+      "dossier": "dossiers/02_partial_eval_classification.md"
+    },
+    {
+      "id": "R01",
+      "title": "Longwave consumer-specific predicate cache",
+      "stage": "radiation",
+      "semantic_level": "G",
+      "priority": 2,
+      "source_ids": [
+        "S06",
+        "S07",
+        "S19"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Derive sky/veg/wall/reflection four predicates once from original three channels; store up to four bits per pixel-patch for the LW consumer only.",
+      "proof_and_guard": "Compute original typed predicates including (1-sh)*vb; preserve original visibility/raw export. New early warnings must not appear.",
+      "cost_model": "Prepare C0; reuse if T*(decode3+predicate-code_read)>C0. Packed derived size NP/2 bytes.",
+      "small_deciding_experiment": "All binary/ternary/raw profiles, odd shapes, sign/nonfinite guards, cache corruption and 24-step amortization.",
+      "reject_or_defer_when": "Additional 76.5 MiB at 1024 square is not amortized, raw guard expensive or classification dominates.",
+      "overlap_or_dependency": "Not a claim of a 32x overall traffic reduction. Alternative to repeated decode, not multiplicative with R05.",
+      "dossier": "dossiers/03_visibility_and_stream.md"
+    },
+    {
+      "id": "R02",
+      "title": "Proven inactive-contribution skipping",
+      "stage": "radiation",
+      "semantic_level": "G",
+      "priority": 3,
+      "source_ids": [
+        "S06",
+        "S07"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Skip contributions only after proving they are bitwise no-ops for each accumulator and cannot cause warnings.",
+      "proof_and_guard": "0*Inf and negative zero are counterexamples; zero masks alone insufficient. Keep exact replay otherwise.",
+      "cost_model": "Visit active contributions plus guard cost rather than every possible update.",
+      "small_deciding_experiment": "Small exhaustive accumulator/sign cases and domain certificates; measure active fraction.",
+      "reject_or_defer_when": "Proof excludes most workload or masked branch divergence outweighs skipped arithmetic.",
+      "overlap_or_dependency": "Strictly harder than predicate caching; never implied by R01.",
+      "dossier": "dossiers/03_visibility_and_stream.md"
+    },
+    {
+      "id": "R03",
+      "title": "Ordered aniLum block kernel",
+      "stage": "diffuse",
+      "semantic_level": "G",
+      "priority": 1,
+      "source_ids": [
+        "S06",
+        "S19",
+        "S27"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Compile the separate diffuse patch sweep with block-owned accumulator, original patch order and typed multiply/add.",
+      "proof_and_guard": "Preserve LazyDiffVisibility arithmetic, channel read order, raw values and float addition.",
+      "cost_model": "O(NP) stays, Python P full-raster dispatch/materialization removed.",
+      "small_deciding_experiment": "Real dRad/aniLum traces before Kdown and shortwave; 64-256 square warm stage time.",
+      "reject_or_defer_when": "Stage fraction too small, new decode loses or error checkpoints differ.",
+      "overlap_or_dependency": "Independent small implementation; do not wait for native research.",
+      "dossier": "dossiers/03_visibility_and_stream.md"
+    },
+    {
+      "id": "R04",
+      "title": "Share diffuse decode with shortwave at a legal boundary",
+      "stage": "diffuse",
+      "semantic_level": "G",
+      "priority": 3,
+      "source_ids": [
+        "S06",
+        "S27"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Move or join aniLum consumption only after proving dRad is not needed before the joint region; otherwise bounded shared decode cache.",
+      "proof_and_guard": "Full use-def order; no change to shadows, temperature preparation or Kdown chronology.",
+      "cost_model": "Eliminate duplicate visibility read/decode; store only needed bounded fields.",
+      "small_deciding_experiment": "Exact execution trace of reads/writes plus old/new stage outputs.",
+      "reject_or_defer_when": "Consumer lifetime requires a full cube or would move an observable computation.",
+      "overlap_or_dependency": "R03 is safe independent fallback; this is not automatic fusion.",
+      "dossier": "dossiers/03_visibility_and_stream.md"
+    },
+    {
+      "id": "R05",
+      "title": "Direct predicate/visibility consumption in microtiles",
+      "stage": "radiation",
+      "semantic_level": "G",
+      "priority": 3,
+      "source_ids": [
+        "S08",
+        "S09",
+        "S19"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Consume packed data in cache-sized pixel groups using original arithmetic, not a full-scene AoSoA conversion.",
+      "proof_and_guard": "Per-pixel patch order and byte-error order intact; code is new only if it differs from failed fused designs.",
+      "cost_model": "Scratch O(BP) -> O(BA)+small patch slices, plus decode arithmetic; choose via actual traffic.",
+      "small_deciding_experiment": "Compare current N9 stream, same schedule Numba, changed producer and combined region.",
+      "reject_or_defer_when": "Repeated per-lane bit extraction or register pressure recreates P01 regression.",
+      "overlap_or_dependency": "Do not enable old rejected env switches as the implementation.",
+      "dossier": "dossiers/03_visibility_and_stream.md"
+    },
+    {
+      "id": "R06",
+      "title": "Reusable scratch with explicit generation ownership",
+      "stage": "radiation",
+      "semantic_level": "G",
+      "priority": 2,
+      "source_ids": [
+        "S08",
+        "S09",
+        "S05"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Allocate bounded slots per worker/profile and initialize exactly the active ranges before reuse across calls.",
+      "proof_and_guard": "No stale inactive masks/tail lanes, aliasing, open owner or exception leakage; no buffer reuse before consumer completion.",
+      "cost_model": "Reduce repeated allocations/zeros at cost of stable live space.",
+      "small_deciding_experiment": "Changing active patches, alternating shapes, poisoned padding, cancellation and repeated scenes.",
+      "reject_or_defer_when": "Saved allocation is negligible or retained cache bloats resident memory.",
+      "overlap_or_dependency": "Existing per-call slots already exist; target cross-call and unnecessary initialization only.",
+      "dossier": "dossiers/03_visibility_and_stream.md"
+    },
+    {
+      "id": "R07",
+      "title": "Coarse dispatch with small microblocks",
+      "stage": "radiation",
+      "semantic_level": "G",
+      "priority": 2,
+      "source_ids": [
+        "S08",
+        "S09"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Separate public block size, cache microblock and native dispatch region; move loops across Python boundary when all operations are compiled.",
+      "proof_and_guard": "No callback per microblock in a purported coarse kernel; enforce exact read/error and output order.",
+      "cost_model": "Calls K*T*N/B -> K*T*N/M, M>=B; scratch stays O(BP), not O(MP).",
+      "small_deciding_experiment": "Count actual calls, stage time and scratch; small/large/tail blocks and caller-requested block controls.",
+      "reject_or_defer_when": "Dispatch savings already achieved by N9 or required callbacks remain.",
+      "overlap_or_dependency": "Combined savings with R06 are measured together; not multiplied.",
+      "dossier": "dossiers/03_visibility_and_stream.md"
+    },
+    {
+      "id": "R08",
+      "title": "Compiler/layout tuning under current backend first",
+      "stage": "radiation",
+      "semantic_level": "G",
+      "priority": 3,
+      "source_ids": [
+        "S07",
+        "S08"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Inspect assembly/IR for gaps; compare lane width, unroll, coefficient hoists and locality with original ordering in Numba.",
+      "proof_and_guard": "No FMA/contraction/reassociation; SIMD across outputs only.",
+      "cost_model": "Gain depends on baseline SIMD efficiency, gather latency and occupancy, not vector width alone.",
+      "small_deciding_experiment": "Two bounded variants, one actual profile; assembly and wrapper measurements.",
+      "reject_or_defer_when": "No material residual or near-parity complexity makes maintenance unjustified.",
+      "overlap_or_dependency": "Native alternative only after this strongest B exists.",
+      "dossier": "dossiers/03_visibility_and_stream.md"
+    },
+    {
+      "id": "R09",
+      "title": "Exact repeated signature and prefix sharing",
+      "stage": "radiation",
+      "semantic_level": "G",
+      "priority": 4,
+      "source_ids": [
+        "S06",
+        "S07"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Memoize identical complete typed computations or identical ordered prefixes with the SAME entering accumulator.",
+      "proof_and_guard": "Visibility equality alone insufficient: include Lup, material, ASVF, coeffs, order and initial state.",
+      "cost_model": "UP or trie-prefix work replaces repeated NP, with hashing/gather/scatter overhead.",
+      "small_deciding_experiment": "Only census exact duplicate rate first; then tiny verified prototype if high.",
+      "reject_or_defer_when": "U near N or index overhead dominates.",
+      "overlap_or_dependency": "Not low rank, quantization or approximate lookup.",
+      "dossier": "dossiers/03_visibility_and_stream.md"
+    },
+    {
+      "id": "R10",
+      "title": "Remove unused private patch tables and copies",
+      "stage": "radiation",
+      "semantic_level": "G",
+      "priority": 2,
+      "source_ids": [
+        "S07",
+        "S05"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Audit unused Lsky_normal/cardinal setup and temporary table copies inside primary demand only.",
+      "proof_and_guard": "Full public diagnostic return preserved; warning/mutation/liveness analysis before removal.",
+      "cost_model": "O(P) setup and some allocations removed; small expected coverage.",
+      "small_deciding_experiment": "Complete private-vs-full projection tests and allocation counts.",
+      "reject_or_defer_when": "No significant measured cost; do not distract from T01.",
+      "overlap_or_dependency": "Already-shipped diagnostic elimination is baseline, not new credit.",
+      "dossier": "dossiers/03_visibility_and_stream.md"
+    },
+    {
+      "id": "G01",
+      "title": "Prepared GVF at one thread",
+      "stage": "ground_view",
+      "semantic_level": "G",
+      "priority": 1,
+      "source_ids": [
+        "S06",
+        "S10",
+        "S11"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Decouple invariant source preparation and bounded postprocessing from the threads>1 route gate. Use serial compiled gather when H=1.",
+      "proof_and_guard": "Preserve guard union, first/later water snapshot, dtype and mutation timing, alias fallbacks.",
+      "cost_model": "Same gather work with less repeated preparation/allocation; useful for W workers at H=1.",
+      "small_deciding_experiment": "H1/H2 default calls with/without landcover, water and aliases; compare every GVF field.",
+      "reject_or_defer_when": "Serial prepared path is slower on protected cells or changes errors.",
+      "overlap_or_dependency": "Not a blanket increase of CPU budget.",
+      "dossier": "dossiers/04_gvf_state.md"
+    },
+    {
+      "id": "G02",
+      "title": "Ground contribution prefix before first blocker",
+      "stage": "ground_view",
+      "semantic_level": "G",
+      "priority": 3,
+      "source_ids": [
+        "S11"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Precompute static first blockage index and stop ground contribution loads after f becomes zero; retain all wall-state updates or exact substitutes.",
+      "proof_and_guard": "Finite-safe absorption proof against actual bounds and previous-sample edge retention; zero multiplication not harmless with Inf.",
+      "cost_model": "T*N*D*R -> prepare+T*N*D*(mean_prefix+overhead).",
+      "small_deciding_experiment": "Dense/open/water adversarial rays and all 16 original intermediates.",
+      "reject_or_defer_when": "Open scenes have no short prefix; guard/precompute cannot repay.",
+      "overlap_or_dependency": "Conditional companion to G03, not naive break at building.",
+      "dossier": "dossiers/04_gvf_state.md"
+    },
+    {
+      "id": "G03",
+      "title": "Exact repeated-addition tables for wall contributions",
+      "stage": "ground_view",
+      "semantic_level": "G",
+      "priority": 3,
+      "source_ids": [
+        "S11"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Store A_c(0)=+0; A_c(n+1)=RN(A_c(n)+c), then use exact count of repeated activated contributions.",
+      "proof_and_guard": "Never n*c; c dtype and initial signed-zero accumulator fixed, count reproduces actual step order.",
+      "cost_model": "O(U*R) table prep versus repeated constant addition per receiver/direction.",
+      "small_deciding_experiment": "Counts at first/second search boundaries, c signs, overflow guards and mutation profiles.",
+      "reject_or_defer_when": "c varies per pixel so U large, or random table lookup loses.",
+      "overlap_or_dependency": "Enables legal wall continuation after G02; cannot remove all post-blocker work without proof.",
+      "dossier": "dossiers/04_gvf_state.md"
+    },
+    {
+      "id": "G04",
+      "title": "Cache static unshadowed albedo subfields",
+      "stage": "ground_view",
+      "semantic_level": "G",
+      "priority": 3,
+      "source_ids": [
+        "S10",
+        "S11"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Factor only fields dependent on immutable geometry/albedo, not changing radiance or shadows.",
+      "proof_and_guard": "Trace full dependencies and validity key; ordered total/cardinal sums unchanged.",
+      "cost_model": "T*Cs -> Cs+T*read; need T*(Cs-read)>build.",
+      "small_deciding_experiment": "Small multi-day, changed-albedo and changed-shadow tests; setup+memory included.",
+      "reject_or_defer_when": "Static fraction tiny or extra five maps cost more than saved work.",
+      "overlap_or_dependency": "Never cache the full ground-view radiance.",
+      "dossier": "dossiers/04_gvf_state.md"
+    },
+    {
+      "id": "G05",
+      "title": "Fuse remaining gather and postprocess storage",
+      "stage": "ground_view",
+      "semantic_level": "G",
+      "priority": 2,
+      "source_ids": [
+        "S10",
+        "S11"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Use exact typed receiver accumulators through immediate postprocess before storing outputs; inspect current compiled postprocess before redesign.",
+      "proof_and_guard": "16 intermediates remain observable in diagnostic route; direction order and keep-mask moment preserved.",
+      "cost_model": "Avoid intermediate write/read traffic; arithmetic unchanged.",
+      "small_deciding_experiment": "Trace all intermediates in diagnostic build and compare final fields; inspect spills.",
+      "reject_or_defer_when": "Already fused in selected route or oversized kernel spills.",
+      "overlap_or_dependency": "G03/current typed postprocess already shipped; only missing boundaries count.",
+      "dossier": "dossiers/04_gvf_state.md"
+    },
+    {
+      "id": "G06",
+      "title": "Reuse exact addressing and direction constants",
+      "stage": "ground_view",
+      "semantic_level": "G",
+      "priority": 3,
+      "source_ids": [
+        "S10",
+        "S11"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Reuse verified schedule and angle constants across directions/timesteps within exact scale/shape/profile keys.",
+      "proof_and_guard": "No giant ND*R address table; source boundary history and scalar rounding preserved.",
+      "cost_model": "Prepare once vs repeated setup; bounded descriptors.",
+      "small_deciding_experiment": "Pointer identity/call-count census, varied scale, original rounding boundaries.",
+      "reject_or_defer_when": "Current cache already covers work or descriptors dominate memory.",
+      "overlap_or_dependency": "Catalogued to prevent rebuilding an existing schedule cache.",
+      "dossier": "dossiers/04_gvf_state.md"
+    },
+    {
+      "id": "G07",
+      "title": "Pointwise thermal-state fusion without time scan",
+      "stage": "state",
+      "semantic_level": "G",
+      "priority": 2,
+      "source_ids": [
+        "S05",
+        "S06"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Fuse updates of independent carried maps at one chronological step, keeping old source versions alive through all reads.",
+      "proof_and_guard": "No independent timesteps, no closed-form recurrence; snapshot aliases and original rounding/order.",
+      "cost_model": "Fewer raster temporaries/pass crossings for five directional maps.",
+      "small_deciding_experiment": "State after every 24/48 step including firstdaytime, night and restart.",
+      "reject_or_defer_when": "State updates differ by dtype/branch or dominate little time.",
+      "overlap_or_dependency": "Separate from GVF physics and persists same complete state.",
+      "dossier": "dossiers/04_gvf_state.md"
+    },
+    {
+      "id": "Y01",
+      "title": "Use existing exact wall-shadow parallel paths selectively",
+      "stage": "geometry",
+      "semantic_level": "G",
+      "priority": 2,
+      "source_ids": [
+        "S06",
+        "S25"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Dispatch exact_13/exact_23 under measured within-tile budget rather than hardcoded serial on all compatible calls.",
+      "proof_and_guard": "Both wall shadow families and outputs; process-level thread masks; no nested pools.",
+      "cost_model": "Same work, shorter span until bandwidth/divergence saturation.",
+      "small_deciding_experiment": "H1/H2/H4 actual route counters and branch-safe small scene parity.",
+      "reject_or_defer_when": "Little scaling or phase overhead exceeds gain.",
+      "overlap_or_dependency": "Do not attribute it to source compilation; kernels already exist.",
+      "dossier": "dossiers/05_geometry.md"
+    },
+    {
+      "id": "Y02",
+      "title": "Separate static global bush control sequence",
+      "stage": "geometry",
+      "semantic_level": "G",
+      "priority": 4,
+      "source_ids": [
+        "S12"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Precompute per-step global activation from immutable shifted canopy and bush, then run a verified pixel recurrence using the control sequence.",
+      "proof_and_guard": "Global NaN poisoning and first-step behavior must match; sparse-any shortcut only for proven finite domain.",
+      "cost_model": "Control O(LN) may become O(LNb); reduced barriers but pixel shadow work remains.",
+      "small_deciding_experiment": "Positive-bush actual fixtures, all-negative and nonfinite edge tests, full three masks.",
+      "reject_or_defer_when": "Bush path rare or global control prep more expensive.",
+      "overlap_or_dependency": "Absorption shortcut for no-bush is already shipped; this is different.",
+      "dossier": "dossiers/05_geometry.md"
+    },
+    {
+      "id": "Y03",
+      "title": "Certified ray suffix pruning",
+      "stage": "geometry",
+      "semantic_level": "G",
+      "priority": 3,
+      "source_ids": [
+        "S12",
+        "S25"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Use suffix minima of stored decrements plus conservative height maxima to prove all remaining samples ineffective.",
+      "proof_and_guard": "Include zero padding, first-step correction and every output; wall quantities need separate proof.",
+      "cost_model": "Saved sample visits minus bound/search setup; no absolute-height normalization.",
+      "small_deciding_experiment": "Count provably removable suffix before implementing; low sun, negative terrain, disordered decrements.",
+      "reject_or_defer_when": "Few certifiable suffixes or invalid proof on vegetation/wall state.",
+      "overlap_or_dependency": "Shares saved samples with existing absorption; combine as a union, not product.",
+      "dossier": "dossiers/05_geometry.md"
+    },
+    {
+      "id": "Y04",
+      "title": "Hierarchy skipping on the actual discrete sample set",
+      "stage": "geometry",
+      "semantic_level": "G",
+      "priority": 4,
+      "source_ids": [
+        "S12",
+        "S25"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Use flat conservative region bounds only where all exact scheduled sample updates can be proved irrelevant.",
+      "proof_and_guard": "Do not replace oblique discrete rays with a continuous horizon recurrence.",
+      "cost_model": "Build+bound queries+visited exact samples; upper-bounded improvement by truly pruned fraction.",
+      "small_deciding_experiment": "Small compiled prototype only after counters justify; compare original coordinates verbatim.",
+      "reject_or_defer_when": "Old Python hierarchy regression repeats or construction cannot amortize.",
+      "overlap_or_dependency": "Known rejected horizons/hierarchies are controls, not candidate implementations.",
+      "dossier": "dossiers/05_geometry.md"
+    },
+    {
+      "id": "Y05",
+      "title": "SVF annulus accumulation fusion",
+      "stage": "geometry",
+      "semantic_level": "G",
+      "priority": 2,
+      "source_ids": [
+        "S26"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Accumulate all required SVF fields with original per-annulus multiply/add rounding, avoiding transient full planes.",
+      "proof_and_guard": "Keep each annulus weight and addition sequence; no sum-weights-first substitution.",
+      "cost_model": "Same scalar arithmetic, fewer whole-raster passes.",
+      "small_deciding_experiment": "Compare all SVF fields, masks and exports at all supported patch options.",
+      "reject_or_defer_when": "Already optimized sufficiently or compiler/profile mismatch.",
+      "overlap_or_dependency": "Patch count and correction/clipping rules unchanged.",
+      "dossier": "dossiers/05_geometry.md"
+    },
+    {
+      "id": "Y06",
+      "title": "Residual wall/aspect scheduling and filter reuse",
+      "stage": "geometry",
+      "semantic_level": "G",
+      "priority": 4,
+      "source_ids": [
+        "S26",
+        "S22"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Inspect remaining setup and parallel scheduling; reuse sparse rotated filters already present, specialize only residual bottleneck.",
+      "proof_and_guard": "Tie order, interpolation, border exclusions, signed zeros and masks unchanged.",
+      "cost_model": "Only remaining setup/loop overhead removable; existing wall speedups are not new.",
+      "small_deciding_experiment": "Small scenes with ties/rotations and one geometry-cold medium case.",
+      "reject_or_defer_when": "Wall time is negligible relative to campaign budget.",
+      "overlap_or_dependency": "Do not implement Sobel or approximate aspect as optimization.",
+      "dossier": "dossiers/05_geometry.md"
+    },
+    {
+      "id": "Y07",
+      "title": "Exact ray schedule reuse across identical calls",
+      "stage": "geometry",
+      "semantic_level": "G",
+      "priority": 3,
+      "source_ids": [
+        "S12",
+        "S25"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Cache immutable generated bounds/decrements when all source-relevant shape, dtype, scale, angles and termination limits match exactly.",
+      "proof_and_guard": "Same source range shape and slicing semantics, no approximate angle bins.",
+      "cost_model": "O(L) setup once per exact key; bounded byte LRU.",
+      "small_deciding_experiment": "Exact repeated and nextafter angle values, negative zero, different amaxvalue.",
+      "reject_or_defer_when": "Schedules unique or hashing all dynamic arrays costs more than generation.",
+      "overlap_or_dependency": "Most useful repeated scenarios; not a claim all solar schedules repeat.",
+      "dossier": "dossiers/05_geometry.md"
+    },
+    {
+      "id": "Y08",
+      "title": "Receiver packet grouping for divergence",
+      "stage": "geometry",
+      "semantic_level": "G",
+      "priority": 4,
+      "source_ids": [
+        "S12",
+        "S25"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Group independent receivers by proven workload descriptors or compact active lanes while retaining each ray sequence.",
+      "proof_and_guard": "Only receiver scheduling changes; output scatter and error ordering protected.",
+      "cost_model": "Lane efficiency eta=sum(L)/(w*max(L)); include grouping/scatter costs.",
+      "small_deciding_experiment": "Actual packet-length distribution first, then exact receiver-order comparisons.",
+      "reject_or_defer_when": "Gather locality or scheduling destroys saved lane efficiency.",
+      "overlap_or_dependency": "Wide SIMD alone is not speedup evidence.",
+      "dossier": "dossiers/05_geometry.md"
+    },
+    {
+      "id": "C01",
+      "title": "UTCI input/output pointwise fusion",
+      "stage": "comfort",
+      "semantic_level": "G",
+      "priority": 3,
+      "source_ids": [
+        "S05",
+        "S23"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Fuse accepted polynomial with exact wind/temperature preparation and output masking where liveness permits.",
+      "proof_and_guard": "Same coefficients, powers, operation ordering, vapor math and final mask; no Horner reordering.",
+      "cost_model": "O(NT) remains; reduce raster writes and reads.",
+      "small_deciding_experiment": "Known polynomial fixtures, adverse weather, masked receivers and output plans.",
+      "reject_or_defer_when": "Comfort fraction small or compiler instructions regress.",
+      "overlap_or_dependency": "Uniform vapor preparation is already shipped.",
+      "dossier": "dossiers/06_comfort_optional.md"
+    },
+    {
+      "id": "C02",
+      "title": "Avoid unnecessary uniform Ta and Tmrt copy planes",
+      "stage": "comfort",
+      "semantic_level": "G",
+      "priority": 2,
+      "source_ids": [
+        "S05"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Compute the exact scalar zero-plus-temperature-plus-UHI expression once for UTCI; materialize only when a field consumer/writer needs it.",
+      "proof_and_guard": "Preserve +0/-0, two rounding steps, WBGT needs and public outputs; assigning Tmrt directly needs alias proof.",
+      "cost_model": "Several 4N-byte allocation/read/write passes per step avoided.",
+      "small_deciding_experiment": "Signed zero, UHI edge values, with/without Ta and WBGT outputs; writer ownership.",
+      "reject_or_defer_when": "Required outputs force same work or alias safety needs copy.",
+      "overlap_or_dependency": "Not equivalent to deleting output flags.",
+      "dossier": "dossiers/06_comfort_optional.md"
+    },
+    {
+      "id": "C03",
+      "title": "Wet-bulb solver work reuse/compilation",
+      "stage": "comfort",
+      "semantic_level": "G",
+      "priority": 4,
+      "source_ids": [
+        "S24",
+        "S05"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Compile actual iterative kernel or reuse exact repeated forcing inputs, preserving global stop behavior.",
+      "proof_and_guard": "Array-wide convergence vs per-element convergence are NOT interchangeable; limits/phase unchanged.",
+      "cost_model": "Fewer dispatches or repeated identical iterations, conditional on real solver cost.",
+      "small_deciding_experiment": "Near convergence thresholds, extreme humidity, same iteration trace.",
+      "reject_or_defer_when": "WBGT not requested or solver setup tiny.",
+      "overlap_or_dependency": "No substitute thermal-comfort library.",
+      "dossier": "dossiers/06_comfort_optional.md"
+    },
+    {
+      "id": "C04",
+      "title": "Black-globe/WBGT postprocess fusion",
+      "stage": "comfort",
+      "semantic_level": "G",
+      "priority": 3,
+      "source_ids": [
+        "S24",
+        "S05"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Fuse hcg, globe and original shade expression in one pointwise stage retaining dtype.",
+      "proof_and_guard": "np.where eagerly evaluates both expressions; warnings and shade selection stay exact.",
+      "cost_model": "Reduce full-plane intermediates; no change in physical expression.",
+      "small_deciding_experiment": "Shadow .1 threshold nextafter, mixed field dtype and output metadata.",
+      "reject_or_defer_when": "WBGT has low usage/coverage.",
+      "overlap_or_dependency": "Separate from wet-bulb solver.",
+      "dossier": "dossiers/06_comfort_optional.md"
+    },
+    {
+      "id": "C05",
+      "title": "Exact wind forcing reuse",
+      "stage": "comfort",
+      "semantic_level": "G",
+      "priority": 3,
+      "source_ids": [
+        "S05"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Reuse repeated direction/speed products keyed by original coefficient bytes and exact meteorology bits when frequent.",
+      "proof_and_guard": "Preserve 15-degree tie rounding, missing-direction errors and .15 floor; bounded LRU only.",
+      "cost_model": "Repeated N multiplications removed when K_unique << T.",
+      "small_deciding_experiment": "Directional ties, invalid met directions, changed file contents and repeated speeds.",
+      "reject_or_defer_when": "Every step unique or caching full speed fields increases pressure.",
+      "overlap_or_dependency": "S04 is memory/loading, this is dynamic arithmetic reuse.",
+      "dossier": "dossiers/06_comfort_optional.md"
+    },
+    {
+      "id": "C06",
+      "title": "Optional forcing/acquisition preprocessing",
+      "stage": "optional",
+      "semantic_level": "G",
+      "priority": 4,
+      "source_ids": [
+        "S13",
+        "S17"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Profile ERA5/WRF/wind-building separately; reuse exact spatial interpolation weights and immutable acquired inputs, batch authorized independent requests.",
+      "proof_and_guard": "Same interpolation/aggregation/timezone units and error behavior; no production credentials or new paid calls without authorization.",
+      "cost_model": "Eliminate repeated setup/remote bytes; core TIFF comparisons exclude network acquisition transparently.",
+      "small_deciding_experiment": "Local recorded fixture and labeled service mocks; real service validation separately.",
+      "reject_or_defer_when": "No active optional workload; do not install all extras for core optimization.",
+      "overlap_or_dependency": "Not a source-audited new speed claim; local full implementation audit required.",
+      "dossier": "dossiers/06_comfort_optional.md"
+    },
+    {
+      "id": "S01",
+      "title": "Effective thread accounting and one parallel owner",
+      "stage": "runtime",
+      "semantic_level": "E",
+      "priority": 1,
+      "source_ids": [
+        "S08",
+        "S20",
+        "S06"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Record actual Numba pool/mask and nested native counts inside the real worker. Separate slot count from leaf threads.",
+      "proof_and_guard": "Do not assert thread_budget=1 means one CPU core; explicit parallel=False must stay serial.",
+      "cost_model": "Remove oversubscription or underuse, not arithmetic; budgets matched across arms.",
+      "small_deciding_experiment": "Fresh process H1/H2/H4, direct/private/public routes, CPU-time evidence.",
+      "reject_or_defer_when": "No scope for improvement after actual resource census.",
+      "overlap_or_dependency": "Required before all scaling claims.",
+      "dossier": "dossiers/07_runtime_memory.md"
+    },
+    {
+      "id": "S02",
+      "title": "Joint worker/thread/microblock selection",
+      "stage": "runtime",
+      "semantic_level": "G",
+      "priority": 2,
+      "source_ids": [
+        "S13",
+        "S20"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Choose a small measured W,H,B portfolio within unchanged total budget; stage-specific settings if justified.",
+      "proof_and_guard": "Logical tile count/extent unchanged; preserve caller controls and per-process limits.",
+      "cost_model": "Throughput approximately W/(s+p/H), limited by bandwidth/RAM.",
+      "small_deciding_experiment": "1x4 vs 2x2; 4x1 only after G01, actual admitted counts.",
+      "reject_or_defer_when": "Memory pressure or available cells are insufficient; no blind use-all-cores default.",
+      "overlap_or_dependency": "Do not multiply with same-core kernel parallel speedup.",
+      "dossier": "dossiers/07_runtime_memory.md"
+    },
+    {
+      "id": "S03",
+      "title": "Memory inventory from live encoded data",
+      "stage": "runtime",
+      "semantic_level": "G",
+      "priority": 2,
+      "source_ids": [
+        "S16",
+        "S08"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Reserve actual verified encoding payload, carried maps, simultaneous workspace, child native/GDAL caches and writer slots.",
+      "proof_and_guard": "Cold unknown remains worst-case or hard bounded streaming; no safety bypass based on observed RSS alone.",
+      "cost_model": "Capacity can permit more active jobs; memory is a constraint, not a speed multiplier.",
+      "small_deciding_experiment": "Known binary/mixed/raw fixtures and concurrent peak samples, allocation ledger and OOM fail-closed.",
+      "reject_or_defer_when": "Worst-case paths are not accounted or safety margin unverifiable.",
+      "overlap_or_dependency": "Existing phase admission is baseline; complete actual mode/lifetime pricing only.",
+      "dossier": "dossiers/07_runtime_memory.md"
+    },
+    {
+      "id": "S04",
+      "title": "Bounded/lazy directional wind loading",
+      "stage": "runtime",
+      "semantic_level": "G",
+      "priority": 3,
+      "source_ids": [
+        "S05",
+        "S17"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Keep mandatory inventory/shape checks and content guards, but load/map a bounded set of used direction planes.",
+      "proof_and_guard": "Unused corrupt rasters currently may error during eager read; preserve that validation checkpoint even if it limits I/O savings.",
+      "cost_model": "Reduce up to 12 full resident planes; I/O reduction only if same error policy is retained.",
+      "small_deciding_experiment": "Unused corrupt/wrong-shape direction and met tie fixtures; descriptor lifetime/restart.",
+      "reject_or_defer_when": "Equivalent eager validation consumes all bandwidth or cache misses dominate.",
+      "overlap_or_dependency": "Do not claim deferred validation is transparent.",
+      "dossier": "dossiers/07_runtime_memory.md"
+    },
+    {
+      "id": "S05",
+      "title": "Fuse fingerprints with required reads",
+      "stage": "io",
+      "semantic_level": "G",
+      "priority": 3,
+      "source_ids": [
+        "S14",
+        "S18"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Hash bytes while an existing required traversal reads the SAME stored byte stream, and reuse result only inside a frozen snapshot epoch.",
+      "proof_and_guard": "A raster-value digest is not a file-content digest; preserve every external-change detection checkpoint. mtime/size not equivalent.",
+      "cost_model": "Eliminate duplicated reads within a checkpoint, not all InputGuard checks.",
+      "small_deciding_experiment": "Same-size/mtime modifications, mutation during reads, cache handoff and publication.",
+      "reject_or_defer_when": "Storage snapshots/ownership do not support reuse; keep original guards.",
+      "overlap_or_dependency": "Implementation code hashes and input checks have distinct scopes.",
+      "dossier": "dossiers/08_io_persistence.md"
+    },
+    {
+      "id": "S06",
+      "title": "Implementation identity manifest with complete dependency closure",
+      "stage": "runtime",
+      "semantic_level": "G",
+      "priority": 2,
+      "source_ids": [
+        "S14",
+        "S08",
+        "S28"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Cache immutable installed source identity once per invocation and explicitly include changed _native_dispatch/profile sources in new execution identity.",
+      "proof_and_guard": "No underspecified cache key. Keep input guards separate; new identity version may force safe recomputation.",
+      "cost_model": "Reduce repeated source reads; prevent stale cache evidence after profile changes.",
+      "small_deciding_experiment": "Edit one imported helper and verify invalidation; installed read-only vs mutable checkout cases.",
+      "reject_or_defer_when": "Source mutation semantics cannot be preserved by caching.",
+      "overlap_or_dependency": "Correctness prerequisite, not necessarily speedup; identities.py currently enumerates only selected folders.",
+      "dossier": "dossiers/07_runtime_memory.md"
+    },
+    {
+      "id": "S07",
+      "title": "Single stored-stream export validation",
+      "stage": "io",
+      "semantic_level": "G",
+      "priority": 2,
+      "source_ids": [
+        "S18",
+        "S19"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Combine CRC/schema and actual value checks during one bounded traversal of stored NPZ/TIFF data; remove import/reencode/decode loops.",
+      "proof_and_guard": "Check all bytes, members, metadata, raw bits, trailing data and original error priority; retained validator on ambiguous failure if needed.",
+      "cost_model": "Reduce repeated decompress/parse/encode/read traversals, include scratch and full verification.",
+      "small_deciding_experiment": "Small valid/corrupt archives, duplicates, late CRC failure, signed-zero TIFF, interrupted publish.",
+      "reject_or_defer_when": "Cannot preserve error/CRC contract or export stage too small.",
+      "overlap_or_dependency": "No deleting verification; no new export schema required.",
+      "dossier": "dossiers/08_io_persistence.md"
+    },
+    {
+      "id": "S08",
+      "title": "Parallel preparation, ordered artifact publication",
+      "stage": "io",
+      "semantic_level": "G",
+      "priority": 3,
+      "source_ids": [
+        "S13",
+        "S18"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Run independent export/verification jobs in bounded private staging, then publish in required tile order.",
+      "proof_and_guard": "Same destination ownership, failure order, backup rollback, commit barriers; cancellation must drain owners.",
+      "cost_model": "Stage time ~ceil(K/W)*prepare + K*serial_publish, not whole-stage /W.",
+      "small_deciding_experiment": "2-4 small distinct tiles, fail late/early, lock collisions and full artifacts.",
+      "reject_or_defer_when": "Disk/CPU compression saturation or ordering costs erase benefit.",
+      "overlap_or_dependency": "Geometry numerical parallel phase already exists.",
+      "dossier": "dossiers/08_io_persistence.md"
+    },
+    {
+      "id": "S09",
+      "title": "Streaming checkpoint serialization",
+      "stage": "io",
+      "semantic_level": "G",
+      "priority": 2,
+      "source_ids": [
+        "S15"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Replace BytesIO payload duplication with a bounded hashing writer producing exactly the required NPY bytes, then flush/fsync as before.",
+      "proof_and_guard": "Preserve array/scalar tags, endianness, Fortran order, header version, hashes, file names and error cleanup.",
+      "cost_model": "Avoid peak serialized array copy and getvalue duplication; write volume unchanged.",
+      "small_deciding_experiment": "Byte-for-byte checkpoint comparison, noncontiguous arrays, scalar signed zero and crash injection.",
+      "reject_or_defer_when": "np.save interaction requires seeks or hash stream differs; use verified helper/fallback.",
+      "overlap_or_dependency": "Already hashes serialized bytes, so do not claim eliminating a nonexistent file re-read.",
+      "dossier": "dossiers/08_io_persistence.md"
+    },
+    {
+      "id": "S10",
+      "title": "Reuse identical durable checkpoint payloads",
+      "stage": "io",
+      "semantic_level": "G",
+      "priority": 4,
+      "source_ids": [
+        "S15"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Reference exact unchanged immutable payload generations or duplicate via safe link while preserving cursor commit.",
+      "proof_and_guard": "Same corruption checks and old-state resume; fsync, refcount/GC and failure cleanup proven. Private versioning if needed.",
+      "cost_model": "M+(T-1)*changed_fraction*M bytes vs T*M, plus hash/comparison read costs.",
+      "small_deciding_experiment": "Repeated states, corrupt previously stored payload, interrupted link/publication and deletion.",
+      "reject_or_defer_when": "Arrays change every step or identity verification costs dominate.",
+      "overlap_or_dependency": "No checkpoint interval reduction; design-only until compatibility proof.",
+      "dossier": "dossiers/08_io_persistence.md"
+    },
+    {
+      "id": "S11",
+      "title": "Bounded output overlap",
+      "stage": "io",
+      "semantic_level": "G",
+      "priority": 3,
+      "source_ids": [
+        "S05",
+        "S15",
+        "S30"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "One writer owner consumes immutable snapshots while computation prepares independent work; bounded double buffers with completion acknowledgement.",
+      "proof_and_guard": "Checkpoint cannot advance until required output durability; stop and propagate writer errors before dependent publication.",
+      "cost_model": "Potential steady-state max(compute,IO) instead of sum, only for actually overlap-safe region.",
+      "small_deciding_experiment": "Slow writer, injected error, two timesteps, cancellation and buffer poisoning.",
+      "reject_or_defer_when": "Per-step durability barrier prevents useful overlap or extra copy costs win.",
+      "overlap_or_dependency": "Device download overlap accounted in H04, not counted twice.",
+      "dossier": "dossiers/08_io_persistence.md"
+    },
+    {
+      "id": "S12",
+      "title": "Validated preprocessing artifact reuse",
+      "stage": "preprocess",
+      "semantic_level": "G",
+      "priority": 4,
+      "source_ids": [
+        "S17",
+        "S14"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Avoid rewriting identical translated tiles only when existing contents, metadata and required side effects are fully preserved.",
+      "proof_and_guard": "Original clear-folder/overwrite and stale file semantics remain; no hardlink mutable input as private output.",
+      "cost_model": "Read/validate vs translate/write cost; win only with sufficient repetition.",
+      "small_deciding_experiment": "Changed affine/CRS/extent, partial folder, same data different compression and overwrite cases.",
+      "reject_or_defer_when": "Public preprocess must rebuild by contract; leave as separate explicit reuse mode.",
+      "overlap_or_dependency": "Not an excuse to compare cold baseline against warm candidate.",
+      "dossier": "dossiers/08_io_persistence.md"
+    },
+    {
+      "id": "S13",
+      "title": "Align GDAL reservations with enforced actual cache caps",
+      "stage": "runtime",
+      "semantic_level": "G",
+      "priority": 2,
+      "source_ids": [
+        "S16",
+        "S13"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Use measured/probed effective per-process GDAL cache and explicit controlled caps consistently in admission and execution.",
+      "proof_and_guard": "Honor caller policy; restore process/global settings; no hidden global mutation or budget relaxation.",
+      "cost_model": "May reduce conservative over-reservation and actual cache pressure, not guaranteed runtime speed.",
+      "small_deciding_experiment": "Child GetCacheMax value, env/user caps, several processes and protected no-env behavior.",
+      "reject_or_defer_when": "Application cannot safely scope cap or OS effects dominate.",
+      "overlap_or_dependency": "Current planner uses physical-memory 5% default; do not merely alter estimator.",
+      "dossier": "dossiers/07_runtime_memory.md"
+    },
+    {
+      "id": "S14",
+      "title": "Reusable worker-static preparation and bounded JIT cache",
+      "stage": "runtime",
+      "semantic_level": "G",
+      "priority": 3,
+      "source_ids": [
+        "S05",
+        "S20"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Reuse expensive immutable helpers such as timezone index, import/metadata tables and compiled artifacts across independent tiles.",
+      "proof_and_guard": "Location-specific solar/forcing outputs remain keyed by exact coordinates/time; cache dirs require approved write-location policy.",
+      "cost_model": "Amortize imports/setup J/K; bound retained memory and stale code invalidation.",
+      "small_deciding_experiment": "Two different locations/dates/epochs in same worker, read-only install, no toolchain, cache miss/hit.",
+      "reject_or_defer_when": "Helper mutable/not thread-safe or process lifetime memory grows.",
+      "overlap_or_dependency": "Persistent worker pool already shipped; reuse inside it is the residual.",
+      "dossier": "dossiers/07_runtime_memory.md"
+    },
+    {
+      "id": "S15",
+      "title": "Remove unsafe global demand coupling before thread fanout",
+      "stage": "runtime",
+      "semantic_level": "G",
+      "priority": 2,
+      "source_ids": [
+        "S05",
+        "S07"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Use explicit private context or scoped ContextVar where independent tiles could share a process; otherwise keep process isolation.",
+      "proof_and_guard": "Public demand APIs and restoration after exceptions unchanged; no race between tile contexts.",
+      "cost_model": "Enabler for future safe scheduling, not standalone promised gain.",
+      "small_deciding_experiment": "Interleaved demand modes and exceptions, two threads, restoration assertion.",
+      "reject_or_defer_when": "Only process-isolated execution needed; avoid gratuitous refactor.",
+      "overlap_or_dependency": "Do not launch tile threads over process-global demand state.",
+      "dossier": "dossiers/07_runtime_memory.md"
+    },
+    {
+      "id": "S16",
+      "title": "Bounded mmap/descriptor and file-handle reuse",
+      "stage": "runtime",
+      "semantic_level": "G",
+      "priority": 3,
+      "source_ids": [
+        "S19",
+        "S14"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Retain validated owner-bound handles across related stages while closing after last reader; LRU by bytes/descriptors.",
+      "proof_and_guard": "Immutable content checks, close locks, inode replacement and descriptor budget honored.",
+      "cost_model": "Avoid repeated map/open/setup; page faults and resident pages still counted.",
+      "small_deciding_experiment": "Concurrent close, file replacement, repeated tiles, descriptor exhaustion.",
+      "reject_or_defer_when": "Long-lived maps inflate memory or undermine mutation checks.",
+      "overlap_or_dependency": "Not equivalent to zero memory usage.",
+      "dossier": "dossiers/07_runtime_memory.md"
+    },
+    {
+      "id": "S17",
+      "title": "Demand-driven terminal computation and outputs",
+      "stage": "pipeline",
+      "semantic_level": "G",
+      "priority": 3,
+      "source_ids": [
+        "S05",
+        "S30"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Derive backward liveness from actual requested artifacts, public returns, state, warnings and neighbor reads.",
+      "proof_and_guard": "UTCI is a required pipeline output despite no obvious save_utci flag; inspect OutputPlan before pruning.",
+      "cost_model": "Remove only truly unobserved computation; bytes of required output remain.",
+      "small_deciding_experiment": "All save flags, diagnostics, WBGT, traces and resume output plans.",
+      "reject_or_defer_when": "Any alleged dead result is consumed by TMRT/state or error semantics.",
+      "overlap_or_dependency": "Different output plans compared separately, never hidden workload reduction.",
+      "dossier": "dossiers/06_comfort_optional.md"
+    },
+    {
+      "id": "S18",
+      "title": "Allocator/GC and import overhead investigation",
+      "stage": "runtime",
+      "semantic_level": "G",
+      "priority": 4,
+      "source_ids": [
+        "S05",
+        "S20"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Measure GC/allocation/import time before considering buffer pools, delayed imports or temporary GC policies.",
+      "proof_and_guard": "No blanket disable, unbounded object cache, leaked handles or global process surprise.",
+      "cost_model": "Only measured fraction removable.",
+      "small_deciding_experiment": "Allocation counters and repeated tile RSS slope, then one small controlled change.",
+      "reject_or_defer_when": "No meaningful evidence; defer rather than tune folklore.",
+      "overlap_or_dependency": "Numba new JIT signatures may be root cause, not GC.",
+      "dossier": "dossiers/07_runtime_memory.md"
+    },
+    {
+      "id": "H01",
+      "title": "Select whole CPU/GPU residency regions",
+      "stage": "heterogeneous",
+      "semantic_level": "G",
+      "priority": 4,
+      "source_ids": [
+        "S05",
+        "S06",
+        "S07"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Compare retaining geometry/predicate/state on device across multiple consumers/timesteps against best current CPU, with all boundaries.",
+      "proof_and_guard": "Chronology, output/checkpoint and dtype exact profile unchanged; CPU remains complete fallback.",
+      "cost_model": "Tgpu=setup+H2D+launch+kernel+D2H+sync+remaining; select regions, not fastest individual functions.",
+      "small_deciding_experiment": "Small real region, explicit device and synchronized timing plus bytes; at most one backend first.",
+      "reject_or_defer_when": "No GPU hardware or break-even impossible; record unavailable, do not emulate speed.",
+      "overlap_or_dependency": "Architecture study is broad; native-default N9 remains closed.",
+      "dossier": "dossiers/09_heterogeneous.md"
+    },
+    {
+      "id": "H02",
+      "title": "Device-side compact decode and ordered accumulation",
+      "stage": "heterogeneous",
+      "semantic_level": "G",
+      "priority": 4,
+      "source_ids": [
+        "S19",
+        "S07"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "GPU work item owns an output; tile packed inputs, decode and consume without giant NP materialization.",
+      "proof_and_guard": "Original patch reduction order, two passes and raw fallback. No warp/tree sum silently.",
+      "cost_model": "Trade cheap integer work for less global traffic; report register/local-memory spills.",
+      "small_deciding_experiment": "CPU reference vs exact device intermediate states; measure decode+kernel+transfer.",
+      "reject_or_defer_when": "Divergence, FP64 or decoder pressure negates bandwidth savings.",
+      "overlap_or_dependency": "FlashAttention-style I/O reasoning, not borrowing its numeric guarantees or speed ratios.",
+      "dossier": "dossiers/09_heterogeneous.md"
+    },
+    {
+      "id": "H03",
+      "title": "Keep sensitive scalar/profile math on CPU",
+      "stage": "heterogeneous",
+      "semantic_level": "G",
+      "priority": 4,
+      "source_ids": [
+        "S06",
+        "S28"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Upload trusted coefficient tables and classify on CPU initially, device runs bulk arithmetic only.",
+      "proof_and_guard": "Do not narrow float64 contributions before float64 add then float32 store. Device capability required for profile.",
+      "cost_model": "Small per-step coefficients vs large resident receiver state; conversion overhead included.",
+      "small_deciding_experiment": "Actual mixed sun/shade types and nonfinite predicates, fully synchronized output.",
+      "reject_or_defer_when": "Required FP64 unavailable/slow or coefficient masks themselves require huge transfers.",
+      "overlap_or_dependency": "MLX GPU float64 unsupported per inspected docs; backend probe must fail closed.",
+      "dossier": "dossiers/09_heterogeneous.md"
+    },
+    {
+      "id": "H04",
+      "title": "Bounded transfer/compute pipeline",
+      "stage": "heterogeneous",
+      "semantic_level": "G",
+      "priority": 4,
+      "source_ids": [
+        "S15",
+        "S30"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Overlap independent upload/compute/download slots with explicit events and one writer.",
+      "proof_and_guard": "No time dependence violation, early checkpoint, mutable buffer reuse or hidden async errors.",
+      "cost_model": "Throughput approaches max(link,compute,writer) only if independently overlap-safe.",
+      "small_deciding_experiment": "Counter/accounting trace, saturation and failure/cancel tests.",
+      "reject_or_defer_when": "Unified bandwidth bottleneck or extra copies exceed overlap.",
+      "overlap_or_dependency": "Do not double-count S11 writer overlap.",
+      "dossier": "dossiers/09_heterogeneous.md"
+    },
+    {
+      "id": "H05",
+      "title": "Unified-memory and out-of-core device scheduling",
+      "stage": "heterogeneous",
+      "semantic_level": "G",
+      "priority": 4,
+      "source_ids": [
+        "S16",
+        "S19"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Treat host/device unified pages as shared capacity; bounded resident regions with explicit completion and pressure reserve.",
+      "proof_and_guard": "No assumption zero-copy means no synchronization, allocation or page traffic.",
+      "cost_model": "Resident static+state+scratch+queues below safe capacity; bandwidth shared with CPU.",
+      "small_deciding_experiment": "Peak memory/pressure and transfer counters on actual hardware only.",
+      "reject_or_defer_when": "Paging, eviction or concurrent CPU access dominates.",
+      "overlap_or_dependency": "No swap-based speedup strategy.",
+      "dossier": "dossiers/09_heterogeneous.md"
+    },
+    {
+      "id": "H06",
+      "title": "New native/portable compiler only after causal coverage evidence",
+      "stage": "backend",
+      "semantic_level": "G",
+      "priority": 4,
+      "source_ids": [
+        "S21",
+        "S22",
+        "S07"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Compare Numba B with equivalent-layout ISPC/Highway/Dr.Jit/PoCL only if a broad residual region and new design are established.",
+      "proof_and_guard": "Keep N9 decisions historical; no automatic reactivation of old env switches, runtime build or user setup.",
+      "cost_model": "Application gain via Amdahl including producer/packing/adapter/init.",
+      "small_deciding_experiment": "At most one selected backend region and full adapter comparison.",
+      "reject_or_defer_when": "Leaf-only win or Numba B matches it; reject C.",
+      "overlap_or_dependency": "Platform and wheel maintenance must repay measured benefit.",
+      "dossier": "dossiers/09_heterogeneous.md"
+    },
+    {
+      "id": "H07",
+      "title": "Architecture-specific schedules behind portable contract",
+      "stage": "backend",
+      "semantic_level": "G",
+      "priority": 4,
+      "source_ids": [
+        "S07",
+        "S20"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Tune x86/ARM or device schedules separately behind capability-detected internal kernels; retain semantic reference.",
+      "proof_and_guard": "Platform eligibility and strict math versioned; public API unmodified.",
+      "cost_model": "Different schedules may improve locality/lanes; no cross-hardware speed multiplication.",
+      "small_deciding_experiment": "Named hardware only; no claims for untested OS/ISA.",
+      "reject_or_defer_when": "Additional dependency/packaging complexity not justified.",
+      "overlap_or_dependency": "CPU-only core must import without all accelerator extras.",
+      "dossier": "dossiers/09_heterogeneous.md"
+    },
+    {
+      "id": "H08",
+      "title": "Multi-accelerator independent job routing",
+      "stage": "heterogeneous",
+      "semantic_level": "G",
+      "priority": 4,
+      "source_ids": [
+        "S13",
+        "S20"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Assign independent logical tiles to available CPU/GPU devices with capacity and transfer-aware queueing.",
+      "proof_and_guard": "Exact output mapping, publication order, state isolation and hardware scope recorded.",
+      "cost_model": "Makespan lower bound max(total capacity demand,critical chain,IO); measure shared host bottleneck.",
+      "small_deciding_experiment": "Only if deployment actually needs multiple devices; small distinct jobs first.",
+      "reject_or_defer_when": "No such hardware/workload or disk/link saturated.",
+      "overlap_or_dependency": "Explicit optional extension, not part of initial execution wave.",
+      "dossier": "dossiers/09_heterogeneous.md"
+    },
+    {
+      "id": "Q01",
+      "title": "Band-wise angular operator precomputation",
+      "stage": "research",
+      "semantic_level": "R",
+      "priority": 5,
+      "source_ids": [
+        "S06",
+        "S07"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Factor real-valued sum by common band emissivity: H[x,b]=sum_{p in b}V[x,p]w[p]; then sum_b H[x,b]E[b,t].",
+      "proof_and_guard": "Same real expression may differ in float32 rounding; cannot enter exact default.",
+      "cost_model": "O(TNP) -> O(NP+TNBands) for eligible terms only.",
+      "small_deciding_experiment": "Derive error bounds and profile old rejected angular moments before any separately authorized experiment.",
+      "reject_or_defer_when": "No authorization to change numerical evaluation; remain design-only.",
+      "overlap_or_dependency": "Potential large arithmetic saving, no bitwise claim.",
+      "dossier": "dossiers/10_research_boundary.md"
+    },
+    {
+      "id": "Q02",
+      "title": "Matrix multiply or batched time contraction",
+      "stage": "research",
+      "semantic_level": "R",
+      "priority": 5,
+      "source_ids": [
+        "S06"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Express truly linear forcing-dependent components as operator application; consider GEMM only outside state-dependent chronology.",
+      "proof_and_guard": "BLAS reduction/FMA order differs; time-dependent state and nonlinear masks cannot be batched blindly.",
+      "cost_model": "Higher arithmetic intensity/BLAS utilization at operator memory cost.",
+      "small_deciding_experiment": "Symbolic dependency proof plus separately authorized numeric tolerance study.",
+      "reject_or_defer_when": "Current exact contract or dynamic nonlinear dependencies block it.",
+      "overlap_or_dependency": "Not default GPU tensor-core permission.",
+      "dossier": "dossiers/10_research_boundary.md"
+    },
+    {
+      "id": "Q03",
+      "title": "Convolution/prefix scan/horizon replacement",
+      "stage": "research",
+      "semantic_level": "R",
+      "priority": 5,
+      "source_ids": [
+        "S12",
+        "S11"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Investigate only where original discrete operator and padding can be represented exactly; FFT/continuous horizons are not automatic equivalents.",
+      "proof_and_guard": "Prefix subtraction and reassociation alter rounding; oblique rays differ from translation recurrences.",
+      "cost_model": "Potential asymptotic reduction, but semantics usually differ.",
+      "small_deciding_experiment": "Proof before benchmark; retain original unsupported cases.",
+      "reject_or_defer_when": "No discrete equivalence proof or inherited failed approach repeated.",
+      "overlap_or_dependency": "Existing rejected horizon experiments are required reading.",
+      "dossier": "dossiers/10_research_boundary.md"
+    },
+    {
+      "id": "Q04",
+      "title": "Mixed precision, fast math and approximations",
+      "stage": "research",
+      "semantic_level": "R",
+      "priority": 5,
+      "source_ids": [
+        "S06",
+        "S28"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Catalog float16/tensor cores/approximate trig/Horner opportunities only as a separate authorized numerical profile.",
+      "proof_and_guard": "Never weaken exact tests, patch count, ray detail or physical components by default.",
+      "cost_model": "May increase throughput but changes arithmetic contract.",
+      "small_deciding_experiment": "Separate model policy and error study, never production adoption from this packet.",
+      "reject_or_defer_when": "No explicit user authorization.",
+      "overlap_or_dependency": "Do not relabel approximate as exact after final-output tolerance passes.",
+      "dossier": "dossiers/10_research_boundary.md"
+    },
+    {
+      "id": "Q05",
+      "title": "Operational contract tradeoffs",
+      "stage": "research",
+      "semantic_level": "R",
+      "priority": 5,
+      "source_ids": [
+        "S15",
+        "S17"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Fewer checkpoints/outputs, source metadata trust, approximate caches or shorter model horizon are distinct product choices.",
+      "proof_and_guard": "Clearly different workload, durability or validation semantics; not transparent speedups.",
+      "cost_model": "Can reduce I/O/service, comparison denominator must change explicitly.",
+      "small_deciding_experiment": "Separate authorized deployment profile only.",
+      "reject_or_defer_when": "Default DX/numerical/durability contract unchanged.",
+      "overlap_or_dependency": "Listed to prevent hidden shortcuts.",
+      "dossier": "dossiers/10_research_boundary.md"
+    },
+    {
+      "id": "Q06",
+      "title": "Hardware/power/affinity changes",
+      "stage": "research",
+      "semantic_level": "R",
+      "priority": 5,
+      "source_ids": [
+        "S20"
+      ],
+      "status": "proposed_not_measured",
+      "transformation": "Record plugged-in power, thermal state, ISA, affinity and storage as experimental factors.",
+      "proof_and_guard": "Faster hardware or extra cores is not a same-budget code speedup. Do not alter user power policy automatically.",
+      "cost_model": "Changes effective resource capacity rather than same-work algorithm.",
+      "small_deciding_experiment": "Compare within matched hardware/power cells; report resource deltas separately.",
+      "reject_or_defer_when": "Uncontrolled conditions invalidate affected performance comparisons.",
+      "overlap_or_dependency": "Battery/AC min-time ratios are not general performance guarantees.",
+      "dossier": "dossiers/10_research_boundary.md"
+    }
+  ]
+}

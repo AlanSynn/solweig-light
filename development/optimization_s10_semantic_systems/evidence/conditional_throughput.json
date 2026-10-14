@@ -1,0 +1,35 @@
+{
+  "evidence_class": "hypothetical_sensitivity_using_unverified_user_report",
+  "baseline": {
+    "shape": [
+      512,
+      512
+    ],
+    "sim_seconds": 37.5,
+    "other_stage_seconds": 37.2,
+    "day_lw_fraction_assumed": 0.45
+  },
+  "rows": [
+    {
+      "assumed_daytime_lw_speedup": 2,
+      "conditional_sim_speedup": 1.2903225806451613,
+      "conditional_stage_sum_speedup": 1.1273344651952462
+    },
+    {
+      "assumed_daytime_lw_speedup": 3,
+      "conditional_sim_speedup": 1.4285714285714284,
+      "conditional_stage_sum_speedup": 1.177304964539007
+    },
+    {
+      "assumed_daytime_lw_speedup": 5,
+      "conditional_sim_speedup": 1.5625,
+      "conditional_stage_sum_speedup": 1.2205882352941175
+    }
+  ],
+  "not_measured": [
+    "source-matched unprofiled fractions",
+    "new implementation",
+    "M4 throughput",
+    "24-tile target"
+  ]
+}

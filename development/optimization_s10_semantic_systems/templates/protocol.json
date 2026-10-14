@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "status": "template_not_executed",
+  "campaign": "S10",
+  "frozen_before_candidate_results": false,
+  "source_A": null,
+  "source_B": null,
+  "source_C": null,
+  "upstream_reference": "0d7fe742abeeddd890dd58fc76ed7f78bd47faec",
+  "numerical_profile": null,
+  "environment_hash": null,
+  "fixture_manifest_hash": null,
+  "primary_cells": [],
+  "protected_cells": [],
+  "eligible_work_definition": null,
+  "required_fields": [
+    "actual_threads",
+    "actual_route_counts",
+    "cache_regime",
+    "power_state",
+    "requested_outputs",
+    "checkpoint_policy",
+    "raw_trial_paths",
+    "paired_order",
+    "source_hashes"
+  ],
+  "proposed_gates": {
+    "geomean_application_speedup": 1.1,
+    "max_protected_regression_ratio": 1.03,
+    "backend_vs_B_speedup": 1.05,
+    "eligible_route_coverage": 0.8
+  },
+  "limits": {
+    "small_pairs_per_selected_cell": 3,
+    "tuning_variants_per_family": 2,
+    "residual_selection_rounds": 1,
+    "final_large_candidate_runs": 1,
+    "causal_large_retry_max": 1
+  },
+  "warning": "Populate and freeze after baseline characterization, before candidate performance. Template values are NOT measured."
+}

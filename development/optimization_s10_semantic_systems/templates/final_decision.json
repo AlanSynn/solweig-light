@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "status": "template_not_executed",
+  "campaign_closed": false,
+  "terminal_state": null,
+  "improvement_demonstrated": false,
+  "native_goal_reopened": false,
+  "actual_target_status": "unverified",
+  "merge_ready": false,
+  "source_sha": null,
+  "target_main_sha": null,
+  "installed_artifact_sha256": null,
+  "measurements": [],
+  "unavailable_gates": [],
+  "rejected_candidates": [],
+  "reviewer": null,
+  "automatic_publish_authorized": false
+}
