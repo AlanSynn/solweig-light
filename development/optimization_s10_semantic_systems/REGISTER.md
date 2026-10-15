@@ -25,6 +25,18 @@ to `evidence/` (distilled) and `/storage/scratch1/1/dsynn6/solweig-light-s10-raw
 | 12 | T02 | typed execution plan (profile->kernel planning) | amortizes Python type checks; needed at scale of T01 use | folds into T01 design | cold JIT | fold into T01 |
 
 Notes:
+- S10-37 FOLLOW-ON CAMPAIGN PROMPT for the user's Astra agent (2026-10-15,
+  agents/astra-envelope-optimization-prompt.md): end-to-end envelope diagnosis
+  (small/large tiles x short/long runs x serial/parallel) with approximation
+  tier-3 latitude the user granted (tiny quantified error, zero preferred).
+  Grounded in two independent subagent studies (performance anatomy;
+  headroom arithmetic) + this session's spot-checks: the parked parallel
+  twins (sky_compiled.py _pixel_parallel, utci.py _utci_uniform_parallel —
+  "Serial default; parallel execution is explicit until benchmark review")
+  are the top bitwise candidate (UNMEASURED 1.97-2.11x production-shape
+  hypothesis, Phase 0 M1-M6 decide); fixed-cost package second; frozen
+  C5/C6/N8/N9 kernels and timestep-parallelism stay out of bounds.
+  Prompt only — no product or evidence changes.
 - S10-36 SYNTHETIC-SCALE DEMONSTRATION COMPLETE (2026-10-15,
   evidence/target/{synthetic_scale_protocol,synthetic_scale_demo}.json, slurm
   14060057 COMPLETED 04:15:25): user-directed one-pass paired A/B demo on a
