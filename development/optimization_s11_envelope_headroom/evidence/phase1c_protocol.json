@@ -1,0 +1,50 @@
+{
+  "campaign": "s11-envelope-headroom",
+  "probe_set": "P1c",
+  "title": "Phase-0 completion: worker/thread shape matrix, child-twin dispatch, child-profiled run attribution, UTCI kernel A/B, min-steps fixed cost",
+  "frozen_before_timing": true,
+  "extends": "phase0_protocol.json (commit e711f665); this amendment covers the probes that were UNVERIFIED after jobs 14084547/14085192",
+  "motivation": {
+    "phase_level_attribution_measured": "P1b (job 14085192): SVF phase 4090.5 s = geometry barrier 1360.7 s (33.3%, 3 workers) + serial export loop 2729.7 s (66.7%, parent single-core). Non-kernel fraction at phase level is 0.667, so the parked twin alone cannot exceed ~1.27x phase speedup (k=4.13 measured at 8 threads, bitwise PASS).",
+    "admission_cap_measured": "P0 (job 14085192): at the default resolved budget (~47.6 GiB) only 5 concurrent simulation jobs fit; 6x4/12x2/24x1 refused. Admitted shapes to compare: 3x8 (incumbent), 4x6, 5x4.",
+    "run_attribution_failed_as_instrumented": "P2 profile (job 14085192): execute_tiles delegates to a subprocess worker even at workers=1; parent-side cProfile/seams captured only sleeping (492.7 of 494.7 s). Child-side instrumentation required. TMRT bitwise PASS 24/24 was still verified in all perturbed modes.",
+    "minsteps_probe_defect": "metfile layout read from scene root instead of metfiles/ (same defect as prime_64 in job 14084547)."
+  },
+  "probes": [
+    {
+      "id": "P1c_shape_matrix",
+      "question": "How does the cold 24-tile SVF phase wall and its barrier/export split scale with the admitted worker/thread shapes, and does child-side twin dispatch (bitwise) improve it further?",
+      "arms": [
+        {"tag": "base38", "workers": 3, "threads": 8, "twin": false},
+        {"tag": "w4t6", "workers": 4, "threads": 6, "twin": false},
+        {"tag": "w5t4", "workers": 5, "threads": 4, "twin": false},
+        {"tag": "w5t4twin", "workers": 5, "threads": 4, "twin": true}
+      ],
+      "method": "One cold pass each: wipe scene SVF/ and .solweig-light/, admission pre-check at default budget (refusal -> record + skip), public _calculate_svf once with runtime_options(cpu_budget=24, workers=W, threads_per_worker=T), wall + barrier-vs-export split via prepare_geometry_exports seam, snapshot the SVF dir to the raw area.",
+      "twin_mechanism": "S11_CHILD_TWIN=1 + PYTHONPATH=probe dir; sitecustomize patches solweig_light.geometry.svf.shadow to sky_compiled.shadow_pixel_parallel in pool children (production dispatch semantics including the bush>0 step-major fallback). Parent-side code paths untouched.",
+      "exactness": "Per-tile bitwise comparison (NaN-mask + uint32 view) of all three persisted artifacts (SkyViewFactor tif, svfs zip members, shadowmats npz arrays) of every arm against base38. Any diff = candidate rejected.",
+      "exclusions": "2x12 shape rejected as dominated (fewer workers than incumbent, serial kernel per child, no hypothesis tested); 220G-budget shapes out of scope (allocation is 96G)."
+    },
+    {
+      "id": "P2c_child_profile",
+      "question": "What does one 24-step production run of tile 0_0 spend inside the worker child (engine steps, UTCI, writer writes/checkpoints), at the replicated pool-child condition?",
+      "method": "p2_run_tile.py profile mode with S11_CHILD_PROF=1, S11_CHILD_OUT=<raw>/p2c_child.json, PYTHONPATH=probe dir. sitecustomize instruments the CHILD: cProfile, timed Solweig_2022a_calc / utci_calculator_uniform / TransactionalOutputs.write / .checkpoint, and stashes the first UTCI call args (kind-tagged npz). Parent record: wall + TMRT bitwise vs the existing clean reference (p2_ref_TM.tif).",
+      "exactness": "TMRT bitwise vs clean reference must PASS; the instrumentation is seam-timing only, no numerical change."
+    },
+    {
+      "id": "P2c_utci_ab",
+      "question": "Is utci_calculator_uniform(parallel=True) faster than serial at the production input, and bitwise-equal?",
+      "method": "p2c_utci_ab.py reloads the child-stashed inputs and calls the kernel both ways in the parent: walls + NaN-mask/bitwise comparison.",
+      "exactness": "Bitwise; a diff records the twin as inexact for UTCI and disqualifies dispatch."
+    },
+    {
+      "id": "P2c_minsteps",
+      "question": "What is the fixed per-call cost of the public run at 1 (fallback 2) met records?",
+      "method": "p2_run_tile.py minsteps mode with the corrected metfiles/ layout (truncated metfile copied into mini/metfiles/). Public run_utci_tiles boundary; refusals recorded, not assumed."
+    }
+  ],
+  "resources": "Same allocation shape as Phase 0: sbatch -c 24 --mem=96G, cpu-small partition, shared NUMBA_CACHE_DIR; one job, sequential passes; login node untouched.",
+  "budget": "4 SVF passes (~55-70 min each) + run probes (~25 min) + compare (~10 min) <= 5 h of a 6 h limit. This is the pre-registered finalist comparison demanded by the mission ('compare worker/thread configurations under the same total CPU/RAM budget'); no further shape passes are authorized without new evidence.",
+  "retry_policy": "Single causal retry only for instrument defects, per the campaign policy. Measurement anomalies are recorded, not re-run silently.",
+  "no_gate_claims": "This protocol produces attribution and candidate ranking only. No product source is modified; the product-source diff vs c245ea60 must be empty at job start (freeze assertion in the driver)."
+}

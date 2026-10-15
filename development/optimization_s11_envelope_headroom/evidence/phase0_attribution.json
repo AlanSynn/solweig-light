@@ -1,0 +1,88 @@
+{
+  "campaign": "s11-envelope-headroom",
+  "phase": 0,
+  "title": "Phase-0 attribution record (M1-M6) — measured on Slurm, jobs 14084547 + 14085192",
+  "protocol": "phase0_protocol.json (frozen pre-timing, commit e711f665); completion amendment phase1c_protocol.json",
+  "product_source_invariant": "git diff c245ea60..HEAD -- src pyproject.toml empty at both job starts (freeze assertions in drivers)",
+  "environment": {
+    "allocation": "cpu-small, -c 24 --mem=96G, qos=inferno; affinity 24 CPUs recorded in every record",
+    "numba": "threading_layer=omp; NUMBA_NUM_THREADS set per probe (1/8); fresh shared NUMBA_CACHE_DIR, compile excluded via untimed 64^2 prime",
+    "scene": "24x 1024^2 synthetic tiles, S10 scene, node-local /tmp scratch"
+  },
+  "m1_svf_attribution": {
+    "status": "measured",
+    "tile_level_1024_serial": {
+      "wall_s": 303.5413,
+      "shadow_kernel_s": 162.0791,
+      "shadow_calls": 153,
+      "ray_steps": {"sum": 22869, "min": 9, "max": 1024},
+      "svf_numerics_excl_kernel_s": 23.7,
+      "export_side_s": 121.1,
+      "export_breakdown": "compare(read-back verification) 85.0 (incl import_visibility_npz 59.3), save zip/npz 36.0 (incl zlib 15.1), export_visibility_npz 34.1 (nested), validate 3.0",
+      "source": "p1_clean.json, p1_attributed.json (job 14084547)"
+    },
+    "phase_level_24_tiles_3x8": {
+      "phase_wall_s": 4090.5036,
+      "geometry_barrier_s": 1360.679,
+      "barrier_share": 0.333,
+      "serial_export_loop_s": 2729.7114,
+      "export_share": 0.667,
+      "export_per_tile_s": "111.7-116.5 (24 tiles, parent process single-core, 23 of 24 cores idle)",
+      "reproduction": "S10-36 A-arm svf phase 4063.135 s reproduced within 0.7%",
+      "source": "p1b_svf_phase.json (job 14085192)"
+    },
+    "verdict": "The SVF phase is NOT kernel-dominated at phase level: e (non-kernel fraction) = 0.667, not the 0.20-0.50 range assumed in the Astra sensitivity table. The serial export loop is the largest single segment of the whole production chain (41% of chain: 2729.7/6612.8)."
+  },
+  "m3_ray_census": {"status": "measured", "value": "153 patches/tile, 22869 schedule steps/tile, per-patch min 9 max 1024", "source": "p1_attributed.json"},
+  "m4_svf_serial_vs_parallel": {
+    "status": "measured_bitwise_pass",
+    "whole_tile": {"serial_s": 303.5413, "parallel_8t_s": 180.7457, "ratio": 1.679},
+    "kernel_implied": {"k_8threads": 4.126, "parallel_efficiency": 0.516, "derivation": "162.07/(180.75-(303.54-162.08))"},
+    "compile_cost_s": 3.1248,
+    "bitwise": "clean vs parallel PASS (total tif, all zip members bytes-first, all shadowmats arrays); clean vs attributed PASS (instrumentation non-perturbing)",
+    "scope_condition": "tile 0_0 has bush_max=0; the bush>0 step-major fallback was not exercised by this A/B, but the twin entry point shadow_pixel_parallel embeds the same fallback by construction",
+    "source": "p1_clean.json, p1_parallel.json, p1_bitwise.json"
+  },
+  "m5_utci_serial_vs_parallel": {
+    "status": "partial_wall_level_only",
+    "measured": "utci_parallel run wall 501.95 s vs clean 508.24 s (~1.3%, within noise); TMRT bitwise PASS 24/24 bands",
+    "missing": "kernel-level A/B (child stash) — scheduled in P1c",
+    "source": "p2_clean.json, p2_utci_parallel.json (job 14085192)"
+  },
+  "m2_run_phase_attribution": {
+    "status": "UNVERIFIED_instrument_defect",
+    "finding": "execute_tiles delegates to a subprocess worker even at workers=1; parent-side profile captured 492.7/494.7 s in time.sleep + done-file polling (48954 iterations), seams 0 calls. Requires child-side instrumentation (sitecustomize) — scheduled in P1c.",
+    "secondary_observation": "single-tile 24-step run standalone ~500 s vs pool-mode service ~316 s/tile (S10 run phase 2529.7 s / 24 tiles / 3 workers); not yet explained, child profile will decompose",
+    "bitwise": "TMRT PASS 24/24 in both profile and utci_parallel modes vs clean reference (cross-process determinism)",
+    "source": "p2_profile.json, p2_clean.json"
+  },
+  "m6_input_validation": {
+    "status": "measured",
+    "guard_check_mean_s": 0.040165,
+    "raw_sha256_3files_s": 0.039851,
+    "verdict": "InputGuard.check runs at the raw-hashing floor (+0.3 ms overhead over hashing 3 files). No headroom; metadata shortcut remains rejected (Astra counterexample, guard_counterexample.json).",
+    "source": "p0_env.json (job 14085192)"
+  },
+  "admission_shapes": {
+    "status": "measured",
+    "default_budget_bytes": 51218612224,
+    "table": "3x8 admitted; 4x6 admitted; 2x12 admitted; 6x4 REFUSED; 12x2 REFUSED; 24x1 REFUSED — 'only 5 concurrent phase jobs fit'",
+    "at_220G": "all shapes admitted (out of scope: allocation is 96G)",
+    "consequence": "The worker-scaling route is memory-capped at 5 concurrent jobs, giving at most 5/3 x barrier reduction, not the ideal 8x CPU-filling the Astra table sketched.",
+    "source": "p0_env.json"
+  },
+  "derived_floors": {
+    "svf_phase_amdahl_twin_only": "r_G = 1/(0.667+0.333/4.126) = 1.265x -> chain ~5756 s = 95.9 min = 1.149x overall (whole-tile measured ratio 1.679 agrees)",
+    "barrier_worker_scaling_only": "5 workers -> barrier ~816 s -> phase ~3546 s -> chain ~86.4 min = 1.275x overall (ideal-scaling projection, to be measured in P1c)",
+    "twin_plus_5_workers": "barrier ~312-504 s, export loop unchanged -> phase ~3042-3234 s -> chain ~82-84.5 min = 1.30-1.34x overall (projection)",
+    "export_loop_concurrency_ceiling": "export loop 2729.7 s at 5-way concurrency -> ~546 s -> phase ~858 s with twin+5 workers -> chain ~54.7 min = ~2.0x overall (upper-bound projection; export parallelism is a scheduling change requiring its own protocol, exactness argument, and review)",
+    "caveat": "All projections are Amdahl arithmetic on measured segments, not measurements. Barrier scaling may be sub-ideal (memory bandwidth, admission interplay); P1c measures it."
+  },
+  "raw_evidence": {
+    "records": "solweig-light-s11-raw/phase0/*.json (12 records; 11 from jobs 14084547+14085192, p2_minsteps pending P1c)",
+    "svf_snapshots": "p1_svf_out_{clean,attributed,parallel} (single-tile bitwise evidence)",
+    "archive": "phase0_raw_records.tar.gz + .sha256 (refreshed after P1c)"
+  },
+  "unverified_items": ["M2 child-side attribution", "M5 kernel A/B", "P2 minsteps", "barrier scaling at 4/5 workers", "twin dispatch at phase level (bitwise)"],
+  "actual_target_status": "unverified"
+}
