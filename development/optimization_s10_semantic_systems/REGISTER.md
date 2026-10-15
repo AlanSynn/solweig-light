@@ -25,6 +25,32 @@ to `evidence/` (distilled) and `/storage/scratch1/1/dsynn6/solweig-light-s10-raw
 | 12 | T02 | typed execution plan (profile->kernel planning) | amortizes Python type checks; needed at scale of T01 use | folds into T01 design | cold JIT | fold into T01 |
 
 Notes:
+- S10-36 SYNTHETIC-SCALE DEMONSTRATION COMPLETE (2026-10-15,
+  evidence/target/{synthetic_scale_protocol,synthetic_scale_demo}.json, slurm
+  14060057 COMPLETED 04:15:25): user-directed one-pass paired A/B demo on a
+  24-tile procedurally distinct SYNTHETIC 1024^2 corpus (manifest sha
+  e2c7fa847223bb21; labeled SYNTHETIC_SCALE_THROUGHPUT_DEMONSTRATION — NOT the
+  real target; actual_target_status stays 'unverified'; no gate claims).
+  Pinned symmetric 3x8 (cpu_budget 24) public runtime shape on both arms;
+  prime untimed at serial defaults. Protocol frozen BEFORE any timed run
+  (S10-35); amendments 1-3 are refusal-fact disclosures, zero timed passes
+  consumed by them: main's pre-S03b admission refuses a 1-tile prime at
+  active_workers > len(jobs) (14056137) and 6-way is STRUCTURALLY
+  INADMISSIBLE at any container size (the GDAL-cache charge inflates with
+  the container: 14.06 GB/tile @96G, job 14056731; 24.2 GB/tile @220G, job
+  14058112); the pinned 3x8 admitted on both arms exactly as predicted from
+  main's own refusal arithmetic. MEASURED (B/A, observational, one pass):
+  walls 0.9956, svf 0.9898, run 0.9313, total measured 0.9675
+  (parity-to-1.034x); prime diagnostic 0.9077. Crosscheck PASS under the
+  frozen budgets: TMRT worst 0.0 degC (budget 0.01), 24/24 tiles BITWISE
+  identical; SVF total 0 findings @1e-06. Findings: the held-out small-cell
+  ratios do NOT extrapolate to this synthetic production shape; svf
+  dominates the measured chain (61.4% of A) and was never an S10
+  optimization target; the serial ~20 h run-phase extrapolation
+  overestimated ~36x (fixed-overhead-dominated warm small-cell cost).
+  Raw outputs archived to Dropbox s10/s10_s36_synthdemo_raw.tar.gz
+  (+ sha256 sidecar, 30801e37...). FINAL_DECISION.json, MERGE_MANIFEST.json
+  and the closure records are NOT modified by this demo.
 - S10-32/33/34 CAMPAIGN CLOSED — TERMINAL STATE qualified_exact_cpu (2026-10-14,
   FINAL_DECISION.json + MERGE_MANIFEST.json + evidence/{target,merge,reviews/final}/):
   S10-32: actual target UNAVAILABLE -> actual_target_status 'unverified' as a
