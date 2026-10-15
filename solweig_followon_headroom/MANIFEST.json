@@ -1,0 +1,66 @@
+{
+  "format": "analysis-bundle-1",
+  "scope": "No SOLWEIG/Slurm executions; floor arithmetic and local tests only",
+  "files": [
+    {
+      "path": "DIAGNOSIS.md",
+      "bytes": 13765,
+      "sha256": "755648da72f12f2e83f8465f13df52c50d403ced5fe8167076c62b6fc01c400d"
+    },
+    {
+      "path": "FOLLOWON_STATUS.json",
+      "bytes": 1010,
+      "sha256": "5db26ce1c590e7a2e4735bb6069b4b451f8f0c89e2e8229f441298ddad852b1a"
+    },
+    {
+      "path": "PHASE0_HANDOFF.md",
+      "bytes": 11380,
+      "sha256": "c554b6ed90bbe2665dff9d45a8fe646ae6f3005fe0d5d1f1f3818c57b8093914"
+    },
+    {
+      "path": "PHASE0_PROTOCOL.template.json",
+      "bytes": 2923,
+      "sha256": "9b2fc77a9022d083b746695dca126477176ebde4c2792267e75690cf8695e368"
+    },
+    {
+      "path": "README.md",
+      "bytes": 2422,
+      "sha256": "2fe0b2f2301e3d871082dc6beb6818d2db2c0c52a3bee19e4ad47efa0e30b20d"
+    },
+    {
+      "path": "evidence/access_checks.json",
+      "bytes": 1016,
+      "sha256": "5ad664bc801977d59953459e915b7174000dcc0f97a2a044116f021d6908f3dd"
+    },
+    {
+      "path": "evidence/floor_arithmetic.json",
+      "bytes": 14887,
+      "sha256": "c4fcc091ccece8dc9983b4c0efff46d3c02f5a2acd54241875fa03d0292c7a1b"
+    },
+    {
+      "path": "evidence/guard_counterexample.json",
+      "bytes": 474,
+      "sha256": "b6476ff4e0b0107e1efd4c3327c3775c867770e439b90123dba5c223f16d26d9"
+    },
+    {
+      "path": "evidence/local_test_results.json",
+      "bytes": 2264,
+      "sha256": "e71b052a8c12d540fa56311945d004c1c451c3a7511b9b9cefcba2bc6f87e8a2"
+    },
+    {
+      "path": "tests/test_analysis.py",
+      "bytes": 3652,
+      "sha256": "66bafd037c0474992af0a345ed4a626f0a6f9bf294b23808b4becd1194f44e0f"
+    },
+    {
+      "path": "tools/floor_model.py",
+      "bytes": 8256,
+      "sha256": "674cc8fca2003205d4ef4a3529b8b07055992c215ba04820b14d140b6b676609"
+    },
+    {
+      "path": "tools/guard_counterexample.py",
+      "bytes": 1832,
+      "sha256": "f89f10d4c4ff117aab3021e367fc65e488c5fa230df383704066abc5e94e8bda"
+    }
+  ]
+}

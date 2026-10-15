@@ -1,0 +1,398 @@
+{
+  "title": "S10 follow-on conditional floors",
+  "source": "User-provided verified S10-36 observational record; raw file not read here",
+  "supplied_s10": {
+    "walls_s": 20.0,
+    "svf_s": 4063.1,
+    "run_s": 2529.7,
+    "spatial_tiles": 24,
+    "timesteps": 24
+  },
+  "total_s": 6612.799999999999,
+  "actual_target_status": "unverified",
+  "new_solweig_measurements": false,
+  "current_tiles_per_minute": 0.21775949673360756,
+  "svf_share": 0.6144295910960562,
+  "whole_svf_scenarios": [
+    {
+      "evidence_class": "derived_conditional_scenario",
+      "svf_speedup": 1,
+      "run_speedup": 1,
+      "total_s": 6612.799999999999,
+      "minutes": 110.21333333333332,
+      "speedup_vs_reported_s10_chain": 1.0,
+      "tiles_per_minute": 0.21775949673360756,
+      "run_speedup_required_for_target": null,
+      "run_target_feasible_with_fixed_svf": false,
+      "boundary": "same stage barriers, fixed walls, same workload and shape except declared speedups"
+    },
+    {
+      "evidence_class": "derived_conditional_scenario",
+      "svf_speedup": 2,
+      "run_speedup": 1,
+      "total_s": 4581.25,
+      "minutes": 76.35416666666667,
+      "speedup_vs_reported_s10_chain": 1.4434488403819916,
+      "tiles_per_minute": 0.31432469304229194,
+      "run_speedup_required_for_target": null,
+      "run_target_feasible_with_fixed_svf": false,
+      "boundary": "same stage barriers, fixed walls, same workload and shape except declared speedups"
+    },
+    {
+      "evidence_class": "derived_conditional_scenario",
+      "svf_speedup": 3,
+      "run_speedup": 1,
+      "total_s": 3904.0666666666666,
+      "minutes": 65.06777777777778,
+      "speedup_vs_reported_s10_chain": 1.6938235344341797,
+      "tiles_per_minute": 0.36884616041392737,
+      "run_speedup_required_for_target": 5.943378494792072,
+      "run_target_feasible_with_fixed_svf": true,
+      "boundary": "same stage barriers, fixed walls, same workload and shape except declared speedups"
+    },
+    {
+      "evidence_class": "derived_conditional_scenario",
+      "svf_speedup": 5,
+      "run_speedup": 1,
+      "total_s": 3362.3199999999997,
+      "minutes": 56.038666666666664,
+      "speedup_vs_reported_s10_chain": 1.966737252849223,
+      "tiles_per_minute": 0.42827571438768475,
+      "run_speedup_required_for_target": 2.6150013438359276,
+      "run_target_feasible_with_fixed_svf": true,
+      "boundary": "same stage barriers, fixed walls, same workload and shape except declared speedups"
+    },
+    {
+      "evidence_class": "derived_conditional_scenario",
+      "svf_speedup": 7,
+      "run_speedup": 1,
+      "total_s": 3130.142857142857,
+      "minutes": 52.16904761904762,
+      "speedup_vs_reported_s10_chain": 2.1126192323490485,
+      "tiles_per_minute": 0.46004290082606913,
+      "run_speedup_required_for_target": 2.1088616036870746,
+      "run_target_feasible_with_fixed_svf": true,
+      "boundary": "same stage barriers, fixed walls, same workload and shape except declared speedups"
+    },
+    {
+      "evidence_class": "derived_conditional_scenario",
+      "svf_speedup": 8,
+      "run_speedup": 1,
+      "total_s": 3057.5874999999996,
+      "minutes": 50.95979166666666,
+      "speedup_vs_reported_s10_chain": 2.162750861586136,
+      "tiles_per_minute": 0.47095953917917316,
+      "run_speedup_required_for_target": 1.9885819846908193,
+      "run_target_feasible_with_fixed_svf": true,
+      "boundary": "same stage barriers, fixed walls, same workload and shape except declared speedups"
+    },
+    {
+      "evidence_class": "derived_conditional_scenario",
+      "svf_speedup": "ideal_elimination",
+      "run_speedup": 1,
+      "total_s": 2549.7,
+      "minutes": 42.495,
+      "speedup_vs_reported_s10_chain": 2.5935600266698042,
+      "tiles_per_minute": 0.5647723261560184,
+      "run_speedup_required_for_target": 1.4211797752808988,
+      "run_target_feasible_with_fixed_svf": true,
+      "boundary": "same stage barriers, fixed walls, same workload and shape except declared speedups"
+    }
+  ],
+  "residual_svf_scenarios_with_8x_kernel": [
+    {
+      "nonaccelerated_fraction": 0,
+      "svf_stage_speedup": 8.0,
+      "chain": {
+        "evidence_class": "derived_conditional_scenario",
+        "svf_speedup": 8.0,
+        "run_speedup": 1,
+        "total_s": 3057.5874999999996,
+        "minutes": 50.95979166666666,
+        "speedup_vs_reported_s10_chain": 2.162750861586136,
+        "tiles_per_minute": 0.47095953917917316,
+        "run_speedup_required_for_target": 1.9885819846908193,
+        "run_target_feasible_with_fixed_svf": true,
+        "boundary": "same stage barriers, fixed walls, same workload and shape except declared speedups"
+      }
+    },
+    {
+      "nonaccelerated_fraction": 0.02,
+      "svf_stage_speedup": 7.017543859649123,
+      "chain": {
+        "evidence_class": "derived_conditional_scenario",
+        "svf_speedup": 7.017543859649123,
+        "run_speedup": 1,
+        "total_s": 3128.69175,
+        "minutes": 52.1448625,
+        "speedup_vs_reported_s10_chain": 2.1135990785925136,
+        "tiles_per_minute": 0.4602562716509225,
+        "run_speedup_required_for_target": 2.1063135911014763,
+        "run_target_feasible_with_fixed_svf": true,
+        "boundary": "same stage barriers, fixed walls, same workload and shape except declared speedups"
+      }
+    },
+    {
+      "nonaccelerated_fraction": 0.05,
+      "svf_stage_speedup": 5.925925925925926,
+      "chain": {
+        "evidence_class": "derived_conditional_scenario",
+        "svf_speedup": 5.925925925925926,
+        "run_speedup": 1,
+        "total_s": 3235.348125,
+        "minutes": 53.92246875,
+        "speedup_vs_reported_s10_chain": 2.0439222440707208,
+        "tiles_per_minute": 0.445083479231466,
+        "run_speedup_required_for_target": 2.3115965328793355,
+        "run_target_feasible_with_fixed_svf": true,
+        "boundary": "same stage barriers, fixed walls, same workload and shape except declared speedups"
+      }
+    },
+    {
+      "nonaccelerated_fraction": 0.1,
+      "svf_stage_speedup": 4.705882352941176,
+      "chain": {
+        "evidence_class": "derived_conditional_scenario",
+        "svf_speedup": 4.705882352941176,
+        "run_speedup": 1,
+        "total_s": 3413.10875,
+        "minutes": 56.88514583333333,
+        "speedup_vs_reported_s10_chain": 1.9374712276601205,
+        "tiles_per_minute": 0.42190275947111266,
+        "run_speedup_required_for_target": 2.7598997917555947,
+        "run_target_feasible_with_fixed_svf": true,
+        "boundary": "same stage barriers, fixed walls, same workload and shape except declared speedups"
+      }
+    },
+    {
+      "nonaccelerated_fraction": 0.2,
+      "svf_stage_speedup": 3.333333333333333,
+      "chain": {
+        "evidence_class": "derived_conditional_scenario",
+        "svf_speedup": 3.333333333333333,
+        "run_speedup": 1,
+        "total_s": 3768.63,
+        "minutes": 62.810500000000005,
+        "speedup_vs_reported_s10_chain": 1.7546960035875103,
+        "tiles_per_minute": 0.38210171866168874,
+        "run_speedup_required_for_target": 4.5087065785017915,
+        "run_target_feasible_with_fixed_svf": true,
+        "boundary": "same stage barriers, fixed walls, same workload and shape except declared speedups"
+      }
+    },
+    {
+      "nonaccelerated_fraction": 0.3,
+      "svf_stage_speedup": 2.580645161290323,
+      "chain": {
+        "evidence_class": "derived_conditional_scenario",
+        "svf_speedup": 2.580645161290323,
+        "run_speedup": 1,
+        "total_s": 4124.15125,
+        "minutes": 68.73585416666667,
+        "speedup_vs_reported_s10_chain": 1.6034329487794607,
+        "tiles_per_minute": 0.3491627519722998,
+        "run_speedup_required_for_target": 12.307056111992887,
+        "run_target_feasible_with_fixed_svf": true,
+        "boundary": "same stage barriers, fixed walls, same workload and shape except declared speedups"
+      }
+    },
+    {
+      "nonaccelerated_fraction": 0.5,
+      "svf_stage_speedup": 1.7777777777777777,
+      "chain": {
+        "evidence_class": "derived_conditional_scenario",
+        "svf_speedup": 1.7777777777777777,
+        "run_speedup": 1,
+        "total_s": 4835.19375,
+        "minutes": 80.5865625,
+        "speedup_vs_reported_s10_chain": 1.3676390940900762,
+        "tiles_per_minute": 0.29781640084226196,
+        "run_speedup_required_for_target": null,
+        "run_target_feasible_with_fixed_svf": false,
+        "boundary": "same stage barriers, fixed walls, same workload and shape except declared speedups"
+      }
+    }
+  ],
+  "nonaccelerated_fraction_limit_5x_phase_8x_kernel": 0.08571428571428573,
+  "nonaccelerated_fraction_limit_7x_phase_8x_kernel": 0.020408163265306114,
+  "hypothetical_time_envelope": [
+    {
+      "steps": 1,
+      "g5": {
+        "evidence_class": "hypothetical_average_step_sensitivity",
+        "steps": 1,
+        "baseline_model_s": 4188.504166666667,
+        "candidate_model_s": 938.0241666666667,
+        "speedup": 4.465241211802468,
+        "svf_fraction": 0.970059915980347,
+        "assumptions": [
+          "zero per-invocation fixed run cost",
+          "same average day/night cost",
+          "same geometry and 24 spatial tiles",
+          "not a measured corner or forecast"
+        ]
+      },
+      "g7": {
+        "evidence_class": "hypothetical_average_step_sensitivity",
+        "steps": 1,
+        "baseline_model_s": 4188.504166666667,
+        "candidate_model_s": 705.8470238095239,
+        "speedup": 5.934011231018457,
+        "svf_fraction": 0.970059915980347,
+        "assumptions": [
+          "zero per-invocation fixed run cost",
+          "same average day/night cost",
+          "same geometry and 24 spatial tiles",
+          "not a measured corner or forecast"
+        ]
+      }
+    },
+    {
+      "steps": 24,
+      "g5": {
+        "evidence_class": "hypothetical_average_step_sensitivity",
+        "steps": 24,
+        "baseline_model_s": 6612.799999999999,
+        "candidate_model_s": 3362.3199999999997,
+        "speedup": 1.966737252849223,
+        "svf_fraction": 0.6144295910960562,
+        "assumptions": [
+          "zero per-invocation fixed run cost",
+          "same average day/night cost",
+          "same geometry and 24 spatial tiles",
+          "not a measured corner or forecast"
+        ]
+      },
+      "g7": {
+        "evidence_class": "hypothetical_average_step_sensitivity",
+        "steps": 24,
+        "baseline_model_s": 6612.799999999999,
+        "candidate_model_s": 3130.142857142857,
+        "speedup": 2.1126192323490485,
+        "svf_fraction": 0.6144295910960562,
+        "assumptions": [
+          "zero per-invocation fixed run cost",
+          "same average day/night cost",
+          "same geometry and 24 spatial tiles",
+          "not a measured corner or forecast"
+        ]
+      }
+    },
+    {
+      "steps": 48,
+      "g5": {
+        "evidence_class": "hypothetical_average_step_sensitivity",
+        "steps": 48,
+        "baseline_model_s": 9142.5,
+        "candidate_model_s": 5892.0199999999995,
+        "speedup": 1.5516749773422358,
+        "svf_fraction": 0.4444189226141646,
+        "assumptions": [
+          "zero per-invocation fixed run cost",
+          "same average day/night cost",
+          "same geometry and 24 spatial tiles",
+          "not a measured corner or forecast"
+        ]
+      },
+      "g7": {
+        "evidence_class": "hypothetical_average_step_sensitivity",
+        "steps": 48,
+        "baseline_model_s": 9142.5,
+        "candidate_model_s": 5659.842857142857,
+        "speedup": 1.6153275330713373,
+        "svf_fraction": 0.4444189226141646,
+        "assumptions": [
+          "zero per-invocation fixed run cost",
+          "same average day/night cost",
+          "same geometry and 24 spatial tiles",
+          "not a measured corner or forecast"
+        ]
+      }
+    },
+    {
+      "steps": 72,
+      "g5": {
+        "evidence_class": "hypothetical_average_step_sensitivity",
+        "steps": 72,
+        "baseline_model_s": 11672.199999999999,
+        "candidate_model_s": 8421.72,
+        "speedup": 1.3859639123599454,
+        "svf_fraction": 0.34810061513682083,
+        "assumptions": [
+          "zero per-invocation fixed run cost",
+          "same average day/night cost",
+          "same geometry and 24 spatial tiles",
+          "not a measured corner or forecast"
+        ]
+      },
+      "g7": {
+        "evidence_class": "hypothetical_average_step_sensitivity",
+        "steps": 72,
+        "baseline_model_s": 11672.199999999999,
+        "candidate_model_s": 8189.5428571428565,
+        "speedup": 1.425256599007794,
+        "svf_fraction": 0.34810061513682083,
+        "assumptions": [
+          "zero per-invocation fixed run cost",
+          "same average day/night cost",
+          "same geometry and 24 spatial tiles",
+          "not a measured corner or forecast"
+        ]
+      }
+    },
+    {
+      "steps": 168,
+      "g5": {
+        "evidence_class": "hypothetical_average_step_sensitivity",
+        "steps": 168,
+        "baseline_model_s": 21790.999999999996,
+        "candidate_model_s": 18540.519999999997,
+        "speedup": 1.1753176286317752,
+        "svf_fraction": 0.18645771189940805,
+        "assumptions": [
+          "zero per-invocation fixed run cost",
+          "same average day/night cost",
+          "same geometry and 24 spatial tiles",
+          "not a measured corner or forecast"
+        ]
+      },
+      "g7": {
+        "evidence_class": "hypothetical_average_step_sensitivity",
+        "steps": 168,
+        "baseline_model_s": 21790.999999999996,
+        "candidate_model_s": 18308.342857142856,
+        "speedup": 1.1902224122648222,
+        "svf_fraction": 0.18645771189940805,
+        "assumptions": [
+          "zero per-invocation fixed run cost",
+          "same average day/night cost",
+          "same geometry and 24 spatial tiles",
+          "not a measured corner or forecast"
+        ]
+      }
+    }
+  ],
+  "hypothetical_svf_run_crossover_steps": 38.54781199351702,
+  "small_fixed_residual_ceiling_if_same_boundary": [
+    {
+      "residual_s": 0.13,
+      "total_s": 1.093,
+      "maximum_speedup": 1.1349948078920042,
+      "fraction": 0.11893870082342178,
+      "condition": "only valid if residual and total enclose the same execution boundary"
+    },
+    {
+      "residual_s": 0.14,
+      "total_s": 1.093,
+      "maximum_speedup": 1.1469045120671564,
+      "fraction": 0.1280878316559927,
+      "condition": "only valid if residual and total enclose the same execution boundary"
+    }
+  ],
+  "warnings": [
+    "Do not multiply worker and kernel speedups that consume the same 24-CPU allocation.",
+    "Zero-SVF floor assumes run, barriers and walls unchanged; not a universal hardware floor.",
+    "A single 24-step time does not identify fixed cost or a 1/72-step runtime.",
+    "No confidence interval or headroom exhaustion proof follows from one timed pair."
+  ]
+}

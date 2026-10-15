@@ -1,0 +1,18 @@
+{
+  "evidence_class": "executed_local_analysis_tests",
+  "tests_run": 18,
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "success": true,
+  "solweig_executed": false,
+  "target_host_executed": false,
+  "independent_review": false,
+  "command": "python -m unittest discover -s tests -v",
+  "scope": [
+    "floor arithmetic",
+    "capacity enumeration arithmetic",
+    "metadata-only guard counterexample"
+  ],
+  "log": "test_amdahl_whole_stage (test_analysis.ArithmeticTests.test_amdahl_whole_stage) ... ok\ntest_capacity_is_not_speed_evidence (test_analysis.ArithmeticTests.test_capacity_is_not_speed_evidence) ... ok\ntest_capacity_uses_threads (test_analysis.ArithmeticTests.test_capacity_uses_threads) ... ok\ntest_fivefold_svf (test_analysis.ArithmeticTests.test_fivefold_svf) ... ok\ntest_hypothesis_labeled (test_analysis.ArithmeticTests.test_hypothesis_labeled) ... ok\ntest_impossible_threshold (test_analysis.ArithmeticTests.test_impossible_threshold) ... ok\ntest_infeasible_even_zero_run_at_g2 (test_analysis.ArithmeticTests.test_infeasible_even_zero_run_at_g2) ... ok\ntest_invalid_inputs (test_analysis.ArithmeticTests.test_invalid_inputs) ... ok\ntest_metadata_hash_guard_counterexample (test_analysis.ArithmeticTests.test_metadata_hash_guard_counterexample) ... ok\ntest_monotone_horizon_gain (test_analysis.ArithmeticTests.test_monotone_horizon_gain) ... ok\ntest_no_acceleration_for_full_residual (test_analysis.ArithmeticTests.test_no_acceleration_for_full_residual) ... ok\ntest_nonaccelerated_threshold (test_analysis.ArithmeticTests.test_nonaccelerated_threshold) ... ok\ntest_report_serializes_without_nonfinite (test_analysis.ArithmeticTests.test_report_serializes_without_nonfinite) ... ok\ntest_run_required_after_elimination (test_analysis.ArithmeticTests.test_run_required_after_elimination) ... ok\ntest_run_required_after_g5 (test_analysis.ArithmeticTests.test_run_required_after_g5) ... ok\ntest_sevenfold_svf (test_analysis.ArithmeticTests.test_sevenfold_svf) ... ok\ntest_supplied_sum (test_analysis.ArithmeticTests.test_supplied_sum) ... ok\ntest_zero_svf_floor (test_analysis.ArithmeticTests.test_zero_svf_floor) ... ok\n\n----------------------------------------------------------------------\nRan 18 tests in 0.002s\n\nOK\n"
+}

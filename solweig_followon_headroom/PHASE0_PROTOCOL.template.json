@@ -1,0 +1,96 @@
+{
+  "record": "follow-on phase-0 design, not timing authorization for an unbound source",
+  "status": "draft_requires_local_binding_before_measurement",
+  "parent_campaign": "S10 closed qualified_exact_cpu",
+  "expected_parent_branch": "perf/s10-semantic-systems",
+  "product_reference_prefix": "c245ea60",
+  "resolved_reference_sha": null,
+  "resolved_followon_sha": null,
+  "new_branch_example": "perf/s11-headroom",
+  "read_only_main_prefix": "b3e5ca59",
+  "allocation": {
+    "partition": "cpu-medium",
+    "account": "gts-hoh68",
+    "qos": "inferno",
+    "baseline_cpus": 24,
+    "baseline_workers": 3,
+    "baseline_threads_per_worker": 8,
+    "memory_bytes": null,
+    "node_cpu_model": null,
+    "physical_core_count": null,
+    "walltime_limit": null,
+    "exact_sbatch_argv": null
+  },
+  "raw_root": "/storage/scratch1/1/dsynn6/solweig-light-s10-raw/",
+  "new_raw_subdirectory": "followon_headroom/<protocol-sha>/<slurm-job-id>/",
+  "synthetic_corpus": "/storage/scratch1/1/dsynn6/solweig-light-s10-raw/synthetic_target/",
+  "manifest_sha_prefix": "e2c7fa847223bb21",
+  "manifest_full_sha256": null,
+  "actual_target_status": "unverified",
+  "timed_passes_per_arm_per_cell": 1,
+  "causal_retries_maximum": 1,
+  "order": "Predeclare AB/BA alternation across cells; never select best repeats",
+  "warmups": "Record exact untimed compilation/load pass; no host cache manipulation",
+  "measurements": [
+    {
+      "id": "M1",
+      "status": "not_executed",
+      "exact_runner_command": null,
+      "source_function_inventory": null
+    },
+    {
+      "id": "M2",
+      "status": "not_executed",
+      "exact_runner_command": null,
+      "source_function_inventory": null
+    },
+    {
+      "id": "M3",
+      "status": "not_executed",
+      "exact_runner_command": null,
+      "source_function_inventory": null
+    },
+    {
+      "id": "M4",
+      "status": "not_executed",
+      "exact_runner_command": null,
+      "source_function_inventory": null
+    },
+    {
+      "id": "M5",
+      "status": "not_executed",
+      "exact_runner_command": null,
+      "source_function_inventory": null
+    },
+    {
+      "id": "M6",
+      "status": "not_executed",
+      "exact_runner_command": null,
+      "source_function_inventory": null
+    }
+  ],
+  "freeze_before_timing": [
+    "full_source_shas",
+    "product_and_closed_record_hashes",
+    "exact_commands",
+    "full_fixture_hashes",
+    "outputs_and_checkpoint_policy",
+    "actual_resource_masks",
+    "cache_and_jit_policy",
+    "measurement_boundaries",
+    "exclusion_rules",
+    "retry_policy",
+    "meaningful_gain_threshold_and_decision_rule"
+  ],
+  "forbidden": [
+    "product edit before phase-0 report",
+    "S10 closure overwrite",
+    "main mutation",
+    "push/PR/release/history rewrite",
+    "GPU/native re-port",
+    "new runtime dependency",
+    "implicit mtime/size trust relaxation",
+    "timestep parallelism",
+    "synthetic-to-real claim"
+  ]
+}

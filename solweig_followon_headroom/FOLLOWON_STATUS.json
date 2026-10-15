@@ -1,0 +1,19 @@
+{
+  "status": "analytical_headroom_report_complete_host_attribution_blocked",
+  "product_candidate_implemented": false,
+  "phase0_complete": false,
+  "original_S10_closed_campaign_reopened": false,
+  "actual_target_status": "unverified",
+  "best_supported_priority": "measure M1/M4, then qualify existing exact SVF pixel parallelism",
+  "svf_only_30min_verdict": "impossible at unchanged run service and phase barriers",
+  "svf_only_infinite_speed_floor_s": 2549.7,
+  "whole_phase_5_to_7x_chain_s": [
+    3362.32,
+    3130.142857142857
+  ],
+  "whole_phase_5_to_7x_status": "conditional, not measured",
+  "long_run_headroom": "not identified; geometry gain amortizes, M2 run ledger required",
+  "small_run_headroom": "fixed-cost upper bound only if timing boundaries match; no blanket 10-25% claim",
+  "integrity_change": "metadata-key fingerprint caching excluded from exact defaults pending explicit amendment",
+  "recommendation": "no product change or promotion before local M1-M6 and independent review"
+}
