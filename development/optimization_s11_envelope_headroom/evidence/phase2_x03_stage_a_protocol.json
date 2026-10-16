@@ -2,7 +2,18 @@
   "campaign": "s11-envelope-headroom",
   "phase": "2-x03-stage-a",
   "title": "X03 Stage-A calibration probe: measured run-phase child peak RSS and engine walls at 4/6 threads, to decide whether a run-phase worker-shape candidate is admissible and worthwhile; accepts NO product change",
-  "frozen_before_timing": "2026-10-16, commit 9d02520b (probe findings recorded); no Stage-A timing has happened under this protocol",
+  "frozen_before_timing": "2026-10-16, commit 9d02520b (probe findings recorded); no Stage-A timing has happened under this protocol. AMENDED after Stage-A job 14098252 completed (findings recorded) and BEFORE any Stage-A2 timing: adds the stage_a2 arms (8x3, 12x2 waves + engine_1x3, engine_1x2) so the Stage-B shape target is selected on measured data, not extrapolation",
+  "stage_a2_amendment": {
+    "motivation": "Stage-A measured nearly flat thread scaling (8->4 threads costs +5..14% engine) and RSS of ~0.75 GiB per child at every shape; the run-phase lever is wave count. Divisor shapes 8x3 (3 waves) and 12x2 (2 waves) project below 6x4's 1370 s engine makespan if contention stretch stays bounded; select on measurement.",
+    "arms": {
+      "wave_8x3": "8 concurrent one-tile run jobs at threads_per_worker=3 (tiles 0_0..2_1 — needs an 8-tile subset); makespan + per-child ru_maxrss/seams; admission verdict recorded either way",
+      "wave_12x2": "12 concurrent one-tile run jobs at threads_per_worker=2 (12-tile subset); same recording",
+      "engine_1x3": "standalone 1 worker x 3 threads, tile 0_0; wall + child seam (E3t)",
+      "engine_1x2": "standalone 1 worker x 2 threads, tile 0_0; wall + child seam (E2t)"
+    },
+    "subset": "extended to 12 tiles (0_0, 1_0, 0_1, 1_1, 2_0, 0_2, 0_3, 1_2, 2_1, 3_0, 1_3, 2_2), every copied input sha256-asserted against the driver's embedded list; untimed walls/aspect/SVF prep for all 12",
+    "rules": "same one-job allocation, prime, asserts, bitwise gate (TMRT_0_0 vs p2_ref), no-retry rule, diagnostic-only acceptance as the base protocol"
+  },
   "change_under_test": {
     "commit": "9d02520b",
     "summary": "diagnostic-only calibration probe on the accepted X02+X01 state; product source frozen at the accepted diff",
