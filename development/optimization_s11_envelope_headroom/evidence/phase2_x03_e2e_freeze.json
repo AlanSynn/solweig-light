@@ -1,0 +1,28 @@
+{
+  "campaign": "s11-envelope-headroom",
+  "phase": "2-x03-stage-b-e2e-freeze",
+  "title": "X03 Stage-B E2E freeze (recorded BEFORE the E2E job submission, post-implementation): product diff, anchors, controls, arms",
+  "frozen_before_timing": "committed before the E2E job is submitted; the job echoes this file's expectations (freeze echo) and the driver asserts them in preflight",
+  "arms": {
+    "b1": {"workers": 12, "threads_per_worker": 2, "role": "primary finalist"},
+    "b2": {"workers": 8, "threads_per_worker": 3, "role": "secondary; runs in the same job ONLY IF the primary arm is refused admission (refusal recorded)"}
+  },
+  "expected_product_diff_files": [
+    "src/solweig_light/api.py",
+    "src/solweig_light/geometry/shadows.py",
+    "src/solweig_light/runtime.py",
+    "src/solweig_light/runtime_memory.py"
+  ],
+  "product_diff_sha256": "75e03c621b19dcb45a017eb4f76be1d81ab13e63c1a781127cf3811789eaa67e",
+  "base_commit": "c245ea60f32b2ca93191ea00f48a4f6085a60a2b",
+  "scene_manifest_sha256": "e2c7fa847223bb2143e7725c542cb4d496ffc36a53f4cdc723f0e044c336c89c",
+  "chain_anchor_s": 3838.3158,
+  "anchor_provenance": "x01_b1 (job 14096139): walls 20.7822 + svf 1271.6571 (barrier 352.1531 + export stage 919.504) + run 2545.8766; bitwise SVF 24/24 + TMRT bands 24/24",
+  "svf_control_anchor_s": 1271.6571,
+  "svf_control_note": "SVF phase keeps the unchanged 3x8 shape; it now runs under the 256 MiB child GDAL cap and is the control for cap-induced slowdown (watch barrier + export stage vs 352.1531 + 919.504)",
+  "acceptance": "bitwise 24/24 SVF + 24/24 TMRT AND measured chain < 3838.3158 s AND the admission verdict recorded; otherwise REJECTED with full numbers and no shape change ships",
+  "projection_not_acceptance": "12x2 chain ~= 2123 s (~3.11x vs S10-36): walls ~20.8 + svf ~1271.7 + run ~831 (A2 measured 12x2 makespan, engines 328.8-341.6 s); the measured wall decides",
+  "run_count": "ONE E2E run; a causal retry only for a documented infrastructure anomaly (campaign rule)",
+  "driver": "/storage/scratch1/1/dsynn6/solweig-light-s11-raw/phase2/x03_e2e.py (preflight mode asserts ancestry, product diff, manifest sha; payload records the freeze echo)",
+  "job_script": "/storage/scratch1/1/dsynn6/solweig-light-s11-raw/phase2/x03e.sh (--time=2:00:00 after the B0 walltime lesson)"
+}

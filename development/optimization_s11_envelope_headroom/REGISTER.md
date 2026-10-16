@@ -160,3 +160,25 @@ Notes:
   anchor). Raw B0 records archived to Dropbox
   `campaign_s11/phase2/phase2c_b0_raw_records.tar.gz`
   (sha256 4356598da12f44b4ffe1b640bd546713073789b614b1ffb6f58d173dcce3d312).
+- S11-6d X03 STAGE-B RECALIBRATION IMPLEMENTED (2026-10-16, commit c1351d24;
+  findings `evidence/phase2_x03_stage_b_implementation.json`, E2E freeze
+  `evidence/phase2_x03_e2e_freeze.json`): simulation_reservation repriced to
+  the measured envelope table x MARGIN=3 (1024^2 0.77 GiB / 2048^2 3.588 GiB;
+  above 2048^2 legacy full-plane unchanged) with the GDAL charge capped at
+  256 MiB and child GDAL_CACHEMAX capped to the same ceiling (permitted ==
+  priced envelope). New 1024^2 price 2,908,028,928 B -> 12 workers fit every
+  observed compute base; login refusal preserved; 12 GiB boundary now 4
+  admit / 5 reject. 10 pinned tests recomputed with amendment citations, new
+  I1-I6 invariant tests, focused suite 69/69. Batteries (same-environment
+  FAILED-set diff vs stashed HEAD): exactly 3 tests differ, all FIXED by the
+  capped charge (4 GiB-budget pipeline cells the old uncapped 5%-of-host
+  GDAL price refused at ~4.31 GB), no new failures; absolute counts not
+  comparable to the historical 184 because the external .upstream reference
+  tree is absent from the current filesystem (~677 uniform environmental
+  differential failures in BOTH arms). USER-VISIBLE CONSEQUENCE flagged: the
+  32x35 census cell in a 6 GB step now refuses in both container arms
+  (envelope floor 2,815,852,800 B > 2,705,745,510 B base) — conservative
+  direction, frozen table form ("small tiles price at the 1024^2 entry");
+  production 1024^2 tiles on compute budgets unaffected. NEXT: independent
+  review (review_gate), then the pre-registered single-run E2E finalist 12x2
+  vs the 3838.3158 s anchor.
