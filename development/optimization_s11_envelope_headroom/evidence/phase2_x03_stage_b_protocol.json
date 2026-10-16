@@ -1,0 +1,67 @@
+{
+  "campaign": "s11-envelope-headroom",
+  "phase": "2-x03-stage-b",
+  "title": "X03 Stage-B: review-gated run-phase reservation recalibration (shape-aware measured envelope + capped child GDAL cache), enabling the measured 12x2 run shape; pre-registered B0 large-shape calibration probe, then E2E bitwise A/B vs the x01_b1 anchor",
+  "frozen_before_timing": "2026-10-16, committed before the B0 probe submission and before any Stage-B implementation or timing; implementation lands only after B0 fixes the coefficients AND the independent review approves the diff",
+  "basis": {
+    "stage_a": "evidence/phase2_x03_stage_a_findings.json (job 14098252): child peak RSS 0.72-0.77 GiB at every shape vs 9.17 GiB priced; wave makespans 3x8/4x6/6x4 = 314.9/324.9/342.5 s",
+    "stage_a2": "evidence/phase2_x03_stage_a2_findings.json (retry job 14098987): wave_8x3 = 379.4 s, wave_12x2 = 415.7 s, engine_1x3 = 301.7 s, engine_1x2 = 347.9 s; 24-tile engine makespans 12x2=831 s < 8x3=1138 s < 6x4=1370 s < 4x6=1949 s < 3x8=2519 s; every arm TMRT bitwise 24/24",
+    "gate_structure": "the run phase's single memory gate is plan_phase_admission(..., policy='reject') (api.py run_utci_tiles); worker shape is caller policy (RuntimeOptions workers/threads_per_worker), so repricing simulation_reservation is the ONLY product change needed to admit 12x2"
+  },
+  "part_b0_calibration_probe": {
+    "purpose": "fix the envelope coefficients on measurement at a second shape and validate near-linear pixel scaling; diagnostic only, accepts no product change",
+    "scene": "copy of the corpus generator (synthetic_target/gen/generate_corpus.py, corpus generator_sha256 a79439cc258e1e3a5a1e9b4d8a17ee3031fd388fd1510ac38afcad3a41b73466) with SIZE=2048 and a 1x1 grid, same fixed seed; driver sha256 recorded in the job log before timing; metfile byte-copied from the corpus dated variant",
+    "arms": {
+      "rss_2048_1x8": "one 2048^2/153-patch run at threads_per_worker=8; child ru_maxrss + seams (primary calibration point)",
+      "rss_2048_1x2": "same tile at threads_per_worker=2 (the 12x2 shape condition); also the bitwise cross-check arm"
+    },
+    "integrity_gate": "no stored reference exists at 2048^2, so the gate is a same-input cross-thread comparison: TMRT_2048 from 1x2 must equal 1x8 bitwise 24/24 (detects shape-dependent nondeterminism); additionally the run must complete with no error and a sane day/night engine split",
+    "rules": "one-job allocation (24 cores, 96G), shared NUMBA_CACHE_DIR, untimed prime, input sha asserts, no-retry except a documented driver anomaly (campaign rule)",
+    "fit_rule": "per-child peak RSS points R1024 (max over all Stage-A/A2 arms, 0.77 GiB) and R2048 (max over B0 arms): s = (R2048 - R1024) / (3 * P1024); f = max(R1024 - s * P1024, 256 MiB floor); if the floor clamps f, raise s to max((R1024 - f)/P1024, (R2048 - f)/(4*P1024)); round s up to whole bytes/pixel and f up to whole MiB; record the fit and all raw points in the findings",
+    "no_go": "if R2048 > 4.5 * R1024 (grossly super-linear) the slope form is replaced by alternative A (per-shape measured table with explicit safety margin per entry) and the protocol is amended before implementation"
+  },
+  "part_recalibration": {
+    "change_under_test": "simulation_reservation (runtime_memory.py) total := ceil(MARGIN * (ENVELOPE_FIXED + ENVELOPE_PER_PIXEL * pixels + ENVELOPE_PER_PATCH_BYTES * patches)) + min(default_gdal_cache_bytes(), GDAL_CHILD_CACHE_CAP_BYTES) + pulse + export stream (if export_overlap) + mapped (native_cache mode); Reservation inventory fields remain populated: payload = ENVELOPE_PER_PATCH_BYTES * patches, live = ENVELOPE_FIXED + ENVELOPE_PER_PIXEL * pixels, decoded = 0 and native = 0 (subsumed in the measured envelope, documented), gdal_cache = capped, pulse/stream/mapped as today; docstring cites the Stage-A/A2/B0 evidence and redefinition",
+    "constants": {"MARGIN": 3, "GDAL_CHILD_CACHE_CAP_BYTES": "256 MiB", "ENVELOPE_FIXED": "from B0 fit", "ENVELOPE_PER_PIXEL": "from B0 fit", "ENVELOPE_PER_PATCH_BYTES": "2 * block_pixels * raw_packed_bytes (two-block streaming share) = 256 B/patch at block_pixels=128"},
+    "child_env_change": "runtime._child_environment GDAL_CACHEMAX := min(default_gdal_cache_bytes(), GDAL_CHILD_CACHE_CAP_BYTES) // MiB for ALL child phases, so the permitted per-child envelope equals the priced envelope by construction (an LRU byte ceiling, not a value-affecting knob)",
+    "margin_rationale": "3x covers per-shape/condition variation (0.72-0.77 GiB spread), uncalibrated windchannel deltas, and preserves login-node refusal: at the observed login view (~2.2 GB budget, 0.43 GB parent, ~110 MB gdal) the recalibrated 1024^2 price (~2.6-2.7 GB) still exceeds the reservation base (~1.8 GB), while at 2x the price (~1.9-2.0 GB) is marginal",
+    "capacity_arithmetic": "12 x (MARGIN x ~0.77 GiB + 256 MiB + pulse/stream ~130 MiB) ~= 12 x 2.69 GB ~= 32.3 GB < every observed compute-node live budget (36.68 GB smallest, X01 E2E) and < 47-50.8 GB typical; 8x3 and 6x4 fit with more headroom; a 2048^2 job prices ~3x R2048 + terms and refuses 12-wide on a 47 GB node (conservative by construction)",
+    "invariants_with_tests": {
+      "I1": "total >= MARGIN x measured per-child peak RSS at every calibrated point (1024^2: 0.77 GiB; 2048^2: B0 max)",
+      "I2": "monotone non-decreasing in pixels and patches (property test)",
+      "I3": "login-scale refusal preserved: synthetic small-view unit test (budget ~2.2 GB) refuses one 1024^2/153 simulation job with ResourceAdmissionError",
+      "I4": "12 concurrent 1024^2/153 jobs fit inside a 36 GB budget minus parent (admission plan succeeds)",
+      "I5": "reject semantics unchanged: policy='reject' raises ResourceAdmissionError with the unchanged message shape; empty-jobs guard (C6-60 F1) and unknown-shape behavior unchanged",
+      "I6": "legacy_estimate_total_bytes untouched (M2 history anchor test unchanged)"
+    },
+    "affected_tests": [
+      "tests/optimization_v6/memory/test_phase_memory_admission.py (26 tests): exact-byte accounting assertions recomputed under the recalibrated model with probe citations; semantic/structure assertions (differentiation, components charged, empty/unknown guards, reject policy) preserved in meaning",
+      "tests/unit/test_runtime.py (15 tests): child-env GDAL cap assertion updated to the min() semantics",
+      "tests/optimization_s10/semantic/test_s03b_gdal_container_view.py (4 tests): cap interaction updated",
+      "tests/optimization_v8/dx/test_dx_surface.py (7 tests): reviewed; updated only where they price the simulation reservation"
+    ],
+    "alternatives": {
+      "A_per_shape_table": "measured per-shape table + per-entry margin (B0 no-go fallback; not shape-general)",
+      "B_gdal_only_reprice": "cap the gdal component only, keep payload/live full-plane (REJECTED: payload+live alone = 1.63 GB > measured whole-child RSS 0.77 GiB; insufficient to admit 12x2)",
+      "C_margin_2x": "REJECTED by the login-refusal arithmetic above",
+      "D_uncap_env_keep_price": "leave GDAL_CACHEMAX at 5% and price observed use only (REJECTED: permitted envelope would exceed priced envelope; admission could under-price a future workload that fills the granted cache)"
+    },
+    "review_gate": "independent reviewer inspects the full diff (runtime_memory.py + runtime.py), the B0 fit, and the updated tests BEFORE the E2E runs; reviewer receives the evidence files and the invariants list, and is asked for counterexamples (workloads that could exceed the capped-cache envelope; shapes where the price under-covers measured RSS)"
+  },
+  "part_e2e": {
+    "finalist_arms": {
+      "primary": "full chain at runtime_options(cpu_budget=24, workers=12, threads_per_worker=2) on the same frozen scene/asserts/bitwise gates as x01_b1",
+      "secondary": "workers=8, threads_per_worker=3, run in the same job ONLY IF the primary arm is refused admission at that job's live budget (refusal recorded)"
+    },
+    "bitwise": "24/24 SVF and 24/24 TMRT vs the same stored references used by x01_b1",
+    "timing": "whole-chain wall vs the stored anchor 3838.3 s (= 1.723x vs S10-36); the SVF segment (unchanged 3x8 shape) is the GDAL-cap control vs the anchor 1271.7 s (barrier 352.2 + export stage 919.5)",
+    "run_count": "ONE E2E run; a causal retry only for a documented infrastructure anomaly (campaign rule)",
+    "acceptance": "bitwise pass AND measured chain < 3838.3 s AND admission verdict recorded; otherwise the candidate is recorded REJECTED with the full numbers and no shape change ships",
+    "projection_not_acceptance": "12x2 chain ~= 2123 s (~3.11x), 8x3 ~= 2430 s (~2.72x); the measured wall decides"
+  },
+  "product_diff_expectation": {
+    "pre_implementation_probes": "src diff unchanged: api.py + shadows.py, sha256 2a2ea8817dd8376cac594b0381a1bf3d432b0ea057eced3bf7b6f5d69f2a5394",
+    "post_implementation": "runtime.py + runtime_memory.py added to the product diff; the E2E job's freeze echo records the new file list and diff sha"
+  },
+  "environment": "same as Stage-A/A2: sbatch cpu-small gts-hoh68 inferno -c 24 --mem=96G, shared NUMBA_CACHE_DIR, repo .venv editable install"
+}
