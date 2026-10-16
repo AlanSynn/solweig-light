@@ -157,6 +157,15 @@ SIMULATION_ENVELOPE_TABLE = (
     (1024 * 1024, 826_736_640),      # 0.77 GiB, Stage-A/A2 measured maximum
     (2048 * 2048, 3_852_328_960),    # 3.588 GiB, Stage-B0 measured maximum
 )
+# Every table entry was measured at the production defaults (block_pixels=128,
+# patches=153, windchannels=12: the Stage-A/A2/B0 arms all ran those), so the
+# per-block decode scratch of that configuration is inside the measured
+# envelope.  Only the scratch BEYOND it is charged on top of the envelope
+# (Stage-B review MAJOR-1: block_pixels is a legal, unbounded knob -- e.g.
+# block 1 MiB at 1024^2/153 adds ~2.56 GB of scratch the envelope never saw).
+_MEASURED_DECODED_SCRATCH_BYTES = (
+    128 * DEFAULT_PATCHES * (DEFAULT_WIND_CHANNELS + 4) * 4
+)
 
 # Legacy simulation envelope, kept as accounting units (runtime.py:285-286):
 # 192 full-plane f32 equivalents cover the enumerated M1 stage 0/3/4 families
@@ -636,7 +645,16 @@ def _measured_simulation_envelope(pixels: int) -> int | None:
     the largest calibrated entry: the legacy full-plane envelope applies
     unchanged there (conservative by construction).
     """
-    for limit, envelope in SIMULATION_ENVELOPE_TABLE:
+    # The lookup's correctness depends on the entries being sorted; an
+    # out-of-order future edit would silently under-price (Stage-B review
+    # NOTE-9), so refuse it instead.
+    table = SIMULATION_ENVELOPE_TABLE
+    if any(table[i][0] >= table[i + 1][0] for i in range(len(table) - 1)):
+        raise ValueError(
+            "SIMULATION_ENVELOPE_TABLE entries must be strictly increasing "
+            "in pixels"
+        )
+    for limit, envelope in table:
         if pixels <= limit:
             return envelope
     return None
@@ -667,11 +685,14 @@ def simulation_reservation(
     plus a GDAL block-cache charge capped at ``GDAL_CHILD_CACHE_CAP_BYTES`` --
     the same ceiling worker children receive via GDAL_CACHEMAX, so the
     permitted per-child envelope equals the priced envelope by construction.
-    Inventory mapping under the table: ``payload`` = ``decoded`` =
-    ``native`` = 0 (subsumed in the measured envelope, which was captured on
-    the production unknown_cold route with publication and checkpoints
-    active), ``live`` = margin x envelope, ``gdal_cache`` = capped,
-    ``pulse``/``stream``/``mapped`` unchanged.  Above the largest calibrated
+    Inventory mapping under the table: ``payload`` = ``native`` = 0
+    (subsumed in the measured envelope, which was captured on the production
+    unknown_cold route with publication and checkpoints active),
+    ``decoded`` = the block scratch beyond the measured configuration
+    (block 128 / 153 patches / 12 wind -- exactly zero for shapes at or
+    below it, charged on top beyond it), ``live`` = margin x envelope,
+    ``gdal_cache`` = capped, ``pulse``/``stream``/``mapped`` unchanged.
+    Above the largest calibrated
     entry the legacy full-plane components below apply unchanged.  Reject
     semantics, the ``ResourceAdmissionError`` surface and the public API are
     unchanged (``plan_phase_admission`` pricing only).
@@ -695,11 +716,22 @@ def simulation_reservation(
         # that mode's payload is subsumed in the envelope.  Every other
         # visibility mode keeps its payload/mapped charge on top of the
         # envelope so no mode prices below its resident pages (D04).
+        # native_bytes is subsumed too, but still validated (Stage-B review
+        # NOTE-8): a misdescribed job must fail explicitly at every shape,
+        # not only above the table.
+        if native_bytes is not None:
+            _non_negative_int(native_bytes, "native_bytes")
         payload, mapped = _payload_bytes(shape.pixels, shape.patches, visibility_mode)
         if visibility_mode == VISIBILITY_UNKNOWN_COLD:
             payload = 0
         live = SIMULATION_ENVELOPE_MARGIN * envelope
-        decoded = 0
+        # The envelope subsumes the decode scratch of the MEASURED
+        # configuration (block 128 / 153 patches / 12 wind); scratch beyond
+        # it -- an unbounded legal block_pixels (Stage-B review MAJOR-1) or
+        # extra patches/wind -- is charged on top.
+        decoded = max(
+            0, _decoded_block_bytes(shape) - _MEASURED_DECODED_SCRATCH_BYTES
+        )
         native = 0
         gdal_cache = min(gdal_default, GDAL_CHILD_CACHE_CAP_BYTES)
     else:

@@ -125,13 +125,21 @@ def test_simulation_envelope_table_recalibration():
     sim = simulation_reservation(WORST_SHAPE, gdal_cache_bytes=GDAL_32GIB_HOST)
     assert sim.live_array_bytes == rm.SIMULATION_ENVELOPE_MARGIN * 826_736_640
     assert sim.payload_bytes == 0  # unknown_cold payload subsumed in the measurement
-    assert sim.decoded_block_bytes == 0 and sim.native_bytes == 0
+    # block 1024 scratch beyond the measured block-128 configuration
+    # (hardening, Stage-B review MAJOR-1): 10,027,008 - 1,253,376
+    assert sim.decoded_block_bytes == 8_773_632 and sim.native_bytes == 0
     assert sim.gdal_cache_bytes == 256 * MIB  # capped, not the 1.7 GiB 5%-of-32G
     assert sim.write_pulse_bytes == (DIGEST_PULSE_PLANES + CHECKPOINT_PULSE_PLANES) * PLANE_F32
     assert sim.total_bytes == (
         sim.live_array_bytes + sim.gdal_cache_bytes + sim.write_pulse_bytes
-        + sim.export_stream_bytes + sim.mapped_bytes
-    ) == 2_908_028_928
+        + sim.export_stream_bytes + sim.decoded_block_bytes + sim.mapped_bytes
+    ) == 2_916_802_560
+    # at the MEASURED configuration (block 128, production default) the
+    # residual is exactly zero and the price is the byte-identical E2E
+    # measured value (job 14104820 admission echo)
+    measured_shape = TileShapeDescriptor(1024, 1024, 153, 12, 128)
+    assert simulation_reservation(
+        measured_shape, gdal_cache_bytes=GDAL_32GIB_HOST).total_bytes == 2_908_028_928
     # every calibrated price covers margin x measured (I1); price grows with
     # pixels (I2); above the table the legacy envelope applies unchanged (I6 path)
     assert sim.total_bytes >= rm.SIMULATION_ENVELOPE_MARGIN * 826_736_640
@@ -250,7 +258,7 @@ def test_phase_shape_differentiation_corrects_over_admission():
         + GDAL_32GIB_HOST + 768 * MIB + DEFAULT_EXPORT_STREAM_BYTES
     )
     # exact recalibrated components (Stage-A/A2/B0 measured envelope table)
-    assert sim.total_bytes == 2_908_028_928
+    assert sim.total_bytes == 2_916_802_560
     assert geo.total_bytes == 4_758_857_318
     assert sim.write_pulse_bytes == (DIGEST_PULSE_PLANES + CHECKPOINT_PULSE_PLANES) * PLANE_F32
     assert sim.gdal_cache_bytes == 256 * MIB  # capped, matches the child GDAL_CACHEMAX
@@ -290,10 +298,10 @@ def test_boundary_12gib_admits_four_workers_rejects_five():
     tree_four_sim = 4 * sim.total_bytes + DEFAULT_PARENT_FOOTPRINT_BYTES
     tree_five_sim = 5 * sim.total_bytes + DEFAULT_PARENT_FOOTPRINT_BYTES
     tree_geo_sim = geo.total_bytes + sim.total_bytes + DEFAULT_PARENT_FOOTPRINT_BYTES
-    assert tree_two_sim <= BUDGET_12GIB          #  6,245,554,586 <= 12 GiB
-    assert tree_geo_sim <= BUDGET_12GIB          #  8,096,382,976 <= 12 GiB
-    assert tree_four_sim <= BUDGET_12GIB         # 12,061,612,442 <= 12 GiB
-    assert tree_five_sim > BUDGET_12GIB          # 14,969,641,370 > 12 GiB
+    assert tree_two_sim <= BUDGET_12GIB          #  6,263,101,850 <= 12 GiB
+    assert tree_geo_sim <= BUDGET_12GIB          #  8,105,156,608 <= 12 GiB
+    assert tree_four_sim <= BUDGET_12GIB         # 12,096,706,970 <= 12 GiB
+    assert tree_five_sim > BUDGET_12GIB          # 15,013,509,530 > 12 GiB
 
     mixed = _worst_jobs(PHASE_GEOMETRY, 1) + _worst_jobs(PHASE_SIMULATION, 1)
     plan = plan_phase_admission(
@@ -318,8 +326,8 @@ def test_boundary_12gib_admits_four_workers_rejects_five():
             policy="reject",
         )
     # the rejection names the arithmetic, not a vague failure:
-    # 5 x 2,908,028,928 B (5x1 production case, block1024)
-    assert "14,540,144,640" in str(excinfo.value)
+    # 5 x 2,916,802,560 B (5x1 worst case, block1024)
+    assert "14,584,012,800" in str(excinfo.value)
 
 
 def test_three_worker_boundary_raw_worst_and_legacy_gap():
@@ -341,7 +349,7 @@ def test_three_worker_boundary_raw_worst_and_legacy_gap():
     )
     tree_four = 4 * sim.total_bytes + DEFAULT_PARENT_FOOTPRINT_BYTES
     tree_five = 5 * sim.total_bytes + DEFAULT_PARENT_FOOTPRINT_BYTES
-    assert tree_four <= BUDGET_12GIB < tree_five  # 12,061,612,442 / 14,969,641,370
+    assert tree_four <= BUDGET_12GIB < tree_five  # 12,096,706,970 / 15,013,509,530
 
     with pytest.raises(ResourceAdmissionError) as excinfo:
         plan_phase_admission(
@@ -380,8 +388,8 @@ def test_writer_queue_shrinks_admissible_width():
         four, budget_bytes=BUDGET_12GIB, gdal_cache_bytes=GDAL_32GIB_HOST,
         writer_queue_bytes=1 * GIB, policy="queue",
     )
-    # base 12 - 0.4 - 1 = 10.6 GiB: 3 x 2.708 GiB = 8.13 GiB fits,
-    # 4 x 2.708 GiB = 10.83 GiB does not, so one of the four stays queued
+    # base 12 - 0.4 - 1 = 10.6 GiB: 3 x 2.717 GiB = 8.15 GiB fits,
+    # 4 x 2.717 GiB = 10.87 GiB does not, so one of the four stays queued
     # (recalibrated X03 Stage-B price; was (1, 3) under the component model)
     assert (plan.admissible_workers, plan.deferred_count) == (3, 1)
 
@@ -423,7 +431,7 @@ def test_reject_policy_raises_in_process_runtime_error_identity():
 
 
 def test_queue_policy_defers_without_raising():
-    # 6 jobs at the recalibrated price: 4 x 2.708 GiB fit the 11.6 GiB base,
+    # 6 jobs at the recalibrated price: 4 x 2.717 GiB fit the 11.6 GiB base,
     # 2 defer — X03 Stage-B (was 4 jobs at (2, 2) under the component model)
     six = _worst_jobs(PHASE_SIMULATION, 6)
     plan = plan_phase_admission(
@@ -634,5 +642,5 @@ def test_reservation_inventory_reports_plane_equivalents():
     # the measured envelope is not a whole-plane multiple, floor is intended).
     assert inv["payload_plane_equivalents_f32"] == 0
     assert inv["live_array_plane_equivalents_f32"] == 591
-    assert sim.total_bytes == 2_908_028_928
+    assert sim.total_bytes == 2_916_802_560
     assert json.dumps(inv)  # audit dict stays JSON-safe

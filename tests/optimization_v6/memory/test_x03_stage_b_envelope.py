@@ -79,7 +79,8 @@ def test_i3_login_scale_refusal_preserved():
     the explicit arithmetic (price ~2.76 GB > base ~1.77 GB)."""
     with pytest.raises(rm.ResourceAdmissionError) as excinfo:
         plan_phase_admission(
-            [PhaseJob("simulation", 1024, 1024, 153, 12, 1024)],
+            # the production descriptor: PhaseJob defaults block_pixels=128
+            [PhaseJob("simulation", 1024, 1024, 153, 12, 128)],
             budget_bytes=int(2.2 * GIB), gdal_cache_bytes=LOGIN_GDAL_BYTES,
         )
     message = str(excinfo.value)
@@ -90,8 +91,8 @@ def test_i3_login_scale_refusal_preserved():
 def test_i4_twelve_1024_jobs_fit_36gib_budget():
     """I4: 12 concurrent 1024^2/153 jobs fit a 36 GB budget minus parent --
     the X03 E2E finalist (12x2) admits under the recalibrated price."""
-    jobs = [PhaseJob("simulation", 1024, 1024, 153, 12, 1024, tile=f"t{i}")
-            for i in range(12)]
+    jobs = [PhaseJob("simulation", 1024, 1024, 153, 12, 128, tile=f"t{i}")
+            for i in range(12)]  # the E2E descriptor (block 128, api default)
     plan = plan_phase_admission(
         jobs, budget_bytes=36 * GIB, gdal_cache_bytes=GDAL_32GIB_HOST,
         policy="queue",
@@ -137,3 +138,50 @@ def test_permitted_gdal_cache_equals_priced_cap():
     cap_mib = rm.GDAL_CHILD_CACHE_CAP_BYTES // MIB
     assert int(env["GDAL_CACHEMAX"]) <= cap_mib
     assert int(env["GDAL_CACHEMAX"]) >= 1
+
+
+def test_hardening_decoded_scratch_beyond_measured_configuration():
+    """Stage-B review MAJOR-1: block_pixels is a legal, unbounded knob, and
+    the decode scratch (block_pixels x patches x (wind + 4) x 4) beyond the
+    measured block-128 configuration must be priced on top of the envelope.
+    At block 128 the residual is exactly zero (the E2E-measured price is
+    byte-identical); at block 1 MiB the ~10.27 GB residual pushes the price
+    past a 12 GiB base, so the configuration refuses instead of OOMing."""
+    gd32 = (32 * GIB * rm.DEFAULT_GDAL_CACHE_RATIO[0]) // rm.DEFAULT_GDAL_CACHE_RATIO[1]
+    at_measured = simulation_reservation(
+        TileShapeDescriptor(1024, 1024, 153, 12, 128), gdal_cache_bytes=gd32)
+    assert at_measured.decoded_block_bytes == 0
+    assert at_measured.total_bytes == 2_908_028_928  # E2E byte-identity
+    giant = simulation_reservation(
+        TileShapeDescriptor(1024, 1024, 153, 12, 1024 * 1024),
+        gdal_cache_bytes=gd32)
+    assert giant.decoded_block_bytes == (
+        1_048_576 * 153 * 16 * 4 - rm._MEASURED_DECODED_SCRATCH_BYTES
+    ) == 10_266_402_816
+    assert giant.total_bytes == 13_174_431_744
+    with pytest.raises(rm.ResourceAdmissionError, match="13,174,431,744"):
+        plan_phase_admission(
+            [PhaseJob("simulation", 1024, 1024, 153, 12, 1024 * 1024)],
+            budget_bytes=12 * GIB, gdal_cache_bytes=gd32, policy="reject",
+        )
+
+
+def test_hardening_native_bytes_validated_on_table_path():
+    """Stage-B review NOTE-8: native_bytes is subsumed under the table but
+    still validated -- a misdescribed job fails explicitly at every shape,
+    not only above the table."""
+    with pytest.raises(ValueError, match="native_bytes"):
+        simulation_reservation(
+            TileShapeDescriptor(1024, 1024, 153, 12, 128), native_bytes=-4)
+
+
+def test_hardening_envelope_table_order_guarded(monkeypatch):
+    """Stage-B review NOTE-9: the lookup's correctness depends on strictly
+    increasing entries; an out-of-order table refuses instead of silently
+    under-pricing."""
+    monkeypatch.setattr(
+        rm, "SIMULATION_ENVELOPE_TABLE",
+        ((2048 * 2048, 3_852_328_960), (1024 * 1024, 826_736_640)),
+    )
+    with pytest.raises(ValueError, match="strictly increasing"):
+        rm._measured_simulation_envelope(1000)

@@ -198,3 +198,19 @@ Notes:
   walls unhooked in phase2; parent-side stage cross-check used). NEXT:
   post-E2E hardening (review MAJOR-1 decoded scratch + NOTE-8 + NOTE-9 —
   E2E configuration price byte-identical under the fix).
+- S11-6g X03 STAGE-B POST-E2E HARDENING (2026-10-16, review follow-ups):
+  MAJOR-1 -- the table path now charges the decode scratch BEYOND the
+  measured configuration (block 128 / 153 patches / 12 wind, subsumed
+  scratch 1,253,376 B): decoded = max(0, legacy - measured); at the measured
+  configuration the residual is exactly zero so the E2E-measured price is
+  byte-identical (2,908,028,928 B, pinned), while block 1 MiB at 1024^2/153
+  now prices 13,174,431,744 B and refuses 12 GiB instead of under-pricing
+  ~2.5 GB of scratch; NOTE-8 -- native_bytes validated on the table path;
+  NOTE-9 -- envelope-table ordering guarded (strictly-increasing ValueError).
+  Pins updated to the block-1024 WORST_SHAPE price 2,916,802,560 B
+  (12 GiB boundary unchanged: 4 admit / 5 reject, message 14,584,012,800);
+  I3/I4 invariant tests use the production block-128 descriptor; +3
+  hardening tests. Focused 72/72; batteries A 679/2163 + B 10/457 --
+  FAILED sets byte-identical to the accepted E2E state (7b69e693). The E2E
+  acceptance remains pinned to product sha 75e03c62... (state caf0468e);
+  this commit's product sha supersedes it for future runs.
