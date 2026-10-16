@@ -182,3 +182,19 @@ Notes:
   production 1024^2 tiles on compute budgets unaffected. NEXT: independent
   review (review_gate), then the pre-registered single-run E2E finalist 12x2
   vs the 3838.3158 s anchor.
+- S11-6f X03 STAGE-B E2E: **ACCEPTED, MEASURED** (2026-10-16, job 14104820,
+  single pre-registered run, 33:38; review APPROVE pre-E2E
+  `evidence/phase2_x03_stage_b_review.json`; findings
+  `evidence/phase2_x03_e2e_findings.json`): 12x2 ADMITTED under the
+  recalibrated envelope table (12 x 2,908,028,928 B = 35.33 GB vs this
+  job's 50.67 GB base); chain walls 21.01 + svf 599.25 + run 832.33 =
+  **1452.5935 s = 2.642x vs the x01_b1 anchor 3838.3158 s = 4.552x vs
+  S10-36 (6612.9 s)**; **bitwise SVF 24/24 + TMRT bands 24/24**; run phase
+  +0.16% off the A2 makespan projection (831 s); SVF gain is the arm shape
+  (export degree 3->12: stage 919.5 -> 237.2 s, ~97% efficiency; barrier
+  +2.8%) — enabled by the recalibrated gate, NOT the GDAL cap (geometry
+  children keep the uncapped per-plan cache); secondary 8x3 correctly
+  skipped (primary admitted); instrument miss recorded (per-tile export
+  walls unhooked in phase2; parent-side stage cross-check used). NEXT:
+  post-E2E hardening (review MAJOR-1 decoded scratch + NOTE-8 + NOTE-9 —
+  E2E configuration price byte-identical under the fix).
