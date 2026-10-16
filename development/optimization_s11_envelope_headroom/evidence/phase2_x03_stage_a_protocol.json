@@ -14,6 +14,14 @@
     "subset": "extended to 12 tiles (0_0, 1_0, 0_1, 1_1, 2_0, 0_2, 0_3, 1_2, 2_1, 3_0, 1_3, 2_2), every copied input sha256-asserted against the driver's embedded list; untimed walls/aspect/SVF prep for all 12",
     "rules": "same one-job allocation, prime, asserts, bitwise gate (TMRT_0_0 vs p2_ref), no-retry rule, diagnostic-only acceptance as the base protocol"
   },
+  "stage_a2_retry": {
+    "first_attempt": "job 14098639: driver x03_stage_a2.py omitted metfile entries from EXTRA_SHAS for the six extension tiles, so build_subset_scene copied a 12-tile scene with metfiles for only the base six and run_utci_tiles' required-folder key intersection (api.py: Building_DSM/Trees/DEM/metfiles/walls/aspect) silently dropped the six new tiles. All six extension-tile wave jobs died in ~2 s with ValueError('No tiles to run; ... not found in preprocess_dir') in BOTH wave arms; wave_8x3 and wave_12x2 therefore measured 6-way concurrency (6 real children each, child_dumps=6), not 8/12-way, and are INVALID as A2 arms. The engine_1x3/engine_1x2 arms (tile 0_0) are valid and are retained as corroboration; the retry re-measures all four arms in one job for single-provenance records. All first-attempt outputs are preserved under raw phase2/aborted_14098639/.",
+    "causal_retry_basis": "documented driver anomaly (input-preparation bug in the probe driver, not an undesired measurement or a drop-out); same precedent as the R11 first attempt (job 14097616, PersistenceError). This is the one justified causal retry for the stage_a2 arms; the no-retry rule for undesired numbers is unaffected.",
+    "driver_fix": "EXTRA_SHAS gains dated-metfile entries for the six extension tiles (shared content sha bc8ee636..., same assertion style as the base module's metfile loop); new prep_coverage_guard asserts the run-phase key intersection covers all 12 TILES before any timed arm (fail-fast, mirrors api.run_utci_tiles' intersection); new wave-arm guard re-reads the recorded arm and fails if any child reported an error.",
+    "arms": "unchanged: wave_8x3, wave_12x2, engine_1x3, engine_1x2",
+    "rules": "unchanged: same one-job allocation, prime, asserts, bitwise gate (TMRT_0_0 vs p2_ref), diagnostic-only acceptance",
+    "frozen_before_timing": "this amendment is committed before the retry job is submitted; the retry job id and PREP_COVERAGE_OK line are recorded in the findings"
+  },
   "change_under_test": {
     "commit": "9d02520b",
     "summary": "diagnostic-only calibration probe on the accepted X02+X01 state; product source frozen at the accepted diff",
