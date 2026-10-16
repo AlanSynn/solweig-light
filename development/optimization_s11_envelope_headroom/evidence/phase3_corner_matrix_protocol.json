@@ -1,0 +1,66 @@
+{
+  "campaign": "s11-envelope-headroom",
+  "phase": "3-corner-matrix",
+  "title": "Corner-coverage measurement matrix on the accepted S11 tree (pure measurement, zero product changes)",
+  "motivation": "The S11 closure (commit d6ecea11) measured only the 24-step, 1024^2, cold, 12x2 corner (chain 1452.5935 s). The campaign success criteria require measured per-corner timings across small/large tiles, 1/24/72+ timesteps, cold/warm runs, and serial/parallel workloads. This protocol freezes those corners BEFORE any timing, per the Phase-0 discipline (pre-register protocols, then measure).",
+  "tree_pin": {
+    "base_commit": "c245ea60f32b2ca93191ea00f48a4f6085a60a2b",
+    "head_commit": "d6ecea113a2d131a4ece27edd5b976fdc2d9d795",
+    "expected_product_diff_files": [
+      "src/solweig_light/api.py",
+      "src/solweig_light/geometry/shadows.py",
+      "src/solweig_light/runtime.py",
+      "src/solweig_light/runtime_memory.py"
+    ],
+    "expected_product_diff_sha256": "7e9809181f18319fe25399b4cabe9f6890c948fef94b758b92c6692c04a63a36",
+    "note": "Post-hardening tree (supersedes 75e03c62... for future runs per the S11 closure). The E2E-measured 12x2 configuration prices byte-identically under this tree (2,908,028,928 B/job; batteries byte-identical to the accepted state). Every job asserts this pin at start and aborts on drift."
+  },
+  "scene_pin": {
+    "corpus_scene": "/storage/scratch1/1/dsynn6/solweig-light-s10-raw/synthetic_target/scene",
+    "corpus_manifest_sha256": "e2c7fa847223bb2143e7725c542cb4d496ffc36a53f4cdc723f0e044c336c89c",
+    "date": "2020-07-18",
+    "base_metfile_rows": 24,
+    "variant_construction": {
+      "steps_2": "header + first 2 data rows of the corpus metfile (hours 0,1 of id 200)",
+      "steps_72": "header + 3 day-blocks of 24 hourly rows (id 200/201/202); columns other than id byte-identical to the day-200 rows; both dated and undated filenames written per tile as the corpus does",
+      "small_256": "gdal.Translate srcWin [0,0,256,256] of every tile raster in Building_DSM/Trees/DEM into a fresh 24-tile scene; metfiles copied; variant manifest with sha256s recorded",
+      "large_2048": "phase2/b0_generate_corpus_2048.py (deterministic single-tile 2048^2 generator, reused from Stage-B0 job 14100529) into a fresh scene; manifest sha recorded"
+    }
+  },
+  "arm_definitions": [
+    {"tag": "c24p",  "scene": "1024x24", "steps": 24, "workers": 12, "threads": 2, "temp": "cold", "role": "in-matrix parallel anchor on the pinned tree"},
+    {"tag": "c24w",  "scene": "1024x24 (SAME copy as c24p; .solweig-light and SVF stores retained from c24p)", "steps": 24, "workers": 12, "threads": 2, "temp": "warm", "role": "warm rerun: hot page cache + existing stores; _calculate_svf validate_existing=False still recomputes"},
+    {"tag": "c2p",   "scene": "1024x24 + 2-step metfiles", "steps": 2, "workers": 12, "threads": 2, "temp": "cold", "role": "contract-minimum timestep corner"},
+    {"tag": "c72p",  "scene": "1024x24 + 72-step metfiles", "steps": 72, "workers": 12, "threads": 2, "temp": "cold", "role": "72+ timestep corner (3 day-blocks)", "save_flags": "save_tmrt ONLY (pre-registered deviation: 10-variable saves at 72 steps x 24 tiles would write ~70 GB of node-local /tmp; all other arms save the full 10-variable set)"},
+    {"tag": "c256p", "scene": "256x24 crop", "steps": 24, "workers": 12, "threads": 2, "temp": "cold", "role": "small-tile parallel corner"},
+    {"tag": "c256s", "scene": "256x24 crop (fresh copy, same crop bytes)", "steps": 24, "workers": 1, "threads": 24, "temp": "cold", "role": "small-tile serial corner; bitwise pair with c256p"},
+    {"tag": "c2048p","scene": "2048x1 (b0 generator)", "steps": 24, "workers": 4, "threads": 6, "temp": "cold", "role": "large-tile corner; fallback 3x8 ONLY if 4x6 admission is refused (both echoes recorded)"},
+    {"tag": "c24s",  "scene": "1024x24", "steps": 24, "workers": 1, "threads": 24, "temp": "cold", "role": "serial corner at the production scale; single worker owning the whole node (the practitioner's serial run); degree-1 export + degree-1 scheduling", "job": "separate (long) job"}
+  ],
+  "corner_contract_notes": [
+    "1-step corner is contract-unsupported: pipeline.py raises 'Own-met input must contain multiple rows' for a 1-row metfile (np.loadtxt yields 1-D); the public minimum is 2 rows. Corner c2p measures that minimum; the 1-step refusal is documented, not forced.",
+    "The serial corner is workers=1, threads_per_worker=24: one worker owns the node. The 1-thread engine extremity is already covered by the A2/R11 paired probes (engine 1x2=347.9 s, 1x3=301.7 s, 8t=264 s, TMRT bitwise in all arms); repeating it at chain scale would add ~7 h of node time for a thread-scaling fact already measured.",
+    "SVF artifacts are timestep-independent, so every 1024^2 24-tile arm (c24p, c24w, c2p, c72p, c24s) gates SVF bitwise against the frozen corpus goldens; TMRT gates apply only where the step count matches the golden (24 steps).",
+    "No external goldens exist for 2/72-step TMRT, the 256^2 crop, or 2048^2: those arms record band counts (== met rows), all-finite checks, and artifact sha256s. Large-tile cross-thread numerical equality is already pinned by Stage-B0 (2048^2 TMRT bitwise 24/24 across 1x8/1x2, job 14100529). The c256p/c256s pair gates SVF+TMRT bitwise EQUAL between the two configs (cross-config determinism at the small corner)."
+  ],
+  "gates": {
+    "numerical": {
+      "c24p": "SVF bitwise 24/24 vs phase0/p1c_svf_base38 AND TMRT 24/24 bands vs phase0/p2_ref_TMRT.tif",
+      "c24w": "same as c24p",
+      "c24s": "same as c24p (serial machinery bitwise at production scale)",
+      "c2p": "SVF bitwise 24/24 vs p1c_svf_base38; TMRT band count == 2; all-finite",
+      "c72p": "SVF bitwise 24/24 vs p1c_svf_base38; TMRT band count == 72; all-finite",
+      "c256p": "TMRT band count == 24; SVF+TMRT all-finite; shas recorded",
+      "c256s": "SVF + TMRT bitwise EQUAL to c256p for all 24 tiles",
+      "c2048p": "TMRT band count == 24; SVF+TMRT all-finite; shas recorded"
+    },
+    "admission": "every arm records the plan_phase_admission echo (admissible_workers, per-job price, base, budget) under its own runtime options; c24/c256 arms must admit (12-wide is the accepted state at 1024^2; trivial at 256^2); c2048p primary 4x6 expected to admit 4 (4 x ~11.6 GB <= base); a refusal of the primary is recorded and the pre-declared fallback shape runs",
+    "chain_band": "c24p chain within [1380, 1525] s (+-5% of the E2E anchor 1452.5935) as a cross-tree sanity band; informational for all other arms",
+    "attribution": "per-arm phase split walls / svf (barrier + export stage, barrier timed parent-side around execute_geometry_phase) / run, plus runtime env echo"
+  },
+  "run_policy": "ONE timed pass per arm; zero retries except a single causal retry on a documented infrastructure anomaly. Jobs C1 (c24p,c24w,c2p,c72p), C2 (c256p,c256s,c2048p), C3 (c24s) are independent Slurm jobs (24 CPU, 96G each) and may run concurrently on different nodes. Variant/scene construction and the numba prime are untimed.",
+  "efficiency_deliverable": "corner_matrix_findings.json: per-corner chain + phase table; serial/parallel ratios (c24s vs c24p, c256s vs c256p); warm/cold deltas (c24w vs c24p); timestep scaling of the run phase (2/24/72); tile-size scaling (256^2/1024^2/2048^2); updated remaining-headroom statement feeding the barrier-seam (X04) feasibility read from measured barrier/export/run attribution across shapes.",
+  "review_status": "No product change is involved in this phase (pure measurement on the accepted, already-reviewed tree); the pre-E2E independent-review rule for accepted numerical/scheduling changes does not trigger here. A barrier-seam CHANGE candidate (X04) arising from these measurements would follow the full protocol -> implementation -> independent review -> E2E arc before acceptance.",
+  "actual_target_status": "unverified (synthetic corpus only, as throughout the campaign)",
+  "frozen_before_timing": "2026-10-16, commit to follow immediately (protocol sha echoed by every job)"
+}
