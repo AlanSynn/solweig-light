@@ -139,3 +139,24 @@ Notes:
   frozen before any further timing. Raw x03 records archived to Dropbox
   `campaign_s11/phase2/phase2b_x03_raw_records.tar.gz`
   (sha256 697dadf451544af39d7443011f3d189169732fcbfb7f9a9a37cd1c06b58da43c).
+
+- S11-6 X03 STAGE-B: B0 CALIBRATION COMPLETE (2026-10-16, jobs 14099620
+  TIMEOUT + 14100529 COMPLETE; protocol frozen 001a887e, amended 940ae45e
+  pre-retry; findings `evidence/phase2_x03_stage_b0_findings.json`): first
+  attempt lost the 1x2 arm to the partition's default 1-hour walltime (no
+  --time directive); its 1x8 arm was valid and triggered the frozen no-go
+  (R2048/R1024 = 3.588/0.77 = 4.66 > 4.5). Retry with explicit --time: both
+  arms valid, child peak RSS 3.588 GiB at BOTH thread counts, engine
+  1102.8/1436.9 s (1x8/1x2), cross-thread TMRT 2048^2 bitwise 24/24 pass,
+  1x8 engine within 1% of the aborted attempt. MEASURED ENVELOPE TABLE:
+  {1024^2: 826,736,640 B, 2048^2: 3,852,328,960 B}; slope form replaced by
+  the table (alternative A) per the frozen no-go. Derived pricing: 1024^2
+  per-child ~2.83 GB (margin 3x + 256 MiB capped GDAL cache) -> 12 workers
+  fit the smallest observed base (34.0 < 36.25 GB); login-scale refusal
+  preserved; above 2048^2 the legacy envelope applies unchanged. NEXT:
+  implement simulation_reservation repricing + child GDAL_CACHEMAX cap,
+  update pinned accounting tests, invariant tests I1-I6, independent
+  review, then the pre-registered E2E finalist (12x2 vs the 3838.3 s
+  anchor). Raw B0 records archived to Dropbox
+  `campaign_s11/phase2/phase2c_b0_raw_records.tar.gz`
+  (sha256 4356598da12f44b4ffe1b640bd546713073789b614b1ffb6f58d173dcce3d312).
