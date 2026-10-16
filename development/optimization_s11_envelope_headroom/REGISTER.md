@@ -214,3 +214,27 @@ Notes:
   FAILED sets byte-identical to the accepted E2E state (7b69e693). The E2E
   acceptance remains pinned to product sha 75e03c62... (state caf0468e);
   this commit's product sha supersedes it for future runs.
+
+## S11 campaign closure (2026-10-16)
+
+ACCEPTED CHAIN (all measured, branch `perf/s11-envelope-headroom`, HEAD
+94451323): walls 21.0 + SVF 599.3 (barrier 362.1 + concurrent export 237.2,
+degree 12) + run 832.3 = **1452.5935 s = 4.552x vs S10-36 (6612.9 s)**;
+bitwise SVF 24/24 + TMRT bands 24/24 on the frozen 24x1024^2 scene.
+Candidate ledger: X02 dispatch + X01 export concurrency + X03 measured-
+envelope admission recalibration ACCEPTED (each E2E-measured, review-gated);
+8x3 measured slower than 12x2 in Stage-A2 (1138 vs 831 s makespan, not run
+E2E); 6x4/4x6/3x8 measured worse; slope-form envelope no-go (R-ratio 4.66);
+alternatives B/C/D rejected by arithmetic frozen in the Stage-B protocol.
+Amdahl ceiling at this node class (24 CPUs): serial fraction (walls +
+barrier) ~26% of the chain; run engines saturate 12x2=24 threads (~330 s
+per tile, 2 waves); 16-wide admission would fit the observed 50.7 GB base
+but has no spare CPUs to feed. Remaining headroom: the barrier seam
+(read-back verify + staged publication, 362 s serial) and per-engine
+efficiency; both need either more CPUs or a protocol amendment. Memory
+floor: per-simulation-child price 2,908,028,928 B (margin 3x the measured
+0.77 GiB envelope + 256 MiB capped GDAL cache); every simulation tile
+<=1024^2 refuses below ~2.9 GiB budgets by design (review MINOR-4).
+actual_target_status: **unverified** (no real-target runs were authorized;
+all measurements are on the frozen synthetic corpus). main untouched;
+nothing pushed.
