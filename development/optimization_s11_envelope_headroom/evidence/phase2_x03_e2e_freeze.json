@@ -19,7 +19,7 @@
   "chain_anchor_s": 3838.3158,
   "anchor_provenance": "x01_b1 (job 14096139): walls 20.7822 + svf 1271.6571 (barrier 352.1531 + export stage 919.504) + run 2545.8766; bitwise SVF 24/24 + TMRT bands 24/24",
   "svf_control_anchor_s": 1271.6571,
-  "svf_control_note": "SVF phase keeps the unchanged 3x8 shape; it now runs under the 256 MiB child GDAL cap and is the control for cap-induced slowdown (watch barrier + export stage vs 352.1531 + 919.504)",
+  "svf_control_note": "SVF phase runs at the ARM shape (12x2), same structure as the x01_b1 anchor driver, so the segment comparison is apples-to-apples but NOT at 3x8; the 256 MiB child GDAL cap does NOT reach SVF/geometry children (execute_geometry_phase prices and grants the uncapped per-plan 5%-of-RAM cache, runtime_phases.py) -- the cap only reaches run-phase children. Interpret the SVF segment as a same-shape, same-cache control for X01/X02/environment drift only (watch barrier + export stage vs 352.1531 + 919.504); do not attribute a delta to the cap or to a shape change. [note corrected by the Stage-B review, MINOR 3]",
   "acceptance": "bitwise 24/24 SVF + 24/24 TMRT AND measured chain < 3838.3158 s AND the admission verdict recorded; otherwise REJECTED with full numbers and no shape change ships",
   "projection_not_acceptance": "12x2 chain ~= 2123 s (~3.11x vs S10-36): walls ~20.8 + svf ~1271.7 + run ~831 (A2 measured 12x2 makespan, engines 328.8-341.6 s); the measured wall decides",
   "run_count": "ONE E2E run; a causal retry only for a documented infrastructure anomaly (campaign rule)",
