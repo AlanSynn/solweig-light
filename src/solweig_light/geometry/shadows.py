@@ -113,11 +113,15 @@ shadow_numpy = shadow
 def shadow(amaxvalue, a, vegdem, vegdem2, bush, azimuth, altitude, scale):
     """Compiled recurrence, dispatched on the static bush predicate (S11 X02).
 
-    bush > 0 anywhere keeps the step-major serial path: the twin's internal
-    bush fallback is the step-major *parallel* recurrence, which is outside
-    the reviewed bitwise regime. Otherwise the pixel-parallel twin runs; S11
-    phase-0 measured it bitwise-identical at kernel and whole-phase level
-    (4 and 8 threads; independence proof in sky_compiled._shadow_pixel).
+    Routing mirrors the internal predicate of sky_compiled._shadow_pixel
+    exactly (same np.max reduction, same NaN propagation): a positive max
+    takes the step-major serial path — the twin's internal bush fallback is
+    the step-major *parallel* recurrence, outside the reviewed bitwise
+    regime — while a zero/NaN-poisoned max takes the pixel-parallel twin,
+    whose pixel kernels are bitwise-identical to the pixel-serial twin the
+    wrapper previously reached (S11 phase-0: kernel- and whole-phase-level,
+    4 and 8 threads; independence proof in sky_compiled._shadow_pixel;
+    independent adversarial probes in evidence/phase1_x02_review.md).
     """
     from .sky_compiled import shadow_pixel_parallel, shadow_pixel_serial
     if np.max(bush) > 0:
