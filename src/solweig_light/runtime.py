@@ -677,8 +677,17 @@ def _child_environment(options: RuntimeOptions) -> dict[str, str]:
     # admission calculator charges (5% of physical RAM when GDAL_CACHEMAX is
     # unset; M2 §5).  GDAL reads this at first use in each fresh child, the
     # same mechanism as the thread caps above.  Value is megabytes.
-    from .runtime_memory import default_gdal_cache_bytes
-    env['GDAL_CACHEMAX'] = str(max(1, default_gdal_cache_bytes() // (1024 * 1024)))
+    # X03 Stage-B (C6-42 amendment): additionally cap at the 256 MiB block
+    # cache the recalibrated simulation reservation prices, so the permitted
+    # per-child envelope equals the priced envelope by construction (an LRU
+    # byte ceiling, not a value-affecting knob).  Evidence:
+    # development/optimization_s11_envelope_headroom/evidence/
+    # phase2_x03_stage_{a,a2,b0}_findings.json.
+    from .runtime_memory import GDAL_CHILD_CACHE_CAP_BYTES, default_gdal_cache_bytes
+    env['GDAL_CACHEMAX'] = str(max(
+        1,
+        min(default_gdal_cache_bytes(), GDAL_CHILD_CACHE_CAP_BYTES) // (1024 * 1024),
+    ))
     return env
 
 

@@ -97,13 +97,54 @@ def test_dtype64_reserve_repriced_at_eight_bytes():
     the legacy promotion reserve at its denominated dtype (D04); per the
     C6-60 review (F7) no resident float64 family exists in-tile —
     walls/aspects are float32 residents — so the reserve is promotion slack,
-    not resident arrays."""
-    corrected = simulation_reservation(WORST_SHAPE, gdal_cache_bytes=0,
+    not resident arrays.
+
+    X03 Stage-B amendment: the legacy component formula now governs only
+    ABOVE the measured envelope table (4096^2 here); at calibrated pixel
+    counts the reservation is the measured envelope x margin
+    (test_simulation_envelope_table_recalibration)."""
+    above = TileShapeDescriptor(4096, 4096, WORST_PATCHES, WORST_WIND, WORST_BLOCK)
+    corrected = simulation_reservation(above, gdal_cache_bytes=0,
                                        export_overlap=False, native_bytes=0)
-    expected_live = (192 + WORST_WIND) * PLANE_F32 + 32 * WORST_PIXELS * 8
+    expected_live = (192 + WORST_WIND) * above.pixels * 4 + 32 * above.pixels * 8
     assert corrected.live_array_bytes == expected_live
-    delta = corrected.live_array_bytes - (192 + 32 + WORST_WIND) * PLANE_F32
-    assert delta == 32 * WORST_PIXELS * 4 == 134_217_728
+    delta = corrected.live_array_bytes - (192 + 32 + WORST_WIND) * above.pixels * 4
+    assert delta == 32 * above.pixels * 4 == 2_147_483_648
+
+
+def test_simulation_envelope_table_recalibration():
+    """X03 Stage-B (C6-42 amendment): at calibrated pixel counts the
+    simulation reservation is the MEASURED per-child peak RSS envelope
+    (Stage-A/A2: 826,736,640 B at 1024^2; Stage-B0: 3,852,328,960 B at
+    2048^2) x SIMULATION_ENVELOPE_MARGIN, plus the GDAL charge capped at
+    GDAL_CHILD_CACHE_CAP_BYTES -- the same ceiling children receive via
+    GDAL_CACHEMAX, so the permitted envelope equals the priced envelope.
+    Evidence: phase2_x03_stage_{a,a2,b0}_findings.json."""
+    import solweig_light.runtime_memory as rm
+
+    sim = simulation_reservation(WORST_SHAPE, gdal_cache_bytes=GDAL_32GIB_HOST)
+    assert sim.live_array_bytes == rm.SIMULATION_ENVELOPE_MARGIN * 826_736_640
+    assert sim.payload_bytes == 0  # unknown_cold payload subsumed in the measurement
+    assert sim.decoded_block_bytes == 0 and sim.native_bytes == 0
+    assert sim.gdal_cache_bytes == 256 * MIB  # capped, not the 1.7 GiB 5%-of-32G
+    assert sim.write_pulse_bytes == (DIGEST_PULSE_PLANES + CHECKPOINT_PULSE_PLANES) * PLANE_F32
+    assert sim.total_bytes == (
+        sim.live_array_bytes + sim.gdal_cache_bytes + sim.write_pulse_bytes
+        + sim.export_stream_bytes + sim.mapped_bytes
+    ) == 2_908_028_928
+    # every calibrated price covers margin x measured (I1); price grows with
+    # pixels (I2); above the table the legacy envelope applies unchanged (I6 path)
+    assert sim.total_bytes >= rm.SIMULATION_ENVELOPE_MARGIN * 826_736_640
+    big = simulation_reservation(
+        TileShapeDescriptor(2048, 2048, WORST_PATCHES, WORST_WIND, WORST_BLOCK),
+        gdal_cache_bytes=GDAL_32GIB_HOST)
+    assert big.total_bytes > sim.total_bytes
+    assert big.live_array_bytes == rm.SIMULATION_ENVELOPE_MARGIN * 3_852_328_960
+    above = simulation_reservation(
+        TileShapeDescriptor(4096, 4096, WORST_PATCHES, WORST_WIND, WORST_BLOCK),
+        gdal_cache_bytes=GDAL_32GIB_HOST)
+    assert above.payload_bytes == RAW_PAYLOAD_WORST * 16  # legacy full-plane pricing
+    assert above.native_bytes == 768 * MIB and above.decoded_block_bytes > 0
 
 
 def test_inventory_table_reconciles_with_legacy_envelope():
@@ -173,34 +214,46 @@ def test_packed_mode_formulas_match_visibility_validation():
 def test_native_cache_mode_charges_resident_mapped_pages():
     """M2 §7: a read-only mapping becomes resident on touch; mmap is not free
     memory.  native_cache moves the payload charge from heap to mapped pages
-    with the same magnitude."""
+    with the same magnitude.
+
+    X03 Stage-B amendment: under the measured envelope the unknown_cold raw
+    payload is subsumed in the envelope (raw.payload_bytes == 0), so the
+    native_cache mapping charge now appears as an ADDITION on top of the raw
+    total instead of a like-for-like move."""
     raw = simulation_reservation(WORST_SHAPE, gdal_cache_bytes=0,
-                                 export_overlap=False, native_bytes=0)
+                                 export_overlap=False)
     mapped = simulation_reservation(WORST_SHAPE, visibility_mode=VISIBILITY_NATIVE_CACHE,
-                                    gdal_cache_bytes=0, export_overlap=False, native_bytes=0)
+                                    gdal_cache_bytes=0, export_overlap=False)
+    assert raw.payload_bytes == 0  # subsumed in the measured envelope
     assert mapped.payload_bytes == 0
     assert mapped.mapped_bytes == RAW_PAYLOAD_WORST
-    assert mapped.total_bytes == raw.total_bytes
+    assert mapped.total_bytes == raw.total_bytes + RAW_PAYLOAD_WORST
 
 
 def test_phase_shape_differentiation_corrects_over_admission():
     """M2 §6g: preprocess used ~0.2 GiB but paid the 3.4742 GiB simulation
-    estimate.  The corrected phase reservations are differentiated (all
-    corrected charges still included)."""
+    estimate.  The corrected phase reservations are differentiated.
+
+    X03 Stage-B amendment: the simulation phase itself was the remaining
+    over-priced member — the component model charged ~5.35 GiB against a
+    measured 0.77 GiB child RSS (24/24 records).  Under the measured
+    envelope the simulation child is now the LIGHTEST phase at 1024^2
+    (pre < sim < geo), which is the correction working as intended; the
+    legacy 3.4742 GiB estimate stays as the above-table conservative bound."""
     pre = preprocess_reservation(WORST_SHAPE, gdal_cache_bytes=GDAL_32GIB_HOST)
     geo = geometry_reservation(WORST_SHAPE, gdal_cache_bytes=GDAL_32GIB_HOST)
     sim = simulation_reservation(WORST_SHAPE, gdal_cache_bytes=GDAL_32GIB_HOST)
-    assert pre.total_bytes < geo.total_bytes < sim.total_bytes
-    assert pre.total_bytes < LEGACY_WORST_CASE_BYTES < sim.total_bytes
+    assert pre.total_bytes < sim.total_bytes < geo.total_bytes
+    assert sim.total_bytes < LEGACY_WORST_CASE_BYTES  # repriced below the legacy estimate
     assert pre.total_bytes == (
         PREPROCESS_F64_PLANES * WORST_PIXELS * 8
         + GDAL_32GIB_HOST + 768 * MIB + DEFAULT_EXPORT_STREAM_BYTES
     )
-    # exact corrected worst-case components (M2 §2 + §6 corrections)
-    assert sim.total_bytes == 5_741_962_854
+    # exact recalibrated components (Stage-A/A2/B0 measured envelope table)
+    assert sim.total_bytes == 2_908_028_928
     assert geo.total_bytes == 4_758_857_318
     assert sim.write_pulse_bytes == (DIGEST_PULSE_PLANES + CHECKPOINT_PULSE_PLANES) * PLANE_F32
-    assert sim.gdal_cache_bytes == GDAL_32GIB_HOST
+    assert sim.gdal_cache_bytes == 256 * MIB  # capped, matches the child GDAL_CACHEMAX
 
 
 def test_default_gdal_cache_derivation(monkeypatch):
@@ -224,18 +277,23 @@ def _worst_jobs(phase, count):
     ]
 
 
-def test_boundary_12gib_admits_two_workers_rejects_four():
-    """Corrected boundary: at 12 GiB with every M2 §6 charge applied, the
-    1024/P153 raw worst case admits 2 concurrent workers (2x2 geometry +
-    simulation fits) and rejects 4x1."""
+def test_boundary_12gib_admits_four_workers_rejects_five():
+    """Recalibrated boundary (X03 Stage-B amendment): at 12 GiB with the
+    measured-envelope price (3 x 0.77 GiB + capped GDAL + pulse + stream =
+    2,908,028,928 B/worker), the 1024/P153 production case admits 4
+    concurrent workers and rejects 5x1.  The boundary moved OUT by 2 workers
+    versus the component model: the component model was the conservative
+    side at calibrated shapes (measured RSS <= envelope, 24/24 records)."""
     sim = simulation_reservation(WORST_SHAPE, gdal_cache_bytes=GDAL_32GIB_HOST)
     geo = geometry_reservation(WORST_SHAPE, gdal_cache_bytes=GDAL_32GIB_HOST)
     tree_two_sim = 2 * sim.total_bytes + DEFAULT_PARENT_FOOTPRINT_BYTES
-    tree_three_sim = 3 * sim.total_bytes + DEFAULT_PARENT_FOOTPRINT_BYTES
+    tree_four_sim = 4 * sim.total_bytes + DEFAULT_PARENT_FOOTPRINT_BYTES
+    tree_five_sim = 5 * sim.total_bytes + DEFAULT_PARENT_FOOTPRINT_BYTES
     tree_geo_sim = geo.total_bytes + sim.total_bytes + DEFAULT_PARENT_FOOTPRINT_BYTES
-    assert tree_two_sim <= BUDGET_12GIB          # 11,913,422,438 <= 12 GiB
-    assert tree_geo_sim <= BUDGET_12GIB          # 10,930,316,902 <= 12 GiB
-    assert tree_three_sim > BUDGET_12GIB         # 17,655,385,292 > 12 GiB
+    assert tree_two_sim <= BUDGET_12GIB          #  6,245,554,586 <= 12 GiB
+    assert tree_geo_sim <= BUDGET_12GIB          #  8,096,382,976 <= 12 GiB
+    assert tree_four_sim <= BUDGET_12GIB         # 12,061,612,442 <= 12 GiB
+    assert tree_five_sim > BUDGET_12GIB          # 14,969,641,370 > 12 GiB
 
     mixed = _worst_jobs(PHASE_GEOMETRY, 1) + _worst_jobs(PHASE_SIMULATION, 1)
     plan = plan_phase_admission(
@@ -246,59 +304,61 @@ def test_boundary_12gib_admits_two_workers_rejects_four():
     assert plan.admissible_workers == 2
     assert plan.native_threads == 4  # 2 workers x 2 threads (2x2)
 
-    four = _worst_jobs(PHASE_SIMULATION, 4)
+    five = _worst_jobs(PHASE_SIMULATION, 5)
     plan_q = plan_phase_admission(
-        four, budget_bytes=BUDGET_12GIB, gdal_cache_bytes=GDAL_32GIB_HOST,
+        five, budget_bytes=BUDGET_12GIB, gdal_cache_bytes=GDAL_32GIB_HOST,
         policy="queue",
     )
     assert (plan_q.status, plan_q.admissible_workers, plan_q.deferred_count) == (
-        "queued", 2, 2,
+        "queued", 4, 1,
     )
     with pytest.raises(ResourceAdmissionError) as excinfo:
         plan_phase_admission(
-            four, budget_bytes=BUDGET_12GIB, gdal_cache_bytes=GDAL_32GIB_HOST,
+            five, budget_bytes=BUDGET_12GIB, gdal_cache_bytes=GDAL_32GIB_HOST,
             policy="reject",
         )
     # the rejection names the arithmetic, not a vague failure:
-    # 4 x 5,741,962,854 B (4x1 raw worst case, block1024)
-    assert "22,967,851,416" in str(excinfo.value)
+    # 5 x 2,908,028,928 B (5x1 production case, block1024)
+    assert "14,540,144,640" in str(excinfo.value)
 
 
 def test_three_worker_boundary_raw_worst_and_legacy_gap():
-    """C6-60 review F6 refinement: 4x1 is NOT the unique breach
-    configuration.  At a 12 GiB budget the legacy model budget-admits 3x1
-    (3 x 3,730,374,656 = 11,191,123,968 <= 12 GiB) while the raw-worst tree
-    (3 x corrected reservation + parent = 17,655,385,292 B = 16.44 GiB)
-    breaches the cap.  The corrected calculator charges every raw-worst
-    component per worker, so budget-admission and raw-safety coincide:
-    3x1 is rejected and the raw-safe worker count is 2."""
-    three = _worst_jobs(PHASE_SIMULATION, 3)
+    """C6-60 review F6 refinement, superseded by the X03 Stage-B amendment.
+    The historical gap ran one way: the legacy estimate admitted 3x1 while
+    the corrected component model rejected it as raw-unsafe.  Under the
+    measured envelope the direction INVERTS at calibrated shapes: the
+    calibrated price (2,908,028,928 B) admits 4x1 where the legacy estimate
+    (3,730,374,656 B) still caps at 3x1 -- safety now rests on measurement
+    (child RSS <= 0.77 GiB envelope on 24/24 records, cross-thread bitwise
+    24/24) instead of on the full-plane component upper bound, which remains
+    in force above the table (test_dtype64_reserve_repriced_at_eight_bytes)."""
     sim = simulation_reservation(WORST_SHAPE, gdal_cache_bytes=GDAL_32GIB_HOST)
-    # every raw-worst component is charged inside one per-worker reservation
+    # every charged component is still accounted inside one per-worker reservation
     assert sim.total_bytes == (
         sim.payload_bytes + sim.live_array_bytes + sim.decoded_block_bytes
         + sim.native_bytes + sim.gdal_cache_bytes + sim.write_pulse_bytes
         + sim.export_stream_bytes + sim.mapped_bytes
     )
-    raw_worst_tree = 3 * sim.total_bytes + DEFAULT_PARENT_FOOTPRINT_BYTES
-    assert raw_worst_tree == 17_655_385_292 > BUDGET_12GIB
+    tree_four = 4 * sim.total_bytes + DEFAULT_PARENT_FOOTPRINT_BYTES
+    tree_five = 5 * sim.total_bytes + DEFAULT_PARENT_FOOTPRINT_BYTES
+    assert tree_four <= BUDGET_12GIB < tree_five  # 12,061,612,442 / 14,969,641,370
 
     with pytest.raises(ResourceAdmissionError) as excinfo:
         plan_phase_admission(
-            three, budget_bytes=BUDGET_12GIB, gdal_cache_bytes=GDAL_32GIB_HOST,
-            policy="reject",
+            _worst_jobs(PHASE_SIMULATION, 5), budget_bytes=BUDGET_12GIB,
+            gdal_cache_bytes=GDAL_32GIB_HOST, policy="reject",
         )
-    assert "only 2 fit" in str(excinfo.value)
+    assert "only 4 fit" in str(excinfo.value)
     queued = plan_phase_admission(
-        three, budget_bytes=BUDGET_12GIB, gdal_cache_bytes=GDAL_32GIB_HOST,
-        policy="queue",
+        _worst_jobs(PHASE_SIMULATION, 5), budget_bytes=BUDGET_12GIB,
+        gdal_cache_bytes=GDAL_32GIB_HOST, policy="queue",
     )
-    assert (queued.admissible_workers, queued.deferred_count) == (2, 1)
+    assert (queued.admissible_workers, queued.deferred_count) == (4, 1)
 
-    # the legacy public model has no raw-worst dimension: it admits 3x1 on
-    # estimate sums alone, which is exactly the gap the corrected calculator
-    # closes (review F6: "3x1 ... raw worst ... 15.72 GiB > 12 GiB cap" under
-    # m2's composition; identical conclusion at this composition).
+    # the legacy public model keeps its own estimate-based arithmetic
+    # unchanged: 3x1 fits (11,191,123,968 <= 12 GiB) -- the conservative
+    # bound at calibrated shapes now, superseded by measurement rather
+    # than by rejection.
     from solweig_light.runtime import RuntimeOptions, plan_admission
     legacy = RuntimeOptions(
         memory_budget_bytes=BUDGET_12GIB, workers=3, cpu_budget=3,
@@ -320,9 +380,10 @@ def test_writer_queue_shrinks_admissible_width():
         four, budget_bytes=BUDGET_12GIB, gdal_cache_bytes=GDAL_32GIB_HOST,
         writer_queue_bytes=1 * GIB, policy="queue",
     )
-    # base 12 - 0.4 - 1 = 10.6 GiB < 2 x 5.348 GiB, so only one of the four
-    # jobs fits at a time; the other three stay queued
-    assert (plan.admissible_workers, plan.deferred_count) == (1, 3)
+    # base 12 - 0.4 - 1 = 10.6 GiB: 3 x 2.708 GiB = 8.13 GiB fits,
+    # 4 x 2.708 GiB = 10.83 GiB does not, so one of the four stays queued
+    # (recalibrated X03 Stage-B price; was (1, 3) under the component model)
+    assert (plan.admissible_workers, plan.deferred_count) == (3, 1)
 
 
 def test_admission_inputs_from_existing_options():
@@ -347,10 +408,11 @@ def test_admission_inputs_from_existing_options():
 # ---------------------------------------------------------------------------
 
 def test_reject_policy_raises_in_process_runtime_error_identity():
-    four = _worst_jobs(PHASE_SIMULATION, 4)
+    # 5 jobs breach the recalibrated 12 GiB boundary (4 fit) — X03 Stage-B
+    five = _worst_jobs(PHASE_SIMULATION, 5)
     with pytest.raises(ResourceAdmissionError) as excinfo:
         plan_phase_admission(
-            four, budget_bytes=BUDGET_12GIB, gdal_cache_bytes=GDAL_32GIB_HOST,
+            five, budget_bytes=BUDGET_12GIB, gdal_cache_bytes=GDAL_32GIB_HOST,
             policy="reject",
         )
     # same class object as runtime.py exports (type identity survives
@@ -361,24 +423,27 @@ def test_reject_policy_raises_in_process_runtime_error_identity():
 
 
 def test_queue_policy_defers_without_raising():
-    four = _worst_jobs(PHASE_SIMULATION, 4)
+    # 6 jobs at the recalibrated price: 4 x 2.708 GiB fit the 11.6 GiB base,
+    # 2 defer — X03 Stage-B (was 4 jobs at (2, 2) under the component model)
+    six = _worst_jobs(PHASE_SIMULATION, 6)
     plan = plan_phase_admission(
-        four, budget_bytes=BUDGET_12GIB, gdal_cache_bytes=GDAL_32GIB_HOST,
+        six, budget_bytes=BUDGET_12GIB, gdal_cache_bytes=GDAL_32GIB_HOST,
         policy="queue",
     )
     assert plan.status == "queued"
-    assert plan.admitted_count == 2 and plan.deferred_count == 2
+    assert plan.admitted_count == 4 and plan.deferred_count == 2
     assert plan.reservation_base_bytes == BUDGET_12GIB - DEFAULT_PARENT_FOOTPRINT_BYTES
 
 
 def test_individually_infeasible_job_raises_in_both_policies():
     """A phase that can never fit raises even under queue policy: queueing
     cannot fix an impossible job (missing/absent relief is explicit, not a
-    silent skip).  5.5 GiB budget leaves 5.1 GiB base < 5.348 GiB sim."""
+    silent skip).  A 2.5 GiB budget leaves 2,254,857,830 B base < the
+    2,908,028,928 B recalibrated simulation price (X03 Stage-B)."""
     for policy in ("reject", "queue"):
         with pytest.raises(ResourceAdmissionError) as excinfo:
             plan_phase_admission(
-                _worst_jobs(PHASE_SIMULATION, 1), budget_bytes=int(5.5 * GIB),
+                _worst_jobs(PHASE_SIMULATION, 1), budget_bytes=int(2.5 * GIB),
                 gdal_cache_bytes=GDAL_32GIB_HOST, policy=policy,
             )
         assert "queueing cannot make this phase fit" in str(excinfo.value)
@@ -563,6 +628,11 @@ def test_preprocess_jobs_reject_visibility_publication_descriptors():
 def test_reservation_inventory_reports_plane_equivalents():
     sim = simulation_reservation(WORST_SHAPE, gdal_cache_bytes=GDAL_32GIB_HOST)
     inv = sim.inventory()
-    assert inv["payload_plane_equivalents_f32"] == 459
-    assert inv["live_array_plane_equivalents_f32"] == 192 + 12 + 64  # 32 planes at f64
+    # X03 Stage-B: under the measured envelope the payload is subsumed
+    # (0 plane equivalents) and live = 3 x 0.77 GiB = 2,480,209,920 B,
+    # i.e. 591 whole f32 planes at 1024^2 (2,480,209,920 // 4,194,304;
+    # the measured envelope is not a whole-plane multiple, floor is intended).
+    assert inv["payload_plane_equivalents_f32"] == 0
+    assert inv["live_array_plane_equivalents_f32"] == 591
+    assert sim.total_bytes == 2_908_028_928
     assert json.dumps(inv)  # audit dict stays JSON-safe

@@ -136,6 +136,28 @@ DEFAULT_PARENT_FOOTPRINT_BYTES = 429_496_730  # ceil(0.4 GiB)
 # default because publication always overlaps resident arrays today.
 DEFAULT_EXPORT_STREAM_BYTES = 64 * MIB
 
+# X03 Stage-B (C6-42 amendment, 2026-10-16): measured per-child peak RSS
+# envelopes for the simulation phase.  The C6-42 full-plane envelope prices
+# components the streaming block engine never materializes -- measured child
+# peak RSS is 0.72-0.77 GiB at 1024^2/153 patches (Stage-A/A2: ~40 children
+# across every worker/thread shape) and 3.588 GiB at 2048^2 (Stage-B0, 8 and
+# 2 threads; mildly super-linear, 4.66x per 4x pixels, so the frozen no-go
+# replaced a coefficient fit with this per-shape table).  Every entry is a
+# measured maximum; the margin below covers shape/thread variation and the
+# uncalibrated windchannel dimension.  Evidence:
+# development/optimization_s11_envelope_headroom/evidence/
+#   phase2_x03_stage_{a,a2,b0}_findings.json.
+SIMULATION_ENVELOPE_MARGIN = 3
+# Worker children receive a GDAL block-cache ceiling capped to the same value
+# charged here (runtime._child_environment GDAL_CACHEMAX), so the permitted
+# per-child envelope equals the priced envelope by construction.  The cap is
+# an LRU byte ceiling, not a value-affecting knob.
+GDAL_CHILD_CACHE_CAP_BYTES = 256 * MIB
+SIMULATION_ENVELOPE_TABLE = (
+    (1024 * 1024, 826_736_640),      # 0.77 GiB, Stage-A/A2 measured maximum
+    (2048 * 2048, 3_852_328_960),    # 3.588 GiB, Stage-B0 measured maximum
+)
+
 # Legacy simulation envelope, kept as accounting units (runtime.py:285-286):
 # 192 full-plane f32 equivalents cover the enumerated M1 stage 0/3/4 families
 # (see INVENTORY_LINES and the reconciliation test), and the separate
@@ -604,6 +626,22 @@ def geometry_reservation(
     )
 
 
+def _measured_simulation_envelope(pixels: int) -> int | None:
+    """First envelope-table entry whose pixel count covers ``pixels``.
+
+    The step function is non-decreasing in pixels and prices every shape at
+    or below a calibrated pixel count with the NEXT LARGER measurement, the
+    safe direction: per-child RSS grows with pixel count, so a smaller tile's
+    true peak is bounded by the larger shape's measurement.  ``None`` above
+    the largest calibrated entry: the legacy full-plane envelope applies
+    unchanged there (conservative by construction).
+    """
+    for limit, envelope in SIMULATION_ENVELOPE_TABLE:
+        if pixels <= limit:
+            return envelope
+    return None
+
+
 def simulation_reservation(
     shape: TileShapeDescriptor,
     *,
@@ -621,17 +659,28 @@ def simulation_reservation(
     adds the GDAL cache, the write pulses, the export overlap stream and
     (native_cache mode) the resident mapping charge on top of the legacy
     components.
+
+    X03 Stage-B (C6-42 amendment, frozen protocol
+    ``phase2_x03_stage_b_protocol.json``): at calibrated pixel counts the
+    reservation is the MEASURED per-child peak RSS envelope
+    (``_measured_simulation_envelope``) times ``SIMULATION_ENVELOPE_MARGIN``,
+    plus a GDAL block-cache charge capped at ``GDAL_CHILD_CACHE_CAP_BYTES`` --
+    the same ceiling worker children receive via GDAL_CACHEMAX, so the
+    permitted per-child envelope equals the priced envelope by construction.
+    Inventory mapping under the table: ``payload`` = ``decoded`` =
+    ``native`` = 0 (subsumed in the measured envelope, which was captured on
+    the production unknown_cold route with publication and checkpoints
+    active), ``live`` = margin x envelope, ``gdal_cache`` = capped,
+    ``pulse``/``stream``/``mapped`` unchanged.  Above the largest calibrated
+    entry the legacy full-plane components below apply unchanged.  Reject
+    semantics, the ``ResourceAdmissionError`` surface and the public API are
+    unchanged (``plan_phase_admission`` pricing only).
     """
     if visibility_mode not in VISIBILITY_MODES:
         raise ValueError(
             f"visibility_mode must be one of {VISIBILITY_MODES}; got {visibility_mode!r}"
         )
-    gdal_cache = _resolved_gdal_cache(gdal_cache_bytes)
-    native = (
-        _native_allowance(shape.windchannels)
-        if native_bytes is None
-        else _non_negative_int(native_bytes, "native_bytes")
-    )
+    gdal_default = _resolved_gdal_cache(gdal_cache_bytes)
     stream = (
         DEFAULT_EXPORT_STREAM_BYTES
         if export_stream_bytes is None
@@ -639,13 +688,33 @@ def simulation_reservation(
     )
     if not export_overlap:
         stream = 0
-    payload, mapped = _payload_bytes(shape.pixels, shape.patches, visibility_mode)
-    live = (
-        (SIMULATION_LIVE_F32_PLANES + shape.windchannels) * shape.pixels * 4
-        + SIMULATION_F64_RESERVE_PLANES * shape.pixels * 8
-    )
-    decoded = _decoded_block_bytes(shape)
     pulse = shape.pixels * SIMULATION_WRITE_PULSE_PLANES * 4
+    envelope = _measured_simulation_envelope(shape.pixels)
+    if envelope is not None:
+        # The table was measured on the production unknown_cold route, so
+        # that mode's payload is subsumed in the envelope.  Every other
+        # visibility mode keeps its payload/mapped charge on top of the
+        # envelope so no mode prices below its resident pages (D04).
+        payload, mapped = _payload_bytes(shape.pixels, shape.patches, visibility_mode)
+        if visibility_mode == VISIBILITY_UNKNOWN_COLD:
+            payload = 0
+        live = SIMULATION_ENVELOPE_MARGIN * envelope
+        decoded = 0
+        native = 0
+        gdal_cache = min(gdal_default, GDAL_CHILD_CACHE_CAP_BYTES)
+    else:
+        native = (
+            _native_allowance(shape.windchannels)
+            if native_bytes is None
+            else _non_negative_int(native_bytes, "native_bytes")
+        )
+        payload, mapped = _payload_bytes(shape.pixels, shape.patches, visibility_mode)
+        live = (
+            (SIMULATION_LIVE_F32_PLANES + shape.windchannels) * shape.pixels * 4
+            + SIMULATION_F64_RESERVE_PLANES * shape.pixels * 8
+        )
+        decoded = _decoded_block_bytes(shape)
+        gdal_cache = gdal_default
     total = payload + live + decoded + native + gdal_cache + pulse + stream + mapped
     return Reservation(
         PHASE_SIMULATION, shape, visibility_mode,
