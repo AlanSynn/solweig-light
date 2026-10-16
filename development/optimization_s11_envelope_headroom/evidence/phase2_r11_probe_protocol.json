@@ -2,7 +2,7 @@
   "campaign": "s11-envelope-headroom",
   "phase": "2-r11-probe",
   "title": "R11 diagnostic probe: paired, same-job resolution of the standalone-508 vs pool-318 s/tile run-phase anomaly; this protocol accepts NO product change",
-  "frozen_before_timing": "2026-10-16, commit 94cd7b50 (X01 post-E2E review fix); no run-phase probe timing has happened under this protocol",
+  "frozen_before_timing": "2026-10-16, commit 94cd7b50 (X01 post-E2E review fix); protocol amended pre-timing (same day, before any probe job) with the thread-env mechanism finding and the A_low arm; no run-phase probe timing has happened under this protocol",
   "change_under_test": {
     "commit": "94cd7b50",
     "summary": "diagnostic-only probe on the accepted X02+X01 state; product source is frozen at the accepted diff",
@@ -12,38 +12,41 @@
   },
   "motivation": {
     "measured_facts": [
-      "p2_clean (phase0): ONE tile 0_0 through execute_tiles, workers=1, threads_per_worker=8 (child env NUMBA_NUM_THREADS=8/OMP=8), clean (no profiler): wall 508.2 s; TMRT bitwise vs p2_ref",
-      "p2_profile (phase0): same dispatch under parent-side cProfile: wall 551.4 s; cProfile saw only time.sleep in execute_tiles — the engine runs in a runtime_worker subprocess, so child-side numbers come from p2c_child",
+      "p2_clean (phase0): ONE tile 0_0 through run_utci_tiles, workers=1, threads_per_worker=1, clean (no profiler): wall 508.2 s; TMRT bitwise vs p2_ref",
+      "MECHANISM (code inspection, pre-timing): execute_tiles ALWAYS runs tiles on plan_admission(...).active_workers persistent subprocess children (even at workers=1; p2_profile's cProfile corroborates: the parent slept in poll/reap while a subprocess ran the engine), and runtime._child_environment overwrites OMP_NUM_THREADS/NUMBA_NUM_THREADS and every other thread var with str(threads_per_worker) in each child. p2_clean therefore ran its engine child at ONE thread; the job-level NUMBA_NUM_THREADS=8 seen in its env record applied only to the parent. The phase0 protocol's 'replicates the measured pool-child condition' comment was wrong.",
+      "p2_profile (phase0): same dispatch under parent-side cProfile: wall 551.4 s; cProfile saw only time.sleep in execute_tiles — the engine runs in a runtime_worker subprocess",
       "p2c_child (phase1c): cProfile INSIDE the runtime_worker child: wall 548.8 s under 93.7M profiled calls; engine seam 24 calls total 521.4 s; night steps ~6.06 s vs day steps ~31-36 s (bimodal 5.2x); hot: Lcyl region_pool 185.1 s cum, run_prepared_gvf_step 149.2 s tottime, Kside aniso 115.5 s cum (decode_block 52.5 tottime, classify_block_aosoa 43.6 cum), lw_primary_b 76.5 s tottime",
-      "X01 E2E (phase1b, job 14096139): run phase 2545.9 s for 24 tiles at 3 workers x 8 threads => ~318 s/tile effective; no per-child run-phase seams were recorded",
-      "pool children are ~1.6x FASTER per tile than the standalone run despite identical declared child env; product code sets NO affinity pinning (only runtime.py reads sched_getaffinity; no sched_setaffinity, no taskset)"
+      "X01 E2E (phase1b, job 14096139): run phase 2545.9 s for 24 tiles at 3 workers x 8 threads => ~318 s/tile effective; children ran with NUMBA/OMP=8 (threads_per_worker=8); no per-child run-phase seams were recorded",
+      "product code sets NO affinity pinning (only runtime.py reads sched_getaffinity; no sched_setaffinity, no taskset)"
     ],
     "hypotheses": [
-      "H1 machine-state: the 508 s standalone leg ran under different machine conditions (page-cache/frequency/noisy neighbor); ~318 s is the true steady state",
-      "H2 tile-mix: tile 0_0 is heavier than the average E2E tile; per-tile spread explains part of the gap",
-      "H3 placement: 3 concurrent children interact favorably with the machine (NUMA interleaving, OMP spin-wait behavior) in a way a lone 8-thread process does not",
-      "H4 measurement artifact: an arithmetic or accounting error (imbalance/straggler hiding in 2545.9/8, or hidden warmup in p2_clean)"
+      "H4-threads (PRIMARY, mechanism identified): the 508.2 s standalone baseline is a 1-thread child (threads_per_worker=1 overrode the job-level NUMBA_NUM_THREADS=8 in the child env); the pool children ran at 8. Predicted 1.58x gap is 1-thread vs 8-thread engine scaling, not a pool effect",
+      "H1 machine-state: the standalone leg ran under different machine conditions; ~318 s is the true steady state (now unlikely given the mechanism)",
+      "H2 tile-mix: tile 0_0 is heavier than the average E2E tile; explains part of any residual gap",
+      "H3 placement: 3 concurrent children interact favorably with the machine (NUMA/OMP spin-wait); demoted — no pinning exists and both conditions share the 24-core mask, but the paired B arm still tests it"
     ],
-    "why_it_matters": "R11 candidate sizing needs the RIGHT baseline: if ~318 s/tile is the true pool-child steady state, the cProfile-inflated p2c shares are the only profile available and clean per-child seams are needed; if 508 s is the true single-tile floor, a ~1.6x per-tile opportunity exists in placement/scheduling"
+    "why_it_matters": "R11 candidate sizing needs the RIGHT baseline and the RIGHT profile condition: all phase0/1c standalone run-phase numbers (508.2 clean, 551.4 parent-profiled, 548.8 child-profiled) must be re-annotated with their true thread condition, and clean per-child seams at the production condition (8 threads) are needed to size candidates"
   },
   "probe_design": {
-    "one_job_same_node": "all arms in ONE sbatch allocation, order A,B,A2,B2,D to separate machine drift from treatment",
-    "scene": "3-tile subset (0_0, 1_0, 0_1) of the frozen S10 synthetic corpus at /tmp/s11_r11_probe, built cold by the driver; untimed walls+aspect+SVF prep for exactly those tiles before any timed arm; manifest sha256 of the subset recorded in the driver and asserted",
+    "one_job_same_node": "all arms in ONE sbatch allocation, order A, A_low, B, A2, B2, D to separate machine drift from treatment",
+    "scene": "3-tile subset (0_0, 1_0, 0_1) of the frozen S10 synthetic corpus at /tmp/s11_r11_probe, built cold by the driver; untimed walls+aspect+SVF prep for exactly those tiles before any timed arm; every copied input's sha256 asserted against the driver's embedded list",
     "prime": "untimed 64^2 prime first (shared NUMBA_CACHE_DIR), phase0/1 pattern",
     "arms": {
-      "A_standalone_1x8": "workers=1, threads_per_worker=8; execute_tiles on tile 0_0; wall around the call; TMRT_0_0 bitwise vs p2_ref_TMRT.tif",
-      "B_pool_3x8": "workers=3, threads_per_worker=8; execute_tiles on [0_0, 1_0, 0_1]; wall around the call; per-child seam dumps (engine/utci/write/checkpoint totals + engine per-call list + child startup wall + sched_getaffinity size) via the seam-only sitecustomize hook (S11_CHILD_SEAM=1, per-pid JSON at child exit); TMRT_0_0 bitwise",
+      "A_standalone_1x8": "workers=1, threads_per_worker=8; run_utci_tiles on tile 0_0; wall around the call; child at NUMBA/OMP=8; TMRT_0_0 bitwise vs p2_ref_TMRT.tif",
+      "A_low_standalone_1x1t": "workers=1, threads_per_worker=1 (replicates the p2_clean condition exactly); wall; TMRT_0_0 bitwise; EXPECT ~508 s if H4-threads holds",
+      "B_pool_3x8": "workers=3, threads_per_worker=8; run_utci_tiles on [0_0, 1_0, 0_1]; wall around the call; per-child seam dumps (engine/utci/write/checkpoint totals + engine per-call list + sched_getaffinity size) via the seam-only sitecustomize hook (S11_CHILD_SEAM=1, per-pid JSON at child exit); TMRT_0_0 bitwise",
       "A2_standalone_1x8_rep": "arm A repeated verbatim (drift control)",
       "B2_pool_3x8_rep": "arm B repeated verbatim (drift control)",
       "D_standalone_1x24": "workers=1, threads_per_worker=24; diagnostic ceiling only, NOT a product config; wall; TMRT_0_0 bitwise"
     },
-    "recorded_per_arm": ["wall_s", "child seam dumps", "numactl topology + lscpu summary (once per job)", "TMRT_0_0 bitwise verdict", "env snapshot"],
-    "asserts_before_timing": ["git merge-base --is-ancestor of the frozen commit at job start", "product diff file list + sha256 equal to change_under_test", "subset-scene manifest sha256 equal to the driver constant"],
+    "recorded_per_arm": ["wall_s", "child seam dumps (B/B2)", "numactl topology + lscpu summary (once per job)", "TMRT_0_0 bitwise verdict", "env snapshot incl resolved_runtime"],
+    "asserts_before_timing": ["git merge-base --is-ancestor of the frozen commit at job start", "product diff file list + sha256 equal to change_under_test", "per-file sha256 of every copied subset input equal to the driver's embedded list"],
     "bitwise_criteria": "every timed arm's TMRT_0_0.tif all bands equal vs p2_ref_TMRT.tif; any diff aborts the probe (environment broken, no conclusions drawn)",
     "timing_rules": "no retries except a documented infrastructure anomaly (crash, node eviction, admission refusal), never an undesired number; no product files change while the job runs"
   },
   "acceptance": {
-    "probe_is_diagnostic_only": "the probe accepts NO product change; its output is a causal resolution naming the supported hypothesis (or a recorded refutation of all four) plus clean per-child engine numbers for R11 candidate sizing",
+    "probe_is_diagnostic_only": "the probe accepts NO product change; its output is a causal resolution naming the supported hypothesis with paired numbers, plus clean per-child engine seams at the production condition for R11 candidate sizing",
+    "interpretation": "if A ~ A2 ~ B ~ B2 (~318 s) and A_low ~ 508 s, H4-threads is confirmed: the anomaly dissolves (no pool effect, no placement effect), p2_clean is re-annotated as a 1-thread measurement, and R11 proceeds from the 8-thread child seams; if A >> B, H3 placement is real and gets its own investigation",
     "follow_on": "any R11 candidate (scheduling/overlap only; frozen C5/C6/N8/N9 arithmetic untouched; no timestep parallelism) requires its own frozen protocol, independent review, E2E bitwise A/B, and REGISTER row"
   },
   "environment": {
