@@ -60,12 +60,15 @@ def _precompute_geometry_phase(directory, tiles, building, dem, trees, patch_opt
     shared C6-10 recipe inside a native-thread-capped child process, under
     C6-42 phase-aware memory admission, and results are published in the
     original sorted tile order as a complete stage barrier (journal-first,
-    manifest-last).  The serial loop below then re-opens the ready store
+    manifest-last).  The export stage below then re-opens the ready store
     handles as cache hits and keeps sole ownership of the legacy
-    TIFF/ZIP/NPZ artifact publication, so public outputs and their order
-    are unchanged.  Any admission or child failure raises the pipeline's
-    own public error before or instead of that loop, exactly as the serial
-    route would.
+    TIFF/ZIP/NPZ artifact publication.  Since S11 X01 that stage runs
+    per-tile concurrently (same per-tile lock-protected code): on success
+    the published artifact set and bytes are unchanged, while publication
+    order is completion order and a failure truncates to the completed set
+    rather than a sorted prefix.  Any admission or child failure raises the
+    pipeline's own public error before or instead of that stage, exactly as
+    the serial route would.
     """
     from osgeo import gdal
 
@@ -93,6 +96,57 @@ def _precompute_geometry_phase(directory, tiles, building, dem, trees, patch_opt
         publication_root=directory / '.solweig-light' / 'phases' / 'geometry',
         store_root=cache_root,
     )
+
+
+def _export_tile_job(job):
+    """Process-pool body for one per-tile geometry export (S11 X01).
+
+    Module level so spawn workers can pickle it by reference. All state
+    travels in the job tuple; the return value is unused by the caller.
+    """
+    from .geometry.service import prepare_geometry_exports
+    directory, tile, paths, patch_option, overwrite, runtime = job
+    prepare_geometry_exports(directory, tile, paths, patch_option,
+                             overwrite=overwrite, runtime=runtime)
+
+
+def _concurrent_geometry_exports(directory, pending, building, dem, trees,
+                                 patch_option, overwrite, runtime):
+    """Run the per-tile geometry export loop concurrently (S11 X01).
+
+    prepare_geometry_exports is per-tile independent and already
+    lock-protected (tile-keyed export/destination locks, staged atomic
+    publication), so concurrency cannot interleave writes to one tile. What
+    changes relative to the serial loop is scheduling only: on success the
+    published artifact set and bytes are identical, but publication order
+    is completion order; on failure the published set is the completed set
+    (running exports finish, queued ones are cancelled) rather than a
+    sorted prefix. The degree is the user's declared worker count -- each
+    export child is strictly lighter than the barrier simulation jobs that
+    worker count was admitted against. Spawn context keeps process startup
+    clear of any parent thread-pool state.
+    """
+    import multiprocessing as mp
+    from concurrent.futures import ProcessPoolExecutor
+
+    jobs = [(str(directory), tile,
+             {'Building_DSM': building[tile], 'Trees': trees[tile], 'DEM': dem[tile]},
+             patch_option, overwrite, runtime)
+            for tile in pending]
+    ctx = mp.get_context('spawn')
+    with ProcessPoolExecutor(max_workers=min(runtime.workers, len(pending)),
+                             mp_context=ctx) as pool:
+        futures = [pool.submit(_export_tile_job, job) for job in jobs]
+        first_error = None
+        for tile, future in zip(pending, futures):
+            try:
+                future.result()
+            except Exception as error:  # first failure in sorted order
+                first_error = error
+                break
+        if first_error is not None:
+            pool.shutdown(wait=True, cancel_futures=True)
+            raise first_error
 
 
 def _calculate_svf(base_path, patch_option, overwrite, *, validate_existing):
@@ -143,10 +197,14 @@ def _calculate_svf(base_path, patch_option, overwrite, *, validate_existing):
         # the serial route verbatim.
         _precompute_geometry_phase(directory, pending, building, dem, trees,
                                    patch_option, runtime)
-    for tile in pending:
-        prepare_geometry_exports(directory, tile,
-            {'Building_DSM': building[tile], 'Trees': trees[tile], 'DEM': dem[tile]},
-            patch_option, overwrite=overwrite, runtime=runtime)
+    if len(pending) > 1 and runtime.workers > 1:
+        _concurrent_geometry_exports(directory, pending, building, dem, trees,
+                                     patch_option, overwrite, runtime)
+    else:
+        for tile in pending:
+            prepare_geometry_exports(directory, tile,
+                {'Building_DSM': building[tile], 'Trees': trees[tile], 'DEM': dem[tile]},
+                patch_option, overwrite=overwrite, runtime=runtime)
     print('[INFO] Standalone SVF calculation complete.')
 
 
