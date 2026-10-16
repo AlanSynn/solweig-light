@@ -3,9 +3,13 @@
 The stage's per-tile code (service.prepare_geometry_exports) is unchanged
 and lock-protected; these tests pin the scheduling contract introduced by
 the concurrent loop: identical artifact content on success, the first
-sorted failure raised, and no partial set for a failed tile. Artifacts are
-compared data-level (the container formats embed timestamps, so byte
-equality across separate runs is not a bitwise property).
+sorted failure raised, and no partial set for a failed tile. The stage is
+route-gated on cache_enabled (review N2: cache-disabled multi-worker runs
+keep the serial loop, one admitted production at a time), so the content
+test drives the stage directly with the cache disabled -- every child then
+performs full numerical production, the heaviest version of the stage.
+Artifacts are compared data-level (the container formats embed timestamps,
+so byte equality across separate runs is not a bitwise property).
 """
 import shutil
 from pathlib import Path
@@ -14,6 +18,7 @@ import numpy as np
 import pytest
 from osgeo import gdal
 
+from solweig_light import api
 from solweig_light.api import _calculate_svf, _concurrent_geometry_exports, _export_tile_job
 from solweig_light.runtime import get_runtime_options, runtime_options
 
@@ -70,11 +75,29 @@ def test_concurrent_exports_match_serial_bitwise(tmp_path):
     scene(tmp_path / 'concurrent', ['0_0', '1_0'])
     with runtime_options(workers=1, threads_per_worker=1, cache_enabled=False):
         _calculate_svf(str(tmp_path / 'serial'), 2, True, validate_existing=False)
+    concurrent = tmp_path / 'concurrent'
+    tiles = ['0_0', '1_0']
+    building = {tile: str(concurrent / 'Building_DSM' / f'Building_DSM_{tile}.tif')
+                for tile in tiles}
+    dem = {tile: str(concurrent / 'DEM' / f'DEM_{tile}.tif') for tile in tiles}
+    trees = {tile: str(concurrent / 'Trees' / f'Trees_{tile}.tif') for tile in tiles}
     with runtime_options(workers=2, threads_per_worker=1, cache_enabled=False):
-        _calculate_svf(str(tmp_path / 'concurrent'), 2, True, validate_existing=False)
+        _concurrent_geometry_exports(concurrent, tiles, building, dem, trees,
+                                     2, True, get_runtime_options())
+    for tile in tiles:
+        assert_tile_bitwise(concurrent / 'SVF', tmp_path / 'serial' / 'SVF', tile)
+
+
+def test_cache_disabled_multi_worker_keeps_serial_route(tmp_path, monkeypatch):
+    scene(tmp_path, ['0_0', '1_0'])
+    calls = []
+    monkeypatch.setattr(api, '_concurrent_geometry_exports',
+                        lambda *args, **kwargs: calls.append(args))
+    with runtime_options(workers=2, threads_per_worker=1, cache_enabled=False):
+        _calculate_svf(str(tmp_path), 2, True, validate_existing=False)
+    assert calls == []
     for tile in ('0_0', '1_0'):
-        assert_tile_bitwise(tmp_path / 'concurrent' / 'SVF',
-                            tmp_path / 'serial' / 'SVF', tile)
+        assert (tmp_path / 'SVF' / f'SkyViewFactor_{tile}.tif').is_file()
 
 
 def test_concurrent_export_failure_raises_and_publishes_no_partial_set(tmp_path):

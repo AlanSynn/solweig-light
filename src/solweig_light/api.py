@@ -116,15 +116,21 @@ def _concurrent_geometry_exports(directory, pending, building, dem, trees,
 
     prepare_geometry_exports is per-tile independent and already
     lock-protected (tile-keyed export/destination locks, staged atomic
-    publication), so concurrency cannot interleave writes to one tile. What
-    changes relative to the serial loop is scheduling only: on success the
-    published artifact set and bytes are identical, but publication order
-    is completion order; on failure the published set is the completed set
-    (running exports finish, queued ones are cancelled) rather than a
-    sorted prefix. The degree is the user's declared worker count -- each
-    export child is strictly lighter than the barrier simulation jobs that
-    worker count was admitted against. Spawn context keeps process startup
-    clear of any parent thread-pool state.
+    publication), so concurrency cannot interleave writes to one tile. The
+    caller gates this stage on cache_enabled, so it only runs after the
+    C6-40 phase route published every tile's store entry: export children
+    are cache-hit readers, strictly lighter than the barrier geometry jobs
+    the same worker count was admitted against. What changes relative to
+    the serial loop is scheduling only: on success the published artifact
+    set and bytes are identical, but publication order is completion
+    order; on failure the published set is the completed set (running
+    exports finish, queued ones are cancelled) rather than a sorted
+    prefix, and the first failure in sorted order is re-raised -- abrupt
+    child death (OOM kill, segfault) instead surfaces
+    BrokenProcessPool. Spawn context keeps process startup clear of any
+    parent thread-pool state, and re-imports the parent ``__main__`` in
+    every child: callers embedding this workflow in a script must guard
+    their entry code with ``if __name__ == '__main__':``.
     """
     import multiprocessing as mp
     from concurrent.futures import ProcessPoolExecutor
@@ -197,7 +203,7 @@ def _calculate_svf(base_path, patch_option, overwrite, *, validate_existing):
         # the serial route verbatim.
         _precompute_geometry_phase(directory, pending, building, dem, trees,
                                    patch_option, runtime)
-    if len(pending) > 1 and runtime.workers > 1:
+    if len(pending) > 1 and runtime.workers > 1 and runtime.cache_enabled:
         _concurrent_geometry_exports(directory, pending, building, dem, trees,
                                      patch_option, overwrite, runtime)
     else:
