@@ -13,7 +13,7 @@
       "src/solweig_light/runtime_memory.py"
     ],
     "expected_product_diff_sha256": "7e9809181f18319fe25399b4cabe9f6890c948fef94b758b92c6692c04a63a36",
-    "note": "Post-hardening tree (supersedes 75e03c62... for future runs per the S11 closure). The E2E-measured 12x2 configuration prices byte-identically under this tree (2,908,028,928 B/job; batteries byte-identical to the accepted state). Every job asserts this pin at start and aborts on drift."
+    "note": "Post-hardening tree (supersedes 75e03c62... for future runs per the S11 closure). The E2E-measured 12x2 configuration prices byte-identically under this tree (2,908,028,928 B/job; batteries byte-identical to the accepted state). Every job asserts this pin at start and aborts on drift. Pin semantics: head_commit must be an ANCESTOR of the running HEAD and the src/pyproject diff vs base_commit must match expected_product_diff_files + sha256 exactly (docs/evidence-only commits after the pin are permissible)."
   },
   "scene_pin": {
     "corpus_scene": "/storage/scratch1/1/dsynn6/solweig-light-s10-raw/synthetic_target/scene",
