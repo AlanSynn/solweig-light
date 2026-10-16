@@ -35,6 +35,7 @@
     {"tag": "c256p", "scene": "256x24 crop", "steps": 24, "workers": 12, "threads": 2, "temp": "cold", "role": "small-tile parallel corner"},
     {"tag": "c256s", "scene": "256x24 crop (fresh copy, same crop bytes)", "steps": 24, "workers": 1, "threads": 24, "temp": "cold", "role": "small-tile serial corner; bitwise pair with c256p"},
     {"tag": "c2048p","scene": "2048x1 (b0 generator)", "steps": 24, "workers": 4, "threads": 6, "temp": "cold", "role": "large-tile corner; fallback 3x8 ONLY if 4x6 admission is refused (both echoes recorded)"},
+    {"tag": "c2048s","scene": "2048x1 (b0 generator)", "steps": 24, "workers": 1, "threads": 8, "temp": "cold", "role": "large-tile corner at the production-viable shape (AMENDMENT 2026-10-16, pre-timing: c2048p measured a PRE-EXISTING public-API defect instead of a timing -- plan_phase_admission(policy='reject') refuses any phase whose job count is below the requested worker width (runtime_memory.py requested>admissible check; api.py passes the unclamped width), so a 1-tile scene refuses at workers>=2 with a misleading 'only 1 fit' message despite ~4x memory slack; reproduced on login against the pinned tree AND confirmed present on main (runtime_memory.py:948, api.py:235). Defect documented, NOT fixed here (public-behavior change). c2048s measures the corner the way production accepts it: workers=1)."},
     {"tag": "c24s",  "scene": "1024x24", "steps": 24, "workers": 1, "threads": 24, "temp": "cold", "role": "serial corner at the production scale; single worker owning the whole node (the practitioner's serial run); degree-1 export + degree-1 scheduling", "job": "separate (long) job"}
   ],
   "corner_contract_notes": [
@@ -52,13 +53,14 @@
       "c72p": "SVF bitwise 24/24 vs p1c_svf_base38; TMRT band count == 72; all-finite",
       "c256p": "TMRT band count == 24; SVF+TMRT all-finite; shas recorded",
       "c256s": "SVF + TMRT bitwise EQUAL to c256p for all 24 tiles",
-      "c2048p": "TMRT band count == 24; SVF+TMRT all-finite; shas recorded"
+      "c2048p": "TMRT band count == 24; SVF+TMRT all-finite; shas recorded; OR the documented admission-refusal record (defect discovery)",
+      "c2048s": "TMRT band count == 24; SVF+TMRT all-finite; shas recorded"
     },
     "admission": "every arm records the plan_phase_admission echo (admissible_workers, per-job price, base, budget) under its own runtime options; c24/c256 arms must admit (12-wide is the accepted state at 1024^2; trivial at 256^2); c2048p primary 4x6 expected to admit 4 (4 x ~11.6 GB <= base); a refusal of the primary is recorded and the pre-declared fallback shape runs",
     "chain_band": "c24p chain within [1380, 1525] s (+-5% of the E2E anchor 1452.5935) as a cross-tree sanity band; informational for all other arms",
     "attribution": "per-arm phase split walls / svf (barrier + export stage, barrier timed parent-side around execute_geometry_phase) / run, plus runtime env echo"
   },
-  "run_policy": "ONE timed pass per arm; zero retries except a single causal retry on a documented infrastructure anomaly. Jobs C1 (c24p,c24w,c2p,c72p), C2 (c256p,c256s,c2048p), C3 (c24s) are independent Slurm jobs (24 CPU, 96G each) and may run concurrently on different nodes. Variant/scene construction and the numba prime are untimed.",
+  "run_policy": "ONE timed pass per arm; zero retries except a single causal retry on a documented infrastructure anomaly (exercised once: jobs 14107911/14107913 died in the UNTIMED prime -- three concurrent jobs raced on the hardcoded shared phase0/scene_64 probe scene; no timed work lost; retry used a job-private prime scene). Jobs C1 (c24p,c24w,c2p,c72p), C2 (c256p,c256s,c2048p), C3 (c24s) are independent Slurm jobs (24 CPU, 96G each) and may run concurrently on different nodes. Job C4 (c2048s) was added by the pre-timing amendment above after C2 recorded the c2048p admission defect. Variant/scene construction and the numba prime are untimed.",
   "efficiency_deliverable": "corner_matrix_findings.json: per-corner chain + phase table; serial/parallel ratios (c24s vs c24p, c256s vs c256p); warm/cold deltas (c24w vs c24p); timestep scaling of the run phase (2/24/72); tile-size scaling (256^2/1024^2/2048^2); updated remaining-headroom statement feeding the barrier-seam (X04) feasibility read from measured barrier/export/run attribution across shapes.",
   "review_status": "No product change is involved in this phase (pure measurement on the accepted, already-reviewed tree); the pre-E2E independent-review rule for accepted numerical/scheduling changes does not trigger here. A barrier-seam CHANGE candidate (X04) arising from these measurements would follow the full protocol -> implementation -> independent review -> E2E arc before acceptance.",
   "actual_target_status": "unverified (synthetic corpus only, as throughout the campaign)",
