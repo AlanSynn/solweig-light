@@ -238,3 +238,45 @@ floor: per-simulation-child price 2,908,028,928 B (margin 3x the measured
 actual_target_status: **unverified** (no real-target runs were authorized;
 all measurements are on the frozen synthetic corpus). main untouched;
 nothing pushed.
+
+- S11-7 CORNER-COVERAGE MATRIX MEASURED (2026-10-16, jobs 14108231 + 14107912
+  + 14108232 + 14114558; protocol `evidence/phase3_corner_matrix_protocol.json`
+  frozen pre-timing at d7b0e078/7f1bb818, amendment ad53b56a pre-dated the
+  c2048s timing; findings `evidence/phase3_corner_matrix_findings.json`):
+  pure measurement on the accepted tree (pin 7e980918), zero product changes.
+  All four goal corners now have timings with bitwise-clean numerics:
+  steps 2/24/72 (1-step contract-unsupported, documented), tiles
+  256^2/1024^2/2048^2, cold/warm, serial 1x24 vs parallel 12x2/4x6.
+  Headline: c24p 1483.90 s (in the frozen +-5% band vs the E2E anchor,
+  +2.15%); serial c24s 10744.28 s -> **7.24x** (worker efficiency 60.3%,
+  24 CPUs both arms; TMRT sha256 IDENTICAL across serial/parallel/golden);
+  warm c24w 1541.12 s = +3.86% vs cold (warm is NOT faster end-to-end:
+  geometry verify-only saves 327.7 s but the run phase pays +385.9 s);
+  72 steps c72p 2954.05 s (run 854.4 -> 2327.8, ~31 s/step marginal);
+  2 steps c2p 792.66 s (94% fixed cost; contract minimum verified);
+  256^2 pair 92.07 vs 635.00 s = **6.90x** with CROSS-CONFIG BITWISE PASS
+  (SVF+TMRT identical between 12x2 and 1x24); 2048^2 x1 serial 1940.99 s.
+  Every gate passed; no numerical relaxation anywhere.
+  **DEFECT DISCOVERED (pre-existing on main, NOT introduced by the
+  campaign)**: plan_phase_admission(policy='reject') refuses whenever the
+  requested worker width exceeds the phase's job count regardless of memory
+  slack, and api.py:293-303 passes the unclamped width -- any scene with
+  fewer tiles than `workers` refuses at the public API with a misleading
+  "only N fit" message (1-tile 2048^2 scene at workers>=2; ~4x memory slack
+  ignored). Reproduced in-process and confirmed on main
+  (runtime_memory.py:948, api.py:235). Documented, NOT fixed: public-
+  behavior change -> user-approved arc required. Candidate fix: clamp to
+  min(width, len(jobs)) or route under-fill to queue semantics.
+  Barrier-seam verdict: execute_geometry_phase is CPU-throughput-bound
+  (flat across shapes: 346.8/370.9/366.3 s; serial route bypasses it by
+  design); no measured lever remains inside frozen contracts; cross-phase
+  pipelining would need an admission-model amendment (<= ~14% ceiling).
+  No X04 recommended pre-amendment. Infrastructure anomaly (documented,
+  single causal retry used): attempt 1 of C1/C3 (14107911/14107913) died in
+  the UNTIMED prime -- three concurrent jobs raced on the shared
+  phase0/scene_64 probe scene; retried with a job-private prime scene; no
+  timed work lost. Raw records archived:
+  campaign_s11/phase3/phase3_corner_raw_records.tar.gz (sha256
+  63f50894f90070eea95ef4357d36b8b557f9c8582ed1a8be7eedd1652db73f40).
+  actual_target_status: **unverified** (synthetic corpus only). main
+  untouched; nothing pushed.

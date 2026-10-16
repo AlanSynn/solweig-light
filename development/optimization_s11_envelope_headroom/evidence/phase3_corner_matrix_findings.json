@@ -1,0 +1,51 @@
+{
+  "campaign": "s11-envelope-headroom",
+  "phase": "3-corner-matrix",
+  "title": "Corner-coverage matrix MEASURED on the accepted tree (pin 7e980918, protocol 7013d76e): 7 timing arms + 1 documented pre-existing public-API defect; every numerical gate passes (SVF+TMRT goldens, cross-config bitwise pairs, band/finite checks)",
+  "protocol": "evidence/phase3_corner_matrix_protocol.json (frozen pre-timing, commits d7b0e078 + 7f1bb818; amendment ad53b56a pre-dated the c2048s timing)",
+  "jobs": {
+    "C1": "14107911 (DIED in untimed prime: shared scene_64 race) -> retry 14108231, node atl1-1-02-008-12-2, COMPLETED",
+    "C2": "14107912, node atl1-1-02-007-21-1, COMPLETED",
+    "C3": "14107913 (DIED in untimed prime: shared scene_64 race) -> retry 14108232, node atl1-1-02-010-18-2, COMPLETED",
+    "C4": "14114558, node atl1-1-02-007-11-1, COMPLETED (amendment arm c2048s)",
+    "infrastructure_anomaly": "Attempt 1 of C1/C3 raced on the hardcoded shared phase0/scene_64 probe scene (three concurrent jobs, one committed TMRT ownership, the other hit the persistence journal). Died in the UNTIMED prime; no timed work lost; the protocol's single causal retry clause covered the resubmission with a job-private prime scene (phase3/prime_64_local.py). Product source untouched."
+  },
+  "arms": [
+    {"tag": "c24p",  "corner": "1024^2 x24, 24 steps, 12x2, cold", "chain_s": 1483.9017, "walls_s": 21.2797, "svf_s": 608.2005, "barrier_s": 370.8983, "export_stage_s": 237.3022, "run_s": 854.4214,
+     "gates": "SVF bitwise 24/24 vs p1c_svf_base38; TMRT 24/24 bands vs p2_ref_TMRT.tif; TMRT sha256 c361f819...",
+     "band": "within frozen [1380, 1525] (+2.15% vs the E2E anchor 1452.5935 on a different node; cross-tree sanity PASS)"},
+    {"tag": "c24w",  "corner": "1024^2 x24, 24 steps, 12x2, WARM (same scene copy, stores retained)", "chain_s": 1541.1165, "walls_s": 20.4954, "svf_s": 280.3405, "barrier_s": 43.1853, "export_stage_s": 237.1552, "run_s": 1240.2806,
+     "gates": "SVF 24/24 + TMRT 24/24 (identical TMRT sha to c24p)"},
+    {"tag": "c24s",  "corner": "1024^2 x24, 24 steps, 1x24 (serial: one worker owns the node), cold", "chain_s": 10744.2774, "walls_s": 20.7936, "svf_s": 3455.036, "barrier_s": null, "export_stage_s": null, "run_s": 7268.4479,
+     "gates": "SVF 24/24 + TMRT 24/24; TMRT sha256 IDENTICAL to c24p (c361f819...) -- serial and parallel machinery bitwise-equal at the production corner",
+     "note": "barrier not instrumented: workers==1 keeps the serial route verbatim (api.py C6-40 guard) and bypasses execute_geometry_phase by design"},
+    {"tag": "c2p",   "corner": "1024^2 x24, 2 STEPS (public contract minimum), 12x2, cold", "chain_s": 792.6609, "walls_s": 18.2822, "svf_s": 722.15, "barrier_s": 484.8887, "export_stage_s": 237.2613, "run_s": 52.2287,
+     "gates": "SVF 24/24 (SVF is timestep-independent); TMRT exactly 2 bands, finite",
+     "note": "1-step remains contract-unsupported (pipeline.py ndim guard, documented). barrier 484.9 vs c24p's 370.9 on the same node/shape/scene-size: +114 s unexplained single-measurement variance (post-c24w page-cache churn suspected); does not affect this arm's floor conclusion"},
+    {"tag": "c72p",  "corner": "1024^2 x24, 72 STEPS (3 day-blocks), 12x2, cold", "chain_s": 2954.0485, "walls_s": 21.0696, "svf_s": 605.1378, "barrier_s": 366.3157, "export_stage_s": 238.8221, "run_s": 2327.8411,
+     "gates": "SVF 24/24; TMRT exactly 72 bands, finite; save_tmrt-only per the pre-registered deviation (~70 GB /tmp avoided; run-phase write cost slightly understated vs the 10-variable arms, recorded)"},
+    {"tag": "c256p", "corner": "256^2 x24 crop, 24 steps, 12x2, cold", "chain_s": 92.0681, "walls_s": 2.0534, "svf_s": 31.5924, "barrier_s": 16.7787, "export_stage_s": 14.8137, "run_s": 58.4223,
+     "gates": "TMRT 24 bands, finite; sha 01ded1fd...; admission echo: 12 jobs priced at the 1024^2 envelope entry (small tiles priced at the table floor -- the census-lockout behavior at scale)"},
+    {"tag": "c256s", "corner": "256^2 x24 crop, 24 steps, 1x24 (serial), cold", "chain_s": 635.0043, "walls_s": 0.9027, "svf_s": 175.7608, "barrier_s": null, "export_stage_s": null, "run_s": 458.3408,
+     "gates": "CROSS-CONFIG BITWISE PASS: SVF 24/24 tiles and TMRT 24/24 bands IDENTICAL to c256p (sha 01ded1fd...)"},
+    {"tag": "c2048p","corner": "2048^2 x1, 24 steps, 4x6 then fallback 3x8", "result": "REFUSED at BOTH widths -- NOT a memory refusal: pre-existing public-API defect",
+     "defect": "plan_phase_admission(policy='reject') refuses whenever the requested worker width exceeds the phase's job count (runtime_memory.py: requested>admissible where admissible=min(memory-fit, requested)); api.py:293-303 passes the unclamped width, so ANY scene with fewer tiles than 'workers' refuses at the public API ('requested 4 concurrent phase jobs but only 1 fit' despite the single 12,261,629,952 B reservation fitting the 50,891,986,534 B base with ~4x slack). Reproduced in-process against the pinned tree AND confirmed present on main (runtime_memory.py:948, api.py:235). The message text ('only 1 fit') is misleading in the under-fill case.",
+     "disposition": "documented + committed (ad53b56a); NOT fixed -- public-behavior change requires a user-approved arc (protocol -> impl -> review -> E2E). Candidate fix: clamp the production call to min(width, len(jobs)) or route under-fill to queue semantics; blast radius: turns a hard error into a run for tiles<workers scenes."},
+    {"tag": "c2048s","corner": "2048^2 x1, 24 steps, 1x8 (production-viable serial shape), cold", "chain_s": 1940.9944, "walls_s": 6.3896, "svf_s": 630.8294, "barrier_s": null, "export_stage_s": null, "run_s": 1303.7755,
+     "gates": "TMRT exactly 24 bands, finite; sha 3edfd91f... (no external golden for a different scene; cross-thread numerical equality at 2048^2 was pinned by Stage-B0 job 14100529, TMRT bitwise 24/24 across 1x8/1x2)"}
+  ],
+  "efficiency_table": {
+    "serial_to_parallel_12x2_1024": {"ratio": 7.24, "num": "c24s 10744.28 / c24p 1483.90", "worker_efficiency_pct": 60.3, "cpus": "24 in both arms"},
+    "serial_to_parallel_12x2_256": {"ratio": 6.90, "num": "c256s 635.00 / c256p 92.07"},
+    "per_phase_1024": {"walls": "~1.0x (already concurrent)", "svf": "5.68x (3455.0 -> 608.2)", "run": "8.50x (7268.4 -> 854.4)"},
+    "steps_scaling_12x2": {"run_s": {"2": 52.23, "24": 854.42, "72": 2327.84}, "marginal_s_per_step": "~36.5 at 24 steps, ~30.7 at 72; fixed run floor ~35-40 s",
+      "chain_floor_note": "at 2 steps the chain is 94% fixed cost (walls+svf 740.4 of 792.7 s) -- timestep count barely moves small-step runs"},
+    "tile_scaling": {"256x24": 92.07, "1024x24": 1483.90, "ratio": "16.1x for 16x pixels (linear); 2048x1 serial 1940.99"},
+    "warm_vs_cold_1024_12x2": {"cold_s": 1483.90, "warm_s": 1541.12, "delta_pct": 3.86,
+      "structure": "warm saves geometry construction (barrier 370.9 -> 43.2, verify-only republication) but the run phase pays +385.9 s; hypotheses (unattributed): dirty-page writeback of the immediately preceding arm's ~23 GB of outputs, or publication-overwrite cost in the persistence path. Measured conclusion: warm reruns are NOT faster end-to-end on this pipeline"}
+  },
+  "barrier_seam_verdict": "The 362-371 s seam is execute_geometry_phase (walls/aspect construction). Measured flat across shapes (346.8 at 3x8, 370.9 at 12x2, 366.3 at 72 steps, 484.9 outlier at 2 steps) -> CPU-throughput-bound, not width- or serialization-bound; it already runs concurrent admission-planned children (C6-40) and the X02 twin removed its kernel slack. The serial corner does not exercise it (verbatim serial route). No further measured lever exists inside the frozen contracts: reducing the work is a numerical change (forbidden); overlapping phases would break the frozen phase-admission envelope (phases priced exclusive-resident) -- a user-amendment decision with a bounded ceiling (~export+compute stage, <= ~14% of the 12x2 chain). NO X04 candidate is recommended pre-amendment.",
+  "remaining_headroom": "At 24 CPUs the accepted 12x2 chain (1483.9 s cold) splits: run 57.6% (engine-saturated, 8.50x vs serial), barrier 25.0% (CPU-bound geometry), export stage 16.0% (degree-12, ~97% efficient), walls 1.4%. Gains beyond ~1.2x require either more CPUs (not authorized), cross-phase pipelining (admission-model amendment), or arithmetic changes (forbidden). The corner matrix closes the coverage gap: all four goal corners measured with bitwise-clean numerics.",
+  "actual_target_status": "unverified (synthetic corpus only, as throughout the campaign)",
+  "raw_evidence": "phase3/: corner_*.json (8 arm records + gates), x03f_14107911/x03h_14107913 (attempt-1 anomaly logs), x03f_14108231/x03g_14107912/x03h_14108232/x03i_14114558.out, prime_64.json; archived to Dropbox campaign_s11/phase3/ (sha256 in REGISTER)"
+}
