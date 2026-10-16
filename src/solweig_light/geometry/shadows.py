@@ -111,6 +111,15 @@ shadow_numpy = shadow
 
 
 def shadow(amaxvalue, a, vegdem, vegdem2, bush, azimuth, altitude, scale):
-    """Exact compiled serial recurrence with the original ray support."""
-    from .sky_compiled import shadow_pixel_serial
-    return shadow_pixel_serial(amaxvalue, a, vegdem, vegdem2, bush, azimuth, altitude, scale)
+    """Compiled recurrence, dispatched on the static bush predicate (S11 X02).
+
+    bush > 0 anywhere keeps the step-major serial path: the twin's internal
+    bush fallback is the step-major *parallel* recurrence, which is outside
+    the reviewed bitwise regime. Otherwise the pixel-parallel twin runs; S11
+    phase-0 measured it bitwise-identical at kernel and whole-phase level
+    (4 and 8 threads; independence proof in sky_compiled._shadow_pixel).
+    """
+    from .sky_compiled import shadow_pixel_parallel, shadow_pixel_serial
+    if np.max(bush) > 0:
+        return shadow_pixel_serial(amaxvalue, a, vegdem, vegdem2, bush, azimuth, altitude, scale)
+    return shadow_pixel_parallel(amaxvalue, a, vegdem, vegdem2, bush, azimuth, altitude, scale)
