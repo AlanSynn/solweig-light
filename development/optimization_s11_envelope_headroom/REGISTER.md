@@ -98,3 +98,44 @@ Notes:
   requires its own frozen protocol (measured child RSS calibration +
   engine-at-4-threads + E2E bitwise A/B if admission-legal). Raw records
   archived to Dropbox `campaign_s11/phase2/`.
+
+- S11-5 X03 STAGE-A CALIBRATION (2026-10-16, job 14098252;
+  `evidence/phase2_x03_stage_a_protocol.json` frozen pre-timing at 9d02520b,
+  findings `evidence/phase2_x03_stage_a_findings.json`): run-phase child
+  peak RSS measured 0.72-0.77 GiB at EVERY shape (3x8/4x6/6x4 waves +
+  standalone 1x6/1x4) vs the C6-42 simulation_reservation price of 9.17 GiB
+  — >11x conservative (the model prices a full-plane envelope the streaming
+  block engine never materializes). Thread scaling nearly flat: standalone
+  engines 263.6/281.4/299.9/492.0 s at 8/6/4/1 threads. Wave makespans
+  314.9/324.9/342.5 s at 3x8/4x6/6x4; admission at node constants admits
+  3x8 and 4x6, refuses 6x4 (5 fit). Wave count is the run-phase lever;
+  amendment (cac80fc9) added 8x3/12x2 wave arms + engine_1x3/engine_1x2 to
+  select the Stage-B shape on measurement. Every arm TMRT bitwise 24/24.
+
+- S11-5b X03 STAGE-A2 WAVE SELECTION (2026-10-16, first attempt 14098639
+  INVALID, retry 14098987 COMPLETE; amendment chain cac80fc9 -> eeb242e5
+  committed before the retry; findings
+  `evidence/phase2_x03_stage_a2_findings.json`): first attempt aborted on a
+  DRIVER bug — EXTRA_SHAS omitted extension-tile metfiles, so
+  run_utci_tiles' required-folder key intersection silently dropped the six
+  new tiles and both wave arms measured 6-way, not 8/12-way (all six bad
+  children ~2 s, ValueError "not found in preprocess_dir"); records
+  preserved under raw `aborted_14098639/` with manifest. Retry with metfile
+  fix + prep-coverage guard (PREP_COVERAGE_OK 12 tiles) + child-error guard:
+  wave_8x3 = 379.4 s (engines 293.5-309.0), wave_12x2 = 415.7 s (engines
+  328.8-341.6), engine_1x3 = 301.7 s, engine_1x2 = 347.9 s; RSS 0.72-0.77
+  GiB everywhere; contention stretch <= 5%; every arm TMRT bitwise 24/24.
+  Measured 24-tile engine makespans: 12x2 = 831 s < 8x3 = 1138 s < 6x4 =
+  1370 s < 4x6 = 1949 s < 3x8 (current) = 2519 s. E2E projections (not
+  acceptance): 12x2 chain ~ 2123 s ~ 3.11x, 8x3 ~ 2430 s ~ 2.72x vs the
+  S10-36 anchor. BOTH divisor shapes refuse under the current C6-42 model
+  at every observed live budget (36.7-50.8 GB). STAGE-B TARGET:
+  review-gated, shape-aware reservation recalibration (pixel-proportional
+  coefficient validated at 1024^2 AND a larger shape + explicit safety
+  margin; reject semantics, ResourceAdmissionError surface, public API,
+  and login-node refusal behavior preserved exactly) enabling the 12x2
+  run-phase shape, with 8x3 as the measured fallback; then a full E2E
+  bitwise A/B vs the x01_b1 anchor (3838.3 s). Stage-B protocol to be
+  frozen before any further timing. Raw x03 records archived to Dropbox
+  `campaign_s11/phase2/phase2b_x03_raw_records.tar.gz`
+  (sha256 697dadf451544af39d7443011f3d189169732fcbfb7f9a9a37cd1c06b58da43c).

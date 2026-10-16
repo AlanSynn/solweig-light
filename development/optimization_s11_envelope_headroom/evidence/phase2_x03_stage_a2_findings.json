@@ -1,0 +1,40 @@
+{
+  "campaign": "s11-envelope-headroom",
+  "phase": "2-x03-stage-a2",
+  "title": "X03 Stage-A2 findings (retry job 14098987): wave_12x2 = 415.7 s makespan -> 831 s for 24 tiles (2 waves), the best measured shape; both divisor shapes refuse under the current C6-42 reservation model; Stage-B target = review-gated reservation recalibration + 12x2 (fallback 8x3)",
+  "protocol": "evidence/phase2_x03_stage_a_protocol.json (stage_a2_amendment at cac80fc9; stage_a2_retry amendment committed eeb242e5 BEFORE the retry submission)",
+  "retry_job": "14098987 (COMPLETED 00:37:02): PREP_COVERAGE_OK (12 tiles), STAGE_A2_DONE, every arm TMRT_0_0 bitwise 24/24 vs p2_ref_TMRT.tif, product diff frozen (api.py + shadows.py, sha256 2a2ea8817dd8376cac594b0381a1bf3d432b0ea057eced3bf7b6f5d69f2a5394)",
+  "first_attempt_invalid": {
+    "job": "14098639 (COMPLETED 00:37:29), preserved under raw phase2/aborted_14098639/",
+    "cause": "driver EXTRA_SHAS omitted metfile entries for the six extension tiles; run_utci_tiles' required-folder key intersection silently dropped them; all six extension-tile wave jobs died in ~2 s with ValueError('No tiles to run; ... not found in preprocess_dir')",
+    "consequence": "wave_8x3 and wave_12x2 measured 6-way concurrency (child_dumps=6), not the frozen 8/12-way arms; records INVALID as A2 arms",
+    "valid_parts": "engine_1x3 engine 306.9 s, engine_1x2 engine 345.9 s (tile 0_0, TMRT pass) -- corroborate the retry's 301.7/347.9 within 1.7%",
+    "incidental_6way": "6x3 wave makespan 368.0 s (engines 290-304); 6x2 wave makespan 386.6 s (engines 320.7-331.8); diagnostic only, not A2 arms"
+  },
+  "measured_retry": {
+    "wave_makespans_s": {"8x3": 379.4, "12x2": 415.7},
+    "wave_engines_s": {"8x3": [293.5, 296.6, 298.9, 300.4, 300.5, 305.7, 305.8, 309.0],
+                        "12x2": [328.8, 330.1, 331.0, 331.3, 332.2, 332.3, 334.7, 335.8, 336.9, 339.5, 339.9, 341.6]},
+    "standalone_engines_s": {"1x2": 347.9, "1x3": 301.7},
+    "child_peak_rss_gib": {"8x3": [0.73, 0.76], "12x2": [0.72, 0.77], "1x3": 0.76, "1x2": 0.76},
+    "admission_verdicts_current_model": {"8x3": "refused (live budget fits 4)", "12x2": "refused (live budget fits 4)",
+      "note": "live budget varies per job (47.1 GB this retry, 50.8 GB Stage-A, 36.7 GB X01 E2E); under every observed budget both divisor shapes refuse while 6x4 refused and 4x6 admitted at Stage-A's 50.8 GB"},
+    "contention_stretch": "engines stretch <= 5% from standalone to full-node waves (12 children at 2 threads: 328.8-341.6 vs 347.9 standalone -- 12-way waves run FASTER per child than a standalone 2-thread run because cache/affinity effects offset contention)"
+  },
+  "thread_curve_standalone_engine_s": {"1": 492.0, "2": 347.9, "3": 301.7, "4": 299.9, "6": 281.4, "8": 263.6,
+    "note": "1x8/1x6/1x4/1x1 from Stage-A (job 14098252); 1x3/1x2 from this retry; thread scaling above 2 threads is nearly flat (+15% total from 8 to 3 threads)"},
+  "ranking_24_tile_engine_makespan_s": {"12x2": 831, "8x3": 1138, "6x4": 1370, "4x6": 1949, "3x8_current": 2519,
+    "method": "wave_makespan x ceil(24/jobs); 6x4/4x6/3x8 measured in Stage-A, 8x3/12x2 in this retry"},
+  "e2e_projection": {
+    "12x2": "chain ~= 3838.3 - (2545.9 - 831) = ~2123 s = 35.4 min ~= 3.11x vs S10-36 A-arm (6612.9 s); SVF phase unchanged in this substitution, measured by the E2E A/B",
+    "8x3": "chain ~= 3838.3 - (2545.9 - 1138) = ~2430 s = 40.5 min ~= 2.72x",
+    "gate": "these are projections; the Stage-B E2E bitwise A/B vs the x01_b1 anchor is the acceptance measurement"
+  },
+  "conclusions": {
+    "shape": "12x2 is the Stage-B target: 2 waves, best measured makespan, RSS envelope identical to every other shape (0.72-0.77 GiB/child). 8x3 is the measured fallback (admits under a 2x-recalibrated model if 12 does not).",
+    "recalibration_required": "the current C6-42 simulation reservation (9.17 GiB per 1024^2/153-patch job) refuses both target shapes on every observed live budget; measured per-child peak RSS is 0.72-0.77 GiB (>11x conservative). The recalibration must be shape-aware (pixel-proportional coefficient validated at 1024^2 AND a larger shape, plus an explicit safety margin), preserve plan_phase_admission reject semantics, the ResourceAdmissionError surface, and the public API exactly.",
+    "review_gate": "recalibration is a scheduling-policy amendment to the accepted C6-42 decision: independent review required before acceptance; alternatives (per-shape measured table vs pixel coefficient; margin size) addressed in the Stage-B protocol; login-node refusal behavior must be preserved (12x2 still refuses inside the small shared cgroup budget).",
+    "margin_arithmetic": "at 12 workers: measured 12 x 0.77 = 9.2 GiB children + gdal cache ~4.8 GiB + parent ~0.4 GiB ~= 14.4 GiB against live budgets 36.7-50.8 GB; a 3x per-child margin (2.31 GiB/child -> 27.7 GiB + 5.2 = ~33 GiB) still fits every observed compute-node budget and still refuses on the login node's 2.1-2.4 GB"
+  },
+  "raw_evidence": "phase2: x03_{wave_8x3,wave_12x2,engine_1x3,engine_1x2}.json + wave_*/ per-child records + seams + x03b_14098987.out; first attempt under aborted_14098639/; archived with the phase2 x03 records (see manifest sha256 in the REGISTER and Dropbox campaign_s11/phase2/)"
+}
