@@ -96,3 +96,58 @@ To review the prospective tracked set without adding files, run:
 ```sh
 git ls-files --others --exclude-standard
 ```
+
+## S11 closure archive (2026-10-16)
+
+Uploaded with `dbxcli` to Dropbox `Alan Synn/Research/solweig-light/`:
+
+- `campaign_s11/phase0/` — S11 phase-0 attribution raw records + SVF
+  snapshot corpus (~1.9 GB bitwise evidence; sha256 lists in the S11-1
+  REGISTER entry, git history `development/optimization_s11_envelope_headroom/REGISTER.md`).
+- `campaign_s11/phase1/phase1b_raw_records.tar.gz` — X02 raw records.
+- `campaign_s11/phase2/phase2b_x03_raw_records.tar.gz` (sha256
+  `697dadf451544af39d7443011f3d189169732fcbfb7f9a9a37cd1c06b58da43c`) and
+  `campaign_s11/phase2/phase2c_b0_raw_records.tar.gz` (sha256
+  `4356598da12f44b4ffe1b640bd546713073789b614b1ffb6f58d173dcce3d312`) —
+  X03 Stage-B raw records.
+- `campaign_s11/phase3/phase3_corner_raw_records.tar.gz` (sha256
+  `63f50894f90070eea95ef4357d36b8b557f9c8582ed1a8be7eedd1652db73f40`) —
+  S11-7 corner-matrix raw records.
+- `campaign_s11/phase4/phase4_x05_raw_records.tar.gz` (sha256
+  `7aa135ff28196d97859e4893f791b0b3587b1053f699404de8a4e1f664720d3b`) —
+  X05 under-fill fix: battery A/B logs, review raw inputs, single E2E run
+  record (all gates PASS; TMRT sha `3edfd91f…` bitwise == c2048s).
+- `campaign_s11/repo_cleanup_20261016/reports_bulk_20261016.tar.gz` (sha256
+  `41ca10c4e31ab0f33dfc53e767bb372c73f56a2f6aef6907e80a2eaac5ab7812`) —
+  `development/reports/` and `development/reports/characterization/` bulk
+  removed from git at the S11 closure; members are relative to
+  `development/reports/` (restore: `tar -xzf <bundle> -C development/reports`;
+  the kept subsets `contract_snapshot.json`,
+  `characterization/p7_p6_baseline`, `characterization/p8_utci_official_source`,
+  `characterization/p8_umep_source` are NOT in the bundle).
+- `campaign_s11/repo_cleanup_20261016/campaign_packets_20261016.tar.gz`
+  (sha256
+  `7beb2b3583130e12ca83010261d9ff04fdbad3404fcea8c0fb0b9c3ecfd99bb3`) —
+  whole-tree removals: `development/plans/`,
+  `development/optimization_v4/`, `development/optimization_v5_claude/`,
+  `development/optimization_n9_final/`,
+  `development/optimization_s11_envelope_headroom/`,
+  `solweig_followon_headroom/` (members relative to the repository root;
+  restore: `tar -xzf <bundle> -C <repo-root>`).
+
+Also removed at the closure: campaign-history branches
+`perf/s10-semantic-systems` and `perf/s11-envelope-headroom` (fully merged
+into main via fast-forward at `cba707db` before deletion; their commits are
+reachable from main, so no branch-only blobs exist).
+
+S11 campaign terminal summary (its REGISTER/evidence packet is inside
+`campaign_packets_20261016.tar.gz`): X02 SVF pixel-parallel twin (chain
+6612.9 → 5636.2 s, 1.173x), X01 concurrent export loop (→ 3838.3 s, 1.723x),
+X03 measured-envelope recalibration (→ 1452.6 s, 4.552x vs the post-S10
+anchor at 12x2), S11-7 corner matrix (serial c24s 10744.28 s vs c24p
+1483.90 s = 7.24x at 60.3% worker efficiency; 256^2 pair 6.90x cross-config
+bitwise; warm NOT faster, +3.86%), X05 under-fill admission defect fixed
+end-to-end (review APPROVE 0 MAJOR; E2E at the previously-refusing 2048^2
+4x6 shape bitwise vs the 1x8 record; battery FAILED sets byte-identical,
+176/3133 both arms). All numerics bitwise against the corpus goldens;
+actual_target_status remains unverified (synthetic corpus only).

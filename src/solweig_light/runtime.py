@@ -681,8 +681,9 @@ def _child_environment(options: RuntimeOptions) -> dict[str, str]:
     # cache the recalibrated simulation reservation prices, so the permitted
     # per-child envelope equals the priced envelope by construction (an LRU
     # byte ceiling, not a value-affecting knob).  Evidence:
-    # development/optimization_s11_envelope_headroom/evidence/
-    # phase2_x03_stage_{a,a2,b0}_findings.json.
+    # Dropbox Alan Synn/Research/solweig-light/campaign_s11/phase2/
+    # (phase2_x03_stage_{a,a2,b0}_findings.json; also in git history at the
+    # 2026-10-16 main cleanup's parent commit).
     from .runtime_memory import GDAL_CHILD_CACHE_CAP_BYTES, default_gdal_cache_bytes
     env['GDAL_CACHEMAX'] = str(max(
         1,

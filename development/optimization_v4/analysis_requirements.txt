@@ -1,3 +1,0 @@
-# Only the optional packet-analysis self-tests, not the SOLWEIG core runtime.
-numpy
-PyYAML

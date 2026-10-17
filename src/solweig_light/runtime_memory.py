@@ -145,8 +145,9 @@ DEFAULT_EXPORT_STREAM_BYTES = 64 * MIB
 # replaced a coefficient fit with this per-shape table).  Every entry is a
 # measured maximum; the margin below covers shape/thread variation and the
 # uncalibrated windchannel dimension.  Evidence:
-# development/optimization_s11_envelope_headroom/evidence/
-#   phase2_x03_stage_{a,a2,b0}_findings.json.
+# Dropbox Alan Synn/Research/solweig-light/campaign_s11/phase2/
+#   (phase2_x03_stage_{a,a2,b0}_findings.json; also in git history at the
+#   2026-10-16 main cleanup's parent commit).
 SIMULATION_ENVELOPE_MARGIN = 3
 # Worker children receive a GDAL block-cache ceiling capped to the same value
 # charged here (runtime._child_environment GDAL_CACHEMAX), so the permitted

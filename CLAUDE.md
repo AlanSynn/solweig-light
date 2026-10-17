@@ -14,8 +14,10 @@ in git:
   identify and verify the archived artifacts. Operational details and the archive index
   live in `development/docs/evidence_storage.md`.
 - Campaign-history branches (`handover/campaign-line`, `perf/cpu-optimization`,
-  `perf/native-optimization`) were archived the same way before branch deletion. Do not
-  recreate heavy evidence commits on new branches.
+  `perf/native-optimization`, `perf/s10-semantic-systems`,
+  `perf/s11-envelope-headroom`) were archived the same way before branch deletion
+  (the latter two after fast-forwarding main to their tips at `cba707db`,
+  2026-10-16). Do not recreate heavy evidence commits on new branches.
 - History rewriting (`git filter-repo` etc.) and repository re-creation were explicitly
   rejected — do not propose or perform them.
 - `tests/reference/` goldens stay in the repository: CI differential tests require them

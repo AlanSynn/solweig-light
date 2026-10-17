@@ -7,7 +7,8 @@ worker children receive via ``GDAL_CACHEMAX``, so the permitted envelope equals
 the priced envelope by construction).  Evidence: Stage-A/A2 (job 14098987,
 1024^2 envelope 826,736,640 B, n~40 children) and Stage-B0 (job 14100529,
 2048^2 envelope 3,852,328,960 B, cross-thread TMRT bitwise 24/24), archived
-under ``development/optimization_s11_envelope_headroom/evidence/``.
+to Dropbox ``Alan Synn/Research/solweig-light/campaign_s11/phase2/`` (and in
+git history at the 2026-10-16 main cleanup's parent commit).
 
 Each test here carries one frozen invariant (I1-I6).
 """
