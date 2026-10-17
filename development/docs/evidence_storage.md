@@ -152,6 +152,24 @@ end-to-end (review APPROVE 0 MAJOR; E2E at the previously-refusing 2048^2
 176/3133 both arms). All numerics bitwise against the corpus goldens;
 actual_target_status remains unverified (synthetic corpus only).
 
+## S12 closure (2026-10-16/17) — change summary
+
+The S11 campaign line was fast-forward merged to main at `cba707db`, then the
+lean-repo closure landed as four commits. What was touched, in one place:
+
+| commit | places modified | what and why |
+|---|---|---|
+| `05ecd6ae` S12-cleanup | `development/` (−3128 files: v4/v5/N9 packets, s11 packet, followon, `plans/`, bulk `reports/`; kept exactly the test-referenced subsets), 2 src comment evidence-pointers (`runtime.py`, `runtime_memory.py`), `tests/optimization_v6/memory/test_phase_memory_admission.py` + `test_x03_stage_b_envelope.py` docstrings, `development/README.md` (map + archive section), this file (S11 closure archive index), `CLAUDE.md` (archived-branch list) | lean-repo closure per user instruction; campaign packets archived to Dropbox `campaign_s11/repo_cleanup_20261016/` |
+| `e3346e14` S12-fix | restores `development/reports/characterization/p7_repaired_p6_baseline{,_v2}/` (132 KB, from `cba707db`); `development/README.md` kept-set list; this file | post-cleanup battery caught 35 deterministic setup errors — two test-coupled fixture packets evaded the literal-path audit |
+| `c620286b` S12-verdict | this file only (verdict record; NO code change) | battery FAILED-set parity proven; the one deviation root-caused as a numba cache-state artifact |
+| `12ff6d39` S12-baseline | this file only (+ raw records to Dropbox `campaign_s11/phase4/phase4_s12_closure_raw_records.tar.gz`, sha256 `3bbfcc16…`) | direct old-main chain measurement: b3e5ca59 = 6840.3854 s, TMRT bitwise == golden; headline 4.61× vs old main |
+
+`src/` product logic and test logic are untouched by all four commits; the
+only src/tests edits are the two evidence-pointer comments in `05ecd6ae`
+(`runtime.py`, `runtime_memory.py`) and two docstring evidence-pointer
+updates in the named `tests/optimization_v6/memory/` files — no behavior
+change anywhere.
+
 ## S12 cleanup correction (2026-10-16, post-cleanup battery)
 
 The bulk-`reports/` removal above accidentally included two TEST-COUPLED
