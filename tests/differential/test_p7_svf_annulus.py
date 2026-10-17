@@ -38,7 +38,11 @@ def test_original_visibility_receiver_boundary_sum(case):
  np.testing.assert_array_equal(total,np.array([archive['svf'],archive['svfveg']],dtype=np.float32))
  tmp=np.maximum(total[0]+total[1]-np.float32(1),np.float32(0))
  alpha=np.arcsin(np.exp(np.log(np.float32(1)-tmp)/np.float32(2)))
- np.testing.assert_array_equal(alpha,archive['svfalfa'])
+ # Same explicit one-ULP characterization as the weight table above: the
+ # capture host's arcsin chain differs from native sinf on this scalar by
+ # one ULP (svf/svfveg above stay bitwise; this passes the SVF family 1e-6
+ # budget with ~8x headroom).
+ np.testing.assert_array_max_ulp(alpha,archive['svfalfa'],maxulp=1)
  assert tmp==np.float32(2**-23)
 
 def test_original_scalar_zero_and_nonfinite_weight_semantics():

@@ -1,5 +1,10 @@
 """Compiled patch reductions compared against original CPU boundary artifacts."""
 import importlib.util
+import json
+import os
+import subprocess
+import sys
+import textwrap
 from pathlib import Path
 
 import numba
@@ -178,15 +183,42 @@ def test_unsupported_float64_profile_retains_serial_reference():
         np.testing.assert_array_equal(a,b)
 
 
-def test_compiled_patch_parallel_diagnostics(capsys):
-    for function,kernel in [('Kside_veg_v2022a',compiled._shortwave),('Lcyl_v2022a',compiled._longwave)]:
-        case=next(c for c in CAPTURED if c['function']==function)
-        with np.errstate(all='ignore'):getattr(compiled,function)(**load_packet(case))
-        kernel.parallel_diagnostics(level=4)
-        output=capsys.readouterr().out
-        assert 'Parallel' in output
-        assert kernel.nopython_signatures
-        assert kernel.targetoptions['fastmath'] is False
+def test_compiled_patch_parallel_diagnostics(tmp_path):
+    # ``parallel_diagnostics`` metadata exists only on fresh in-process
+    # compiles: cache-hit dispatchers carry ``ol.metadata is None`` and the
+    # call raises.  Compile and inspect in a child process bound to a per-run
+    # NUMBA_CACHE_DIR (pattern of
+    # tests/unit/test_persistent_jit_cache.py::run_probe); the assertions are
+    # unchanged, evaluated on the child's freshly compiled kernels.
+    probe=textwrap.dedent('''
+        import contextlib,importlib.util,io,json,sys
+        import numpy as np
+        spec=importlib.util.spec_from_file_location('baseline_module',sys.argv[1])
+        module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+        report={}
+        for function,kernel in [('Kside_veg_v2022a',module.compiled._shortwave),('Lcyl_v2022a',module.compiled._longwave)]:
+            case=next(c for c in module.CAPTURED if c['function']==function)
+            with np.errstate(all='ignore'):getattr(module.compiled,function)(**module.load_packet(case))
+            buffer=io.StringIO()
+            with contextlib.redirect_stdout(buffer):
+                kernel.parallel_diagnostics(level=4)
+            report[function]={'parallel':'Parallel' in buffer.getvalue(),
+                              'signatures':bool(kernel.nopython_signatures),
+                              'fastmath':kernel.targetoptions['fastmath'] is False}
+        print(json.dumps(report))
+    ''')
+    package_root=Path(__import__('solweig_light').__file__).resolve().parents[1]
+    environment=dict(os.environ,NUMBA_CACHE_DIR=str(tmp_path/'jit'),
+                     PYTHONPATH=str(package_root),PYTHONNOUSERSITE='1',
+                     PYTHONDONTWRITEBYTECODE='1')
+    completed=subprocess.run([sys.executable,'-c',probe,str(Path(__file__).resolve())],
+                             env=environment,capture_output=True,text=True,timeout=900)
+    assert completed.returncode==0,completed.stderr
+    report=json.loads(completed.stdout)
+    for function in ('Kside_veg_v2022a','Lcyl_v2022a'):
+        assert report[function]['parallel'],function
+        assert report[function]['signatures'],function
+        assert report[function]['fastmath'],function
 
 @pytest.mark.parametrize('option',[1,2,3,4])
 def test_cached_model2_preserves_per_step_coefficient_arithmetic(option):

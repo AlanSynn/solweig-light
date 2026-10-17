@@ -1,5 +1,10 @@
 import json
+import os
 import platform
+import subprocess
+import sys
+import textwrap
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -155,14 +160,38 @@ def test_checkpoint_without_profile_cannot_resume_profiled_run(tmp_path):
     with pytest.raises(PersistenceError, match='identity'):
         TransactionalOutputs(identity=current, resume=True, **common)
 
-def test_lowered_helpers_use_explicit_fma_without_fast_flags():
-    from solweig_light.radiation._sleef_acos import asvf_fma
-    from solweig_light.radiation._sleef_classifier import tan_array, atan_array
-    asvf_fma(np.array([.25], np.float32)); tan_array(np.array([.25], np.float32)); atan_array(np.array([.25], np.float32))
-    for dispatcher in (asvf_fma, tan_array, atan_array):
-        llvm = dispatcher.inspect_llvm(dispatcher.signatures[0])
-        assert 'llvm.fma.f32' in llvm
-        assert ' fast ' not in llvm
+def test_lowered_helpers_use_explicit_fma_without_fast_flags(tmp_path):
+    # numba disables IR inspection for cache-hit dispatchers ("Inspection
+    # disabled for cached code" -- a header-only stub is returned), so
+    # lowered-IR checks are only valid on a fresh in-process compile.  Compile
+    # and inspect in a child process bound to a per-run cache directory
+    # (pattern of tests/unit/test_persistent_jit_cache.py::run_probe); the
+    # per-dispatcher assertions are unchanged.
+    probe = textwrap.dedent('''
+        import json
+        import numpy as np
+        from solweig_light.radiation._sleef_acos import asvf_fma
+        from solweig_light.radiation._sleef_classifier import tan_array, atan_array
+        report = {}
+        for name, dispatcher in (('asvf_fma', asvf_fma),
+                                 ('tan_array', tan_array),
+                                 ('atan_array', atan_array)):
+            dispatcher(np.array([.25], np.float32))
+            llvm = dispatcher.inspect_llvm(dispatcher.signatures[0])
+            report[name] = {'fma': 'llvm.fma.f32' in llvm, 'fast': ' fast ' in llvm}
+        print(json.dumps(report))
+    ''')
+    package_root = Path(__import__('solweig_light').__file__).resolve().parents[1]
+    environment = dict(os.environ, NUMBA_CACHE_DIR=str(tmp_path / 'jit'),
+                       PYTHONPATH=str(package_root), PYTHONNOUSERSITE='1',
+                       PYTHONDONTWRITEBYTECODE='1')
+    completed = subprocess.run([sys.executable, '-c', probe], env=environment,
+                               capture_output=True, text=True, timeout=900)
+    assert completed.returncode == 0, completed.stderr
+    report = json.loads(completed.stdout)
+    for name in ('asvf_fma', 'tan_array', 'atan_array'):
+        assert report[name]['fma'], name
+        assert not report[name]['fast'], name
 
 def test_simulation_identity_embeds_full_profile(tmp_path):
     from solweig_light.identities import simulation_identity

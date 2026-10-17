@@ -77,17 +77,26 @@ def compare(event, output, delay_index=0):
 def test_original_cpu_radiation_boundaries(event, monkeypatch, compact):
     references = [item for item in MANIFEST['events'] if item['boundary'] == 'output' and item['timestep'] == event['timestep']]
     captured = []
+    from solweig_light.radiation import cylinder_longwave
     for name in {item['function'] for item in references} - {'Solweig_2022a_calc'}:
         # The compiled longwave driver calls its module-local ordered sweep.
         # Observe that sweep directly so all original intermediate fields remain
         # checked; do not drop the nested boundary from the oracle.
         owner = patch_radiation if name == 'define_patch_characteristics' else engine
-        original = getattr(owner, name)
+        # The C6 cylinder specialization dispatches the longwave boundary
+        # through the private demand profile (cylinder_longwave.Lcyl_v2022a_by_demand,
+        # call-time import in engine.Solweig_2022a_calc).  Observe that seam and
+        # record it under the original boundary name so the upstream-captured
+        # oracle stays authoritative; the default FULL_DIAGNOSTICS demand runs
+        # the untouched public full path, returning the recorded six fields.
+        seam = 'Lcyl_v2022a_by_demand' if name == 'Lcyl_v2022a' else name
+        module = cylinder_longwave if name == 'Lcyl_v2022a' else owner
+        original = getattr(module, seam)
         def wrapper(*args, _original=original, _name=name, **kwargs):
             result = _original(*args, **kwargs)
             captured.append((_name, deepcopy(result)))
             return result
-        monkeypatch.setattr(owner, name, wrapper)
+        monkeypatch.setattr(module, seam, wrapper)
     with np.errstate(all='ignore'):
         result = engine.Solweig_2022a_calc(**load_input(event, compact=compact))
     captured.append(('Solweig_2022a_calc', result))

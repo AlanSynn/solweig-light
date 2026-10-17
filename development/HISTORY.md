@@ -214,27 +214,32 @@ These are the rules every later campaign measured against:
 - **Test battery**: `pytest tests/differential tests/integration tests/unit`
   on a dedicated compute node (sbatch, cpu-small, 24 CPU/96G, detached git
   worktree at the exact commit, shared NUMBA_CACHE_DIR). Clean baseline:
-  **176 failed / 3133 passed** — a stable, byte-identical FAILED set of
-  pre-existing environmental failures (missing `.upstream` tree pieces,
-  login-cgroup thread limits, and similar), identical across arms; verdicts
-  are FAILED-set diffs, never absolute counts. Login-node batteries are
-  smoke only. Post-merge, the battery collects **3309** tests (the old
+  **176 failed / 3133 passed** — a stable, byte-identical FAILED set that
+  was, in fact, heterogeneous (the era-2 "environmental failures" label was
+  imprecise; corrected by the 2026-10-17 baseline-hygiene audit): mostly
+  cross-platform last-bit divergences of the macOS-arm64 original captures
+  on the Linux battery host (walls aspect/arctan path, svfalfa), plus stale
+  test seams (the C6 `Lcyl_v2022a_by_demand` dispatch) and stale test pins
+  (the C6-42 reservation repricing vs a 4 GiB test budget), a warm-numba-cache
+  inspection artifact, and 9 platform-bound P7 measurement-harness guards.
+  Identical across arms; verdicts are FAILED-set diffs, never absolute
+  counts. Login-node batteries are smoke only. Post-merge, the battery
+  collects **3309** tests (the old
   `--ignore=tests/unit/test_exact_cpu_pairs.py` workaround became obsolete —
   era 7).
   - Three of the 176 baseline failures belong to
-    `tests/unit/test_p7_serial_variant_harness.py`: their frozen protocol
-    references characterization evidence (`p7_persistent_jit_distinct_variant`,
-    `p7_pairs_v4`) that was removed with the bulk `development/reports/` at
-    the S11 closure (raw-evidence class — archived, deliberately NOT
-    restored). The harness, its tool and its protocol stay in the repo, so
-    the collection count is unchanged; the three failures are a permanent,
-    understood part of the baseline.
-- **Known battery artifact** (documented so nobody re-diagnoses it):
-  `test_compiled_patch_parallel_diagnostics` fails on a WARM numba cache
-  and passes on a fresh one — `parallel_diagnostics()` metadata exists only
-  on fresh in-process compiles (cache-hit dispatchers carry
-  `ol.metadata is None`). Verified by fresh-cache discrimination (single +
-  full-file 635/635 PASS). Not a product regression.
+    `tests/unit/test_p7_serial_variant_harness.py`. The era-3 note below the
+    S12 baseline-hygiene commit records their actual blockers (path drift and
+    untracked raw scenes — not, as first written, the S11 evidence removal).
+- **Known battery artifact — eliminated 2026-10-17**: `parallel_diagnostics()`
+  metadata exists only on fresh in-process compiles (cache-hit dispatchers
+  carry `ol.metadata is None`), and numba disables IR inspection for
+  cache-hit dispatchers ("Inspection disabled for cached code" — a
+  header-only stub), so `test_compiled_patch_parallel_diagnostics` and
+  `test_lowered_helpers_use_explicit_fma_without_fast_flags` failed on the
+  warm shared battery cache and passed fresh. Both tests now compile and
+  inspect in a subprocess bound to a per-run `NUMBA_CACHE_DIR` (the
+  `test_persistent_jit_cache.py` probe pattern); assertions unchanged.
 
 ## Era 3 — the v4–N9 campaign line (2026-09; merged at handover)
 

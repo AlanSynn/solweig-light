@@ -135,8 +135,13 @@ def test_real_multiple_tile_workers(tmp_path):
             for path in list(folder.iterdir()):
                 if path.is_file() and '_0_0.' in path.name:
                     shutil.copy2(path, path.with_name(path.name.replace('_0_0.', '_1_0.')))
+    # The scheduler prices each child with the C6-42 measured-RSS envelope
+    # (simulation_reservation): these duplicate tiles need 2 x ~2.82 GiB plus
+    # the 0.4 GiB parent footprint.  The historical 4 GiB pin predated that
+    # repricing and refused both workers deterministically on every host; 8 GiB
+    # keeps this test about concurrent workers, not about the budget.
     with runtime_options(RuntimeOptions(workers=2, cpu_budget=2,
-                                        memory_budget_bytes=4 * 1024**3)):
+                                        memory_budget_bytes=8 * 1024**3)):
         run_utci_tiles(str(tmp_path), str(prepared), '2020-07-18', **FLAGS)
     compare_original(tmp_path, '0_0')
     compare_original(tmp_path, '1_0')
@@ -207,15 +212,25 @@ def test_changed_input_cannot_publish_geometry(tmp_path, monkeypatch, boundary):
         dataset.FlushCache()
         dataset = None
 
-    name = 'read_raster' if boundary == 'read' else 'svf_calculator'
-    original = getattr(pipeline, name)
+    def make_racing(original):
+        def racing_read(*args, **kwargs):
+            result = original(*args, **kwargs)
+            mutate()
+            return result
+        return racing_read
 
-    def racing_read(*args, **kwargs):
-        result = original(*args, **kwargs)
-        mutate()
-        return result
-
-    monkeypatch.setattr(pipeline, name, racing_read)
+    if boundary == 'read':
+        # The input reader is called through the pipeline module global.
+        monkeypatch.setattr(pipeline, 'read_raster',
+                            make_racing(pipeline.read_raster))
+    else:
+        # GeometryRecipe.produce imports the shared numerical producer from
+        # its home module at call time (geometry/recipe.py: ``from .svf
+        # import svf_calculator_compact``); patch that seam so the racing
+        # mutation actually lands inside the guarded production window.
+        import solweig_light.geometry.svf as svf_module
+        monkeypatch.setattr(svf_module, 'svf_calculator_compact',
+                            make_racing(svf_module.svf_calculator_compact))
     with pytest.raises(InputChangedError, match='changed during execution'):
         run_direct(tmp_path, prepared, FLAGS)
     assert changed
