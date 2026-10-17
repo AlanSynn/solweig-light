@@ -1041,6 +1041,12 @@ def plan_phase_admission(
     requested = len(jobs) if active_workers is None else _positive_int(
         active_workers, "active_workers"
     )
+    # The concurrent demand can never exceed the number of jobs: a phase with
+    # fewer tiles than the worker width must admit at the job count instead of
+    # refusing with a misleading "only N fit" message (X05; S11-7 corner-matrix
+    # discovery, user-approved public-behavior change). Genuine over-commit --
+    # top-requested reservations that do not fit the base -- still refuses.
+    requested = min(requested, len(jobs))
     ordered = sorted(
         (item.total_bytes for item in reservations), reverse=True
     )

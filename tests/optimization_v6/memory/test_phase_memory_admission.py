@@ -644,3 +644,68 @@ def test_reservation_inventory_reports_plane_equivalents():
     assert inv["live_array_plane_equivalents_f32"] == 591
     assert sim.total_bytes == 2_916_802_560
     assert json.dumps(inv)  # audit dict stays JSON-safe
+
+
+def test_underfill_admits_at_job_count():
+    """X05 (user-approved public-behavior change, 2026-10-16): a phase whose
+    job count is below the requested worker width admits at the job count
+    instead of refusing with a misleading "only N fit" message.  Discovered
+    by the S11-7 corner matrix (1-tile 2048^2 scene at workers>=2); present
+    on main before the campaign.  The concurrent demand can never exceed the
+    number of jobs."""
+    one = _worst_jobs(PHASE_SIMULATION, 1)
+    plan = plan_phase_admission(
+        one, budget_bytes=36 * GIB, active_workers=4,
+        gdal_cache_bytes=GDAL_32GIB_HOST, policy="reject",
+    )
+    assert plan.status == "admitted"
+    assert plan.admissible_workers == 1
+    assert plan.admitted_count == 1 and plan.deferred_count == 0
+
+    geo_one = [
+        PhaseJob(PHASE_GEOMETRY, WORST_ROWS, WORST_COLS, WORST_PATCHES,
+                 WORST_WIND, WORST_BLOCK, tile="geo_0")
+    ]
+    geo_plan = plan_phase_admission(
+        geo_one, budget_bytes=36 * GIB, active_workers=4,
+        gdal_cache_bytes=GDAL_32GIB_HOST, policy="reject",
+    )
+    assert geo_plan.status == "admitted"
+    assert geo_plan.admissible_workers == 1
+
+
+def test_underfill_queue_policy_admits_not_queues():
+    """X05: under the queue policy an under-filled width is admitted, not
+    deferred -- min(requested, len(jobs)) == admissible."""
+    one = _worst_jobs(PHASE_SIMULATION, 1)
+    plan = plan_phase_admission(
+        one, budget_bytes=36 * GIB, active_workers=4,
+        gdal_cache_bytes=GDAL_32GIB_HOST, policy="queue",
+    )
+    assert plan.status == "admitted"
+    assert plan.admitted_count == 1 and plan.deferred_count == 0
+
+
+def test_overcommit_four_jobs_two_fit_still_refuses():
+    """X05 guard: the clamp only removes the under-fill refusal.  Genuine
+    over-commit -- four jobs where only two fit the base -- still refuses
+    with the unchanged message (mirrors the geometry-adapter pin)."""
+    four = _worst_jobs(PHASE_SIMULATION, 4)
+    with pytest.raises(ResourceAdmissionError, match="requested 4 concurrent"):
+        plan_phase_admission(
+            four, budget_bytes=9 * GIB, active_workers=4,
+            gdal_cache_bytes=GDAL_32GIB_HOST, policy="reject",
+        )
+
+
+def test_production_12x2_width_unchanged_by_clamp():
+    """X05 guard: the accepted E2E configuration (24 tiles, width 12) plans
+    identically -- min(12, 24) == 12, all twelve admitted, none deferred."""
+    jobs = _worst_jobs(PHASE_SIMULATION, 24)
+    plan = plan_phase_admission(
+        jobs, budget_bytes=36 * GIB, active_workers=12,
+        gdal_cache_bytes=GDAL_32GIB_HOST, policy="reject",
+    )
+    assert plan.status == "admitted"
+    assert plan.admissible_workers == 12
+    assert plan.admitted_count == 12 and plan.deferred_count == 0
