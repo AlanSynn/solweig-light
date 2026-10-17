@@ -525,7 +525,14 @@ in the source records themselves),
     pure helpers, never `validate_protocol`), the two `p8_*`
     characterization subsets (read by `tests/scientific/`),
     `contract_snapshot.json`, `scientific_release_exceptions.json`.
-    Expected post-removal battery: 3300 collected, 0 failed.
+  - *Post-removal battery verdict*: sbatch job 14143334 at the removal
+    commit: **3237 collected, 3237 passed, 0 failed — FAILED set empty.**
+    The pre-registered FAILED-set expectation held exactly; the
+    pre-registered collection count (3300) was a misprediction: the two
+    deleted harness modules carried 72 tests, not just the 9 guards — the
+    other 63 were passing tests of the same retired harness machinery
+    (3309 − 72 = 3237, count re-verified by collection at `08bb59db`).
+    The canonical battery baseline is now **0 failed / 3237 passed**.
 
 ## Performance summary (verified chain)
 

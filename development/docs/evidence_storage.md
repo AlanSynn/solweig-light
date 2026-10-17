@@ -371,7 +371,13 @@ commits:
   through the `run_exact_cpu_pairs` → `tests/unit/test_exact_cpu_pairs.py`
   chain, which uses only the pure helpers), the `p8_*` characterization
   subsets, `contract_snapshot.json`, `scientific_release_exceptions.json`.
-  Expected post-removal battery: 3300 collected, 0 failed.
+- **Post-removal battery verdict** (2026-10-17): sbatch job **14143334**
+  at the removal commit: **3237 collected, 0 failed — FAILED set empty**;
+  the canonical battery is now fully green. The pre-registered FAILED-set
+  expectation held exactly; the collection count was mispredicted as 3300
+  because the deleted harness modules carried 72 tests (the 9 guards plus
+  63 passing tests of the same retired machinery), not just the 9 —
+  3309 − 72 = 3237, re-verified by collection at `08bb59db`.
 
 Archive (Dropbox `Alan Synn/Research/solweig-light/repo_closure_20261017/`):
 
@@ -380,6 +386,9 @@ Archive (Dropbox `Alan Synn/Research/solweig-light/repo_closure_20261017/`):
   (+ `.sha256` sidecar), with `MANIFEST_harness_tmp.txt`,
   `harness_removal_list.txt` (the 140 paths) and the pre-registered
   expectation file.
-- `battery_hygiene_raw_records.tar.gz` — job script, sbatch output, full
-  log, FAILED list, divergence-generation script (uploaded after the
-  post-removal battery; see below for its sha256).
+- `battery_hygiene_raw_records.tar.gz` (12 members) — both batteries' job
+  scripts, sbatch outputs, full logs, FAILED lists, the pre-registered
+  expectations, the divergence-generation script and the recorded
+  divergence table —
+  sha256 `806671a0c2eb6b99465df1a848d58659fb426043393d28e2270671298cd4e712`
+  (+ `.sha256` sidecar).
