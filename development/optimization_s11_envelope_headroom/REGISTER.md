@@ -280,3 +280,47 @@ nothing pushed.
   63f50894f90070eea95ef4357d36b8b557f9c8582ed1a8be7eedd1652db73f40).
   actual_target_status: **unverified** (synthetic corpus only). main
   untouched; nothing pushed.
+
+## S11-8 — X05: under-fill admission defect FIXED end-to-end (2026-10-16, user-approved)
+
+User decisions (verbatim): 1번 진행 (fix the under-fill defect), 2번 보류
+(cross-phase pipelining held), 3번 복원 (restore .upstream/SOLWEIG-GPU —
+fresh clone of github.com/nvnsudharsan/solweig-gpu, HEAD 0d7fe742 ==
+the docs/p5_optional.md pin; .upstream/ gitignored), 4번 유지 (census
+lockout pricing kept). Full arc on this branch, main untouched:
+protocol `evidence/phase4_underfill_fix_protocol.json` frozen
+pre-implementation at fce148f3; fix = ONE line in
+plan_phase_admission — `requested = min(requested, len(jobs))` — plus
+4 behavior pins (ba9e6652); independent adversarial review APPROVE,
+0 MAJOR (record 2d04a661: all 7 pins verified; both under-fill pins
+proven to FAIL on a git-archive of pre-fix fce148f3 while both
+non-regression guards pass on BOTH sides; counterexample hunt clean;
+bonus accuracy: reject-message top-slice now truthful, planner now
+matches runtime.plan_admission's long-standing clamp runtime.py:581;
+finding-1 docstring corrected forward — 3 fit at 9 GiB, not 2);
+compute-node battery A/B (worktrees at the exact commits, clean
+24-CPU/96G cgroups, jobs 14123731 fce148f3 / 14123732 ba9e6652):
+176 failed / 3133 passed BOTH arms with byte-IDENTICAL FAILED sets,
+0 admission/memory failures -> nothing changed outside the intended
+under-fill admission. E2E freeze f1cefc89 (single-run budget) then ONE
+run (job 14124331): the previously-refusing 2048^2 single-tile chain at
+4x6 completes WITHOUT ResourceAdmissionError; admission echo status
+"admitted", admissible_workers=1, per-job 12,261,629,952 B (== c2048s
+record and frozen gate); TMRT 24 bands, finite, sha256
+3edfd91fa30649a2c924632b3436d1360c829a5cc3ab05d5eda2b0c8f3c768a4 ==
+the 1x8 c2048s record (cross-thread determinism at the new shape).
+Chain timing informational only (walls 5.90/6.39, svf 588.0/630.8,
+run 1178.2/1303.8, chain 1772.1/1941.0 s vs c2048s 1x8) — NO
+performance claim. Battery-baseline note: with .upstream restored,
+LOGIN-node batteries still fail 675/2167 (numba thread limit vs the
+login cgroup) — login batteries are smoke-only; the clean compute-node
+baseline is 176 failed / 3133 passed (identical sets across arms).
+Consequences: scenes with fewer tiles than the requested width now
+admit at the job count (reject) or report admitted with no phantom
+deferral (queue); the S11-7 c2048p refusal is reclassified from a
+scheduling constraint to a fixed defect; the envelope table is
+unchanged; main still carries the defect. Raw records archived:
+campaign_s11/phase4/phase4_x05_raw_records.tar.gz (sha256
+7aa135ff28196d97859e4893f791b0b3587b1053f699404de8a4e1f664720d3b).
+Findings `evidence/phase4_underfill_fix_findings.json`. actual_
+target_status: **unverified** (synthetic corpus only). Nothing pushed.
