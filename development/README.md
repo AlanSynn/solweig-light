@@ -12,9 +12,9 @@ contract, campaigns, closure — is **[HISTORY.md](HISTORY.md)**.
 | [HISTORY.md](HISTORY.md) | the single sequential history document (everything else was archived 2026-10-17) |
 | [docs/evidence_storage.md](docs/evidence_storage.md) | evidence-storage policy + Dropbox archive index (sha256 lists) |
 | [benchmarks/protocols/comparison_v1.json](benchmarks/protocols/comparison_v1.json) | machine-readable numerical authority read by the differential/integration suites |
-| [benchmarks/protocols/p7_persistent_jit_serial_variant/](benchmarks/protocols/p7_persistent_jit_serial_variant/) | frozen harness protocol of `tests/unit/test_p7_serial_variant_harness.py` |
-| [reports/](reports/) | what live tests read: `contract_snapshot.json`, the characterization subsets (`p7_p6_baseline`, `p7_repaired_p6_baseline{,_v2}`, `p8_utci_official_source`, `p8_umep_source`) and `scientific_release_exceptions.json` |
-| [tools/](tools/) | the six harness-exercised scripts (`run_exact_cpu_pairs`, `summarize_exact_cpu_pairs`, `capture_exact_pipeline`, `benchmark_p7_pipeline`, `run_p7_serial_variant`, `characterize_inputs`) + `evidence_archive_20261013/` |
+| [benchmarks/protocols/p7_persistent_jit_serial_variant/](benchmarks/protocols/p7_persistent_jit_serial_variant/) | frozen protocol read by `tools/run_p7_serial_variant.py` (kept through the `run_exact_cpu_pairs` chain — see below) |
+| [reports/](reports/) | what live tests read: `contract_snapshot.json`, the characterization subsets (`p8_utci_official_source`, `p8_umep_source`) and `scientific_release_exceptions.json` |
+| [tools/](tools/) | the five exactness scripts (`run_exact_cpu_pairs`, `summarize_exact_cpu_pairs`, `capture_exact_pipeline`, `run_p7_serial_variant`, `characterize_inputs`) + `evidence_archive_20261013/`. `run_exact_cpu_pairs` (exercised by `tests/unit/test_exact_cpu_pairs.py`) imports `run_p7_serial_variant`, which reads the frozen protocol above — that chain is why both stay |
 | [experiments/optimization_v8/packaging/build_native.py](experiments/optimization_v8/packaging/build_native.py) | the single surviving experiments file: collection-time import of `tests/optimization_v8/packaging/conftest.py` (restored at the post-closure audit) |
 | optimization_v6_continue/evidence/, optimization_v7_backends/evidence/captures/ (capture manifest + `b7_02_fixtures.npz` module-loaded by the v7 suite), optimization_v8_native_default/evidence/{installed,dx_baseline}, optimization_s10_semantic_systems/evidence/ | packet evidence read by `tests/optimization_v6/`, `tests/optimization_v7/`, `tests/optimization_v8/`, `tests/optimization_s10/` |
 
@@ -36,8 +36,8 @@ at the repository root, so their paths cite the pre-restructure layout:
 `reports/...` means `development/reports/...`, `tools/...` means
 `development/tools/...`. Records are retained as written (retain-don't-edit).
 The kept harness tools resolve paths via `parents[1]`, which is
-`development/` today; `characterize_inputs.py` and
-`benchmark_p7_pipeline.py` are sha-pinned by their tests and must not be
-modified. The known baseline failures of
-`tests/unit/test_p7_serial_variant_harness.py` are described in
-[HISTORY.md](HISTORY.md) (era 2, test battery).
+`development/` today; `characterize_inputs.py` is sha-pinned by its test and
+must not be modified. `benchmark_p7_pipeline.py` and the two P7 harness test
+modules it and the serial-variant protocol served were removed 2026-10-17
+(the baseline-hygiene closure: user-directed removal of the platform-bound
+harness guards; archived under `repo_closure_20261017/`).
