@@ -1,5 +1,13 @@
 # Numerical contract under P0 characterization
 
+> **Archived evidence (2026-10-17 note):** the P0-era evidence records under
+> `development/reports/` cited below (geometry/boundary/capture/tuning and
+> installed-verification JSONs) were removed at the 2026-10-16 lean-repo
+> closure — Dropbox `Alan Synn/Research/solweig-light/campaign_s11/repo_cleanup_20261016/reports_bulk_20261016.tar.gz`
+> (sha256 `41ca10c4…`), also recoverable from git history at `cba707db`.
+> The machine-readable authority `development/benchmarks/protocols/comparison_v1.json`
+> remains in the repository. References are retained as historical.
+
 Status: **frozen P0 comparison proposal; not yet validated for optimization**.
 The machine-readable authority is `development/benchmarks/protocols/comparison_v1.json`,
 covering 96 named component return fields with units and context-sensitive rules.

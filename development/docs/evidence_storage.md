@@ -276,4 +276,6 @@ TRUE at its recorded location `docs/upstream_patches/wrf_timestamp_v1.patch`
 `tests/optional` shows the same 4 pre-existing collection errors as before
 the closure (dev venv lacks the optional extras; no test file changed).
 Raw records (battery log + FAILED set, delete manifest, bundle sha256)
-are in the local scratch `closure_20261017/` for the next archive bundle.
+are archived to Dropbox
+`repo_closure_20261017/battery_closure_raw_records.tar.gz` (sha256
+`581778a0f9c12db41f83f124227452759c7aa592cc7b5e4b26ec647f97bf0042`).

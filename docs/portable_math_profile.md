@@ -1,5 +1,10 @@
 # Portable math profile v1 — design and admission policy
 
+> **Archived evidence (2026-10-17 note):** `development/reports/characterization/p8_portable_profile_v1/`
+> (policy.json, promotion records) was removed at the 2026-10-16 lean-repo
+> closure — Dropbox `Alan Synn/Research/solweig-light/campaign_s11/repo_cleanup_20261016/reports_bulk_20261016.tar.gz`
+> (sha256 `41ca10c4…`), also recoverable from git history at `cba707db`.
+
 Status: integrated into the development runtime after two-platform review; release and renewed performance qualification remain incomplete. The admission policy below was declared before integration and remains unchanged. The user explicitly authorized developing a versioned CPU-native portable math profile against the validated original SLEEF reference, with Cura disagreements retained. The separate approved SVF/UMEP release exceptions do not waive this profile's numerical gates. This document and `development/reports/characterization/p8_portable_profile_v1/policy.json` predeclare the implementation contract and admission gates before production integration.
 
 ## Reference amendment and scope

@@ -130,31 +130,20 @@ rather than silently falling back. Evidence:
 | [compatibility](docs/compatibility.md) | SOLWEIG-GPU compatibility surface, companion distribution |
 | [runtime](docs/runtime.md), [cache policy](docs/cache_policy.md) | tiling/threads behavior, cache and restart semantics |
 | [optional environment](docs/optional_environment.md) | ERA5/WRF/forcing extras |
-| [performance](development/docs/performance.md), [provenance](docs/provenance.md) | measurement records and evidence storage rules |
-| [progress](development/docs/progress.md) | port log: P0–P8 phase gates, what passed when |
+| [provenance](docs/provenance.md) | behavioral reference, evidence storage rules |
+| [history](development/HISTORY.md) | the consolidated sequential record: port, exactness contract, every campaign, evidence map |
 
 ## How this was developed
 
-The full optimization history is recorded, not narrated — every campaign
-kept its own packet with rules, evidence, and a terminal record:
-
-- **[docs/optimization_campaigns.md](development/docs/optimization_campaigns.md)** — the
-  map: each campaign (v4 process discipline → v5/C5 fused-kernel era →
-  v6/C6 demand-specific radiation era → v7 ISPC backends → v8 native-default
-  attempt → n9 final), what landed in `src/` per era with commit anchors,
-  and which records are provenance vs. measurement. If you want to know why
-  a given line of `src/` looks the way it does, start there.
-- **`development/optimization_v4/` … `development/optimization_n9_final/`** —
-  the campaign packets themselves (strategy catalogs, dossiers, evidence,
-  selection and merge manifests).
-  `development/optimization_n9_final/FINAL_SELECTION.json` is the terminal
-  decision record of the whole line.
-- **`tests/optimization_v5/` … `tests/optimization_v8/`** — the gate tests
-  each campaign shipped with its changes.
-- Superseded and invalidated records are retained deliberately and never
-  edited (see "Measured-vs-provenance discipline" in the campaign map); if a
-  document cites a number, the chain from that number to raw data is
-  recoverable.
+The full history is consolidated in
+**[development/HISTORY.md](development/HISTORY.md)** — the port (P0–P8), the
+exactness contract, the v4–N9 campaign line, the S10/S11 campaigns and the
+terminal state, with commit anchors and the evidence map. The per-campaign
+process documents and packets were archived at the 2026-10-17 closure
+(Dropbox `repo_closure_20261017/` and `campaign_s11/repo_cleanup_20261016/`;
+deleted trees are also recoverable from git history). The gate tests each
+campaign shipped remain under `tests/optimization_v5/` …
+`tests/optimization_v8/` and `tests/optimization_s10/`.
 
 ## Verification
 
@@ -170,24 +159,19 @@ candidate runtime.
 
 ## Status
 
-Correctness-first: the P0–P6 port gates passed independent review (P6: 3,029
-core, 78 optional, 34 forcing-only installed tests, no skips — see
-[progress](development/docs/progress.md) and the per-phase reports under
-`development/reports/`).
-A local exact optimization matrix (1,024-pixel-block, four-thread setting;
-1.627 median paired ratio in the primary geometry-warm cell) passed
-independent promotion review and installed-wheel verification — local
-Apple M1 Pro candidate-to-candidate evidence, not an original-upstream
-speedup claim; see
-[the report](development/reports/local_cpu_optimization.md).
-
-Still open before a release: the full original-upstream and tuned-CPU
-matrix (P7/P8), larger 2048/default-3600 or explicit memory-limit coverage,
-multi-day execution, final-source Linux evidence and hosted CI. Four
-approved inherited scientific exceptions remain failed and documented; they
-do not close the remaining release gates. `development/plans/TASKS.yaml` and
-`development/plans/SOLWEIG_LIGHT_IMPLEMENTATION_PLAN.md` carry the
-completion gates.
+Development is **closed** (2026-10-17). The port gates passed independent
+review (P6: 3,029 core, 78 optional, 34 forcing-only installed tests, no
+skips). The optimization campaigns (v4–N9, S10, S11) are terminal and merged
+to main at `cba707db`: on the 24×1024² synthetic-corpus chain (24 steps,
+24-CPU node), the end-to-end wall time went from **6840.4 s** (pre-campaign
+main) to **1483.9 s** = **4.61×**, with TMRT outputs **bitwise identical**
+to the corpus goldens; serial→parallel at the same shape is 7.24×. All
+measurements are on the synthetic corpus (`actual_target_status` unverified)
+and one node class; see `development/HISTORY.md` for the verified numbers,
+rejected directions, and standing caveats. Four approved inherited scientific
+exceptions remain failed and documented
+([model deviations](docs/model_deviations.md)); P8 release qualification was
+never completed, and no further campaign is planned.
 
 ## Credits and license
 

@@ -1,5 +1,13 @@
 # Runtime controls and recovery
 
+> **Archived evidence (2026-10-17 note):** the measurement reports cited below
+> (`development/reports/p6_runtime_measurements.md`,
+> `development/reports/local_cpu_optimization.md`) were removed at the
+> 2026-10-16 lean-repo closure and live in Dropbox
+> `Alan Synn/Research/solweig-light/campaign_s11/repo_cleanup_20261016/reports_bulk_20261016.tar.gz`
+> (sha256 `41ca10c4…`); they are also recoverable from git history at
+> `cba707db`. The references are retained as historical.
+
 The seven compatibility signatures are unchanged. CPU execution controls are
 scoped separately. This is the locally measured configuration for an intact
 one-tile `thermal_comfort` call on a machine with at least four available CPUs:

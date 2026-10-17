@@ -1,5 +1,14 @@
 # AGENTS.md — SOLWEIG-light
 
+> **Historical note (2026-10-17):** `development/plans/SOLWEIG_LIGHT_IMPLEMENTATION_PLAN.md`
+> and `development/plans/TASKS.yaml` were removed at the 2026-10-16 lean-repo
+> closure (Dropbox
+> `Alan Synn/Research/solweig-light/campaign_s11/repo_cleanup_20261016/campaign_packets_20261016.tar.gz`,
+> sha256 `7beb2b35…`; git history `cba707db`). References to them below are
+> retained as historical contract language; the plan-era gates they describe
+> were executed and closed — see `development/HISTORY.md` for the consolidated
+> record.
+
 ## 1. Mission
 
 Implement and verify a complete CPU-native `solweig-light` in this repository.

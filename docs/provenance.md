@@ -1,5 +1,15 @@
 # Provenance
 
+> **Archived evidence (2026-10-17 note):** `development/reports/source_manifest.json`
+> was removed at the 2026-10-16 lean-repo closure (Dropbox
+> `campaign_s11/repo_cleanup_20261016/reports_bulk_20261016.tar.gz`, sha256
+> `41ca10c4…`). The P0-era tools `development/tools/run_reference.py` and
+> `development/tools/generate_fixtures.py` in the command records below were
+> removed at the 2026-10-17 documentation closure (Dropbox
+> `repo_closure_20261017/development_closure_20261017.tar.gz`, sha256
+> `0ef48084…`); both classes are recoverable from git history at their era
+> commits (`cba707db`, `07807fd8`). References are retained as historical.
+
 The behavioral reference is `nvnsudharsan/SOLWEIG-GPU` at commit
 `0d7fe742abeeddd890dd58fc76ed7f78bd47faec`. The local reference checkout is
 `.upstream/SOLWEIG-GPU`; it is excluded from candidate packaging and Git.

@@ -35,16 +35,17 @@ execute against real files.
 ## Final P5 installed-wheel verification
 
 The evidence summary and exact gate commands are in
-[`p5_optional.md`](../development/docs/p5_optional.md). Final-source installed-wheel runs passed 58
+[`p5_optional.md`](p5_optional.md). Final-source installed-wheel runs passed 58
 optional tests in 16.69 seconds and 34 clean forcing-extra tests in 4.75 seconds
 with zero skips. The final core run passed 2,881 tests in 220.53 seconds, with
 nine genuine chronological TIFF cases and zero skips. All three installed-wheel
 records verify the same final wheel against the worktree source.
 
-The final records are
-[`p5_installed_verification.json`](../development/reports/p5_installed_verification.json),
-[`p5_optional_installed_verification.json`](../development/reports/p5_optional_installed_verification.json)
-and [`p5_forcing_extra_verification.json`](../development/reports/p5_forcing_extra_verification.json).
+The final records are archived (`p5_installed_verification.json`,
+`p5_optional_installed_verification.json`,
+`p5_forcing_extra_verification.json`; removed at the 2026-10-16 lean-repo
+closure — Dropbox `campaign_s11/repo_cleanup_20261016/reports_bulk_20261016.tar.gz`,
+git history `cba707db`).
 These bind executed JUnit results to the installed wheel, source files,
 environment and reference manifests. The forcing-only gate verifies the
 `forcing` extra without Torch, rasterio, GeoPandas or acquisition clients;
