@@ -322,4 +322,16 @@ Found and fixed in this audit:
   evidence-restoration extractions untracked); root `build/` +
   `compat/build/` local ignored junk removed.
 
-Verification battery at the audit-fix commit follows.
+### Post-audit battery verdict (2026-10-17)
+
+Canonical battery at the audit-fix commit `a0f440ba` (sbatch job 14131416,
+same protocol): **177 failed / 3132 passed, FAILED set byte-identical to
+`battery_closure_failed.txt`** — the two restorations, doc corrections and
+CI glob changed zero test outcomes. Raw records (job script, sbatch output,
+full log, FAILED list) are archived as Dropbox
+`Alan Synn/Research/solweig-light/repo_closure_20261017/battery_audit_raw_records.tar.gz`
+(sha256 `1a51a0da045b8e186fae6419dbd0a5fa57211778fdd23d9e293e465943cb1b6a`).
+Suite-level collections after the fix:
+`tests/optimization_v7` 12 collected / 0 errors (was 2 errors since
+2026-10-13), `tests/optimization_v8` 2020 collected + the 2 documented
+environmental errors (was: collection interrupted), canonical trio 3309.
