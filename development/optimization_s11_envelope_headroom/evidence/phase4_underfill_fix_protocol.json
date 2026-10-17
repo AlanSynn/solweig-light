@@ -1,0 +1,33 @@
+{
+  "campaign": "s11-envelope-headroom",
+  "phase": "4-underfill-fix",
+  "title": "X05: fix the pre-existing under-fill admission refusal (user-approved public-behavior change, decided 2026-10-16)",
+  "authorization": "USER DECISION 2026-10-16: '1번 진행' — fix the under-fill defect (option a: width clamp). Main remains read-only; the fix lands on perf/s11-envelope-headroom via the full arc (frozen protocol -> implementation -> independent review -> E2E).",
+  "defect": "plan_phase_admission(policy='reject') raises whenever requested worker width exceeds the phase's job count, regardless of memory slack; api.py:293-303 and runtime_phases.py:638-643 pass the unclamped width, so any scene with fewer tiles than 'workers' refuses at the public API with a misleading 'only N fit' message (discovered by the S11-7 corner matrix, c2048p; present on main at runtime_memory.py:948 + api.py:235).",
+  "change_under_test": {
+    "file": "src/solweig_light/runtime_memory.py",
+    "change": "in plan_phase_admission, clamp the concurrent demand to the actual job count: requested = min(requested, len(jobs)) (one line after the existing requested computation). The concurrent demand can never exceed the number of jobs; the width check then only refuses GENUINE over-commit (top-requested reservations do not fit the base).",
+    "alternatives_rejected": [
+      "clamp at each production call site (2+ sites, miss risk, library callers stay broken)",
+      "route under-fill to queue policy at the call sites (does not fix direct library callers; same multi-site problem)",
+      "message-text-only change (does not fix the refusal)"
+    ]
+  },
+  "behavior_pins": {
+    "underfill_admits": "1 job + active_workers=4, ample budget, policy='reject' -> ADMITTED, admissible_workers=1 (was ResourceAdmissionError)",
+    "genuine_overcommit_unchanged": "4 jobs + width 4 where only 2 fit (test_geometry_phase_adapter 'only 2 fit') -> still refused, message unchanged",
+    "x03_i5_unchanged": "14 jobs at 36 GiB, width 14 -> still refuses 'requested 14 concurrent' (clamp is a no-op when jobs >= width)",
+    "e2e_config_unchanged": "the accepted 12x2 configuration (24 jobs, width 12) -> min(12, 24) = 12, identical plan",
+    "queue_semantics": "queue policy under-fill -> 'admitted' (min(requested, jobs) == admissible), not 'queued'",
+    "infeasible_unchanged": "a single job that can never fit keeps the infeasible 'needs about ... queueing cannot make this phase fit' error (precedes the width check)",
+    "empty_guard_unchanged": "plan_phase_admission([]) still raises ValueError 'at least one job'"
+  },
+  "verification_gates": {
+    "unit_pins": "new tests in tests/optimization_v6/memory/test_phase_memory_admission.py: under-fill admits (simulation + geometry descriptors), genuine overcommit still refuses, 12x2 E2E plan echo unchanged",
+    "batteries": "same-environment FAILED-set diff, working tree vs stashed HEAD, with .upstream/SOLWEIG-GPU RESTORED at the pinned revision 0d7fe742abeeddd890dd58fc76ed7f78bd47faec (restored 2026-10-16 per user decision 3; clone HEAD == the pinned commit recorded in docs/p5_optional.md — the historical 184-failure baseline is obsolete, a fresh baseline is recorded with this protocol)",
+    "review": "independent adversarial review of diff + protocol BEFORE the E2E (mission rule for scheduling/behavior changes)",
+    "e2e": "ONE pre-registered run: 2048^2 single-tile chain at 4x6 on Slurm (the previously-refusing production shape). Gates: (1) run_walls_aspect + _calculate_svf + run_utci_tiles all complete WITHOUT ResourceAdmissionError; (2) TMRT exactly 24 bands, finite; (3) TMRT sha256 EQUAL to the S11-7 c2048s 1x8 record (3edfd91fa30649a2c924632b3436d1360c829a5cc3ab05d5eda2b0c8f3c768a4) -- cross-thread determinism, Stage-B0 pattern; (4) admission echo recorded (admissible_workers=1, price 12,261,629,952 B). Chain timing informational (6 vs 8 threads; no performance claim)."
+  },
+  "out_of_scope": "cross-phase pipelining (user: 보류); census lockout pricing (user: 유지); main; anything touching the frozen C5/C6/N8/N9 arithmetic or the measured envelope table",
+  "frozen_before_implementation": "2026-10-16, commit follows immediately; no timing has run under this protocol"
+}
