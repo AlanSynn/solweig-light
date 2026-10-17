@@ -166,3 +166,22 @@ reference audit was rerun mechanically: every path literal in `tests/`
 resolves against repo-root/development/tests, except docstring-era citations
 (cover-era paths documented in the era-note above). The post-restoration
 battery re-verifies parity with the campaign FAILED set (176).
+
+### Post-cleanup battery verdict (2026-10-16)
+
+Protocol-correct verification battery on main @ `e3346e14` (job 14126143,
+3309 tests collected — the `--ignore=tests/unit/test_exact_cpu_pairs.py`
+workaround from the old-main era is OBSOLETE post-merge: old main's
+pre-restructure path `parents[2]/"tools"` was fixed by the campaign line, and
+the 8 exact-pair tests collect again): **FAILED set == the campaign baseline
+176 + exactly one deviation**,
+`tests/differential/test_patch_radiation.py::test_compiled_patch_parallel_diagnostics`.
+Root-caused as a numba cache-state artifact, NOT a product regression
+(job 14126396): the test introspects `parallel_diagnostics()` metadata, which
+exists only when the kernel was freshly compiled in-process — fresh-cache
+runs PASS (single: 1 passed; full file: 635 passed), warm-cache re-runs FAIL
+(cache-hit dispatchers carry no parfor diagnostics). The campaign arms and
+battery run 1 hit fresh-compile state; runs 2/3 and the isolated probe hit
+warm shared `NUMBA_CACHE_DIR`. Numerics are unaffected (all 635 numerical
+tests of the file pass on both cache states). No repo change needed; noted
+for future battery runs on warm caches.
