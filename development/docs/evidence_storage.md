@@ -151,3 +151,18 @@ end-to-end (review APPROVE 0 MAJOR; E2E at the previously-refusing 2048^2
 4x6 shape bitwise vs the 1x8 record; battery FAILED sets byte-identical,
 176/3133 both arms). All numerics bitwise against the corpus goldens;
 actual_target_status remains unverified (synthetic corpus only).
+
+## S12 cleanup correction (2026-10-16, post-cleanup battery)
+
+The bulk-`reports/` removal above accidentally included two TEST-COUPLED
+characterization packets: `reports/characterization/p7_repaired_p6_baseline/`
+and `p7_repaired_p6_baseline_v2/` (parametrized fixtures of
+`tests/unit/test_p7_benchmark_harness.py` — bare-name parametrization, missed
+by the literal-path reference audit). The post-cleanup verification battery
+(job 14125319, rerun 14125777) caught it deterministically: 35 setup errors,
+all `FileNotFoundError` on those two packets' `manifest.json`. Both packets
+were restored from git history at `cba707db` (132 KB total) and the full
+reference audit was rerun mechanically: every path literal in `tests/`
+resolves against repo-root/development/tests, except docstring-era citations
+(cover-era paths documented in the era-note above). The post-restoration
+battery re-verifies parity with the campaign FAILED set (176).

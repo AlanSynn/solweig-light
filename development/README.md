@@ -17,7 +17,7 @@ tree, and moving it changed no source file.
 | [optimization_v6_continue/](optimization_v6_continue/) | v6 campaign packet. Kept in git: `tests/optimization_v6/` reads its `evidence/`. |
 | [optimization_v7_backends/](optimization_v7_backends/), [optimization_v8_native_default/](optimization_v8_native_default/) | v7/v8 campaign packets. Kept in git: test-referenced `evidence/captures/`. |
 | [docs/](docs/) | Process records: the P0–P8 port log ([progress.md](docs/progress.md)), per-phase records (p4/p5/p6/p7_*), the exact-optimization strategy review, evidence-storage policy, source audits ([audit/](docs/audit/)) and the upstream patch ([upstream_patches/](docs/upstream_patches/)). |
-| [reports/](reports/) | What live tests read: `contract_snapshot.json` (public-contract pin) and `characterization/` subsets (`p7_p6_baseline`, `p8_utci_official_source`, `p8_umep_source`). |
+| [reports/](reports/) | What live tests read: `contract_snapshot.json` (public-contract pin) and `characterization/` subsets (`p7_p6_baseline`, `p7_repaired_p6_baseline`, `p7_repaired_p6_baseline_v2`, `p8_utci_official_source`, `p8_umep_source` — the two `p7_repaired` packets are parametrized fixtures of `tests/unit/test_p7_benchmark_harness.py`). |
 | [benchmarks/](benchmarks/) | Frozen benchmark protocols (`comparison_v1.json` is the machine-readable numerical authority cited by [docs/numerical_contract.md](../docs/numerical_contract.md)) plus fixture scenes. |
 | [experiments/](experiments/) | Repo-only experiment workspaces (e.g. the archived v8 native-dispatch qualification machinery — banned from wheels, retained for provenance). |
 | [tools/](tools/) | One-shot capture/characterization/benchmark scripts used to produce the records above and exercised by harness tests. |
