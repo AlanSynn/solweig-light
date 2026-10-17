@@ -185,3 +185,20 @@ battery run 1 hit fresh-compile state; runs 2/3 and the isolated probe hit
 warm shared `NUMBA_CACHE_DIR`. Numerics are unaffected (all 635 numerical
 tests of the file pass on both cache states). No repo change needed; noted
 for future battery runs on warm caches.
+
+### Direct old-main chain baseline (S12 closure, 2026-10-17)
+
+The pre-merge main chain (b3e5ca59) was measured directly at the SAME cold
+chain recipe as the S11-7 c24p corner (1024^2 corpus, 3x8 = 24 tiles, 24
+steps, walls -> SVF -> run, 10-variable saves; sbatch job 14125735, 24 CPUs):
+**6840.3854 s** (walls 24.11 + svf 4067.41 + run 2748.87), TMRT 24 bands
+finite, **sha256 == corpus golden c361f819... bitwise** — old main and merged
+main produce identical outputs; only speed differs. Headline (same 3x8 shape,
+cold): **6840.4 -> 1483.90 s = 4.61x vs old main** (12x2 envelope 1452.6 s =
+4.71x). Raw records (incl. the driver-defect first attempt 14125089 and its
+root cause, the four post-cleanup batteries, and the cache-state
+discrimination probes) are archived to Dropbox
+`campaign_s11/phase4/phase4_s12_closure_raw_records.tar.gz`
+(sha256 3bbfcc16f2472ef9de02ea1377acd709618b13d0894d2d60a39476420ca6592b).
+Caveats as before: synthetic corpus only (actual_target_status unverified);
+single node-class (cpu-small, 24 CPU).
