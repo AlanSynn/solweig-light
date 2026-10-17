@@ -251,7 +251,7 @@ history document) plus the test-coupled/policy subsets listed there.
   `tests/reference/{wrf_patched_cpu,public_forcing_original_cpu}/manifest.json`
   and the `tests/optional` sha-pin), `p5_optional.md`,
   `p6_memory_inventory.md`, `wind_memory_inventory.md`.
-- Restored from `cba707db`: `reports/scientific_release_exceptions.json`
+- Restored from `cba707db`: `development/reports/scientific_release_exceptions.json`
   (2.7 KB policy provenance cited by `docs/compatibility.md` and
   `docs/model_deviations.md`).
 - Prose updates: root `README.md` (documentation map + closed status),
@@ -279,3 +279,47 @@ Raw records (battery log + FAILED set, delete manifest, bundle sha256)
 are archived to Dropbox
 `repo_closure_20261017/battery_closure_raw_records.tar.gz` (sha256
 `581778a0f9c12db41f83f124227452759c7aa592cc7b5e4b26ec647f97bf0042`).
+
+### Post-closure full-repo audit (2026-10-17, user-directed)
+
+Seven independent auditors (structure/hygiene, repo machinery, doc
+cross-references, HISTORY factual accuracy, independent test-coupling
+re-derivation, packaging/wheel build+install, git/archive integrity).
+Verified clean: wheel contents (79 files, no leakage, install/import/data
+from a throwaway venv), git delta == documented closure scope exactly
+(508 D + 4 R + 2 A + 10 M, no history rewriting, bundles 3-way
+sample-verified), all prose links/commits/hashes resolve, HISTORY
+numeric claims agree with this file (≈50 claim groups), canonical
+collection 3309, `git diff 07807fd8..HEAD -- tests/` empty.
+
+Found and fixed in this audit:
+
+- **Closure miss (conftest = collection-time code)**: deleting
+  `development/experiments/` broke `pytest tests/optimization_v8`
+  collection — `tests/optimization_v8/packaging/conftest.py:27-29`
+  imports `build_native.py` from that tree at module level. Restored the
+  single file from `07807fd8` (the rest of `experiments/` stays deleted).
+  The prior audits' "lazy Path construction, no import" claim covered
+  test modules but missed conftest — the S12 bare-name lesson one level
+  deeper.
+- **Pre-existing since b3e5ca59 (2026-10-13)**: `b7_02_fixtures.npz`
+  (6.5 MB raw capture) was untracked by the evidence migration, breaking
+  `tests/optimization_v7` collection (2 module-level `np.load` sites)
+  ever since — invisible because v7 is outside the canonical battery.
+  Restored from `90d72b50` (blob already in git history; zero clone-size
+  cost). Kept-lists updated (HISTORY, development/README).
+- Wording corrections: HISTORY `−3128` label (3,115 development + 13
+  followon), S10-36 anchor phase-sum note (6612.8 sum vs 6612.9 recorded
+  total — source-record discrepancy), Amdahl-ceiling sentence (≈26% serial
+  bounds THIS tree at ≈3.4× ideal; ~4.7× vs old main includes X01/X02's
+  removal of earlier serial phases), model_deviations annotation made
+  exact (five subsets), numerical_contract annotation made
+  non-exhaustive, CI workflow's one version-pinned wheel filename → glob.
+- No-action findings (documented): 2 v8 installed-suite collection errors
+  are the documented login-node gdal/libstdc++ quirk; 4 tests/optional
+  errors are missing optional extras in the dev venv; `.gitignore`
+  patterns for removed trees are retained deliberately (they keep
+  evidence-restoration extractions untracked); root `build/` +
+  `compat/build/` local ignored junk removed.
+
+Verification battery at the audit-fix commit follows.

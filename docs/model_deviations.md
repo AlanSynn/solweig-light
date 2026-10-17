@@ -2,7 +2,8 @@
 
 > **Archived evidence (2026-10-17 note):** evidence records under
 > `development/reports/` cited below (except `contract_snapshot.json`, the
-> characterization subsets, and `scientific_release_exceptions.json`, which
+> five test-coupled characterization subsets listed in
+> `development/README.md`, and `scientific_release_exceptions.json`, which
 > remain in the repository) were removed at the 2026-10-16 lean-repo closure —
 > Dropbox `Alan Synn/Research/solweig-light/campaign_s11/repo_cleanup_20261016/reports_bulk_20261016.tar.gz`
 > (sha256 `41ca10c4…`), also recoverable from git history at `cba707db`.

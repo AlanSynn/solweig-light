@@ -52,7 +52,10 @@ rules, treated as hard limits in every campaign:
   - `campaign_s11/phase0/`…`phase4/` — S11 raw records per phase, including
     the ~1.9 GB phase-0 SVF snapshot corpus and the S12 closure raw records
     (`phase4_s12_closure_raw_records.tar.gz`, sha256
-    `3bbfcc16f2472ef9de02ea1377acd709618b13d0894d2d60a39476420ca6592b`).
+    `3bbfcc16f2472ef9de02ea1377acd709618b13d0894d2d60a39476420ca6592b`) —
+    plus `repo_closure_20261017/battery_closure_raw_records.tar.gz`
+    (sha256 `581778a0f9c12db41f83f124227452759c7aa592cc7b5e4b26ec647f97bf0042`)
+    for the documentation-closure battery and audit records.
   - `campaign_s11/repo_cleanup_20261016/` — `reports_bulk_20261016.tar.gz`
     (sha256 `41ca10c4…`) and `campaign_packets_20261016.tar.gz` (sha256
     `7beb2b35…`) — bulk `development/reports/` and the whole campaign
@@ -76,7 +79,7 @@ rules, treated as hard limits in every campaign:
   | `90d72b50` | 2026-09-23 | campaign line close (v5–N9) + handover restructure (`development/` umbrella) |
   | `b3e5ca59` | 2026-10-13 | evidence-storage migration ("old main" tip; S10/S11 baseline) |
   | `cba707db` | 2026-10-16 | S11-8 closure tip; S10+S11 branches fast-forwarded here |
-  | `05ecd6ae` | 2026-10-16 | S12 lean-repo cleanup (−3128 development files, archived) |
+  | `05ecd6ae` | 2026-10-16 | S12 lean-repo cleanup (−3,128 files: 3,115 under development/ + 13 followon; archived) |
   | `e3346e14` | 2026-10-16 | S12 fix: restore 2 test-coupled fixture packets |
   | `c620286b` | 2026-10-16 | S12 battery verdict record |
   | `12ff6d39` | 2026-10-17 | S12 direct old-main baseline (4.61×) + archive index |
@@ -98,9 +101,16 @@ rules, treated as hard limits in every campaign:
   `p7_repaired_p6_baseline{,_v2}`, `p8_umep_source`,
   `p8_utci_official_source`, `scientific_release_exceptions.json`);
   the `evidence/` trees of `optimization_v6_continue/`,
-  `optimization_v7_backends/` (captures only),
+  `optimization_v7_backends/` (captures: capture manifest + the
+  `b7_02_fixtures.npz` module-loaded by the v7 suite — restored from
+  `90d72b50` at the post-closure audit; it had been untracked with the
+  2026-10-13 evidence migration, which broke v7 collection),
   `optimization_v8_native_default/` (installed + dx_baseline),
   `optimization_s10_semantic_systems/`;
+  `development/experiments/optimization_v8/packaging/build_native.py`
+  (collection-time import of `tests/optimization_v8/packaging/conftest.py`;
+  restored from `07807fd8` at the post-closure audit — the rest of
+  `experiments/` stays deleted);
   `development/docs/evidence_storage.md`; this file and
   `development/README.md`. Product documents formerly under
   `development/docs/` moved to the root `docs/` at this closure
@@ -316,8 +326,10 @@ Branch `perf/s11-envelope-headroom` (cut from S10's tip), fast-forward
 merged at `cba707db`; the REGISTER is archived in
 `campaign_s11/repo_cleanup_20261016/campaign_packets_20261016.tar.gz`, its
 findings indexed in `development/docs/evidence_storage.md`. Anchor: the
-S10-36 A-arm chain (walls 20.0 + svf 4063.1 + run 2529.7 = 6612.9 s,
-24×1024² tiles, 24 steps, 3×8).
+S10-36 A-arm chain (walls 20.0 + svf 4063.1 + run 2529.7; the recorded
+total is 6612.9 s — the phase sum is 6612.8, a 0.1 s discrepancy present
+in the source records themselves),
+24×1024² tiles, 24 steps, 3×8.
 
 - **Phase 0 attribution** (M1–M6 measured, product untouched): the serial
   parent export loop is 66.7% of the SVF phase and 41.2% of the whole
@@ -399,6 +411,24 @@ S10-36 A-arm chain (walls 20.0 + svf 4063.1 + run 2529.7 = 6612.9 s,
   defect — editable-install hijacking child imports; fixed with PYTHONPATH
   + child-origin assert; that attempt contributed no timing.)
 - All five closure commits pushed (`b3e5ca59..07807fd8`).
+- **Post-closure audit** (2026-10-17, user-directed, seven independent
+  auditors: structure, repo machinery, doc cross-references, this file's
+  factual accuracy, independent test-coupling re-derivation, packaging/wheel
+  build+install, git/archive integrity): the closure tree, wheel, git
+  delta, and archive bundles verified clean; found and fixed — (a) the
+  closure missed ONE collection-time import
+  (`tests/optimization_v8/packaging/conftest.py` imports
+  `experiments/.../build_native.py`; conftest is collection-time code —
+  the S12 bare-name lesson one level deeper), (b) a PRE-EXISTING defect
+  since the 2026-10-13 evidence migration: the v7 suite module-loads
+  `b7_02_fixtures.npz`, untracked then, breaking v7 collection outside the
+  canonical battery — both files restored from git history, (c) three
+  wording corrections in this file (this section's cleanup-commit label,
+  the S10-36 anchor phase-sum note, the Amdahl-ceiling sentence), (d) the
+  CI workflow's one version-pinned wheel filename → glob. The
+  `development/README.md` map and `docs/` annotations were adjusted to
+  match; canonical collection stays 3309 (`git diff 07807fd8..HEAD --
+  tests/` is empty — no test logic changed at any point of the closure).
 - **Documentation closure** (this commit, 2026-10-17, user-directed): the
   accumulated development documents (per-phase docs, packet prose, era
   tools, benchmark fixtures/superseded protocols, `experiments/`) were
@@ -437,8 +467,11 @@ Context numbers: serial→parallel at 24 steps is **7.24×** (10744.3 →
 1483.9 s); 256² cross-config **6.90×**; cell-level compute improvement from
 S10 ≈2.96× (visible in the run phase; masked in E2E until S11 removed the
 SVF-phase bottleneck); warm start is **not** faster end-to-end (+3.86%).
-Layered efficiency: X03 12×2 = 60.3% of ideal 24-way worker efficiency;
-serial fraction ≈26% caps this node class near ~4.7×.
+Layered efficiency: X03 12×2 = 60.3% of ideal 24-way worker efficiency.
+The residual serial fraction (≈26%: walls + barrier) bounds ideal parallel
+scaling of THIS tree at ≈3.4× further; the measured ~4.7× vs old main is
+larger because X01/X02 also removed serial phases the old-main baseline
+still paid for.
 
 ## Known limitations and standing caveats
 

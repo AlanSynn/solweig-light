@@ -225,7 +225,7 @@ jobs:
       - name: Install only forcing and test extras
         run: |
           python -m build --wheel
-          python -m pip install -c requirements/optional-macos-arm64-py311.txt 'dist/solweig_light-0.1.0.dev0-py3-none-any.whl[forcing,test]'
+          python -m pip install -c requirements/optional-macos-arm64-py311.txt 'dist/solweig_light-*.whl[forcing,test]'
       - name: Execute public forcing workflows without other extras
         run: |
           python - <<'PYCODE'
