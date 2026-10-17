@@ -688,8 +688,9 @@ def test_underfill_queue_policy_admits_not_queues():
 
 def test_overcommit_four_jobs_two_fit_still_refuses():
     """X05 guard: the clamp only removes the under-fill refusal.  Genuine
-    over-commit -- four jobs where only two fit the base -- still refuses
-    with the unchanged message (mirrors the geometry-adapter pin)."""
+    over-commit -- four jobs where only three fit the 9 GiB base -- still
+    refuses with the unchanged "requested 4 concurrent" message (mirrors the
+    geometry-adapter pin)."""
     four = _worst_jobs(PHASE_SIMULATION, 4)
     with pytest.raises(ResourceAdmissionError, match="requested 4 concurrent"):
         plan_phase_admission(
