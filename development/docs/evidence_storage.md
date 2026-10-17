@@ -53,7 +53,9 @@ can be checked afterwards against `repo_evidence_manifest.sha256`.
 - `tests/reference/` goldens stay tracked: CI differential tests require them
   (AGENTS.md §11); they are not archived external-only.
 - `development/{tools,docs,plans,experiments,benchmarks}` and the report-root
-  documents named in `reports/local_evidence_inventory.json`.
+  documents named in `reports/local_evidence_inventory.json` (that inventory
+  record itself was removed at the 2026-10-16 lean-repo closure; it is in
+  the `reports_bulk_20261016.tar.gz` bundle below).
 
 ## Going forward
 
@@ -84,8 +86,10 @@ case may require the exact fixture, dependency environment, upstream commit,
 hardware, cache state, and remote input recorded by its own protocol.
 
 The local CPU optimization experiment additionally records its two large
-baseline sampling captures in
-[`storage_manifest.json`](../reports/characterization/local_cpu_optimization_v1/storage_manifest.json).
+baseline sampling captures in a `storage_manifest.json` under
+`reports/characterization/local_cpu_optimization_v1/` (that packet was
+removed at the 2026-10-16 lean-repo closure; it is in the
+`reports_bulk_20261016.tar.gz` bundle below).
 Those captures remain local with verified hashes. The paired trial
 measurements, RSS JSONL samples, exact comparisons, protocols and source
 snapshots remain tracked; generated raster histories and wheel binaries
@@ -220,3 +224,56 @@ discrimination probes) are archived to Dropbox
 (sha256 3bbfcc16f2472ef9de02ea1377acd709618b13d0894d2d60a39476420ca6592b).
 Caveats as before: synthetic corpus only (actual_target_status unverified);
 single node-class (cpu-small, 24 CPU).
+
+## Documentation closure (2026-10-17)
+
+Final lean-repo step, user-directed: the accumulated development documents
+were removed, leaving `development/HISTORY.md` (the single sequential
+history document) plus the test-coupled/policy subsets listed there.
+
+- Deleted (508 tracked files): campaign packet prose for v6/v7/v8/S10
+  (packet `evidence/` kept — test-read), `development/experiments/`,
+  `development/benchmarks/fixtures/`, all `benchmarks/protocols/` except
+  `comparison_v1.json` and `p7_persistent_jit_serial_variant/`, ~60 era
+  tools (the six harness-exercised scripts and
+  `evidence_archive_20261013/` kept), and the per-phase process docs
+  (`performance.md`, `progress.md`, `optimization_campaigns.md`,
+  `exact_optimization_strategy.md`, `p4/p5/p6/p7_*`, `audit/`).
+- Archive: Dropbox
+  `repo_closure_20261017/development_closure_20261017.tar.gz` (sha256
+  `0ef480844f4a7066a204c58834d50877056385a16715bea30709f80f7eea0305`,
+  509 members incl. `MANIFEST.txt` with per-file sha256s; members are
+  repo-root-relative). Sidecars `delete_manifest.txt` and
+  `development_closure_20261017.tar.gz.sha256` sit beside it. Git-history
+  fallback: pre-closure tip `07807fd8`.
+- Moves to the root `docs/` (recorded-location repairs):
+  `upstream_patches/wrf_timestamp_v1.patch` (location recorded by
+  `tests/reference/{wrf_patched_cpu,public_forcing_original_cpu}/manifest.json`
+  and the `tests/optional` sha-pin), `p5_optional.md`,
+  `p6_memory_inventory.md`, `wind_memory_inventory.md`.
+- Restored from `cba707db`: `reports/scientific_release_exceptions.json`
+  (2.7 KB policy provenance cited by `docs/compatibility.md` and
+  `docs/model_deviations.md`).
+- Prose updates: root `README.md` (documentation map + closed status),
+  `AGENTS.md` (archive note for the removed `plans/` references),
+  archive annotations in `docs/{runtime,numerical_contract,portable_math_profile,model_deviations,provenance}.md`
+  (S11-closure-removed evidence links), `development/README.md` (short
+  map).
+
+### Documentation-closure battery verdict (2026-10-17)
+
+Canonical battery at the closure commit `3ba286c3` (sbatch job 14131194,
+cpu-small/24 CPU, detached worktree, shared warm `NUMBA_CACHE_DIR`,
+protocol identical to `battery_post_cleanup4.sh`; 3309 collected):
+**177 failed / 3132 passed, FAILED set byte-identical to
+`battery_postcleanup4_failed.txt`** (campaign baseline 176 + the documented
+numba warm-cache `parallel_diagnostics` artifact). The 508-file removal,
+the four `docs/` moves, and all prose changes altered **zero** test
+outcomes. Additional direct checks: all 38 `development/`-path literals
+under `tests/` resolve post-deletion; the WRF patch sha-pin recomputes
+TRUE at its recorded location `docs/upstream_patches/wrf_timestamp_v1.patch`
+(sha256 `60af8730…` == `tests/reference/wrf_patched_cpu/manifest.json`);
+`tests/optional` shows the same 4 pre-existing collection errors as before
+the closure (dev venv lacks the optional extras; no test file changed).
+Raw records (battery log + FAILED set, delete manifest, bundle sha256)
+are in the local scratch `closure_20261017/` for the next archive bundle.
