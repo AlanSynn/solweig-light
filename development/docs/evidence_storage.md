@@ -392,3 +392,11 @@ Archive (Dropbox `Alan Synn/Research/solweig-light/repo_closure_20261017/`):
   divergence table —
   sha256 `806671a0c2eb6b99465df1a848d58659fb426043393d28e2270671298cd4e712`
   (+ `.sha256` sidecar).
+
+Final battery (2026-10-17): at the record-consolidation commit (`2fb1e688`,
+HISTORY.md reorganized by theme; the era-by-era narrative snapshotted to
+Dropbox `repo_closure_20261017/HISTORY_pre_consolidation_d3706ad7.md`,
+sha256 `68a749ebbb6c6605f5c3b5179b5ac400256e3e6bc06864e30a1cb356830f9056`):
+sbatch job **14144329**, 3237 collected, **0 failed, FAILED set empty** —
+the doc-only reorganization changed zero test outcomes. This is the state
+pushed to origin/main.
