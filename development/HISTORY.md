@@ -1,203 +1,110 @@
-# solweig-light — consolidated history (final, 2026-10-17)
+# solweig-light — consolidated development record (final, 2026-10-17)
 
-This is the single sequential record of how this repository came to be: the
-port, the exactness contract, every optimization campaign, its terminal
-state, and where the evidence lives. It supersedes the per-era process
-documents that previously accumulated under `development/` (deleted at the
-2026-10-17 documentation closure; recoverable from git history at the
-pre-closure tip `07807fd8` and from the Dropbox archive — see the evidence
-map below). The one other kept prose record is
-`development/docs/evidence_storage.md`, the archive index required by the
-repository evidence policy (see `CLAUDE.md`); where this narrative and that
-index could disagree, the index governs archive locations and hashes.
+Status: **closed**. Every campaign is terminal, every registered item is
+resolved or explicitly rejected, and nothing is in progress. No further
+campaign is planned.
 
-Status: **closed**. All campaigns are terminal, all registered items are
-resolved or explicitly rejected, and nothing is in progress. Performance
-headroom analysis is complete for this node class; further work would be a
-new campaign (none is planned).
+This record is organized **by theme, not campaign chronology**: what the
+vanilla upstream model is and what this package changes (§1), how
+correctness is defined and verified today (§2), what performance was
+achieved and what is off the table (§3), and where everything lives (§4).
+The earlier campaign-by-campaign narrative (eras 1–7) is preserved at git
+`d3706ad7` (no history rewriting was ever performed, by policy) and as
+Dropbox `repo_closure_20261017/HISTORY_pre_consolidation_d3706ad7.md`
+(sha256 `68a749ebbb6c6605f5c3b5179b5ac400256e3e6bc06864e30a1cb356830f9056`).
+Where this narrative and the archive index
+(`development/docs/evidence_storage.md`) could disagree, the index governs
+archive locations and hashes.
 
-## What this package is
+## 1. The upstream model and this port
 
-solweig-light is a CPU-native reimplementation of the SOLWEIG-GPU model
-(upstream pin `nvnsudharsan/SOLWEIG-GPU` @ `0d7fe742`, recorded in
-`docs/provenance.md`): identical model behavior on CPU, with the Torch/GPU
-stack replaced by NumPy + Numba, packaged as `solweig_light` (wheel from
-`src/`, console script `solweig-light`, public API `thermal_comfort`). The
-user-facing contracts live in `docs/` (numerical contract, compatibility,
-model deviations, runtime, cache policy, portable math profile). The
-behavioral reference checkout is `.upstream/SOLWEIG-GPU` (gitignored; a
-fresh clone at the pinned rev restores it).
+### 1.1 Vanilla SOLWEIG-GPU (the behavioral reference)
 
-The development history below was constrained throughout by four ground
-rules, treated as hard limits in every campaign:
+- `nvnsudharsan/SOLWEIG-GPU` @ `0d7fe742abeeddd890dd58fc76ed7f78bd47faec`
+  (recorded in `docs/provenance.md`): a Torch/GPU-oriented SOLWEIG
+  reimplementation. Source files carry GPL-3.0-or-later notices while setup
+  metadata says GPL-3.0-only — the discrepancy is documented, not silently
+  resolved; original notices are preserved in translated files.
+- The behavioral reference checkout is `.upstream/SOLWEIG-GPU` (gitignored;
+  a fresh clone at the pinned rev restores it). It runs in an isolated
+  Python 3.11 venv (`.venv-oracle`) and **never imports candidate code**.
+- Characterization host: macOS ARM64 — CUDA unavailable, so CUDA equivalence
+  was never passed; upstream correctness was established against its CPU
+  execution. A P0 finding: upstream imports Numba without declaring it.
+
+### 1.2 What solweig-light is
+
+A CPU-native reimplementation of that upstream with identical model
+behavior: the Torch/GPU stack replaced by NumPy + Numba, packaged as
+`solweig_light` (wheel built from `src/`, console script `solweig-light`,
+public API `thermal_comfort`). User-facing contracts live in `docs/`
+(numerical contract, compatibility, model deviations, runtime, cache
+policy, portable math profile).
+
+### 1.3 The port milestones (P0–P8, each gated by original-CPU oracle comparisons)
+
+| phase | content | installed-gate result |
+|---|---|---|
+| P0 | upstream characterization: 113-file source manifest, contract snapshot (7 signatures, 27 CLI declarations), static call graph (14 files, 202 functions, 3,776 call sites), deterministic fixture, frozen comparison/benchmark protocols, Numba-gap finding | — |
+| P1 | serial NumPy geometry/radiation + chronological driver; first prepared-TIFF 24-step run within frozen budgets (largest TMRT error ~6.1e-05 °C) | 245 passed |
+| P2 | compiled wall/aspect/UTCI kernels (Numba); 28 frozen kernel configurations; pinned NumPy signed-zero maximum behavior vs a Numba divergence | 515 passed |
+| P3 | compiled shadows/SVF + lossless packed visibility (uint8 NPY, checksummed manifest, mmap); 43 benchmark configurations | 2,038 passed |
+| P4 | compiled ground-view + patch radiation + delay chronology; measured compact-patch regressions at the frozen block (≈11.1× shortwave / 3.4× longwave vs best upstream warm configs) — the mandatory P6/P7 performance mandate | 2,879 passed |
+| P5 | all seven public optional workflows (ERA5/UHI/WRF/roughness wind/input builders) as lazy extras; WRF via the reviewed upstream timestamp-repair patch v1 | 2,881/58/34 |
+| P6 | runtime: native cache + identity guards, transactional output writer, state recovery, cgroup-aware memory admission, worker pools, cancellation | 3,029/78/34 |
+| P7 | performance harness: paired-matrix measurement + repair discipline; two real compatibility defects found and repaired en route (f32 angular promotion in ground-view; scalar annulus arithmetic in Kdown), repair-only baselines kept separate | — |
+| P8 | independent scientific checks + release qualification (see §4.3: four checks remained failed → approved exception; MKL declined; portable SLEEF profile admitted; full release qualification never completed) | — |
+
+Port checkpoint committed user-authorized at `8ca23d44` (2026-09-20), then
+`14e88876` (local CPU optimization v1: GVF pixel parallelism, duplicate
+visibility-decode removal, content-bound persistent JIT caches; paired
+median 1.6268× at 4 threads, 256² warm, bootstrap CI [1.5934, 1.6490],
+exact results).
+
+### 1.4 What differs from vanilla — and what is preserved
+
+**Differs:**
+
+- **Platform**: CPU (NumPy + Numba) instead of Torch/GPU; CUDA equivalence
+  is not claimed. GPU execution exists only as a user-authorized
+  patched-upstream CUDA reference run (worker-limit patch, isolated
+  checkout, 12 GiB cold admission on Cura) recorded as correctness
+  evidence, not a speed claim.
+- **Four inherited scientific deviations** (era-1/P8 findings, retained by
+  user decision under the approved known-limitation exception
+  `inherited-svf-umep-compatibility-v1`): 2× open-scene SVF unity and 2×
+  UMEP ground-view variants remain failed independent checks — upstream
+  behavior preserved and documented in `docs/model_deviations.md`; policy
+  record `development/reports/scientific_release_exceptions.json`.
+- **Portable math profile** `solweig-portable-sleef-5a1d179d-v1`: SLEEF-
+  derived bounded-f32 helpers + NumPy-ufunc fallback, integrated after
+  two-platform admission (M1 + Linux, 14,400 layout/thread cases each;
+  large-scene 240-band gates pass); `docs/portable_math_profile.md`. MKL
+  2024.2 passed everything but was **declined as a production dependency**
+  (user decision).
+- **Packaging**: installable wheel + console script + companion
+  compatibility distribution; upstream stayed a research checkout.
+
+**Preserved:** the model's mathematics and outputs — every output within
+the frozen numerical contract (§2.1), and bitwise against the synthetic-
+corpus goldens wherever measured (§3); upstream exception/failure behavior
+(original failure frames reproduced or rejected identically); the CLI/API
+surface.
+
+### 1.5 The ground rules every change was held to
 
 1. No timestep-level parallelism (the chronological driver's step order is
    contractual).
 2. No altered scientific work — outputs must stay within the frozen
    numerical contract (and, from S10 on, bitwise against corpus goldens).
 3. No new runtime dependencies.
-4. The exact-optimization arithmetic lineages C5/C6/N8/N9 (era 3) are
-   frozen; later campaigns may add dispatch/scheduling around them but may
-   not change their leaf-kernel arithmetic.
+4. The exact-optimization arithmetic lineages C5/C6/N8/N9 are frozen:
+   later campaigns may add dispatch/scheduling around them but may not
+   change their leaf-kernel arithmetic.
 
-## Evidence map
+## 2. Exactness and verification
 
-- **Dropbox** `Alan Synn/Research/solweig-light/` (dbxcli; authenticated):
-  - 2026-10-13 migration: `repo_evidence/`, `branch_evidence/`,
-    `manifests/`, `logs/`, `EVIDENCE_ARCHIVE_README.md` — the 25,426 raw
-    evidence files removed from git at `b3e5ca59`, plus 1,540 blobs unique
-    to the deleted pre-handover campaign branches.
-  - `s10/` — S10 raw records (trials, failsets, installed wheelhouse,
-    synthdemo raw, sha256 sidecars).
-  - `campaign_s11/phase0/`…`phase4/` — S11 raw records per phase, including
-    the ~1.9 GB phase-0 SVF snapshot corpus and the S12 closure raw records
-    (`phase4_s12_closure_raw_records.tar.gz`, sha256
-    `3bbfcc16f2472ef9de02ea1377acd709618b13d0894d2d60a39476420ca6592b`) —
-    plus `repo_closure_20261017/battery_closure_raw_records.tar.gz`
-    (sha256 `581778a0f9c12db41f83f124227452759c7aa592cc7b5e4b26ec647f97bf0042`)
-    for the documentation-closure battery and audit records.
-  - `campaign_s11/repo_cleanup_20261016/` — `reports_bulk_20261016.tar.gz`
-    (sha256 `41ca10c4…`) and `campaign_packets_20261016.tar.gz` (sha256
-    `7beb2b35…`) — bulk `development/reports/` and the whole campaign
-    packets (v4/v5/N9, S11, followon, `plans/`), removed at the S11 closure.
-  - `repo_closure_20261017/development_closure_20261017.tar.gz` (sha256
-    `0ef480844f4a7066a204c58834d50877056385a16715bea30709f80f7eea0305`) —
-    everything removed by this documentation closure (508 files: campaign
-    packet prose for v6/v7/v8/S10, `experiments/`, benchmark fixtures and
-    superseded protocols, era tools, per-phase docs; members are
-    repo-root-relative, a `MANIFEST.txt` inside carries per-file sha256s).
-- **Git history on main**: full commit history is retained (no history
-  rewriting was ever performed, by policy). Deleted documents and packets
-  are recoverable at their era commits; `cba707db` is the last commit that
-  carried every campaign record, and `07807fd8` the last that carried every
-  development document. Key anchors:
-
-  | commit | date | event |
-  |---|---|---|
-  | `8ca23d44` | 2026-09-20 | first commit: P0–P8 port checkpoint + portable math profile + optimization strategy |
-  | `14e88876` | 2026-09-20 | local CPU optimization v1 landed |
-  | `90d72b50` | 2026-09-23 | campaign line close (v5–N9) + handover restructure (`development/` umbrella) |
-  | `b3e5ca59` | 2026-10-13 | evidence-storage migration ("old main" tip; S10/S11 baseline) |
-  | `cba707db` | 2026-10-16 | S11-8 closure tip; S10+S11 branches fast-forwarded here |
-  | `05ecd6ae` | 2026-10-16 | S12 lean-repo cleanup (−3,128 files: 3,115 under development/ + 13 followon; archived) |
-  | `e3346e14` | 2026-10-16 | S12 fix: restore 2 test-coupled fixture packets |
-  | `c620286b` | 2026-10-16 | S12 battery verdict record |
-  | `12ff6d39` | 2026-10-17 | S12 direct old-main baseline (4.61×) + archive index |
-  | `07807fd8` | 2026-10-17 | S12 docs consolidation; first push (b3e5ca59..07807fd8) |
-  | *(this commit)* | 2026-10-17 | documentation closure: this file created, development prose/tools/packets deleted + archived |
-
-- **Kept in the repo** (test-coupled or policy-required):
-  `tests/reference/` goldens; `development/benchmarks/protocols/comparison_v1.json`
-  (read at module level by the differential/integration/s10/v6 suites) and
-  `development/benchmarks/protocols/p7_persistent_jit_serial_variant/`
-  (harness protocol of `tests/unit/test_p7_serial_variant_harness.py`);
-  six `development/tools/` scripts exercised by tests (`run_exact_cpu_pairs.py`,
-  `summarize_exact_cpu_pairs.py`, `capture_exact_pipeline.py`,
-  `benchmark_p7_pipeline.py`, `run_p7_serial_variant.py`,
-  `characterize_inputs.py` — the last two sha-pinned by their harnesses)
-  plus `development/tools/evidence_archive_20261013/` (named by the archive
-  index); `development/reports/contract_snapshot.json` and the
-  characterization subsets (`p7_p6_baseline`,
-  `p7_repaired_p6_baseline{,_v2}`, `p8_umep_source`,
-  `p8_utci_official_source`, `scientific_release_exceptions.json`);
-  the `evidence/` trees of `optimization_v6_continue/`,
-  `optimization_v7_backends/` (captures: capture manifest + the
-  `b7_02_fixtures.npz` module-loaded by the v7 suite — restored from
-  `90d72b50` at the post-closure audit; it had been untracked with the
-  2026-10-13 evidence migration, which broke v7 collection),
-  `optimization_v8_native_default/` (installed + dx_baseline),
-  `optimization_s10_semantic_systems/`;
-  `development/experiments/optimization_v8/packaging/build_native.py`
-  (collection-time import of `tests/optimization_v8/packaging/conftest.py`;
-  restored from `07807fd8` at the post-closure audit — the rest of
-  `experiments/` stays deleted);
-  `development/docs/evidence_storage.md`; this file and
-  `development/README.md`. Product documents formerly under
-  `development/docs/` moved to the root `docs/` at this closure
-  (`p5_optional.md`, `p6_memory_inventory.md`,
-  `wind_memory_inventory.md`, `upstream_patches/wrf_timestamp_v1.patch` —
-  the last is the location recorded by the reference manifests and the
-  optional-test sha-pin).
-
-## Era 1 — P0–P8: the port (2026-09, macOS ARM64 + Cura)
-
-The original upstream is a Torch/GPU-oriented SOLWEIG reimplementation. The
-project began as a correctness-first characterization of that upstream on
-CPU, then rebuilt it as a CPU-native package milestone by milestone, each
-gated by original-CPU oracle comparisons (upstream installed in an isolated
-Python 3.11 venv, never importing candidate code; its outputs packaged as
-goldens under `tests/reference/`, which remain in the repo):
-
-- **P0** — upstream characterization: 113-file source manifest, contract
-  snapshot (7 signatures, 27 CLI declarations), static call graph (14 files,
-  202 functions, 3,776 call sites), deterministic 32×35 24-hour fixture,
-  same-host run repeatability, dependency-gap finding (upstream imports
-  Numba undeclared). Froze the comparison/benchmark protocols.
-- **P1** — serial NumPy geometry/radiation + chronological driver; first
-  prepared-TIFF 24-step run within frozen budgets (largest TMRT error
-  ~6.1e-05 °C); installed-wheel gate 245 passed; compatibility companion
-  distribution introduced.
-- **P2** — compiled wall/aspect/UTCI kernels (Numba), original fixture
-  families, 28 frozen kernel configurations, installed gate 515 passed.
-  Pinned NumPy signed-zero maximum behavior against a Numba divergence.
-- **P3** — compiled shadows/SVF + lossless packed visibility (uint8 NPY,
-  checksummed manifest, mmap); 43 benchmark configurations; installed gate
-  2,038 passed.
-- **P4** — compiled ground-view + patch radiation + delay chronology; 29
-  frozen configurations; exception-compatibility fixes (original failure
-  frames reproduced/rejected where upstream fails); installed gate 2,879
-  passed. Measured compact-patch regressions at the frozen block (≈11.1×
-  shortwave / 3.4× longwave vs best upstream warm configs) — recorded as
-  the mandatory P6/P7 performance work.
-- **P5** — all seven public optional workflows (ERA5/UHI/WRF/roughness
-  wind/input builders) as lazy extras; WRF via the reviewed upstream
-  timestamp-repair patch v1; gates 2,881/58/34.
-- **P6** — runtime: native cache + identity guards, transactional output
-  writer, state recovery, memory admission (cgroup-aware), worker pools,
-  cancellation; two-generation raster ownership bound; gates 3,029/78/34.
-- **P7** — performance: preserved P6 baseline, then measured, repaired, and
-  gated. Found and repaired two real compatibility defects en route (f32
-  angular promotion in ground-view; scalar annulus arithmetic in Kdown)
-  with repair-only baselines kept separate (`p7_repaired_p6_baseline*`,
-  still in the repo as test fixtures). Full 7-scene × 5-pair × 2-budget ×
-  cold/warm paired matrix (v4 protocols) completed; persistent-JIT cache
-  variant promoted after 40/40 pairs (distinct serial definitions to avoid
-  dispatcher cache collisions). Rejected experiments (all recorded, none
-  promoted): single-translation horizon recurrence, conservative quadtree
-  skip (7.2–7.4× slower in Python), UTCI full-Horner (max error 0.031 °C
-  > 0.02 gate), six-moment angular-moment bundle (all medians slower). P7
-  formally remained `in_progress` at the log's end.
-- **P8** — independent scientific checks + release qualification. Official
-  UTCI/UMEP sources retrieved and hashed; isolated executions on the Cura
-  host. Outcome: four named independent scientific checks (2× open-scene
-  SVF unity, 2× UMEP ground-view variants) remained failed; the user
-  approved retaining upstream behavior with a documented known-limitation
-  exception (`inherited-svf-umep-compatibility-v1`; substance in
-  `docs/model_deviations.md`, policy record kept at
-  `development/reports/scientific_release_exceptions.json`). The
-  dense-1024 TMRT incompatibility was localized to platform-dependent
-  `acos`/tangent rounding before strict patch classification; standalone
-  MKL 2024.2 passes everything but was **declined as a production
-  dependency** (user decision). Instead the user authorized a separately
-  versioned portable profile, **`solweig-portable-sleef-5a1d179d-v1`**
-  (SLEEF-derived bounded-f32 helpers + NumPy-ufunc fallback), integrated
-  after two-platform admission (M1 + Linux exact categories, 14,400
-  layout/thread cases each; large-scene 240-band gates pass), documented in
-  `docs/portable_math_profile.md`. A user-authorized patched-upstream CUDA
-  reference (worker-limit patch, isolated checkout) passed the 12 GiB cold
-  admission on Cura — recorded as patched-reference correctness, not a
-  speed claim. Full release qualification (P8) was never completed; the
-  mission pivoted to performance (era 2) with the port checkpoint committed.
-
-End state of the era: commit `8ca23d44` (checkpoint of the whole port +
-records, user-authorized 2026-09-20), then `14e88876` (local CPU
-optimization v1: GVF pixel parallelism, duplicate visibility-decode removal,
-content-bound persistent JIT caches; paired median 1.6268× at 4 threads,
-256² warm, bootstrap CI [1.5934, 1.6490], exact results).
-
-## Era 2 — exactness contract and verification regime
-
-These are the rules every later campaign measured against:
+### 2.1 The numerical contract
 
 - **Machine-readable authority**: `development/benchmarks/protocols/
   comparison_v1.json` — 96 named component return fields with per-family
@@ -211,334 +118,96 @@ These are the rules every later campaign measured against:
   fractional-visibility inputs, documented and pre-existing). From S10
   onward, end-to-end campaign claims additionally require **bitwise**
   equality against the synthetic-corpus goldens (SVF and TMRT sha256).
-- **Test battery**: `pytest tests/differential tests/integration tests/unit`
-  on a dedicated compute node (sbatch, cpu-small, 24 CPU/96G, detached git
-  worktree at the exact commit, shared NUMBA_CACHE_DIR). Clean baseline:
-  **176 failed / 3133 passed** — a stable, byte-identical FAILED set that
-  was, in fact, heterogeneous (the era-2 "environmental failures" label was
-  imprecise; corrected by the 2026-10-17 baseline-hygiene audit): mostly
-  cross-platform last-bit divergences of the macOS-arm64 original captures
-  on the Linux battery host (walls aspect/arctan path, svfalfa), plus stale
-  test seams (the C6 `Lcyl_v2022a_by_demand` dispatch) and stale test pins
-  (the C6-42 reservation repricing vs a 4 GiB test budget), a warm-numba-cache
-  inspection artifact, and 9 platform-bound P7 measurement-harness guards.
-  Identical across arms; verdicts are FAILED-set diffs, never absolute
-  counts. Login-node batteries are smoke only. Post-merge, the battery
-  collects **3309** tests (the old
-  `--ignore=tests/unit/test_exact_cpu_pairs.py` workaround became obsolete —
-  era 7).
-  - Three of the 176 baseline failures belong to
-    `tests/unit/test_p7_serial_variant_harness.py`. Their actual blockers
-    (path drift and untracked raw scenes — not, as first written, the S11
-    evidence removal) are recorded in the baseline-hygiene closure bullet
-    (Era 7).
-- **Known battery artifact — eliminated 2026-10-17**: `parallel_diagnostics()`
-  metadata exists only on fresh in-process compiles (cache-hit dispatchers
-  carry `ol.metadata is None`), and numba disables IR inspection for
-  cache-hit dispatchers ("Inspection disabled for cached code" — a
-  header-only stub), so `test_compiled_patch_parallel_diagnostics` and
-  `test_lowered_helpers_use_explicit_fma_without_fast_flags` failed on the
-  warm shared battery cache and passed fresh. Both tests now compile and
-  inspect in a subprocess bound to a per-run `NUMBA_CACHE_DIR` (the
-  `test_persistent_jit_cache.py` probe pattern); assertions unchanged.
 
-## Era 3 — the v4–N9 campaign line (2026-09; merged at handover)
+### 2.2 The canonical test battery — current state: fully green
 
-Packetized optimization campaigns on dedicated branches, fast-forward merged
-into main at handover (`90d72b50`). Terminal selection:
-**`closed_cpu_only`** — no native/GPU backend earned its default.
+Command: `pytest tests/differential tests/integration tests/unit` on a
+dedicated compute node (sbatch, cpu-small, 24 CPU/96G, detached git
+worktree at the exact commit, shared warm `NUMBA_CACHE_DIR`). Verdicts are
+**FAILED-set diffs** between arms, never absolute counts; login-node runs
+are smoke only (cgroup admission caps numba threads at 4 there).
 
-- **v4** — operational/validation discipline only (strategy catalog, L0–L4
-  test discipline); no src change.
-- **v5 (C5)** — fused ordered packed-visibility decode (default OFF behind
-  `SOLWEIG_LIGHT_FUSED_RAD`), GVF source hoisting + fused row-block gather
-  (~3.6× stage, exact), persistent bounded worker pool, checkpoint digest
-  IO, guarded absorption exit.
-- **v6 (C6)** — common numerical geometry recipe, anisotropic Lside
-  specialization, cylinder longwave/shortwave specializations, prepared GVF
-  per-step sources, prepared multi-channel visibility decoder (later
-  declined by default), phase memory admission (C6-42: the admission model
-  that later shaped all S11 scheduling), patch-classification exact tables.
-- **v7 (B7)** — ISPC `C_native` longwave backend as an opt-in expert backend
-  (`SOLWEIG_LIGHT_LW_BACKEND=native`), bitwise-identical, default untouched;
-  drjit explored, not selected.
-- **v8 (N8)** — native-default attempt: **NOT earned on measurement**
-  (selection `numba_improvement_only`); the native row + qualification
-  machinery landed inert, archived repo-only under
-  `development/experiments/optimization_v8/` (removed at this closure),
-  banned from wheels by gate.
-- **N9 (FINAL)** — bounded Numba stream row B as the shipped longwave
-  default (`thread_budget` pinned 1, all-raw structural decline),
-  mode-specialized packed decode + A-plus comparator; F6 terminal
-  comparison vs main: bitwise parity on all 6 cells / 9 reps, carried
-  geomean **1.60×** median-of-times, cold PASS 0.9226 MARGINAL; the
-  causal-correction allowance was consumed (Amendment 1) — no further F6
-  re-measurement is admissible. Superseded run-1 records (citing
-  123×/5.14×/1.0843) are retained invalidated; any such number is the
-  invalidated run.
-- **Shipped default longwave state after N9**: bounded stream row B at
-  `thread_budget` 1; engine `parallel=True` only when
-  `threads_per_worker > 1`; all-raw inputs decline structurally to the
-  legacy route; `aplus_decode` shipped in both consumer seams.
+- **Current baseline: 3237 collected, 0 failed — FAILED set empty**
+  (sbatch job 14143334, 2026-10-17, at the harness-removal commit). The
+  canonical battery is fully green for the first time since the campaigns
+  began.
+- Other suites: `tests/optimization_v7` 12 collected / 0 errors;
+  `tests/optimization_v8` 2020 collected + 2 documented login-node
+  environmental errors; `tests/optional` 4 collection errors (missing
+  optional extras in the dev venv).
+- **How it got green** (the 2026-10-17 baseline-hygiene closure; `src/`
+  untouched throughout): the standing 176-failure baseline was
+  heterogeneous, not environmental — 168 were fixed test-side (see §2.3
+  for the cross-platform half; the radiation call recorder was re-seamed
+  to the real C6 dispatch boundary `cylinder_longwave.Lcyl_v2022a_by_demand`
+  with its 6 recorded intermediate-field comparisons restored; a stale
+  4 GiB memory-budget pin was repriced to 8 GiB per the measured C6-42
+  envelope; a geometry-guard mutation was moved to the real
+  `svf_calculator_compact` seam; two cache-dependent tests moved to
+  subprocess probes on per-run `NUMBA_CACHE_DIR`, eliminating the
+  warm-cache battery artifact). The remaining 9 were platform-bound guards
+  of the retired P7 measurement harness — archived characterization
+  payloads, a gitignored reference wheel, untracked raw scene inputs, and
+  one pre-restructure path citation; repair would have meant regenerating
+  macOS-arm64 records or un-ignoring heavyweight binaries, and they never
+  exercised `src/` — so they (and 63 passing tests of the same retired
+  machinery, 72 tests total) were deleted by user decision. Details:
+  `development/docs/evidence_storage.md` § "Baseline hygiene".
 
-## Era 4 — handover restructure and evidence policy (2026-09-23 → 10-13)
+### 2.3 Cross-platform divergence policy (macOS captures vs Linux host)
 
-- `90d72b50` moved everything not needed to *use* the package under
-  `development/` (reports, docs, benchmarks, tools, experiments, campaign
-  packets). Old absolute-era paths in tests' docstrings refer to the
-  pre-restructure layout.
-- `b3e5ca59` (2026-10-13, user decision) migrated raw evidence to Dropbox
-  and kept the repo lean (manifests/provenance stay in git). This commit is
-  the "old main" tip — the baseline for all later performance claims. One
-  latent defect of this era (fixed by the campaign line): old main's
-  `tests/unit/test_exact_cpu_pairs.py` resolved its tools path
-  pre-restructure (`parents[2]/"tools"`), so those 8 tests were ignored in
-  batteries until the fix landed on the campaign branch (`a405fc28`).
+The `tests/reference/` goldens labeled `original_upstream_cpu` were
+captured on macOS-26.6.2-arm64 (Python 3.11.16/Clang 21, torch 2.14.0,
+numba 0.67.0, numpy 2.4.6, scipy 1.17.1); the battery host is Linux
+x86_64. Transcendental paths therefore diverge by tiny, deterministic
+amounts on a small recorded cell set:
 
-## Era 5 — S10 semantic-systems campaign (2026-10-13 → 15; terminal
-`qualified_exact_cpu`)
+- **Aspect** (upstream's arctan fallback, a transcendental): recorded
+  per-cell divergence table + absolute envelope
+  (`tests/reference/walls_aspect_cross_platform_divergence.json`;
+  envelope 3.0517578125e-05 degrees — five orders below the 1-degree
+  winner granularity). Walls/dsm stay bitwise; NaN positions exact; any
+  new divergent cell fails. Two rotation-boundary filter cells are pinned
+  to observed values; any second differing cell fails.
+- **svfalfa**: maxulp=1 (the in-file weight-table precedent); `svf`/
+  `svfveg` stay bitwise.
+- **Signed zero**: ±0 signs are numerically inert (IEEE −0.0 == +0.0);
+  sign equality is asserted on nonzero magnitudes only where a reduction
+  order legitimately differs.
+- **Method note**: ULP distance explodes near zero (a ~1e-38 absolute
+  difference at a 0-adjacent value reads as 5e8 ULP), so cross-platform
+  bounds are recorded as **absolute envelopes + per-cell pins**, not
+  maxulp.
 
-Baseline: old main `b3e5ca59`. (The S10 REGISTER and packet prose were
-archived at the 2026-10-17 closure — Dropbox `repo_closure_20261017/` — the
-terminal record lives here; the packet's `evidence/` tree stays, read by
-`tests/optimization_s10/`.) Accepted (each L2-paired, review-gated, exact):
+## 3. Performance record
 
-- T01 — singleton-array Tgwall typed longwave path (1.659× stage geomean).
-- G01+G02 — production dtype profile into the prepared GVF route at H=1
-  (1.738×; root cause: production f64 Tg had been rejected by all-f32
-  guards, so compiled GVF never engaged on land-cover scenes).
-- R03 — aniLum packed-stream ordered-accumulation kernel (cumulative ≈3.0×
-  vs main at cell level).
-- Lside exact dispatch twin (all production calls aniso==1 → exactly
-  `Lup*0.5`; bitwise, kill-switched, independently reviewed).
-- S03b — GDAL cache charge derived from the container-correct memory view
-  (ops fix, not speed; unblocks container-limited hosts).
-- Held-out paired campaign (47 raw records): geomean paired-median **1.314×**
-  (gate ≥1.10 PASS), 100% route coverage, zero reference fallbacks.
-  Terminal state `qualified_exact_cpu`; wheel/DX gates clean (pure
-  py3-none-any wheel, top-level package exactly `{solweig_light}`).
-- S10-36 synthetic-scale demonstration (24×1024² corpus, 3×8): the
-  small-cell ratios did **not** extrapolate — measured parity-to-1.034× —
-  and exposed the structural finding that steered S11: **the SVF phase
-  (61.4% of the chain, dominated by the serial export loop) had never been
-  an S10 target**. In-process warm tile spans: 3.2363 → 1.0926 s = 2.96×.
-- `actual_target_status: unverified` from S10 onward: all measurements are
-  on the procedurally generated synthetic corpus; no real-target run was
-  ever authorized.
+### 3.1 What shipped (the optimization inventory)
 
-## Era 6 — S11 envelope-headroom campaign (2026-10-15/16; terminal)
+| change | what it is | measured effect | exactness |
+|---|---|---|---|
+| v1 (`14e88876`) | GVF pixel parallelism, duplicate visibility-decode removal, content-bound persistent JIT caches | 1.6268× paired median (4 threads, 256² warm) | exact |
+| C5 (v5) | fused ordered packed-visibility decode (default **OFF** behind `SOLWEIG_LIGHT_FUSED_RAD`), GVF source hoisting + fused row-block gather, persistent bounded worker pool, checkpoint digest IO, guarded absorption exit | ~3.6× stage (gather, exact) | exact |
+| C6 (v6) | common numerical geometry recipe, anisotropic Lside specialization, cylinder longwave/shortwave specializations, prepared GVF per-step sources, prepared multi-channel decoder (declined by default), phase-memory admission model (C6-42), patch-classification exact tables | — | exact |
+| B7 (v7) | ISPC `C_native` longwave backend, opt-in via `SOLWEIG_LIGHT_LW_BACKEND=native` | — | bitwise, default untouched |
+| N8 (v8) | native-default attempt — **not earned on measurement** (`numba_improvement_only`); row + qualification machinery landed inert, banned from wheels by gate | — | — |
+| N9 (FINAL) | bounded Numba stream row B as the shipped longwave default (`thread_budget` pinned 1, all-raw structural decline, `aplus_decode` in both consumer seams) | carried geomean **1.60×**; cold PASS 0.9226 MARGINAL (causal-correction allowance consumed — no further F6 re-measurement is admissible) | bitwise 6/6 cells / 9 reps; superseded run-1 numbers (123×/5.14×/1.0843) are retained **invalidated** |
+| S10 | T01 singleton-Tgwall typed longwave (1.659× stage); G01+G02 production dtype profile into prepared GVF at H=1 (1.738×; root cause: f64 Tg rejected by all-f32 guards — compiled GVF never engaged on land-cover scenes); R03 aniLum packed-stream ordered accumulation (cumulative ≈3.0× cell-level); Lside exact dispatch twin (bitwise, kill-switched); S03b GDAL cache charge from the container-correct memory view (ops fix) | held-out paired campaign geomean **1.314×** (gate ≥1.10 PASS), 100% route coverage, zero fallbacks | exact/bitwise; terminal `qualified_exact_cpu` |
+| S11 X02 | SVF pixel-parallel twin at the default shape (static bush predicate routes serial vs parallel) | chain 6612.9 → 5636.2 s = 1.173× | bitwise 24/24 |
+| S11 X01 | per-tile export loop as a concurrent spawn-pool stage (degree = runtime workers, gated on cache_enabled); documented contract amendment: publication order is completion order, failure truncates to the completed set | export stage 2.946×; chain → 3838.3 s = 1.723× | bitwise 24/24 |
+| S11 X03 | measured-envelope admission recalibration (child RSS 0.72–0.77 GiB at 1024² vs the 9.17 GiB legacy reservation; table × margin 3, GDAL charge capped 256 MiB; slope form rejected by frozen no-go) | admits the 12×2 run shape → chain 1452.5935 s | bitwise 24/24; login-node refusal preserved; a 32×35 census cell in 6 GB now refuses (conservative direction) |
+| S11 X05 | under-fill admission defect fix: `plan_phase_admission` clamps `requested = min(requested, len(jobs))` | 2048² 4×6 shape now admits and runs bitwise vs the 1×8 record | batteries byte-identical; adversarial review APPROVE |
 
-Branch `perf/s11-envelope-headroom` (cut from S10's tip), fast-forward
-merged at `cba707db`; the REGISTER is archived in
-`campaign_s11/repo_cleanup_20261016/campaign_packets_20261016.tar.gz`, its
-findings indexed in `development/docs/evidence_storage.md`. Anchor: the
-S10-36 A-arm chain (walls 20.0 + svf 4063.1 + run 2529.7; the recorded
-total is 6612.9 s — the phase sum is 6612.8, a 0.1 s discrepancy present
-in the source records themselves),
-24×1024² tiles, 24 steps, 3×8.
+S10-36 structural finding (steered S11): on the 24×1024² corpus the
+small-cell ratios did not extrapolate (parity–1.034×) because the SVF
+phase — 61.4% of the chain, dominated by the serial export loop — had
+never been an S10 target; in-process warm tile spans 3.2363 → 1.0926 s =
+2.96× (the cell-level improvement masked end-to-end until S11).
 
-- **Phase 0 attribution** (M1–M6 measured, product untouched): the serial
-  parent export loop is 66.7% of the SVF phase and 41.2% of the whole
-  chain; admission caps workers at 5; run phase is engine-dominated (95%)
-  with a 4.2× day/night bimodal; UTCI immaterial (1.3%); guard at the
-  hashing floor.
-- **X02 ACCEPTED** — SVF pixel-parallel twin at the default shape (static
-  bush predicate routes serial vs `shadow_pixel_parallel`): svf phase
-  1.331×, chain 6612.9 → 5636.2 s = **1.173×**; bitwise 24/24.
-- **X01 ACCEPTED** — per-tile export loop as a concurrent spawn-pool stage
-  (degree = runtime workers, gated on cache_enabled): export stage 2708.2 →
-  919.5 s = 2.946×; chain → 3838.3 s = **1.723×** (projection matched to
-  +0.2%); bitwise 24/24. Documented contract amendment: publication order
-  is completion order; failure truncates to the completed set.
-- **X03 ACCEPTED** — measured-envelope admission recalibration. Child peak
-  RSS measured 0.72–0.77 GiB at 1024² (vs the 9.17 GiB legacy reservation,
-  >11× conservative); envelope table measured at 1024² and 2048² (slope
-  form REJECTED by the frozen no-go, R-ratio 4.66); `simulation_reservation`
-  repriced to table × margin 3 with GDAL charge capped at 256 MiB;
-  post-E2E hardening charges decode scratch beyond the measured config.
-  Result: 12×2 run shape admitted — chain **1452.5935 s = 4.552×** vs
-  S10-36 (walls 21.0 + svf 599.3 + run 832.3); run +0.16% off projection;
-  bitwise 24/24; login-node refusal preserved; user-visible consequence
-  documented (a 32×35 census cell in 6 GB now refuses — conservative
-  direction).
-- **S11-7 corner matrix** (pure measurement, zero product change): steps
-  2/24/72 × 256²/1024²/2048² × cold/warm × serial/parallel. Headlines:
-  serial c24s 10744.28 s vs parallel c24p 1483.90 s = **7.24×** (60.3%
-  worker efficiency; TMRT sha IDENTICAL across serial/parallel/golden);
-  256² pair 6.90× cross-config bitwise; warm **not** faster (+3.86%:
-  geometry verify-only saves 327.7 s but run pays +385.9 s); 72-step
-  2954.05 s (~31 s/step marginal); 2-step 792.66 s (94% fixed cost);
-  1-step is contract-unsupported (metfile >2 rows required). Discovered
-  the pre-existing **under-fill admission defect** (below).
-- **X05 ACCEPTED** (user-approved) — the under-fill defect fixed end-to-end:
-  `plan_phase_admission` now clamps `requested = min(requested, len(jobs))`
-  — scenes with fewer tiles than the requested worker width admit at the
-  job count instead of refusing with a misleading "only N fit". One-line
-  fix + 4 behavior pins; adversarial review APPROVE (0 MAJOR, pins proven
-  discriminating on a pre-fix archive); batteries byte-identical (176/3133
-  both arms); E2E at the previously-refusing 2048² 4×6 shape bitwise vs the
-  1×8 record.
-- **Amdahl ceiling at this node class (24 CPUs)**: serial fraction (walls +
-  barrier) ≈26%; run engines saturate 12×2 = 24 threads; 16-wide admission
-  fits memory but has no spare CPUs. Remaining headroom: the barrier seam
-  (362 s serial read-back verify + staged publication) and per-engine
-  efficiency — both need more CPUs or a protocol amendment.
-- **REJECTED in S11** (measured; do not retry): UTCI parallel dispatch
-  (≤1.013× bound), InputGuard optimization (at raw-sha floor), worker
-  shapes >5 wide under the old admission (refused), 2×12 (dominated), 5×4
-  SVF twin shape (admission-refused and dominated), slope-form memory
-  envelope (no-go), alternatives B/C/D of the Stage-B protocol (arithmetic
-  frozen in protocol), 8×3 (measured slower than 12×2: 1138 vs 831 s
-  makespan), cross-phase pipelining (held by user decision; ≤~14% ceiling).
-
-## Era 7 — S12 closure (2026-10-16/17)
-
-- The S11 line was fast-forward merged to main at `cba707db` (branches
-  deleted; commits reachable from main).
-- **Merge-safety battery**: job 14126143 on main @ `e3346e14`, 3309 tests
-  collected (the old-main `--ignore` workaround is obsolete post-merge):
-  FAILED set == the campaign baseline 176 + exactly one deviation — the
-  numba cache-state artifact documented in era 2 (root-caused by
-  fresh-cache discrimination, job 14126396). No product regression.
-- **Lean-repo cleanup** (`05ecd6ae`, then `e3346e14`): campaign packets and
-  bulk reports removed from git and archived to Dropbox; the first cut
-  accidentally dropped two test-coupled fixture packets
-  (`p7_repaired_p6_baseline{,_v2}` — bare-name parametrization evaded the
-  literal-path audit; post-cleanup battery caught 35 deterministic setup
-  errors); restored from `cba707db`, audit re-run mechanically. Lesson
-  recorded: deletion boundaries must resolve parametrized/bare-name test
-  references, not just path literals.
-- **Direct old-main baseline** (`12ff6d39`, job 14125735): the pre-merge
-  main (`b3e5ca59`) chain at the SAME cold recipe (1024² corpus, 3×8 = 24
-  tiles, 24 steps, walls→SVF→run) = **6840.3854 s** (walls 24.11 + svf
-  4067.41 + run 2748.87), TMRT 24 bands **bitwise == corpus golden
-  c361f819…** — old main and merged main produce identical outputs; only
-  speed differs. (First attempt 14125089 died on a measurement-driver
-  defect — editable-install hijacking child imports; fixed with PYTHONPATH
-  + child-origin assert; that attempt contributed no timing.)
-- All five closure commits pushed (`b3e5ca59..07807fd8`).
-- **Post-closure audit** (2026-10-17, user-directed, seven independent
-  auditors: structure, repo machinery, doc cross-references, this file's
-  factual accuracy, independent test-coupling re-derivation, packaging/wheel
-  build+install, git/archive integrity): the closure tree, wheel, git
-  delta, and archive bundles verified clean; found and fixed — (a) the
-  closure missed ONE collection-time import
-  (`tests/optimization_v8/packaging/conftest.py` imports
-  `experiments/.../build_native.py`; conftest is collection-time code —
-  the S12 bare-name lesson one level deeper), (b) a PRE-EXISTING defect
-  since the 2026-10-13 evidence migration: the v7 suite module-loads
-  `b7_02_fixtures.npz`, untracked then, breaking v7 collection outside the
-  canonical battery — both files restored from git history, (c) three
-  wording corrections in this file (this section's cleanup-commit label,
-  the S10-36 anchor phase-sum note, the Amdahl-ceiling sentence), (d) the
-  CI workflow's one version-pinned wheel filename → glob. The
-  `development/README.md` map and `docs/` annotations were adjusted to
-  match; canonical collection stays 3309 (`git diff 07807fd8..HEAD --
-  tests/` is empty — no test logic changed at any point of the closure).
-- **Documentation closure** (this commit, 2026-10-17, user-directed): the
-  accumulated development documents (per-phase docs, packet prose, era
-  tools, benchmark fixtures/superseded protocols, `experiments/`) were
-  deleted and archived to Dropbox `repo_closure_20261017/`; this file is
-  the single surviving narrative. In the same change: the four
-  product documents listed under "Kept in the repo" moved from
-  `development/docs/` to the root `docs/` (repairing citations from
-  `src/` and `docs/` that already pointed at the root locations);
-  `development/reports/scientific_release_exceptions.json` was restored
-  from `cba707db` (a 2.7 KB policy-provenance record cited by
-  `docs/compatibility.md` and `docs/model_deviations.md`); the root
-  `README.md` status section was refreshed to the closed state;
-  `AGENTS.md` and the user-facing docs received archive annotations for
-  their removed-evidence references; `development/README.md` shrank to a
-  map. A pre-existing docs-side condition is annotated rather than
-  repaired: many P0-era evidence records under `development/reports/` had
-  already been removed at the S11 closure (2026-10-16); those references
-  now carry explicit archive notes instead of dangling links.
-- **Baseline-hygiene closure** (2026-10-17, user-directed, commit
-  `08bb59db` + the harness-removal commit): of the 176 heterogeneous
-  baseline failures, 168 were fixed test-side only (`src/` untouched,
-  frozen arithmetic untouched):
-  - *Walls 114*: the fractional-degree aspect path is upstream's arctan
-    fallback (a transcendental) and the original captures were recorded on
-    macOS arm64 — on the Linux battery host it diverges on a small,
-    deterministic per-cell set. Recorded as
-    `tests/reference/walls_aspect_cross_platform_divergence.json` (52
-    fixtures, per-cell capture/port values, envelope 3.0517578125e-05
-    degrees — five orders below the 1-degree winner granularity; NaN
-    positions exact; walls/dsm bitwise; any new divergent cell fails). The
-    table was generated by a scratch script verified identical across
-    serial/parallel1/parallel4 (parallel10 by the battery — the kernels
-    are elementwise over bitwise inputs). Two rotation-boundary filter
-    cells (one per capture, `filters_1` cell [60,4,3], `filters_2` cell
-    [60,9,8]) are pinned to observed values — any second differing cell
-    fails. Signed-zero cross-reduction: sign equality enforced on nonzero
-    magnitudes only (±0 is numerically inert). `svfalfa`: maxulp=1
-    matching the in-file weight-table precedent; `svf`/`svfveg` stay
-    bitwise.
-  - *Radiation 48*: the call recorder was re-seamed to the C6 dispatch
-    boundary (`cylinder_longwave.Lcyl_v2022a_by_demand`, call-time import
-    in the engine) under the original boundary name — the upstream oracle
-    is untouched, and the 6 recorded `Lcyl` intermediate fields' frozen
-    budget comparisons are RESTORED.
-  - *Runtime 2*: the memory budget pin repriced to 8 GiB with the C6-42
-    measured-RSS envelope derivation (the old 4 GiB pin predated the
-    repricing and refused 2 workers deterministically); the geometry
-    racing mutation now patches the real seam
-    (`solweig_light.geometry.svf.svf_calculator_compact`, call-time import
-    in `GeometryRecipe.produce`) so it lands inside the guarded window —
-    guard machinery verified intact.
-  - *Cache-adjacent unit 2*: `parallel_diagnostics()` metadata and FMA IR
-    inspection do not exist on cache-hit dispatchers (numba returns
-    `ol.metadata is None` / a header-only "Inspection disabled" stub), so
-    both tests now compile+inspect in a subprocess bound to a per-run
-    `NUMBA_CACHE_DIR` (the `test_persistent_jit_cache.py` probe pattern);
-    assertions unchanged. This eliminates the warm-cache battery artifact.
-  - *Battery verdict*: canonical battery at `08bb59db` (sbatch job
-    14143003, same protocol): 3309 collected, **9 failed / 3300 passed**,
-    FAILED set byte-identical to the pre-registered 9-guard expectation.
-  - *The 9 platform-bound guards — actual blockers* (measurement-era
-    guards of the retired P7 harness machinery in `development/tools/`;
-    they never exercise `src/`; audit-corrected — NOT the S11 evidence
-    removal as first written):
-    - 6 × `test_p7_benchmark_harness.py`: FileNotFoundError on the
-      pre-restructure repo paths of the P7 characterization payload — the
-      gitignored reference wheel
-      (`p7_p6_baseline/solweig_light-0.1.0.dev0-py3-none-any.whl`) and the
-      `p7_repaired_p6_baseline{,_v2}` subsets (archived 2026-10-16).
-      Repairing them would mean regenerating the archived records or
-      un-ignoring heavyweight binaries.
-    - 3 × `test_p7_serial_variant_harness.py`: two need the untracked raw
-      scene inputs (`small_original_cpu/scene/*.tif` — deliberately
-      gitignored heavyweight DSMs); the third
-      (`test_source_fixture_harness_guard_detects_snapshot_change`) is
-      pure path drift: the frozen protocol cites the pre-restructure root
-      path `tools/benchmark_p7_pipeline.py`, which the guard resolved
-      against the repository root instead of today's `development/tools/`.
-  - *Harness removal* (second commit, same day, user-directed — "make it
-    platform-agnostic or consider deleting it"): the two harness test
-    modules, `development/tools/benchmark_p7_pipeline.py` and the three P7
-    characterization subsets (140 files) were deleted after the battery
-    verdict proved the remaining 3300 green; the removed tree is archived
-    (`repo_closure_20261017/harness_removal_20261017.tar.gz`). Kept, with
-    reader-verified reasons: `run_p7_serial_variant.py` and the frozen
-    protocol (imported by `run_exact_cpu_pairs.py`, exercised by
-    `tests/unit/test_exact_cpu_pairs.py` — the kept chain uses only the
-    pure helpers, never `validate_protocol`), the two `p8_*`
-    characterization subsets (read by `tests/scientific/`),
-    `contract_snapshot.json`, `scientific_release_exceptions.json`.
-  - *Post-removal battery verdict*: sbatch job 14143334 at the removal
-    commit: **3237 collected, 3237 passed, 0 failed — FAILED set empty.**
-    The pre-registered FAILED-set expectation held exactly; the
-    pre-registered collection count (3300) was a misprediction: the two
-    deleted harness modules carried 72 tests, not just the 9 guards — the
-    other 63 were passing tests of the same retired harness machinery
-    (3309 − 72 = 3237, count re-verified by collection at `08bb59db`).
-    The canonical battery baseline is now **0 failed / 3237 passed**.
-
-## Performance summary (verified chain)
+### 3.2 The verified chain (headline numbers)
 
 Same synthetic corpus (24×1024² tiles, 24 steps), same node class
-(cpu-small, 24 CPU), same cold chain recipe; all end-to-end gates bitwise
-against corpus goldens unless noted:
+(cpu-small, 24 CPU), same cold-chain recipe; all end-to-end gates bitwise
+against corpus goldens:
 
 | configuration | chain | vs old main |
 |---|---|---|
@@ -549,44 +218,19 @@ against corpus goldens unless noted:
 | + X03 (envelope recalibration, 12×2) | 1452.6 s | **4.71×** (4.552× vs S10-36) |
 | merged main, same shape 3×8 (c24p headline) | 1483.90 s | **4.61×** |
 
-Context numbers: serial→parallel at 24 steps is **7.24×** (10744.3 →
-1483.9 s); 256² cross-config **6.90×**; cell-level compute improvement from
-S10 ≈2.96× (visible in the run phase; masked in E2E until S11 removed the
-SVF-phase bottleneck); warm start is **not** faster end-to-end (+3.86%).
-Layered efficiency: X03 12×2 = 60.3% of ideal 24-way worker efficiency.
-The residual serial fraction (≈26%: walls + barrier) bounds ideal parallel
-scaling of THIS tree at ≈3.4× further; the measured ~4.7× vs old main is
-larger because X01/X02 also removed serial phases the old-main baseline
-still paid for.
+Context: serial→parallel at 24 steps is **7.24×** (10744.3 → 1483.9 s,
+60.3% worker efficiency; TMRT sha identical across serial/parallel/golden);
+256² cross-config **6.90×**; warm start is **not** faster end-to-end
+(+3.86%); 72-step 2954.05 s (~31 s/step marginal); 2-step 792.66 s (94%
+fixed cost); 1-step is contract-unsupported (metfile >2 rows required).
+Amdahl: residual serial fraction (walls + barrier) ≈26% bounds this tree
+at ≈3.4× further ideal scaling; the measured ~4.7× vs old main is larger
+because X01/X02 also removed serial phases old main still paid for.
+Remaining headroom: the barrier seam (362 s serial read-back verify +
+staged publication) and per-engine efficiency — both need more CPUs or a
+protocol amendment.
 
-## Known limitations and standing caveats
-
-- **Synthetic corpus only.** `actual_target_status: unverified` — every
-  headline number comes from the procedurally generated corpus; no
-  real-scene target run was ever authorized. Physically, the model's four
-  inherited scientific deviations (era 1, P8) remain documented failures
-  under an approved known-limitation exception (`docs/model_deviations.md`;
-  policy record `development/reports/scientific_release_exceptions.json`).
-- **Single node class.** All E2E claims are on cpu-small/24-CPU nodes with
-  the measured admission envelope; other shapes/budgets are calibrated, not
-  measured; above 2048² the legacy full-plane envelope applies unchanged.
-- **Warm-cache behavior**: warm is not faster end-to-end (+3.86%); JIT
-  cache state changes one battery test's outcome (era 2 artifact).
-- **P8 release qualification was never completed** (release benchmark
-  matrices, hosted CI runs, full-platform checks remain outstanding by
-  decision; remote CI has never executed). Compatibility-release use
-  outside the measured envelope carries the documented caveats only.
-- **Post-campaign follow-ups recorded, never taken** (no campaign is
-  planned): `NUMBA_CACHE_DIR` bounded default (would cut ~2.4–2.7 s
-  per-process compile on read-only installs; changes "cold" semantics and
-  needs its own gate record); installed no-env API/CLI product runs on
-  admission-blocked hosts; single-channel-raw compositions unmeasured.
-- The host has known environment quirks for reproduction (editable-install
-  PYTHONPATH trap for worktree drivers; numba cache-state test artifact;
-  login-node cgroup admission; GDAL libstdc++ shim). The canonical battery
-  recipe is sbatch + detached worktree + shared NUMBA_CACHE_DIR.
-
-## Rejected directions (cumulative — do not retry without new causal design)
+### 3.3 Rejected directions (do not retry without new causal design)
 
 Measured or gate-rejected across the campaigns: timestep parallelism (hard
 limit); kernel-internal micro-optimization of the frozen C5/C6/N8/N9
@@ -604,3 +248,116 @@ shapes; slope-form memory envelope; 8×3 fallback shape (measured slower
 than 12×2); cross-phase pipelining (held by user, ≤~14% ceiling);
 Boolean-packed visibility channels (combined channel can equal 2 —
 disproved at P0); interval changes to the delay mechanism (D08).
+
+### 3.4 Recorded follow-ups never taken
+
+No campaign is planned; these are recorded for completeness:
+`NUMBA_CACHE_DIR` bounded default (would cut ~2.4–2.7 s per-process
+compile on read-only installs; changes "cold" semantics, needs its own
+gate record); installed no-env API/CLI product runs on admission-blocked
+hosts; single-channel-raw compositions unmeasured.
+
+## 4. Repository state and archives
+
+### 4.1 Where everything lives
+
+- **Dropbox** `Alan Synn/Research/solweig-light/` (dbxcli; authenticated) —
+  the raw-evidence archive required by the evidence policy (`CLAUDE.md`):
+  - 2026-10-13 migration: `repo_evidence/`, `branch_evidence/`,
+    `manifests/`, `logs/`, `EVIDENCE_ARCHIVE_README.md` — the 25,426 raw
+    evidence files removed from git at `b3e5ca59`, plus 1,540 blobs unique
+    to the deleted pre-handover campaign branches.
+  - `s10/` — S10 raw records; `campaign_s11/phase0/`…`phase4/` — S11/S12
+    raw records per phase (incl. the ~1.9 GB phase-0 SVF snapshot corpus
+    and `phase4_s12_closure_raw_records.tar.gz`, sha256 `3bbfcc16…`).
+  - `campaign_s11/repo_cleanup_20261016/` — the S11 cut
+    (`reports_bulk_20261016.tar.gz` sha256 `41ca10c4…`,
+    `campaign_packets_20261016.tar.gz` sha256 `7beb2b35…`).
+  - `repo_closure_20261017/` — the documentation + hygiene cuts:
+    `development_closure_20261017.tar.gz` (sha256 `0ef48084…`, 508 files),
+    `battery_closure_raw_records.tar.gz` (sha256 `581778a0…`),
+    `battery_audit_raw_records.tar.gz` (sha256 `1a51a0da…`),
+    `harness_removal_20261017.tar.gz` (sha256 `f78d007e…`, 141 members),
+    `battery_hygiene_raw_records.tar.gz` (sha256 `806671a0…`), and
+    `HISTORY_pre_consolidation_d3706ad7.md` (sha256 `68a749eb…`).
+    Full index with expanded hashes: `development/docs/evidence_storage.md`.
+- **Git history on main**: full history retained (no rewriting, by
+  policy). Key anchors:
+
+  | commit | date | event |
+  |---|---|---|
+  | `8ca23d44` | 2026-09-20 | first commit: P0–P8 port checkpoint + portable math profile + optimization strategy |
+  | `14e88876` | 2026-09-20 | local CPU optimization v1 landed |
+  | `90d72b50` | 2026-09-23 | campaign line close (v5–N9) + handover restructure (`development/` umbrella) |
+  | `b3e5ca59` | 2026-10-13 | evidence-storage migration ("old main" tip; S10/S11 baseline) |
+  | `cba707db` | 2026-10-16 | S11-8 closure tip; S10+S11 branches fast-forwarded here |
+  | `05ecd6ae` | 2026-10-16 | S12 lean-repo cleanup (−3,128 files; archived) |
+  | `12ff6d39` | 2026-10-17 | S12 direct old-main baseline (4.61×) + archive index |
+  | `07807fd8` | 2026-10-17 | S12 docs consolidation; first push (b3e5ca59..07807fd8) |
+  | `3ba286c3`–`d3706ad7` | 2026-10-17 | documentation closure, post-closure audit, baseline hygiene (168 fixes + harness removal), fully green battery |
+  | *(this commit)* | 2026-10-17 | this record reorganized by theme; the era-by-era narrative preserved at `d3706ad7` + Dropbox |
+
+- **Kept in the repo** (test-coupled or policy-required):
+  `tests/reference/` goldens (incl. the recorded cross-platform divergence
+  table); `development/benchmarks/protocols/comparison_v1.json` (read at
+  module level by the differential/integration/s10/v6 suites) and
+  `development/benchmarks/protocols/p7_persistent_jit_serial_variant/`
+  (read by `tools/run_p7_serial_variant.py`, kept through the
+  `run_exact_cpu_pairs` → `tests/unit/test_exact_cpu_pairs.py` chain);
+  five `development/tools/` scripts (`run_exact_cpu_pairs`,
+  `summarize_exact_cpu_pairs`, `capture_exact_pipeline`,
+  `run_p7_serial_variant`, `characterize_inputs` — the last sha-pinned)
+  plus `development/tools/evidence_archive_20261013/`;
+  `development/reports/contract_snapshot.json`, the `p8_*`
+  characterization subsets and `scientific_release_exceptions.json`;
+  the `evidence/` trees of `optimization_v6_continue/`,
+  `optimization_v7_backends/` (capture manifest + `b7_02_fixtures.npz`
+  module-loaded by the v7 suite), `optimization_v8_native_default/`
+  (installed + dx_baseline), `optimization_s10_semantic_systems/`;
+  `development/experiments/optimization_v8/packaging/build_native.py`
+  (collection-time import of `tests/optimization_v8/packaging/conftest.py`);
+  `development/docs/evidence_storage.md`; this file and
+  `development/README.md`. Product documents formerly under
+  `development/docs/` moved to the root `docs/` at the documentation
+  closure (`p5_optional.md`, `p6_memory_inventory.md`,
+  `wind_memory_inventory.md`, `upstream_patches/wrf_timestamp_v1.patch` —
+  the last is the location recorded by the reference manifests and the
+  optional-test sha-pin). The P7 harness test modules,
+  `tools/benchmark_p7_pipeline.py` and the `p7_*` characterization
+  subsets were removed at the baseline-hygiene closure (§2.2; archive
+  above).
+
+### 4.2 How the repo got lean (closure timeline, compressed)
+
+`b3e5ca59` (2026-10-13) moved raw evidence to Dropbox; `cba707db`
+(2026-10-16) is the S10+S11 campaign tip; the S12 closure then removed the
+campaign records and development tree bulk (`05ecd6ae`, −3,128 files),
+consolidated the documentation (`07807fd8`, first push), passed a
+post-closure audit (`a0f440ba`), and repaired the test baseline
+(`08bb59db` + the harness-removal commit, ending in the fully green
+battery). Records were retained as written (retain-don't-edit): paths in
+older records cite the pre-restructure root layout (`reports/…`, `tools/…`
+mean `development/reports/…`, `development/tools/…` today).
+
+### 4.3 Known limitations and standing caveats
+
+- **Synthetic corpus only.** `actual_target_status: unverified` — every
+  headline number comes from the procedurally generated corpus; no
+  real-scene target run was ever authorized. The four inherited scientific
+  deviations (§1.4) remain documented failures under the approved
+  exception.
+- **Single node class.** All E2E claims are on cpu-small/24-CPU nodes with
+  the measured admission envelope; other shapes/budgets are calibrated,
+  not measured; above 2048² the legacy full-plane envelope applies
+  unchanged.
+- **Warm-cache behavior**: warm is not faster end-to-end (+3.86%). (The
+  old warm-cache battery test artifact was eliminated at the baseline
+  hygiene — §2.2.)
+- **P8 release qualification was never completed** (release benchmark
+  matrices, hosted CI runs, full-platform checks remain outstanding by
+  decision; remote CI has never executed). Compatibility-release use
+  outside the measured envelope carries the documented caveats only.
+- **Host quirks for reproduction**: editable-install PYTHONPATH trap for
+  worktree drivers; login-node cgroup admission (numba threads ≤4); GDAL
+  libstdc++ shim (the 2 documented v8 collection errors). The canonical
+  battery recipe is §2.2.

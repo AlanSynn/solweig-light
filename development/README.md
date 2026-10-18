@@ -2,8 +2,10 @@
 
 Development history and the test-coupled evidence kept alongside it. Nothing
 in here is imported by the package (`src/` is independent of this tree).
-The consolidated sequential record of the whole project — port, exactness
-contract, campaigns, closure — is **[HISTORY.md](HISTORY.md)**.
+The consolidated development record of the whole project — organized by
+theme: the vanilla upstream model vs this port, the exactness/verification
+state, the performance record, the repository/archive state — is
+**[HISTORY.md](HISTORY.md)**.
 
 ## Map
 

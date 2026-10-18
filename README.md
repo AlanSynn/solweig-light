@@ -131,16 +131,18 @@ rather than silently falling back. Evidence:
 | [runtime](docs/runtime.md), [cache policy](docs/cache_policy.md) | tiling/threads behavior, cache and restart semantics |
 | [optional environment](docs/optional_environment.md) | ERA5/WRF/forcing extras |
 | [provenance](docs/provenance.md) | behavioral reference, evidence storage rules |
-| [history](development/HISTORY.md) | the consolidated sequential record: port, exactness contract, every campaign, evidence map |
+| [history](development/HISTORY.md) | the consolidated development record: vanilla SOLWEIG-GPU vs this port, verification state, performance record, repository/archive state |
 
 ## How this was developed
 
-The full history is consolidated in
-**[development/HISTORY.md](development/HISTORY.md)** — the port (P0–P8), the
-exactness contract, the v4–N9 campaign line, the S10/S11 campaigns and the
-terminal state, with commit anchors and the evidence map. The per-campaign
-process documents and packets were archived at the 2026-10-17 closure
-(Dropbox `repo_closure_20261017/` and `campaign_s11/repo_cleanup_20261016/`;
+The full development record is consolidated in
+**[development/HISTORY.md](development/HISTORY.md)** — what the vanilla
+SOLWEIG-GPU upstream is and what this port changes (P0–P8), how exactness
+is defined and verified, the shipped optimization inventory with the
+verified performance chain (v4–N9, S10, S11), and the repository/archive
+state, with commit anchors. The per-campaign process documents, packets
+and the earlier campaign-by-campaign narrative were archived (Dropbox
+`repo_closure_20261017/` and `campaign_s11/repo_cleanup_20261016/`;
 deleted trees are also recoverable from git history). The gate tests each
 campaign shipped remain under `tests/optimization_v5/` …
 `tests/optimization_v8/` and `tests/optimization_s10/`.
