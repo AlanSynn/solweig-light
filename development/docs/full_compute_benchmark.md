@@ -72,7 +72,7 @@ The work directory contains:
 - `measured-*`: complete fresh scenes, logs, checkpoint states and per-run result JSON.
 - `jit-reference` and `jit-candidate`: isolated Numba caches reused only within their corresponding variant.
 
-Pass `--profile` for one additional candidate run with per-worker `cProfile` files under that run's `events` directory. This run is labeled **profiled** and excluded from performance medians. Profiling covers tile computation, not just the scheduler process. It is not a performance sample.
+Pass `--profile` for one additional candidate run with `cProfile` coverage of the complete SVF API stage and actual worker tile computation. Files are saved as `profile-svf-PID-*.pstats` and `profile-tile-PID-*.pstats` under that run's `events` directory. This run is labeled **profiled** and excluded from performance medians. The SVF profile includes geometry construction and legacy export; the tile profile covers thermal computation rather than only scheduler waiting. It is not a performance sample.
 
 Generated inputs should be supplied as a separate explicitly identified scene with `--dataset-label synthetic_generated`. The harness does not generate, relabel or imply possession of the original dataset. A synthetic result establishes behavior only for that generated case.
 
@@ -111,3 +111,11 @@ For a separately labeled diagnostic workload, the accompanying generator creates
 The output directory must be new. `synthetic_manifest.json` records the generator hash, seed, dimensions, pixel size, source projection/origin, source forcing hash, selected forcing hash, selected year/day/hour/minute values, raster hashes and scene counts. Pass this scene to the benchmark with `--dataset-label synthetic_generated`. All timings and profiles from it describe the generated diagnostic workload only.
 
 The benchmark now also checks finite output counts and stops before measured trials if either first-use workflow or its completeness checks fail. An entirely nonfinite TMRT or UTCI output is rejected. Process-tree RSS sampling may be unavailable even when `psutil` is installed, for example when the host does not expose `/proc`; that condition is recorded explicitly, while resource-based parent/child CPU and high-water RSS remain available.
+
+### Fixed memory admission budget
+
+`--memory-budget-mib` defaults to **4096 MiB**, passed as the same explicit `RuntimeOptions.memory_budget_bytes` to every process and both checkouts. This prevents the runtime's automatic free-memory-based budget from changing between first-use and measured trials as system headroom changes. The benchmark's environment snapshots also record physical memory, available host memory and any exposed container memory limit when those probes are supported.
+
+Choose a fixed budget that both covers the model's conservative admission estimate and fits the server's real headroom. An explicit budget does not allocate that amount of RAM or make an oversized workload safe. The runtime's existing admission calculations remain intact. If admission fails, the harness stops before launching subsequent runs; it does not shrink tiles, skip timesteps, change GDAL limits between variants or weaken a numerical gate.
+
+The first local synthetic round exposed this distinction: both first-use workflows completed, but later runs were rejected before thermal calculation when their automatic budgets fell below the conservative simulation estimate. Those failed runs remain separate evidence, and no performance ratio is derived from them. A new controlled round uses the same explicit 4096 MiB budget for both variants, with fresh first-use caches and complete source provenance.

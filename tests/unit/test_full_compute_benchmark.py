@@ -99,10 +99,50 @@ def test_source_identity_ignores_generated_untracked_directories(tmp_path):
     (generated/'huge.json').write_text('not source')
     nested=tmp_path/'tests/solweig-runtime-generated';nested.mkdir(parents=True)
     (nested/'payload.json').write_text('not source either')
+    metadata=tmp_path/'src/package.egg-info';metadata.mkdir()
+    (metadata/'SOURCES.txt').write_text('generated build metadata')
     first=bench.source_identity(tmp_path)
     assert set(first['untracked_files'])=={'src/package/kernel.py'}
     (generated/'huge.json').write_text('changed generated contents')
     (nested/'payload.json').write_text('changed generated contents')
+    (metadata/'SOURCES.txt').write_text('changed generated build metadata')
     second=bench.source_identity(tmp_path)
     assert second['source_tree_sha256']==first['source_tree_sha256']
     assert second['untracked_files']==first['untracked_files']
+
+
+@pytest.mark.parametrize('value',['0','-1','not-an-integer'])
+def test_memory_budget_option_rejects_nonpositive_or_invalid_values(value):
+    arguments=['--reference-checkout','reference','--candidate-checkout','candidate',
+               '--scene','scene','--workdir','work','--memory-budget-mib',value]
+    with pytest.raises(SystemExit):bench.parser().parse_args(arguments)
+
+
+def test_memory_budget_option_has_fixed_default_and_accepts_override():
+    arguments=['--reference-checkout','reference','--candidate-checkout','candidate',
+               '--scene','scene','--workdir','work']
+    assert bench.parser().parse_args(arguments).memory_budget_mib==4096
+    assert bench.parser().parse_args([*arguments,'--memory-budget-mib','8192']).memory_budget_mib==8192
+
+
+@pytest.mark.parametrize('enabled',[False,True])
+def test_optional_profiles_cover_svf_stage_and_tile_worker(monkeypatch,tmp_path,enabled):
+    import sys
+    import types
+    package=types.ModuleType('solweig_light')
+    api=types.ModuleType('solweig_light.api')
+    pipeline=types.ModuleType('solweig_light.pipeline')
+    for name in ('preprocess','run_walls_aspect','_calculate_svf','run_utci_tiles'):
+        setattr(api,name,lambda *args,**kwargs:42)
+    pipeline.run_tile=lambda *args,**kwargs:43
+    package.api=api;package.pipeline=pipeline
+    for name,module in (('solweig_light',package),('solweig_light.api',api),('solweig_light.pipeline',pipeline)):
+        monkeypatch.setitem(sys.modules,name,module)
+    monkeypatch.setattr(bench,'environment',lambda:{'test':True})
+    monkeypatch.setenv('SOLWEIG_BENCH_EVENTS',str(tmp_path))
+    monkeypatch.setenv('SOLWEIG_BENCH_PROFILE','1' if enabled else '0')
+    bench._install_hooks()
+    assert api._calculate_svf()==42
+    assert pipeline.run_tile()==43
+    assert len(list(tmp_path.glob('profile-svf-*.pstats')))==int(enabled)
+    assert len(list(tmp_path.glob('profile-tile-*.pstats')))==int(enabled)
