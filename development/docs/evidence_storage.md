@@ -63,6 +63,17 @@ Do not commit new raw evidence (bulk run outputs, trial/sample JSON dumps,
 rasters, array caches). Write raw artifacts outside the repository or leave them
 ignored per `.gitignore`, and record manifests and provenance in the repository.
 
+### Full-computation PR evidence (2026-10-20)
+
+The two 600 × 600 synthetic comparison rounds for PR #2 are summarized in
+[`optimization_full_compute`](../optimization_full_compute/README.md).
+Its [evidence inventory](../optimization_full_compute/EVIDENCE.md) records five
+verified local transfer archives, their SHA-256 values and deliberate scope.
+The original Atlanta comparison remains outstanding. Durable archive upload
+was blocked by automatic approval review pending explicit destination
+authorization; Dropbox synchronization was not performed. This is a prepared
+evidence packet, not a completed external archival closure.
+
 ## Historical policy (before 2026-10-13)
 
 The repository keeps concise reports, protocols, provenance records, and source

@@ -94,7 +94,13 @@ The controlled run initially stopped after valid pair 0 because the checker trav
 
 Raw artifacts are outside git at `/workspace/scratch/2c9f54f632af/full_compute_round1_fixed_budget`. The source scene and generator manifest are at `/workspace/scratch/2c9f54f632af/synthetic_full_600`.
 
-**Archive location: pending external evidence archive.** Add the archive URI and archive SHA-256 before final evidence closure; do not commit raw rasters, caches, profiles or bulk JSON to git.
+Selected raw reports, profiles, failures and actual generated inputs are packed
+in `full_compute_evidence_core_20261020.zip` (SHA-256
+`2847e88a5a3743e17e59b504bb93f98adaa721cf020e8de8709ffec2efb76e7f`).
+[EVIDENCE.md](EVIDENCE.md) records its exact scope and delivery status. Durable
+upload was blocked by automatic approval review; no remote archive closure is
+claimed. Round-1 repeated bulk raster/checkpoint outputs remain outside the
+selected transfer archives and in the original local run directories.
 
 | Evidence file | SHA-256 |
 |---|---|
