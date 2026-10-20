@@ -103,23 +103,33 @@ def _descriptor(channel):
 
 
 def _fused_descriptor(channel):
-    """Flat payload layout for the fused kernels, cached per channel.
+    """Flat payload layout cached per immutable channel.
 
-    (flat uint8 payload, int64 offsets[patches+1], uint8 modes). The flat copy
-    lets the kernels index plain arrays instead of per-patch typed-list boxes,
-    and identity of the cached descriptor doubles as payload-identity, so the
-    dispatcher can skip re-decoding a lazy leaf that shares its base channel.
+    Mapped owners already store concatenated patches, so their flat descriptor
+    borrows that read-only mapping. Every consumer must hold all mapped owners'
+    locks from descriptor acquisition through kernel completion; close clears
+    cached descriptors under the same lock. Heap-backed channels keep a copy.
     """
+    from .visibility_native import MappedVisibility
+    mapped = type(channel) is MappedVisibility
+    if mapped:
+        channel._check_open()
     descriptor = getattr(channel, '_fused_block_descriptor', None)
     if descriptor is None:
-        payloads, modes = _descriptor(channel)
-        offsets = np.zeros(len(payloads)+1, dtype=np.int64)
-        for patch in range(len(payloads)):
-            offsets[patch+1] = offsets[patch] + payloads[patch].shape[0]
-        flat = np.empty(int(offsets[-1]), dtype=np.uint8)
-        for patch in range(len(payloads)):
-            flat[offsets[patch]:offsets[patch+1]] = payloads[patch]
-        descriptor = flat, offsets, modes
+        if mapped:
+            offsets = np.array([patch.offset for patch in channel._patches] + [channel.nbytes], dtype=np.int64)
+            modes = np.array([{'binary': 1, 'ternary': 2, 'raw': 4}[patch.mode]
+                              for patch in channel._patches], dtype=np.uint8)
+            descriptor = channel._mapping, offsets, modes
+        else:
+            payloads, modes = _descriptor(channel)
+            offsets = np.zeros(len(payloads)+1, dtype=np.int64)
+            for patch in range(len(payloads)):
+                offsets[patch+1] = offsets[patch] + payloads[patch].shape[0]
+            flat = np.empty(int(offsets[-1]), dtype=np.uint8)
+            for patch in range(len(payloads)):
+                flat[offsets[patch]:offsets[patch+1]] = payloads[patch]
+            descriptor = flat, offsets, modes
         object.__setattr__(channel, '_fused_block_descriptor', descriptor)
     return descriptor
 

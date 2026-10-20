@@ -127,3 +127,22 @@ def shadow(amaxvalue, a, vegdem, vegdem2, bush, azimuth, altitude, scale):
     if np.max(bush) > 0:
         return shadow_pixel_serial(amaxvalue, a, vegdem, vegdem2, bush, azimuth, altitude, scale)
     return shadow_pixel_parallel(amaxvalue, a, vegdem, vegdem2, bush, azimuth, altitude, scale)
+
+
+def prepare_shadow(a, vegdem, vegdem2, bush):
+    """Bind immutable SVF geometry and its exact global bush predicate once.
+
+    np.max deliberately poisons the predicate with NaNs. An any-positive
+    predicate would send NaN-containing bush layers through a different model.
+    Positive bush layers retain the established step-major serial fallback.
+    The bound inputs must not be mutated while this callable is in use.
+    """
+    from .sky_compiled import _shadow_pixel
+    a, vegdem, vegdem2, bush = map(np.asarray, (a, vegdem, vegdem2, bush))
+    positive = bool(np.max(bush) > 0)
+
+    def cast(amaxvalue, azimuth, altitude, scale):
+        return _shadow_pixel(amaxvalue, a, vegdem, vegdem2, bush, azimuth,
+                             altitude, scale, not positive, bush_positive=positive)
+
+    return cast

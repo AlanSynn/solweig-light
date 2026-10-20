@@ -70,6 +70,11 @@ def test_parallel_diagnostics(capsys):
         case=next(c for c in MANIFEST['cases'] if c['family']==family and c['status']=='captured')
         getattr(compiled,f'exact_{family}')(**load(case))
         kernel=getattr(compiled,f'_wall{family}')
+        # Numba does not persist optimization diagnostics in its disk cache.
+        # Recompile a cache-loaded specialization before inspecting the actual
+        # parallel transformation; correctness above still exercises cache hits.
+        if any(overload.metadata is None for overload in kernel.overloads.values()):
+            kernel.recompile()
         kernel.parallel_diagnostics(level=4)
         output=capsys.readouterr().out
         assert 'Parallel' in output

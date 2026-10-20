@@ -63,6 +63,11 @@ def simulation_identity(paths, wind_paths, selected_date, tile, flags, location,
     files = ['pipeline.py', 'models.py', 'data/landcoverclasses_2016a.txt']
     for folder in ('radiation', 'comfort', 'geometry'):
         files.extend(str(path.relative_to(PACKAGE)) for path in (PACKAGE / folder).glob('*.py'))
+    # Compiled block orchestration is part of the numerical implementation,
+    # even though its private modules are outside radiation/. Checkpoints
+    # must not survive a change to those ordered reduction kernels.
+    files.extend(str(path.relative_to(PACKAGE))
+                 for path in (PACKAGE / '_native_dispatch').rglob('*.py'))
     return {
         'math_profile': __import__('solweig_light.radiation._math_profile', fromlist=['profile_identity']).profile_identity(),
         'policy': 'chronological-compatibility-v1', 'upstream_commit': BASELINE,

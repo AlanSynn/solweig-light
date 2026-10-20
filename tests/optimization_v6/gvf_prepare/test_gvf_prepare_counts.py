@@ -66,16 +66,10 @@ def test_lup_expression_single_evaluation_without_water():
 
 
 def test_operate_call_reduction():
-    # Aggregate repeated arithmetic: every numpy elementwise op in the three
-    # routes flows through engine._operate. The prepared route (C6-30) removes
-    # the once-per-direction expression trees; its per-block postprocess stays
-    # NumPy. C6-70 wiring additionally moved the fused route's block
-    # postprocess into the typed kernel (gvf_postprocess_block, C6-31), which
-    # makes zero _operate calls, so the fused route — per-direction trees
-    # only — is now the leanest route. The per-direction tree reduction itself
-    # is pinned by the _lup_expression tests above (fused 36 vs prepared 2/1);
-    # this test pins the aggregate: the typed-postprocess fused route stays
-    # far below both the full route and the prepared route.
+    # The compiled prepared block schedule now combines the hoisted source
+    # trees with typed mixed-dtype postprocessing and ordered accumulation.
+    # Keep the arithmetic-dispatch regression gate: preparation must perform
+    # fewer Python NumPy operations than either retained implementation.
     from solweig_light.radiation import engine, gvf_prepared, ground_view
     scene = build_scene(64, 64, seed=65, water=True)
     counts = {}
@@ -90,7 +84,7 @@ def test_operate_call_reduction():
                 else:
                     gvf_prepared.prepared_gvf_step(**snapshots(scene), parallel=True, block_rows=32)
         counts[name] = wrapper.count
-    assert counts['fused'] < counts['prepared'], counts
+    assert counts['prepared'] < counts['fused'], counts
     # Measured gap fused vs full is 1313 at this shape (972 vs 2285): the
     # typed postprocess plus the removed full-raster plane trees. The floor
     # stays far below the measured gap so only a real regression trips it.

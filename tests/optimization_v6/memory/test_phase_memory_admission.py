@@ -27,6 +27,7 @@ from solweig_light.runtime import (  # noqa: E402
     ResourceAdmissionError,
     estimate_memory,
 )
+import solweig_light.runtime_memory as rm
 from solweig_light.runtime_memory import (  # noqa: E402
     CHECKPOINT_PULSE_PLANES,
     DEFAULT_EXPORT_STREAM_BYTES,
@@ -107,8 +108,8 @@ def test_dtype64_reserve_repriced_at_eight_bytes():
     corrected = simulation_reservation(above, gdal_cache_bytes=0,
                                        export_overlap=False, native_bytes=0)
     expected_live = (192 + WORST_WIND) * above.pixels * 4 + 32 * above.pixels * 8
-    assert corrected.live_array_bytes == expected_live
-    delta = corrected.live_array_bytes - (192 + 32 + WORST_WIND) * above.pixels * 4
+    assert corrected.live_array_bytes == expected_live + 56 * above.pixels
+    delta = corrected.live_array_bytes - 56 * above.pixels - (192 + 32 + WORST_WIND) * above.pixels * 4
     assert delta == 32 * above.pixels * 4 == 2_147_483_648
 
 
@@ -123,23 +124,25 @@ def test_simulation_envelope_table_recalibration():
     import solweig_light.runtime_memory as rm
 
     sim = simulation_reservation(WORST_SHAPE, gdal_cache_bytes=GDAL_32GIB_HOST)
-    assert sim.live_array_bytes == rm.SIMULATION_ENVELOPE_MARGIN * 826_736_640
+    assert sim.live_array_bytes == rm.SIMULATION_ENVELOPE_MARGIN * 826_736_640 + 56 * WORST_PIXELS
     assert sim.payload_bytes == 0  # unknown_cold payload subsumed in the measurement
     # block 1024 scratch beyond the measured block-128 configuration
     # (hardening, Stage-B review MAJOR-1): 10,027,008 - 1,253,376
-    assert sim.decoded_block_bytes == 8_773_632 and sim.native_bytes == 0
+    assert sim.decoded_block_bytes == 8_773_632 + rm._execution_overhead_components(WORST_SHAPE)[1]
+    assert sim.native_bytes == 0
     assert sim.gdal_cache_bytes == 256 * MIB  # capped, not the 1.7 GiB 5%-of-32G
     assert sim.write_pulse_bytes == (DIGEST_PULSE_PLANES + CHECKPOINT_PULSE_PLANES) * PLANE_F32
     assert sim.total_bytes == (
         sim.live_array_bytes + sim.gdal_cache_bytes + sim.write_pulse_bytes
         + sim.export_stream_bytes + sim.decoded_block_bytes + sim.mapped_bytes
-    ) == 2_916_802_560
+    ) == 2_916_802_560 + rm.execution_overhead(WORST_SHAPE)
     # at the MEASURED configuration (block 128, production default) the
-    # residual is exactly zero and the price is the byte-identical E2E
-    # measured value (job 14104820 admission echo)
+    # historical decode residual is zero; preserve the frozen E2E base
+    # (job 14104820) and add the newly allocated full-compute overhead.
     measured_shape = TileShapeDescriptor(1024, 1024, 153, 12, 128)
     assert simulation_reservation(
-        measured_shape, gdal_cache_bytes=GDAL_32GIB_HOST).total_bytes == 2_908_028_928
+        measured_shape, gdal_cache_bytes=GDAL_32GIB_HOST).total_bytes == (
+            2_908_028_928 + rm.execution_overhead(measured_shape))
     # every calibrated price covers margin x measured (I1); price grows with
     # pixels (I2); above the table the legacy envelope applies unchanged (I6 path)
     assert sim.total_bytes >= rm.SIMULATION_ENVELOPE_MARGIN * 826_736_640
@@ -147,7 +150,7 @@ def test_simulation_envelope_table_recalibration():
         TileShapeDescriptor(2048, 2048, WORST_PATCHES, WORST_WIND, WORST_BLOCK),
         gdal_cache_bytes=GDAL_32GIB_HOST)
     assert big.total_bytes > sim.total_bytes
-    assert big.live_array_bytes == rm.SIMULATION_ENVELOPE_MARGIN * 3_852_328_960
+    assert big.live_array_bytes == rm.SIMULATION_ENVELOPE_MARGIN * 3_852_328_960 + 56 * big.pixels
     above = simulation_reservation(
         TileShapeDescriptor(4096, 4096, WORST_PATCHES, WORST_WIND, WORST_BLOCK),
         gdal_cache_bytes=GDAL_32GIB_HOST)
@@ -258,7 +261,7 @@ def test_phase_shape_differentiation_corrects_over_admission():
         + GDAL_32GIB_HOST + 768 * MIB + DEFAULT_EXPORT_STREAM_BYTES
     )
     # exact recalibrated components (Stage-A/A2/B0 measured envelope table)
-    assert sim.total_bytes == 2_916_802_560
+    assert sim.total_bytes == 2_916_802_560 + rm.execution_overhead(WORST_SHAPE)
     assert geo.total_bytes == 4_758_857_318
     assert sim.write_pulse_bytes == (DIGEST_PULSE_PLANES + CHECKPOINT_PULSE_PLANES) * PLANE_F32
     assert sim.gdal_cache_bytes == 256 * MIB  # capped, matches the child GDAL_CACHEMAX
@@ -327,7 +330,7 @@ def test_boundary_12gib_admits_four_workers_rejects_five():
         )
     # the rejection names the arithmetic, not a vague failure:
     # 5 x 2,916,802,560 B (5x1 worst case, block1024)
-    assert "14,584,012,800" in str(excinfo.value)
+    assert f"{5 * sim.total_bytes:,}" in str(excinfo.value)
 
 
 def test_three_worker_boundary_raw_worst_and_legacy_gap():
@@ -638,11 +641,12 @@ def test_reservation_inventory_reports_plane_equivalents():
     inv = sim.inventory()
     # X03 Stage-B: under the measured envelope the payload is subsumed
     # (0 plane equivalents) and live = 3 x 0.77 GiB = 2,480,209,920 B,
-    # i.e. 591 whole f32 planes at 1024^2 (2,480,209,920 // 4,194,304;
+    # i.e. 591 old f32 planes plus 14 newly owned static planes at 1024^2
+    # (2,480,209,920 // 4,194,304;
     # the measured envelope is not a whole-plane multiple, floor is intended).
     assert inv["payload_plane_equivalents_f32"] == 0
-    assert inv["live_array_plane_equivalents_f32"] == 591
-    assert sim.total_bytes == 2_916_802_560
+    assert inv["live_array_plane_equivalents_f32"] == 591 + 14
+    assert sim.total_bytes == 2_916_802_560 + rm.execution_overhead(WORST_SHAPE)
     assert json.dumps(inv)  # audit dict stays JSON-safe
 
 

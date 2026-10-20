@@ -226,7 +226,7 @@ def _run_parallel(a,canopy,trunk,bush,bounds,da,dv,dt,db,first_heights,bush_posi
     _finish_parallel(bush,bush_positive,bp,g,sh,vs,vb,vegetation)
 
 
-def _shadow(amaxvalue,a,vegdem,vegdem2,bush,azimuth,altitude,scale,parallel):
+def _shadow(amaxvalue,a,vegdem,vegdem2,bush,azimuth,altitude,scale,parallel,bush_positive=None):
     a,vegdem,vegdem2,bush=map(np.asarray,(a,vegdem,vegdem2,bush))
     if any(array.shape!=a.shape for array in (vegdem,vegdem2,bush)):
         raise ValueError('shadow input shapes must match')
@@ -243,7 +243,8 @@ def _shadow(amaxvalue,a,vegdem,vegdem2,bush,azimuth,altitude,scale,parallel):
     vb=np.zeros(a.shape,dtype=np.float32)
     tv=np.empty(a.shape,dtype=np.float32)
     g=np.zeros(a.shape,dtype=np.float32)
-    bush_positive=bool(bush.max()>0)
+    if bush_positive is None:
+        bush_positive=bool(bush.max()>0)
     # The legacy bush tail promotes vegetation output to bush dtype only when
     # its global branch executes. Combined visibility always stays float32.
     vegetation=np.empty(a.shape,dtype=np.result_type(np.float32,bush.dtype) if bush_positive else np.float32)
@@ -332,14 +333,16 @@ def _pixel_parallel(a,canopy,trunk,bush,bounds,da,dv,dt,first_heights,sh,vs,vb):
         sh[row,col],vs[row,col],vb[row,col]=_trace_pixel(row,col,a,canopy,trunk,bush,bounds,da,dv,dt,first_heights)
 
 
-def _shadow_pixel(amaxvalue,a,vegdem,vegdem2,bush,azimuth,altitude,scale,parallel):
+def _shadow_pixel(amaxvalue,a,vegdem,vegdem2,bush,azimuth,altitude,scale,parallel,bush_positive=None):
     a,vegdem,vegdem2,bush=map(np.asarray,(a,vegdem,vegdem2,bush))
     if any(array.shape!=a.shape for array in (vegdem,vegdem2,bush)):
         raise ValueError('shadow input shapes must match')
-    if bush.max()>0:
+    if bush_positive is None:
+        bush_positive=bool(bush.max()>0)
+    if bush_positive:
         # A positive global bush layer may update g based on whole-domain
         # visibility. Preserve the step-major implementation for that case.
-        return _shadow(amaxvalue,a,vegdem,vegdem2,bush,azimuth,altitude,scale,parallel)
+        return _shadow(amaxvalue,a,vegdem,vegdem2,bush,azimuth,altitude,scale,parallel,bush_positive=True)
     # Independence proof: the static global bush predicate is false for every
     # ray, so g and the bush tail never execute. f/sh/vs/vb only read their own
     # prior value and immutable shifted input fields. Each pixel follows the

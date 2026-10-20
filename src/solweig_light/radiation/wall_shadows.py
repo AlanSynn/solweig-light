@@ -74,7 +74,8 @@ def _maximum(x,y):
     return x if x >= y else y
 
 
-@njit(fastmath=False, parallel=True)
+@njit(cache=True, fastmath=False, parallel=True)
+@bind_cache_identity
 def _wall13(a, walls, aspect, offsets, heights, low, high, mode):
     sx,sy=a.shape
     out=np.empty((5,sx,sy),dtype=np.float32)
@@ -137,7 +138,8 @@ def _wall13_serial(a, walls, aspect, offsets, heights, low, high, mode):
     return out
 
 
-@njit(fastmath=False, parallel=True)
+@njit(cache=True, fastmath=False, parallel=True)
+@bind_cache_identity
 def _wall23(a, vegdem, vegdem2, bush, walls, aspect, offsets, heights, low, high, mode):
     sx,sy=a.shape
     out=np.empty((8,sx,sy),dtype=np.float32)

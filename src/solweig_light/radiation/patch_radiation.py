@@ -353,8 +353,8 @@ def _classes(altitude,azimuth,geometry,asvf,start,stop,active=None,prepared=None
                 # over, float32 multiply, the two strict comparisons — is the
                 # retained route's elementwise arithmetic without the array
                 # temporaries and dispatch overhead. Typed arithmetic only.
-                from ._math_profile import tan32
-                heights=np.ascontiguousarray(tan32(field)).reshape(-1)
+                from .static_geometry import classification_heights
+                heights=classification_heights(asvf,start,stop)
                 if indices[0]==0 and indices.size==indices[-1]+1:
                     _classes_table(heights,coefficients,
                                    np.asarray(rad2deg,dtype=field.dtype)[()],
@@ -696,11 +696,11 @@ def anilum_packed(diffuse,lv,total,parallel):
     if total!=rows*cols or weights.shape[0]!=patches:
         return None
     from ..geometry.visibility_compiled import _fused_descriptor
-    dsh=_fused_descriptor(leaves[0])
-    dveg=_fused_descriptor(leaves[1])
-    if (dsh[2]==2).any() or (dveg[2]==2).any():
-        return None
     with _fused_guard(leaves,0,total,patches):
+        dsh=_fused_descriptor(leaves[0])
+        dveg=_fused_descriptor(leaves[1])
+        if (dsh[2]==2).any() or (dveg[2]==2).any():
+            return None
         lum=np.ascontiguousarray(weights[:,2])
         kernel=_anilum_packed_parallel if parallel else _anilum_packed_serial
         return kernel(*dsh,*dveg,lum,total)

@@ -390,3 +390,16 @@ def test_dispatch_shape_parity():
     actual, actual_Tg = call_prepared(scene, parallel=True, block_rows=32)
     assert_exact(actual_Tg, expected_Tg, 'Tg after the call')
     assert_gvf_outputs(actual, expected)
+
+
+@pytest.mark.parametrize('water',[False,True])
+@pytest.mark.parametrize('block_rows',[1,32])
+def test_mixed_float64_tg_compiled_accumulation_matches_original(water,block_rows):
+    """Production promoted Tg keeps f32 gather receivers and f64 Lup terms."""
+    scene=build_scene(33,21,seed=83,water=water)
+    scene['Tg']=scene['Tg'].astype(np.float64)
+    scene['Tgwall']=np.array([[21.5]],np.float64)
+    expected,expected_tg=call_original(scene)
+    actual,actual_tg=call_prepared(scene,parallel=True,block_rows=block_rows)
+    assert_exact(actual_tg,expected_tg,'mixed Tg water mutation')
+    assert_gvf_outputs(actual,expected)

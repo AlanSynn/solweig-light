@@ -333,12 +333,15 @@ def cylindric_wedge(zen, svfalfa, rows, cols):
     np.seterr(divide='ignore', invalid='ignore')
     beta = _array(zen, dtype=np.float32)
     alfa = _operate(np.add, _zeros((rows, cols)), svfalfa)
-    xa = _operate(np.subtract, 1, _divide(2.0, _operate(np.multiply, np.tan(alfa), np.tan(beta))))
-    ha = _divide(2.0, _operate(np.multiply, np.tan(alfa), np.tan(beta)))
-    ba = _divide(1.0, np.tan(alfa))
+    # Identical ufunc inputs have identical values and promotion. Reuse the
+    # evaluated subexpressions without changing the arithmetic graph.
+    tan_alfa, tan_beta = np.tan(alfa), np.tan(beta)
+    ha = _divide(2.0, _operate(np.multiply, tan_alfa, tan_beta))
+    xa = _operate(np.subtract, 1, ha)
+    ba = _divide(1.0, tan_alfa)
     hkil = _operate(np.multiply, _operate(np.multiply, 2.0, ba), ha)
     qa = _zeros((rows, cols))
-    qa[xa < 0] = _divide(np.tan(beta), 2)
+    qa[xa < 0] = _divide(tan_beta, 2)
     Za = _zeros((rows, cols))
     Za[xa < 0] = _operate(np.power, _operate(np.subtract, _operate(np.power, ba[xa < 0], 2), _divide(_operate(np.power, qa[xa < 0], 2), 4)), 0.5)
     phi = _zeros((rows, cols))
@@ -386,21 +389,30 @@ def TsWaveDelay_2015a(gvfLup, firstdaytime, timeadd, timestepdec, Tgmap1):
     return (Lup, timeadd, Tgmap1)
 
 def Kup_veg_2015a(radI, radD, radG, altitude, svfbuveg, albedo_b, F_sh, gvfalb, gvfalbE, gvfalbS, gvfalbW, gvfalbN, gvfalbnosh, gvfalbnoshE, gvfalbnoshS, gvfalbnoshW, gvfalbnoshN):
-    """
-    Calculate upward shortwave radiation with vegetation effects.
-    
-    Accounts for multiple reflections between ground, walls, and vegetation.
-    
-    Returns:
-        tuple: Upward shortwave components for different directions
-    """
+    """Calculate upward shortwave with the original ordered arithmetic."""
     albedo_b = np.copy(_array(albedo_b))
-    Kup = _operate(np.add, _operate(np.multiply, _operate(np.multiply, gvfalb, radI), np.sin(_operate(np.multiply, altitude, _divide(np.pi, 180.0)))), _operate(np.multiply, _operate(np.add, _operate(np.multiply, radD, svfbuveg), _operate(np.multiply, _operate(np.multiply, albedo_b, _operate(np.subtract, 1, svfbuveg)), _operate(np.add, _operate(np.multiply, radG, _operate(np.subtract, 1, F_sh)), _operate(np.multiply, radD, F_sh)))), gvfalbnosh))
-    KupE = _operate(np.add, _operate(np.multiply, _operate(np.multiply, gvfalbE, radI), np.sin(_operate(np.multiply, altitude, _divide(np.pi, 180.0)))), _operate(np.multiply, _operate(np.add, _operate(np.multiply, radD, svfbuveg), _operate(np.multiply, _operate(np.multiply, albedo_b, _operate(np.subtract, 1, svfbuveg)), _operate(np.add, _operate(np.multiply, radG, _operate(np.subtract, 1, F_sh)), _operate(np.multiply, radD, F_sh)))), gvfalbnoshE))
-    KupS = _operate(np.add, _operate(np.multiply, _operate(np.multiply, gvfalbS, radI), np.sin(_operate(np.multiply, altitude, _divide(np.pi, 180.0)))), _operate(np.multiply, _operate(np.add, _operate(np.multiply, radD, svfbuveg), _operate(np.multiply, _operate(np.multiply, albedo_b, _operate(np.subtract, 1, svfbuveg)), _operate(np.add, _operate(np.multiply, radG, _operate(np.subtract, 1, F_sh)), _operate(np.multiply, radD, F_sh)))), gvfalbnoshS))
-    KupW = _operate(np.add, _operate(np.multiply, _operate(np.multiply, gvfalbW, radI), np.sin(_operate(np.multiply, altitude, _divide(np.pi, 180.0)))), _operate(np.multiply, _operate(np.add, _operate(np.multiply, radD, svfbuveg), _operate(np.multiply, _operate(np.multiply, albedo_b, _operate(np.subtract, 1, svfbuveg)), _operate(np.add, _operate(np.multiply, radG, _operate(np.subtract, 1, F_sh)), _operate(np.multiply, radD, F_sh)))), gvfalbnoshW))
-    KupN = _operate(np.add, _operate(np.multiply, _operate(np.multiply, gvfalbN, radI), np.sin(_operate(np.multiply, altitude, _divide(np.pi, 180.0)))), _operate(np.multiply, _operate(np.add, _operate(np.multiply, radD, svfbuveg), _operate(np.multiply, _operate(np.multiply, albedo_b, _operate(np.subtract, 1, svfbuveg)), _operate(np.add, _operate(np.multiply, radG, _operate(np.subtract, 1, F_sh)), _operate(np.multiply, radD, F_sh)))), gvfalbnoshN))
-    return (Kup, KupE, KupS, KupW, KupN)
+    # Evaluate the first direct term before the shared diffuse expression, as
+    # the retained expression does. This preserves the first floating-point
+    # exception when both terms have exceptional inputs.
+    first_direct = _operate(np.multiply, gvfalb, radI)
+    sine_altitude = np.sin(_operate(np.multiply, altitude, _divide(np.pi, 180.0)))
+    first_direct = _operate(np.multiply, first_direct, sine_altitude)
+    # These operands are unchanged across all five directional outputs.
+    # Keep each operation and scalar promotion; only reuse its evaluated value.
+    diffuse = _operate(np.add, _operate(np.multiply, radD, svfbuveg),
+        _operate(np.multiply,
+            _operate(np.multiply, albedo_b, _operate(np.subtract, 1, svfbuveg)),
+            _operate(np.add,
+                _operate(np.multiply, radG, _operate(np.subtract, 1, F_sh)),
+                _operate(np.multiply, radD, F_sh))))
+    first = _operate(np.add, first_direct, _operate(np.multiply, diffuse, gvfalbnosh))
+    return (first,) + tuple(_operate(np.add,
+        _operate(np.multiply, _operate(np.multiply, reflected, radI), sine_altitude),
+        _operate(np.multiply, diffuse, unshaded))
+        for reflected, unshaded in (
+            (gvfalbE, gvfalbnoshE),
+            (gvfalbS, gvfalbnoshS), (gvfalbW, gvfalbnoshW),
+            (gvfalbN, gvfalbnoshN)))
 
 def Kvikt_veg(svf, svfveg, vikttot):
     """Calculate shortwave weight factor accounting for vegetation."""
@@ -1744,14 +1756,18 @@ def shadowingfunction_wallheight_13(a, azimuth, altitude, scale, walls, aspect):
     if any(np.asarray(value).dtype != np.float32 for value in (a, walls, aspect)):
         return shadowingfunction_wallheight_13_numpy(a, azimuth, altitude, scale, walls, aspect)
     from .wall_shadows import exact_13
-    return exact_13(a, azimuth, altitude, scale, walls, aspect, parallel=False)
+    from ..runtime import get_runtime_options
+    parallel = get_runtime_options().threads_per_worker > 1 and np.asarray(a).size >= 16384
+    return exact_13(a, azimuth, altitude, scale, walls, aspect, parallel=parallel)
 
 
 def shadowingfunction_wallheight_23(a, vegdem, vegdem2, azimuth, altitude, scale, amaxvalue, bush, walls, aspect):
     if any(np.asarray(value).dtype != np.float32 for value in (a, vegdem, vegdem2, bush, walls, aspect)):
         return shadowingfunction_wallheight_23_numpy(a, vegdem, vegdem2, azimuth, altitude, scale, amaxvalue, bush, walls, aspect)
     from .wall_shadows import exact_23
-    return exact_23(a, vegdem, vegdem2, azimuth, altitude, scale, amaxvalue, bush, walls, aspect, parallel=False)
+    from ..runtime import get_runtime_options
+    parallel = get_runtime_options().threads_per_worker > 1 and np.asarray(a).size >= 16384
+    return exact_23(a, vegdem, vegdem2, azimuth, altitude, scale, amaxvalue, bush, walls, aspect, parallel=parallel)
 
 # Keep the characterized array implementation for unsupported dtype profiles.
 sunonsurface_2018a_numpy = sunonsurface_2018a

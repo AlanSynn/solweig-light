@@ -79,6 +79,7 @@ __all__ = [
     "VISIBILITY_UNKNOWN_COLD",
     "admission_inputs_from_options",
     "default_gdal_cache_bytes",
+    "execution_overhead",
     "legacy_estimate_total_bytes",
     "plan_phase_admission",
     "preprocess_reservation",
@@ -196,6 +197,23 @@ DENSE_CUBE_FALLBACK_PLANES = 153
 DIGEST_PULSE_PLANES = 10
 CHECKPOINT_PULSE_PLANES = 12
 SIMULATION_WRITE_PULSE_PLANES = DIGEST_PULSE_PLANES + CHECKPOINT_PULSE_PLANES
+
+
+# Full-compute additions postdate the measured X03 envelopes above. Preserve
+# every frozen base reserve and add these allocation bounds independently.
+# OwnedRadiationGeometry owns asvf, tangent and twelve SVF float32 planes.
+STATIC_RADIATION_F32_PLANES = 14
+# LW/SW batch scratch: three uint32 visibility arrays and two bool masks per
+# padded receiver/patch, plus LW's seven-f32 frame and ten-f32 accumulator.
+RADIATION_BATCH_LANE_WIDTH = 8  # production LW/SW; defensive LW also permits 4
+RADIATION_BATCH_BYTES_PER_PATCH = 3 * 4 + 2
+RADIATION_BATCH_FRAME_BYTES = 7 * 4
+RADIATION_BATCH_ACCUMULATOR_BYTES = 10 * 4
+# GVF's 16-f32 gather, face mask and postprocess receivers. Charge 96 bytes
+# per receiver conservatively, including the mixed-f64 Lup destination.
+GVF_BATCH_BLOCK_ROWS = 32
+GVF_BATCH_BYTES_PER_RECEIVER = 96
+GVF_FINISH_OVERLAP_F32_PLANES = 16
 
 
 def _positive_int(value: Any, name: str) -> int:
@@ -479,8 +497,9 @@ def _native_allowance(windchannels: int) -> int:
     """JIT/LLVM/BLAS allowance, identical formula to runtime.py:489-490.
 
     Compiled kernels do not duplicate per native thread (M2 §8), so the
-    threads dimension adds no charge; BLAS nested pools stay inside the
-    allowance.
+    compiled-code allowance is independent of threads; new per-thread batch
+    scratch is charged separately by execution_overhead. BLAS nested pools
+    stay inside the allowance.
     """
     return 256 * MIB + 64 * MIB * min(8, windchannels)
 
@@ -507,6 +526,46 @@ def _payload_bytes(pixels: int, patches: int, mode: str) -> tuple[int, int]:
 
 def _decoded_block_bytes(shape: TileShapeDescriptor) -> int:
     return shape.block_pixels * shape.patches * (shape.windchannels + 4) * 4
+
+
+def _execution_overhead_components(
+    shape: TileShapeDescriptor, threads_per_worker: int = 1,
+) -> tuple[int, int]:
+    """Return additional (resident static bytes, peak temporary bytes).
+
+    LW/SW and GVF execute sequentially, so their scratch peak is the maximum,
+    not the sum. Active owners are capped by both native threads and available
+    blocks. AoSoA payloads round receivers to the largest supported lane width.
+    Final outputs remain priced in the base envelope. GVF finishing retains
+    the accumulated sixteen-plane owner while producing its normalized
+    outputs, so price that extra overlap, including the final gvfSum copy.
+    Finishing occurs after the batch workers release their local scratch.
+    """
+    threads = _positive_int(threads_per_worker, "threads_per_worker")
+    static = STATIC_RADIATION_F32_PLANES * 4 * shape.pixels
+    block = min(shape.block_pixels, shape.pixels)
+    rounded = ((block + RADIATION_BATCH_LANE_WIDTH - 1)
+               // RADIATION_BATCH_LANE_WIDTH) * RADIATION_BATCH_LANE_WIDTH
+    patch_owners = min(threads, (shape.pixels + shape.block_pixels - 1) // shape.block_pixels)
+    patch_scratch = patch_owners * (
+        RADIATION_BATCH_BYTES_PER_PATCH * rounded * shape.patches
+        + RADIATION_BATCH_FRAME_BYTES * block + RADIATION_BATCH_ACCUMULATOR_BYTES
+    )
+    row_block = min(GVF_BATCH_BLOCK_ROWS, shape.rows)
+    row_owners = min(threads, (shape.rows + GVF_BATCH_BLOCK_ROWS - 1) // GVF_BATCH_BLOCK_ROWS)
+    gvf_scratch = row_owners * GVF_BATCH_BYTES_PER_RECEIVER * row_block * shape.cols
+    finish_overlap = GVF_FINISH_OVERLAP_F32_PLANES * 4 * shape.pixels
+    return static, max(patch_scratch, gvf_scratch, finish_overlap)
+
+
+def execution_overhead(shape: TileShapeDescriptor, threads_per_worker: int = 1) -> int:
+    """Extra full-compute bytes above preexisting admission calibrations.
+
+    Shared by phase admission and runtime's legacy estimate-based admission.
+    This deliberately adds the complete new scratch bound, including one
+    owner at H=1, without subtracting unmeasured savings from older reserves.
+    """
+    return sum(_execution_overhead_components(shape, threads_per_worker))
 
 
 def _resolved_gdal_cache(gdal_cache_bytes: int | None) -> int:
@@ -664,6 +723,7 @@ def _measured_simulation_envelope(pixels: int) -> int | None:
 def simulation_reservation(
     shape: TileShapeDescriptor,
     *,
+    threads_per_worker: int = 1,
     visibility_mode: str = VISIBILITY_UNKNOWN_COLD,
     export_overlap: bool = True,
     gdal_cache_bytes: int | None = None,
@@ -693,6 +753,9 @@ def simulation_reservation(
     (block 128 / 153 patches / 12 wind -- exactly zero for shapes at or
     below it, charged on top beyond it), ``live`` = margin x envelope,
     ``gdal_cache`` = capped, ``pulse``/``stream``/``mapped`` unchanged.
+    The new static radiation owner and concurrent LW/SW/GVF batch scratch
+    postdate calibration and are added to live/decoded respectively, at every
+    shape and thread count. No historical component is reduced.
     Above the largest calibrated
     entry the legacy full-plane components below apply unchanged.  Reject
     semantics, the ``ResourceAdmissionError`` surface and the public API are
@@ -702,6 +765,7 @@ def simulation_reservation(
         raise ValueError(
             f"visibility_mode must be one of {VISIBILITY_MODES}; got {visibility_mode!r}"
         )
+    static_overhead, batch_overhead = _execution_overhead_components(shape, threads_per_worker)
     gdal_default = _resolved_gdal_cache(gdal_cache_bytes)
     stream = (
         DEFAULT_EXPORT_STREAM_BYTES
@@ -748,6 +812,8 @@ def simulation_reservation(
         )
         decoded = _decoded_block_bytes(shape)
         gdal_cache = gdal_default
+    live += static_overhead
+    decoded += batch_overhead
     total = payload + live + decoded + native + gdal_cache + pulse + stream + mapped
     return Reservation(
         PHASE_SIMULATION, shape, visibility_mode,
@@ -1021,6 +1087,8 @@ def plan_phase_admission(
             raise DenseCubeFallbackNotChargedError(
                 f"{_describe(job)}: dense_fallback is a geometry-phase descriptor"
             )
+        if job.phase == PHASE_SIMULATION:
+            kwargs["threads_per_worker"] = threads_per_worker
         reservations.append(builder(job.shape, **kwargs))
 
     infeasible = [

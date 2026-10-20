@@ -10,34 +10,16 @@
 #but WITHOUT ANY WARRANTY; without even the implied warranty of
 #MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 #GNU General Public License for more details.
-"""N9 default route for the primary-output longwave reduction.
+"""Private admitted longwave dispatch with bounded compiled block ownership.
 
-The bounded stream (``_native_dispatch.lw_stream``) IS the shipped default
-for admitted non-all-raw invocations: there is no selection policy, no
-qualification registry and no per-call env read anywhere in this path
-(N9 F4 -- the N8-22 qualification machinery moved out of the installed
-runtime; research copies live in the repo-only archive).
-
-Route decision, all structural, all PRE-LAUNCH (``None`` -> the caller's
-trusted legacy loop):
-
-* empty/degenerate total or a lane-misaligned block size,
-* non-admitted channels (the producer's exact admission predicate),
-* the all-raw payload class (``lw_stream._all_patches_raw`` -- the one
-  N9-F3 measured stream loss, 0.86-0.93x per pair, direction-consistent),
-* an explicit expert request ``SOLWEIG_LIGHT_LW_BACKEND=native|ispc``
-  (intercepted in the caller seam ``cylinder_longwave._lw_region_route``
-  so the B7-32 dev-build route keeps serving it -- established explicit
-  expert compatibility, unchanged).
-
-Decline semantics are unchanged from N8-40: a decline BEFORE launch
-returns ``None`` and the caller runs the trusted Numba loop -- fallback
-OUTSIDE the admitted domain. A failure AFTER the first launch propagates
-loudly; it is never converted into a fallback.
-
-This module reads NO environment variables: the expert-env intercept
-lives in the caller seam, keeping the package's env-read surface exactly
-as frozen (DX parity gate).
+An InvocationPlan validates channel structure and owns one top-level lease.
+For finite profile geometry, lw_batch executes all blocks in one parallel
+launch, with serial classify/decode/reduce leaves and private block scratch.
+The retained region stream handles exotic tangent or leaf-adapter profiles;
+all-raw/non-admitted payloads still decline before launch to the driver.
+Reserved-code validation retains ascending block, channel, patch and pixel
+order. Failures after launch propagate. Public defensive adapters remain
+unchanged; this module reads no environment variables.
 """
 import numpy as np
 
@@ -83,6 +65,10 @@ def _execute_row(values, geometry, solar_gate, prepared, total,
     if stream is None:
         return None  # non-admitted channels / table / all-raw / misaligned
     try:
+        from solweig_light._native_dispatch.lw_batch import execute
+        batched = execute(stream)
+        if batched is not None:
+            return batched
         output = np.empty((7, total), dtype=np.float32)
         consumer = lw_stream.AosoaBStreamConsumer(stream)
         from solweig_light._native_dispatch.region.region_plan import plan_regions

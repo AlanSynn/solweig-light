@@ -560,7 +560,7 @@ def test_routed_peak_memory_independent_of_scene_extent():
 
 def test_driver_seam_routes_stream_row_b(monkeypatch):
     """The structural default drives the FULL driver through the rewired
-    _execute_row: one region submission, the stream B consumer, bitwise
+    _execute_row: one compiled block schedule over a leased plan, bitwise
     equal to the legacy loop over identical inputs -- and no selection
     policy exists anywhere in the path (the module is gone from the
     package and never imported by a routed call)."""
@@ -589,16 +589,17 @@ def test_driver_seam_routes_stream_row_b(monkeypatch):
                     None)
 
     import solweig_light._native_dispatch.region.region_pool as rp
+    import solweig_light._native_dispatch.lw_batch as batch
     import solweig_light.radiation.cylinder_longwave as cyl
     calls = []
-    real_exec = rp.execute_regions
+    real_exec = batch.execute
 
-    def spy(plan_, consumer, output, **kwargs):
-        report = real_exec(plan_, consumer, output, **kwargs)
-        calls.append(consumer)
-        return report
+    def spy(plan_):
+        result = real_exec(plan_)
+        calls.append((plan_,result))
+        return result
 
-    monkeypatch.setattr(rp, 'execute_regions', spy)
+    monkeypatch.setattr(batch, 'execute', spy)
 
     real_route = cyl._lw_region_route
     cyl._lw_region_route = lambda *a, **k: None
@@ -614,8 +615,8 @@ def test_driver_seam_routes_stream_row_b(monkeypatch):
     assert all(np.array_equal(a.view(np.uint32), b.view(np.uint32))
                for a, b in zip(legacy[:2], routed[:2]))
     assert len(calls) == 1
-    assert isinstance(calls[0], lw_stream.AosoaBStreamConsumer)
-    assert calls[0].mode is ExecutionMode.SELF_PARALLEL
+    assert isinstance(calls[0][0], lw_stream.InvocationPlan)
+    assert calls[0][1] is not None
     # No selection policy anywhere in the path: the module is gone from
     # the package and a routed call never imported it.
     import importlib

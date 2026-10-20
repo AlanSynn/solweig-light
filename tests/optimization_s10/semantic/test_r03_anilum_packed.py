@@ -174,3 +174,58 @@ def test_engine_routes_packed_on_landcover_golden(tmp_path, monkeypatch):
         run_tile(tmp_path, prepared, '2020-07-18', '0_0', paths, flags)
     # 14 daytime steps on the July golden date; every one must engage.
     assert calls['n'] == 14
+
+
+def test_mapped_descriptor_and_kernel_hold_owner_lease(tmp_path, monkeypatch):
+    """A concurrent close cannot unmap bytes during descriptor or kernel use."""
+    import threading
+    from solweig_light.radiation import patch_radiation as pr
+    from solweig_light.geometry import visibility_compiled as codec
+    shadow, vegetation = scene()
+    mapped = []
+    for name, channel in [('shadow',shadow),('vegetation',vegetation)]:
+        path=tmp_path/(name+'.json')
+        save_native_visibility(path,channel)
+        mapped.append(open_native_visibility(path))
+    diffuse=LazyDiffVisibility(*mapped)
+    real_descriptor=codec._fused_descriptor
+    checked=[]
+    def descriptor(channel):
+        # Nonblocking acquisition from a different thread proves the owner
+        # lock is already held before the borrowed descriptor is created.
+        acquired=[]
+        def probe():
+            success=channel._lock.acquire(blocking=False)
+            acquired.append(success)
+            if success:channel._lock.release()
+        thread=threading.Thread(target=probe)
+        thread.start();thread.join(timeout=5)
+        assert not thread.is_alive()
+        assert acquired == [False]
+        checked.append(channel)
+        return real_descriptor(channel)
+    monkeypatch.setattr(codec,'_fused_descriptor',descriptor)
+    closer=[]
+    attempted=threading.Event()
+    closed=threading.Event()
+    def kernel(*args):
+        def close():
+            attempted.set()
+            mapped[0].close()
+            closed.set()
+        thread=threading.Thread(target=close)
+        closer.append(thread);thread.start()
+        assert attempted.wait(timeout=5)
+        assert not closed.is_set()
+        assert not mapped[0].closed
+        return np.zeros(diffuse.shape[0]*diffuse.shape[1],np.float32)
+    monkeypatch.setattr(pr,'_anilum_packed_serial',kernel)
+    try:
+        result=pr.anilum_packed(diffuse,weights(diffuse.shape[2]),
+                               diffuse.shape[0]*diffuse.shape[1],parallel=False)
+        assert result is not None and len(checked)==2
+        closer[0].join(timeout=5)
+        assert closed.is_set()
+    finally:
+        for thread in closer:thread.join(timeout=5)
+        for channel in mapped:channel.close()

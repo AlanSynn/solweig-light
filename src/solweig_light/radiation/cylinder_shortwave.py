@@ -164,6 +164,11 @@ def kside_cylinder_anisotropic(values,block_pixels=128,parallel=True):
         output[index]=e._operate(np.multiply,values[name],.5).reshape(-1)
     if block_pixels<1:raise ValueError('block_pixels must be positive')
     prepared=_class_coefficients(altitude,azimuth,geometry,values['asvf']) if pixels else None
+    if pixels:
+        from .._native_dispatch.sw_batch import execute
+        batched=execute(values,geometry,prepared,lum,surface_sun,surface_sh,block_pixels,output,parallel=parallel)
+        if batched is not None:
+            return tuple(field.reshape(rows,cols) for field in batched)
     kernel=_shortwave_cylinder if parallel else _shortwave_cylinder_serial
     for start in range(0,pixels,block_pixels):
         stop=min(start+block_pixels,pixels)

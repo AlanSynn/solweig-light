@@ -510,7 +510,8 @@ def classify_block_aosoa(altitude, azimuth, geometry, asvf, start, stop, active=
             if tail:
                 mask[full, :, :tail] = False
     if indices.size:
-        heights = np.ascontiguousarray(tan32(field)).reshape(-1)
+        from solweig_light.radiation.static_geometry import classification_heights
+        heights = classification_heights(asvf,start,stop)
         factor = np.asarray(rad2deg, dtype=field.dtype)[()]
         altitudes = geometry.altitude[indices]
         if indices[0] == 0 and indices.size == indices[-1] + 1:
