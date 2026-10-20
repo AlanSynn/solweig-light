@@ -38,6 +38,56 @@ def _decode(payloads, modes, start, stop, patches):
 
 
 @njit(cache=True, fastmath=False)
+@bind_cache_identity
+def _compare_bits(payloads, modes, actual, start, stop, patches):
+    """Compare exact bits with patch-level binary/ternary indexing.
+
+    Nonnegative pixel intervals make the literal shifts/masks equivalent to
+    the original divisions. Patch-major validation and the raw/generic arm
+    retain _decode's order; a mismatch never skips a later reserved code.
+    """
+    first = -1
+    for patch in range(patches):
+        data = payloads[patch]
+        mode = modes[patch]
+        if mode == 1:
+            for row in range(stop-start):
+                pixel = start + row
+                code = (data[pixel >> 3] >> (pixel & 7)) & 1
+                if code == 3:
+                    raise IndexError('Reserved visibility code')
+                value = np.uint32(0) if code == 0 else np.uint32(0x3f800000) if code == 1 else np.uint32(0x40000000)
+                if first < 0 and actual[row, patch] != value:
+                    first = patch
+        elif mode == 2:
+            for row in range(stop-start):
+                pixel = start + row
+                code = (data[pixel >> 2] >> ((pixel & 3) << 1)) & 3
+                if code == 3:
+                    raise IndexError('Reserved visibility code')
+                value = np.uint32(0) if code == 0 else np.uint32(0x3f800000) if code == 1 else np.uint32(0x40000000)
+                if first < 0 and actual[row, patch] != value:
+                    first = patch
+        else:
+            for row in range(stop-start):
+                pixel = start + row
+                if mode == 4:
+                    offset = pixel * 4
+                    value = (np.uint32(data[offset]) | (np.uint32(data[offset+1]) << 8)
+                             | (np.uint32(data[offset+2]) << 16) | (np.uint32(data[offset+3]) << 24))
+                else:
+                    code = (data[pixel // (8 // mode)] >> ((pixel % (8 // mode))*mode)) & ((1 << mode)-1)
+                    if code == 3:
+                        raise IndexError('Reserved visibility code')
+                    value = np.uint32(0) if code == 0 else np.uint32(0x3f800000) if code == 1 else np.uint32(0x40000000)
+                if first < 0 and actual[row, patch] != value:
+                    first = patch
+    # A mismatch cannot skip a later reserved code. The caller must also keep
+    # consuming every ZIP member so validation/CRC errors precede mismatches.
+    return first
+
+
+@njit(cache=True, fastmath=False)
 def _preflight_flat(flat, offsets, modes, start, stop, patches):
     """Reject reserved codes in _decode's exact patch-major, pixel-inner order."""
     for patch in range(patches):
@@ -155,6 +205,29 @@ def decode_block(channel, start, stop, patches):
         if len(leaves) == 1:
             return _decode(*_descriptor(leaves[0]), start, stop, patches)
         return _decode_diff(*_descriptor(leaves[0]), *_descriptor(leaves[1]), start, stop, patches)
+
+
+def compare_block_bits(channel, actual, start, stop, patches):
+    """Return first mismatching patch, -1 for equality, or None for fallback.
+
+    Only known immutable owners and native C-order uint32 blocks are admitted.
+    Descriptors borrow payloads and allocate only O(patches) mode bytes. Mapped
+    storage remains locked from descriptor acquisition through the final read.
+    """
+    from .visibility_native import MappedVisibility
+    if (type(channel) not in (PackedVisibility, MappedVisibility)
+            or type(actual) is not np.ndarray or actual.dtype != np.dtype(np.uint32)
+            or not actual.flags.c_contiguous):
+        return None
+    with ExitStack() as stack:
+        if type(channel) is MappedVisibility:
+            stack.enter_context(channel._lock)
+            channel._check_open()
+        if not 0 <= start <= stop <= channel.shape[0]*channel.shape[1] or not 0 <= patches <= channel.shape[2]:
+            raise IndexError('Visibility block interval out of range')
+        if actual.shape != (stop-start, patches):
+            raise ValueError('Visibility comparison block shape mismatch')
+        return _compare_bits(*_descriptor(channel), actual, start, stop, patches)
 
 
 def diff_from_shared_decoded(shadow, vegetation, diffuse, decoded_shadow,

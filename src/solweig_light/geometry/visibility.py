@@ -454,7 +454,7 @@ def _compare_visibility_npz(path, channels, *, shape, max_workspace_bytes=DEFAUL
                     pixels, patches = shape[0]*shape[1], shape[2]
                     pixel_chunk = budget // (16*patches + 64) if patches else 0
                     if pixel_chunk and type(channel) in (PackedVisibility, MappedVisibility):
-                        from .visibility_compiled import decode_block
+                        from .visibility_compiled import compare_block_bits, decode_block
                         for start in range(0, pixels, pixel_chunk):
                             stop = min(pixels, start+pixel_chunk)
                             count = (stop-start)*patches
@@ -462,10 +462,21 @@ def _compare_visibility_npz(path, channels, *, shape, max_workspace_bytes=DEFAUL
                             if len(data) != count*4:
                                 raise ValueError('Legacy visibility payload length mismatch')
                             actual = np.frombuffer(data, dtype=bits_dtype).reshape(stop-start, patches)
-                            expected = decode_block(channel, start, stop, patches).view(np.uint32)
-                            if not np.array_equal(actual, expected):
-                                patch = int(np.nonzero(np.any(actual != expected, axis=0))[0][0])
+                            # Keep the same read boundaries and validation order.
+                            # Three channels' mode bytes fit the old reserve:
+                            # 4*patches input bytes + 3*patches descriptor bytes
+                            # per minimum one-pixel block is below 16*patches+64.
+                            patch = None
+                            if np.little_endian and bits_dtype.isnative:
+                                patch = compare_block_bits(channel, actual, start, stop, patches)
+                            if patch is None:
+                                expected = decode_block(channel, start, stop, patches).view(np.uint32)
+                                patch = (-1 if np.array_equal(actual, expected) else
+                                         int(np.nonzero(np.any(actual != expected, axis=0))[0][0]))
+                                del expected
+                            if patch >= 0:
                                 record(name, patch)
+                            del actual, data
                     else:
                         for start in range(0, total, elements):
                             count = min(elements, total-start)

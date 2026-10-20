@@ -127,6 +127,7 @@ def test_memory_budget_option_has_fixed_default_and_accepts_override():
 
 @pytest.mark.parametrize('enabled',[False,True])
 def test_optional_profiles_cover_svf_stage_and_tile_worker(monkeypatch,tmp_path,enabled):
+    import json
     import sys
     import types
     package=types.ModuleType('solweig_light')
@@ -141,11 +142,70 @@ def test_optional_profiles_cover_svf_stage_and_tile_worker(monkeypatch,tmp_path,
     monkeypatch.setattr(bench,'environment',lambda:{'test':True})
     monkeypatch.setenv('SOLWEIG_BENCH_EVENTS',str(tmp_path))
     monkeypatch.setenv('SOLWEIG_BENCH_PROFILE','1' if enabled else '0')
+    publications=[]
+    real_fsync,real_replace=bench.os.fsync,bench.os.replace
+    def synced(descriptor):
+        publications.append('fsync')
+        return real_fsync(descriptor)
+    def replaced(source,target):
+        assert publications[-1]=='fsync'
+        assert not Path(target).exists()
+        lines=Path(source).read_text().splitlines()
+        assert len(lines)==1
+        json.loads(lines[0])
+        publications.append('replace')
+        return real_replace(source,target)
+    monkeypatch.setattr(bench.os,'fsync',synced)
+    monkeypatch.setattr(bench.os,'replace',replaced)
     bench._install_hooks()
     assert api._calculate_svf()==42
     assert pipeline.run_tile()==43
+    for name in ('preprocess','run_walls_aspect','run_utci_tiles'):
+        assert getattr(api,name)()==42
+    files=sorted(tmp_path.glob('events-*.jsonl'))
+    assert len(files)==6
+    snapshots={path:path.read_bytes() for path in files}
+    records=[json.loads(path.read_text()) for path in files]
+    assert {record.get('stage') for record in records if record['event']=='stage'}=={
+        'preprocess','walls','svf','tmrt_utci','tile'}
+    assert publications==['fsync','replace']*6
+    assert not list(tmp_path.glob('*.tmp'))
+    assert api.run_walls_aspect()==42
+    assert len(list(tmp_path.glob('events-*.jsonl')))==7
+    assert all(path.read_bytes()==content for path,content in snapshots.items())
     assert len(list(tmp_path.glob('profile-svf-*.pstats')))==int(enabled)
     assert len(list(tmp_path.glob('profile-tile-*.pstats')))==int(enabled)
+
+
+@pytest.mark.parametrize('missing',[None,'walls'])
+def test_immutable_events_keep_required_stage_gate(monkeypatch,tmp_path,missing):
+    import json
+    import sys
+    monkeypatch.setitem(sys.modules,'psutil',None)
+    run=tmp_path/'run'
+    class Completed:
+        pid,returncode=123,0
+        def __init__(self,*args,**kwargs):
+            bench.write_json(run/'child-result.json',{'status':'passed'})
+            for index,stage in enumerate(('preprocess','walls','svf','tmrt_utci')):
+                if stage!=missing:
+                    record={'event':'stage','stage':stage,'status':'passed','wall_seconds':1.}
+                    (run/'events'/f'events-123-install-{index:08d}.jsonl').write_text(json.dumps(record)+'\n')
+            (run/'events'/'unpublished.tmp').write_text('incomplete record')
+        def poll(self):
+            return 0
+    monkeypatch.setattr(bench.subprocess,'Popen',Completed)
+    inventories=[]
+    def inventory(*args):
+        inventories.append(True)
+        return {}
+    monkeypatch.setattr(bench,'inventory',inventory)
+    result=bench.invoke({'run':str(run),'checkout':str(tmp_path),'regime':'measured',
+        'expected_steps':19,'kwargs':{'tile_size':600}},tmp_path,tmp_path/'jit',2)
+    assert result['status']==('passed' if missing is None else 'failed')
+    assert inventories==([True] if missing is None else [])
+    if missing:
+        assert result['instrumentation_error']=="Missing completed stages: ['walls']"
 
 
 @pytest.mark.parametrize('public_extra',['extra.tif','processed_inputs/extra.tif',
