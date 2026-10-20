@@ -1,0 +1,206 @@
+{
+  "schema": 1,
+  "campaign_date_utc": "2026-10-20",
+  "pull_request": "https://github.com/AlanSynn/solweig-light/pull/2",
+  "source_pins": {
+    "before": "de54d4485ab4f7a9b96441b5d4a97b3f51e798ff",
+    "final": "09a08a89dd84bb85fa1de652338d8980fb870295",
+    "main": "288d70e2b3bd8ca5bba4b65e572048fea37bcc51",
+    "round3": "787cdd2464e46ecf162bda66d864e3176dcd240e"
+  },
+  "publication": {
+    "accepted_public_source_commit": "af6c27625c6dd71df45d1db7581a5548255497e5",
+    "identical_complete_git_tree": "e1c22c3af7fe2c5292ccefdfa86b79d457440a75",
+    "measured_local_commit": "09a08a89dd84bb85fa1de652338d8980fb870295",
+    "mapping": "Public source commit and measured local commit have exactly the same complete Git tree; only parents differ. Later documentation does not alter runtime source."
+  },
+  "workload": {
+    "dataset": "synthetic_generated_not_original",
+    "size": [
+      600,
+      600
+    ],
+    "pixel_metres": 4,
+    "seed": 20261020,
+    "timesteps": 19,
+    "patches": 153,
+    "threads": 8,
+    "workers": 1,
+    "memory_admission_mib": 4096,
+    "geometry_and_outputs": "fresh each invocation",
+    "jit": "warmed private caches; first use excluded",
+    "exports": "all default legacy SVF artifacts and TMRT/UTCI",
+    "checkpoint_interval": 1,
+    "resume": false,
+    "os_and_native_build_caches": "not purged",
+    "rss_available": false
+  },
+  "versions": {
+    "Python": "3.12.14",
+    "NumPy": "2.4.6",
+    "Numba": "0.67.0",
+    "SciPy": "1.17.1",
+    "GDAL": "3.13.3",
+    "pytz": "2026.5",
+    "timezonefinder": "9.0.0",
+    "pytest": "9.1.1",
+    "psutil": "7.2.2"
+  },
+  "input_sha256": {
+    "Building_DSM.tif": "2cd6dac82db33f864d42e5407aa1c8d0cfd471462ba107bfa9286273fa63c5e9",
+    "DEM.tif": "40bf20aa2ea22652ff963f6200c3c47b947c55dd580e9eae1ac6433069592801",
+    "Landcover.tif": "9da146f2d1342216798bfd0ccf99d885654a24aae74a437bc85a0084025f5cd6",
+    "Trees.tif": "32bfdb1ec8f13719b2fb610a97dc067fd3a8d28ba0028bebd7d0d1e621235496",
+    "met.txt": "ceb3173fab0439e98e7008c699474bedb70fded57ecbd65356d89148de7c73a0"
+  },
+  "round4": {
+    "measured_runs": 16,
+    "profile_comparisons_excluded_from_timings": 1,
+    "all_exact_comparisons": 13,
+    "workflow_seconds": {
+      "before": [
+        23.205760135000673,
+        24.434251146998577,
+        22.735331068999585,
+        23.882707140001003
+      ],
+      "final": [
+        21.631747712001015,
+        22.154338009999265,
+        22.92160117200001,
+        22.382464881999113
+      ],
+      "main": [
+        96.44860616199912,
+        89.21937371400054,
+        87.26417962999949,
+        90.94305850500132
+      ],
+      "round3": [
+        22.30852777799919,
+        22.633625503000076,
+        22.375704441999915,
+        22.95942756399927
+      ]
+    },
+    "workflow_medians": {
+      "before": 23.544233637500838,
+      "final": 22.26840144599919,
+      "main": 90.08121610950093,
+      "round3": 22.504664972499995
+    },
+    "cpu_seconds_medians": {
+      "before": 108.16908749999999,
+      "final": 100.6189685,
+      "main": 524.4990115,
+      "round3": 103.4179575
+    },
+    "main_to_final_speedup_ratio_of_medians": 4.045248435454499,
+    "main_to_final_paired_wins": 4,
+    "before_to_final_paired_wins": 3,
+    "round3_to_final_paired_wins": 3,
+    "incremental_claim": "Descriptive lower medians; stable incremental wall improvement over before/round3 remains inconclusive."
+  },
+  "round5": {
+    "candidate_commit": "9fa3cc5bb416d7948e39a673eb8fae006a397a61",
+    "baseline_commit": "09a08a89dd84bb85fa1de652338d8980fb870295",
+    "workflow_seconds": {
+      "baseline": [
+        22.149488134999046,
+        22.5308661379986,
+        23.137204409000333,
+        24.40000546900046
+      ],
+      "candidate": [
+        21.66885037999964,
+        23.168723520999265,
+        20.974132858000303,
+        22.07142123599988
+      ]
+    },
+    "workflow_medians": {
+      "baseline": 22.834035273499467,
+      "candidate": 21.87013580799976
+    },
+    "cpu_seconds_medians": {
+      "baseline": 102.54091550000001,
+      "candidate": 104.7161735
+    },
+    "acceptance": {
+      "accepted": false,
+      "exact_outputs": true,
+      "four_of_four_wins": false,
+      "median_reduction_at_least_2_percent": true,
+      "optional_reruns": false
+    },
+    "candidate_disposition": "excluded_by_preregistered_gate",
+    "gate": "Four of four paired workflow wins, at least 2 percent median reduction and exact outputs; no optional reruns.",
+    "baseline_cache_post_audit": "Original and private copy still equal initial frozen digest."
+  },
+  "exact_comparison_scope": {
+    "artifact_member_records": 31,
+    "copied_input_records": 4,
+    "produced_records": 27,
+    "output_bands": 19,
+    "state_arrays_bitwise_equal": 9,
+    "state_typed_integer_values_equal": 2,
+    "metadata_masks_nan_payloads_signed_zero_schema_timestamps_equal": true
+  },
+  "validation": {
+    "selections_overlap_do_not_sum": true,
+    "classifier_lw_layout_memory_passed": 910,
+    "verifier_selection_passed": 150,
+    "harness_selection_passed": 18,
+    "installed_wheel_selection_passed": 580,
+    "rejected_utci_selection_passed": 112,
+    "wheel_python_source_files_matched": 74,
+    "wheel_sha256": "775da4bd845e1a58d4aea0fd33ce93180d26397a18808542d4a2a4b6fa9e8469",
+    "whole_repository_pass_claimed": false,
+    "known_historical_failure": "Full-longwave NaN-payload diagnostic failed on pinned main and an earlier PR candidate; not rerun in this reproduction.",
+    "ci_configuration_changes": false,
+    "ci_based_acceptance": false
+  },
+  "canonical_visibility_npz_bytes": {
+    "main": 10212358,
+    "accepted": 16835741
+  },
+  "archive": {
+    "filename": "solweig_full_compute_evidence_20261020.zip",
+    "sha256": "b866bc669e702267ddab5bacf38a971760e25bcba44cf48d28c112c20769bd6e",
+    "bytes": 217513553,
+    "file_count": 1129,
+    "uncompressed_file_bytes": 378576406,
+    "crc_and_all_member_sha256_verified": true,
+    "scope": "Selected raw reports, logs, profiles, test evidence and source/protocol records; round4 main/final and round5 candidate block-00 public artifacts and final state; generated input; immutable transaction fixture; tested wheel; local source-history bundle.",
+    "durable_upload_status": "Not performed; explicit destination authorization remains required after earlier automatic approval-review rejection."
+  },
+  "reports_sha256": {
+    "round4/round4.lock.json": "bb19414703088101917923609b5690dd9099a3005318fba5b48e0363702bc56a",
+    "round4/protocol.json": "b9be08c5f4a30b76697983cd3b56bc1367edcd6298c0ead848aacc0a7738f487",
+    "round4/run_campaign.py": "97d999e7db403cdee9ee86b53c9d91a6650e0e3ed07b5c2262f10e4585cb41a2",
+    "round4/workflows/campaign.json": "946fbfda29e17bf85a0da4c9b7a164d9e0d417ae2fccf4ab300f7c5271e17429",
+    "round4/workflows/summary.json": "2eed8fd3d9a0a18dcfbedd866ba5c71e95af9554c90c88c56ccbb9a4eee8e59c",
+    "round4/profile-analysis.json": "a96d32d945307e48bf7bb99ef2d17547f34b7a852d340dc06339ef00306ec570",
+    "round5/round5.lock.json": "f17df22a03215a576840eeb2a01ae276afa9141d3fb04a60b4df4fd6030f4b25",
+    "round5/protocol.json": "29412ec3ebcb92d1da87a201953e87628ab18ebed629386cbe0224c9160b504f",
+    "round5/run_campaign.py": "71d3d51ac3f72551d978ce346c70fb8657318b99c2569bdf8644471c7282d922",
+    "round5/workflows/campaign.json": "6e76c5f848f14a135b980da65ccdae56ad8569c08aa51f9cf993099500de622e",
+    "round5/results-audit.json": "ab8d88477a38ed57a62fbda409ec0b6f89af3ef9438abd46dad9d3b3bacd83d7",
+    "round5/independent-review.txt": "4dc20721d47e23619adc5f7926f63c421c19425f7e62307122efa2490e30857e",
+    "sw/round4-budget-subsystem-tests.txt": "72cc9eb4d387e8c1ae5f36b07df256d074a0353c5c67953b3f953bd305105a65",
+    "round4_verify/focused-tests.txt": "8c32f989985b8da8e518cfb414f45c05a83dacfd63357207c58be045397731eb",
+    "hook_diagnostic/revision/unit-tests.txt": "8d730ac27feffbe1eb2a0d15392e7913437888ab5dc654a98e37d97003d961c7",
+    "wheel-final/manifest.json": "ef45fdc077dc902345c5da062998332a0d9f5fa512ec638d9778340fe1e92892",
+    "wheel-final/tests.txt": "35bfa99f32fd9afc881a6a8ad64ea18232eaadab73ac6750f6e92270ebedb0d8",
+    "source_history.bundle": "1d34c712922cac3d28bdaef94aae0252bf135d9d68d9c10aae9d41a0bc1d574c",
+    "final_selection.json": "6f395f5082acae03d7b7caec21eac487b3bdc55102cc4f4591a8e5df201ed12c"
+  },
+  "limitations": [
+    "Original Atlanta inputs/met/benchmark script were unavailable; do not ratio-compare the historical 76.1 second 16-thread result.",
+    "This is a separate reproduction; missing historical raw evidence was not reconstructed or pooled.",
+    "No process-tree RSS or 2 metre result is available.",
+    "Canonical file sizes exclude hidden staging copies; their reappearance mechanism and incidental timing impact are unestablished.",
+    "Archive contains all selected reports and representative binary outputs, not every duplicate trial binary.",
+    "Durable external archive upload remains pending explicit destination authorization after automatic approval-review rejection."
+  ]
+}
