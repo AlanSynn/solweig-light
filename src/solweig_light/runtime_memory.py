@@ -209,6 +209,11 @@ RADIATION_BATCH_LANE_WIDTH = 8  # production LW/SW; defensive LW also permits 4
 RADIATION_BATCH_BYTES_PER_PATCH = 3 * 4 + 2
 RADIATION_BATCH_FRAME_BYTES = 7 * 4
 RADIATION_BATCH_ACCUMULATOR_BYTES = 10 * 4
+# SW's eight-f32 angle vector (32 B/owner) fits the unused LW accumulator
+# allowance above. Group construction uses offsets(P+1,i64), columns(P,i64)
+# and seen(P,bool) once per process invocation, including all-unique fallback.
+SW_GROUP_BUILD_BYTES_PER_PATCH = 2 * 8 + 1
+SW_GROUP_OFFSETS_SENTINEL_BYTES = 8
 # GVF's 16-f32 gather, face mask and postprocess receivers. Charge 96 bytes
 # per receiver conservatively, including the mixed-f64 Lup destination.
 GVF_BATCH_BLOCK_ROWS = 32
@@ -555,7 +560,12 @@ def _execution_overhead_components(
     row_owners = min(threads, (shape.rows + GVF_BATCH_BLOCK_ROWS - 1) // GVF_BATCH_BLOCK_ROWS)
     gvf_scratch = row_owners * GVF_BATCH_BYTES_PER_RECEIVER * row_block * shape.cols
     finish_overlap = GVF_FINISH_OVERLAP_F32_PLANES * 4 * shape.pixels
-    return static, max(patch_scratch, gvf_scratch, finish_overlap)
+    # Group construction precedes worker scratch; retained offsets/columns
+    # overlap it. Add the complete build peak independently, rather than rely
+    # on historical envelope slack or multiply shared metadata by thread count.
+    group_build = (SW_GROUP_BUILD_BYTES_PER_PATCH * shape.patches
+                   + SW_GROUP_OFFSETS_SENTINEL_BYTES)
+    return static, max(patch_scratch, gvf_scratch, finish_overlap) + group_build
 
 
 def execution_overhead(shape: TileShapeDescriptor, threads_per_worker: int = 1) -> int:

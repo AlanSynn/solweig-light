@@ -415,18 +415,93 @@ def _classes_table_masked_aosoa(heights, coefficients, radians_to_degrees, altit
                                 indices, sun, shade, rows):
     """Masked-column form, mirroring _classes_table_masked's indirection."""
     for gang in range(sun.shape[0]):
+        lanes = min(sun.shape[2], rows - gang * sun.shape[2])
         for column in range(coefficients.shape[0]):
             altitude = altitudes[column]
             coefficient = coefficients[column]
             target = indices[column]
-            for lane in range(sun.shape[2]):
+            for lane in range(lanes):
                 row = gang * sun.shape[2] + lane
-                if row >= rows:
-                    break
                 delta = np.float32(heights[row] + coefficient)
                 degrees = np.float32(atan_fma(delta) * radians_to_degrees)
                 sun[gang, target, lane] = degrees < altitude
                 shade[gang, target, lane] = degrees > altitude
+
+
+def _coefficient_bit_groups(coefficients):
+    """Per-invocation column groups, or None for unsupported/all-unique input.
+
+    Group the stored float32 bits, after the original coefficient cast.
+    Signed zeros, distinct NaN payloads and adjacent floats remain distinct.
+    Official patch tables contain at most 609 entries; larger inputs retain
+    the masked route. No pixel or angle table is retained.
+    """
+    if (type(coefficients) is not np.ndarray or coefficients.dtype != np.float32
+            or coefficients.ndim != 1 or not coefficients.flags.c_contiguous
+            or coefficients.size < 2 or coefficients.size > 609):
+        return None
+    return _coefficient_bit_groups_f32(coefficients)
+
+
+@njit(cache=True, fastmath=False)
+@bind_cache_identity
+def _coefficient_bit_groups_f32(coefficients):
+    """Fixed-array builder: peak 17*P+8 bytes, retained data 16*P+8.
+
+    First-unvisited groups and ascending members match the original dict's
+    insertion order. The O(P**2) scan runs once per invocation (P <= 609).
+    """
+    count = coefficients.size
+    offsets = np.empty(count + 1, dtype=np.int64)
+    columns = np.empty(count, dtype=np.int64)
+    seen = np.zeros(count, dtype=np.bool_)
+    bits = coefficients.view(np.uint32)
+    groups = 0
+    offset = 0
+    for first in range(count):
+        if seen[first]:
+            continue
+        offsets[groups] = offset
+        for column in range(first, count):
+            if not seen[column] and bits[column] == bits[first]:
+                columns[offset] = column
+                offset += 1
+                seen[column] = True
+        groups += 1
+    offsets[groups] = offset
+    if groups == count:
+        return None
+    return offsets[:groups + 1], columns
+
+
+@njit(cache=True, fastmath=False, error_model='numpy')
+@_bind_classifier_cache
+def _classes_table_grouped_aosoa(heights, coefficients, radians_to_degrees, altitudes,
+                                indices, offsets, columns, sun, shade, rows):
+    """Reuse the reference expression only for equal stored coefficient bits.
+
+    Each member keeps its own altitude and two strict comparisons. Scratch
+    is one lane-width float32 vector per owned block, never rows * patches.
+    The masked reference above remains the route for unsupported profiles.
+    """
+    degrees_by_lane = np.empty(sun.shape[2], dtype=np.float32)
+    for gang in range(sun.shape[0]):
+        lanes = min(sun.shape[2], rows - gang * sun.shape[2])
+        for group in range(offsets.size - 1):
+            coefficient = coefficients[columns[offsets[group]]]
+            for lane in range(lanes):
+                row = gang * sun.shape[2] + lane
+                delta = np.float32(heights[row] + coefficient)
+                degrees = np.float32(atan_fma(delta) * radians_to_degrees)
+                degrees_by_lane[lane] = degrees
+            for member in range(offsets[group], offsets[group + 1]):
+                column = columns[member]
+                altitude = altitudes[column]
+                target = indices[column]
+                for lane in range(lanes):
+                    degrees = degrees_by_lane[lane]
+                    sun[gang, target, lane] = degrees < altitude
+                    shade[gang, target, lane] = degrees > altitude
 
 
 def _extent(arr):

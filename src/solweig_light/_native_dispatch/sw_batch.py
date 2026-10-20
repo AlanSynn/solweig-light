@@ -4,7 +4,8 @@ from functools import partial
 import numpy as np
 from numba import njit, prange
 from solweig_light.radiation._jit_cache import bind_cache_identity
-from .direct_aosoa import _produce_patchmajor, _classes_table_masked_aosoa
+from .direct_aosoa import (_produce_patchmajor, _classes_table_masked_aosoa,
+                          _classes_table_grouped_aosoa, _coefficient_bit_groups)
 from .lw_batch import _preflight_blocks
 
 _bind_batch_cache = partial(bind_cache_identity, dependencies=(
@@ -16,6 +17,7 @@ _bind_batch_cache = partial(bind_cache_identity, dependencies=(
 @njit(cache=True, fastmath=False)
 @_bind_batch_cache
 def _block(block, sh, vs, vb, heights, coefficients, factor, altitudes, indices,
+           group_offsets, group_columns,
            lum, solid, cosine, surface_sun, surface_sh, total, capacity,
            width, output):
     patches = solid.size
@@ -28,8 +30,12 @@ def _block(block, sh, vs, vb, heights, coefficients, factor, altitudes, indices,
     vb_out = np.empty_like(sh_out)
     sun = np.zeros((gangs, patches, width), np.bool_)
     shade = np.zeros_like(sun)
-    _classes_table_masked_aosoa(heights[start:stop], coefficients, factor,
-                               altitudes, indices, sun, shade, rows)
+    if group_offsets.size:
+        _classes_table_grouped_aosoa(heights[start:stop], coefficients, factor,
+            altitudes, indices, group_offsets, group_columns, sun, shade, rows)
+    else:
+        _classes_table_masked_aosoa(heights[start:stop], coefficients, factor,
+                                   altitudes, indices, sun, shade, rows)
     _produce_patchmajor(sh[0], sh[1], start, stop, patches, sh_out, width)
     _produce_patchmajor(vs[0], vs[1], start, stop, patches, vs_out, width)
     _produce_patchmajor(vb[0], vb[1], start, stop, patches, vb_out, width)
@@ -59,10 +65,12 @@ def _block(block, sh, vs, vb, heights, coefficients, factor, altitudes, indices,
 @njit(cache=True, fastmath=False, parallel=True)
 @_bind_batch_cache
 def _batch(sh, vs, vb, heights, coefficients, factor, altitudes, indices,
+           group_offsets, group_columns,
            lum, solid, cosine, surface_sun, surface_sh, total, capacity,
            width, output):
     for block in prange((total + capacity - 1) // capacity):
         _block(block, sh, vs, vb, heights, coefficients, factor, altitudes, indices,
+            group_offsets, group_columns,
             lum, solid, cosine, surface_sun, surface_sh, total, capacity,
             width, output)
 
@@ -70,10 +78,12 @@ def _batch(sh, vs, vb, heights, coefficients, factor, altitudes, indices,
 @njit(cache=True, fastmath=False)
 @_bind_batch_cache
 def _batch_serial(sh, vs, vb, heights, coefficients, factor, altitudes, indices,
+           group_offsets, group_columns,
            lum, solid, cosine, surface_sun, surface_sh, total, capacity,
            width, output):
     for block in range((total + capacity - 1) // capacity):
         _block(block, sh, vs, vb, heights, coefficients, factor, altitudes, indices,
+            group_offsets, group_columns,
             lum, solid, cosine, surface_sun, surface_sh, total, capacity,
             width, output)
 
@@ -118,9 +128,22 @@ def execute(values, geometry, prepared, lum, surface_sun, surface_sh, capacity, 
             return None
         from solweig_light.radiation.static_geometry import classification_heights
         heights = classification_heights(values['asvf'])
+        # Construct after the existing preflight/tangent evaluation so their
+        # errors keep their ordering. Only ordinary float32 profiles with
+        # distinct ascending targets can change the classifier's write order.
+        groups = None
+        if (field.dtype == np.float32 and geometry.altitude.dtype == np.float32
+                and type(indices) is np.ndarray and indices.ndim == 1
+                and indices.dtype == np.int64 and indices.size == coefficients.size
+                and (not indices.size or (indices[0] >= 0
+                     and indices[-1] < geometry.altitude.size))
+                and (indices.size < 2 or bool((indices[1:] > indices[:-1]).all()))):
+            groups = _coefficient_bit_groups(coefficients)
+        group_offsets, group_columns = ((np.empty(0, np.int64), np.empty(0, np.int64))
+                                         if groups is None else groups)
         kernel = _batch if parallel else _batch_serial
         kernel(sh,vs,vb,heights,coefficients,np.asarray(factor,dtype=field.dtype)[()],
-               geometry.altitude[indices],indices,lum,geometry.solid_angle,
+               geometry.altitude[indices],indices,group_offsets,group_columns,lum,geometry.solid_angle,
                geometry.cosine,surface_sun,surface_sh,total,capacity,8,output)
     # The retained caller overwrites only the candidate-owned components
     # 5 and 6; direct/Kup fields 0..4 were never modified by the kernel.

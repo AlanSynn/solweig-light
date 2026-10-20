@@ -11,6 +11,7 @@ import datetime as dt
 import functools
 import hashlib
 import importlib.metadata
+import itertools
 import json
 import math
 import os
@@ -23,6 +24,7 @@ import subprocess
 import sys
 import time
 import traceback
+import uuid
 import zipfile
 
 THREAD_ENV = ('OMP_NUM_THREADS', 'OPENBLAS_NUM_THREADS', 'MKL_NUM_THREADS',
@@ -174,10 +176,23 @@ def _install_hooks():
         return
     import solweig_light.api as api
     import solweig_light.pipeline as pipeline
-    path = Path(root) / f'events-{os.getpid()}.jsonl'
+    installation = f'{time.time_ns()}-{uuid.uuid4().hex}'
+    prefix = f'events-{os.getpid()}-{installation}'
+    sequence = itertools.count()
     def emit(record):
-        with path.open('a') as stream:
-            stream.write(json.dumps(record, default=str) + '\n')
+        # Publish each record once; never reopen a completed event for append.
+        # The installation token also separates repeated hook installations
+        # and reused PIDs. Readers keep the existing single-line JSONL schema.
+        path = Path(root) / f'{prefix}-{next(sequence):08d}.jsonl'
+        temporary = path.with_suffix('.tmp')
+        try:
+            with temporary.open('x') as stream:
+                stream.write(json.dumps(record, default=str) + '\n')
+                stream.flush()
+                os.fsync(stream.fileno())
+            os.replace(temporary, path)
+        finally:
+            temporary.unlink(missing_ok=True)
     emit({'event': 'startup', 'pid': os.getpid(), 'environment': environment()})
     def wrap(module, name, stage):
         original = getattr(module, name)
