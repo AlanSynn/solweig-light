@@ -92,6 +92,12 @@ The controlled run initially stopped after valid pair 0 because the checker trav
 
 ## Raw evidence and report hashes
 
+**Current availability:** the completed raw directories and prepared ZIP are
+no longer present in the active workspace after the task resumed. The paths
+and hashes below record the completed experiment's original locations and
+identities. [EVIDENCE.md](EVIDENCE.md) distinguishes the preserved summaries
+from the currently unavailable bulk evidence.
+
 Raw artifacts are outside git at `/workspace/scratch/2c9f54f632af/full_compute_round1_fixed_budget`. The source scene and generator manifest are at `/workspace/scratch/2c9f54f632af/synthetic_full_600`.
 
 Selected raw reports, profiles, failures and actual generated inputs are packed

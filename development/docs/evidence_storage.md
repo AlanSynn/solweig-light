@@ -71,8 +71,11 @@ Its [evidence inventory](../optimization_full_compute/EVIDENCE.md) records five
 verified local transfer archives, their SHA-256 values and deliberate scope.
 The original Atlanta comparison remains outstanding. Durable archive upload
 was blocked by automatic approval review pending explicit destination
-authorization; Dropbox synchronization was not performed. This is a prepared
-evidence packet, not a completed external archival closure.
+authorization; Dropbox synchronization was not performed. After task
+resumption, the prepared ZIPs and completed raw benchmark directories were no
+longer present in the active workspace. Recorded archive hashes and concise
+results remain, but the raw packet is currently unavailable. This is not a
+completed external archival closure.
 
 ## Historical policy (before 2026-10-13)
 

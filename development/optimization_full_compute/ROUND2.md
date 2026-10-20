@@ -219,6 +219,14 @@ with unchanged source and harness checks.
 
 ## Reproduction and evidence
 
+**Current availability:** after the task resumed, the completed raw benchmark
+directories and prepared ZIPs were no longer present in the active workspace.
+The following invocation, paths and hashes record the completed experiment;
+they do not imply that the original raw files can currently be downloaded.
+The implementation and this concise report are preserved in git. See
+[EVIDENCE.md](EVIDENCE.md) for the failed durable-save attempt and open evidence
+closure. No new benchmark result is inferred from the surviving summaries.
+
 Exact invocation from `/workspace/scratch/2c9f54f632af`:
 
 ```bash
@@ -265,5 +273,6 @@ all final reports/profiles and the actual generated input scene. Four further
 ZIPs contain the first measured reference/candidate pair's complete selected
 SVF/TMRT/UTCI outputs and final checkpoints. Repeated bulk outputs and native
 caches remain outside those archives. Durable upload was rejected by automatic
-approval review pending explicit authorization; the local ZIPs are prepared,
-but no remote archival closure is claimed. No raw evidence is committed to git.
+approval review pending explicit authorization. The prepared local ZIPs are
+now unavailable after task resumption, and no remote archival closure is
+claimed. No raw evidence is committed to git.
