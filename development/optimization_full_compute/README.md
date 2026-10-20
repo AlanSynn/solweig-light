@@ -32,7 +32,11 @@ rows, 153 sky patches and eight threads. Every measured trial starts with
 fresh geometry and outputs; only each variant's private JIT cache is warmed.
 No process-tree peak-memory comparison is available. Independent stage
 medians do not sum to the median total, and observed ranges are not confidence
-intervals. [Evidence inventory](EVIDENCE.md) identifies the retained raw data.
+intervals. [Evidence inventory](EVIDENCE.md) records original evidence identities
+and their current availability: the completed raw benchmark directories and
+prepared ZIPs are no longer present after the task resumed, and durable upload
+had not succeeded. The committed implementation and measurement summaries
+remain available; raw-evidence closure is still open.
 
 [Round 1](ROUND1.md) records the first implementation and the profile used to
 choose the small follow-up. Its separate campaign measured main at 91.936602 s

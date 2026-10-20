@@ -2,10 +2,18 @@
 
 ## Delivery status
 
-Five verified ZIP archives were prepared for this PR on 2026-10-20. Their
-original local files remain at
+Five verified ZIP archives were prepared for this PR on 2026-10-20 at
 `/workspace/scratch/2c9f54f632af/evidence_archives_20261020/`.
-They can be delivered to the repository owner from the current task.
+
+**Availability update after the task resumed:** that archive directory and
+the completed `full_compute_round2`, `full_compute_round1_fixed_budget`,
+`synthetic_full_600` and `wheel_full_compute_round2` directories are no longer
+present in the active workspace. Scoped read-only searches found no alternate
+copies. The ZIPs cannot currently be downloaded or rehashed. The implementation,
+concise reports, source pins, recorded hashes and measurements already reported
+in the task remain preserved in GitHub and the task record. The original bulk
+evidence does not. No cause for the missing workspace files is established here,
+and no replacement raw measurements have been reconstructed from summary numbers.
 
 **Durable upload is not complete.** The standard upload helper first stopped
 before upload because its authentication configuration was unavailable. An
@@ -13,14 +21,18 @@ escalated attempt was then rejected by automatic approval review: sending the
 archives, including logs and environment/provenance metadata, to ChatGPT Library
 required explicit authorization for that destination. No upload succeeded and
 no alternate transfer was attempted. Dropbox synchronization was not performed.
-These local paths are not durable public archive URLs. The PR remains a draft,
-and evidence archival closure remains open until an authorized save succeeds.
+These execution-time paths are not durable public archive URLs. The PR remains
+a draft. Auditable raw-evidence closure now requires recovery or a newly
+labeled reproduction, followed by an authorized durable save. The existing
+timing summaries must not be relabeled as a new reproduced run.
 
 ## Archives
 
-Every ZIP was independently decompressed and checked against its per-member
-SHA-256 manifest and CRC. Selected originals were rehashed afterward and remain
-unchanged. Every ZIP contains its own README, manifest and checksum list.
+At preparation, every ZIP was independently decompressed and checked against
+its per-member SHA-256 manifest and CRC. Selected originals were rehashed
+afterward and were unchanged. Each ZIP included its own README, manifest and
+checksum list. The following are recorded archive identities, not a claim that
+the files remain available now.
 
 | Archive | Exact bytes | SHA-256 |
 |---|---:|---|
@@ -30,7 +42,10 @@ unchanged. Every ZIP contains its own README, manifest and checksum list.
 | `full_compute_round2_pair0_candidate_20261020_part01.zip` | 40,362,239 | `fafaef9e63e11af9f933b3cf0b94e1f73ccb0de80ba9fd7e78bc598ef0fccc4d` |
 | `full_compute_round2_pair0_candidate_20261020_part02.zip` | 20,698,172 | `1c6728aac51a1a2a6a7dc36943b570a912ae9d3653256baa9c8f75140445acd9` |
 
-## Included evidence
+## Original packaged scope
+
+This inventory describes the packages at preparation time. Their raw contents
+are currently unavailable, including the final validation and failure logs.
 
 - **Core archive:** 322 original payload files. This includes the original
   failed first attempt, fixed-budget round 1, final round 2, all trial reports,
@@ -59,13 +74,15 @@ Both representative final checkpoint state hashes are
 Only one representative pair of full output rasters and final checkpoints is
 included. Reports and correctness results cover all measured pairs, but this
 is **not an archive of every repeated bulk output**. Other trial scenes and
-checkpoint histories remain in the original local benchmark directories.
+checkpoint histories were left in the original local benchmark directories;
+those completed-run directories are also currently unavailable.
 
 The archives exclude JIT/native geometry caches, installed environments and
 wheels, full source snapshots, Git-backed source/document copies, commit-payload
 JSON, repeated inputs/outputs, inflated comparison scratch arrays, and bulk
 compression-family artifacts. Recorded artifact hashes/sizes are retained.
-No selected file was truncated. No required selected validation log is missing.
+At packaging, no selected file was truncated and no required selected validation
+log was missing. That audit does not establish their current availability.
 
 ## Source and reproduction
 
