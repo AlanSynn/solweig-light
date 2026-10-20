@@ -66,7 +66,8 @@ def source_identity(checkout):
     def source_asset(name):
         path=Path(name)
         if any(part in {'__pycache__','.pytest_cache','node_modules','.venv','build','dist'}
-               or part.startswith(('pytest-of-root','solweig-runtime-')) for part in path.parts):
+               or part.startswith(('pytest-of-root','solweig-runtime-'))
+               or part.endswith(('.egg-info','.dist-info')) for part in path.parts):
             return False
         return path.suffix in allowed_suffixes or (path.parts[:2]==('tests','reference')
                                                    and path.suffix in {'.tif','.npz','.npy','.zip'})
@@ -75,6 +76,7 @@ def source_identity(checkout):
     source_files = {str(path.relative_to(checkout)): digest(path)
                     for path in sorted((checkout / 'src').rglob('*'))
                     if path.is_file() and '__pycache__' not in path.parts
+                    and not any(part.endswith(('.egg-info','.dist-info')) for part in path.parts)
                     and path.suffix in {'.py','.pyi','.ispc','.c','.cc','.cpp','.h','.hpp','.json','.txt','.sh','.toml'}}
     return {'checkout': str(checkout), 'commit': git('rev-parse', 'HEAD').decode().strip(),
             'dirty_diff_sha256': hashlib.sha256(tracked_diff).hexdigest(),
@@ -130,8 +132,18 @@ def environment():
             versions[name] = None
     import numba
     from osgeo import gdal
+    from solweig_light import runtime
+    memory={}
+    for key,name in (('physical_bytes','_physical_memory_bytes'),
+                     ('available_host_bytes','_available_host_memory_bytes'),
+                     ('container_limit_bytes','_container_memory_limit_bytes')):
+        try:
+            memory[key]=getattr(runtime,name)()
+        except Exception as error:
+            memory[key]=None
+            memory[key+'_unavailable_reason']=f'{type(error).__name__}: {error}'
     return {'python': sys.version, 'executable': sys.executable, 'platform': platform.platform(),
-            'dependencies': versions, 'gdal_runtime': gdal.VersionInfo(),
+            'dependencies': versions, 'gdal_runtime': gdal.VersionInfo(),'memory':memory,
             'thread_environment': {name: os.environ.get(name) for name in THREAD_ENV},
             'numba_threads': numba.get_num_threads(), 'cpu_count': os.cpu_count(),
             'affinity': sorted(os.sched_getaffinity(0)) if hasattr(os, 'sched_getaffinity') else None,
@@ -174,7 +186,7 @@ def _install_hooks():
             started = time.perf_counter()
             before = _usage()
             profile = None
-            if stage == 'tile' and os.environ.get('SOLWEIG_BENCH_PROFILE') == '1':
+            if stage in ('svf','tile') and os.environ.get('SOLWEIG_BENCH_PROFILE') == '1':
                 import cProfile
                 profile = cProfile.Profile()
                 profile.enable()
@@ -186,7 +198,7 @@ def _install_hooks():
             finally:
                 if profile:
                     profile.disable()
-                    profile.dump_stats(str(Path(root) / f'profile-tile-{os.getpid()}-{time.time_ns()}.pstats'))
+                    profile.dump_stats(str(Path(root) / f'profile-{stage}-{os.getpid()}-{time.time_ns()}.pstats'))
                 emit({'event': 'stage', 'stage': stage, 'pid': os.getpid(), 'status': status,
                       'wall_seconds': time.perf_counter()-started,
                       'usage_before': before, 'usage_after': _usage()})
@@ -603,6 +615,17 @@ def _markdown(report):
     return '\n'.join(lines)
 
 
+
+def positive_integer(value):
+    try:
+        number=int(value)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError('must be a positive integer') from error
+    if number<1:
+        raise argparse.ArgumentTypeError('must be a positive integer')
+    return number
+
+
 def parser():
     result=argparse.ArgumentParser(description=__doc__)
     for name in ('reference-checkout','candidate-checkout','scene','workdir'):result.add_argument('--'+name,required=True,type=Path)
@@ -612,13 +635,15 @@ def parser():
     result.add_argument('--end-time',help='Inclusive ISO datetime or HH:MM; filters staged met rows')
     result.add_argument('--threads',type=int,default=1)
     result.add_argument('--repeats',type=int,default=3)
+    result.add_argument('--memory-budget-mib',type=positive_integer,default=4096,
+                        help='Fixed RuntimeOptions memory budget for both variants (default:4096 MiB)')
     result.add_argument('--expected-size',type=int,default=600)
     result.add_argument('--expected-steps',type=int,default=19)
     result.add_argument('--building-name',default='Building_DSM.tif')
     result.add_argument('--dem-name',default='DEM.tif')
     result.add_argument('--trees-name',default='Trees.tif')
     result.add_argument('--landcover-name',default='Landcover.tif')
-    result.add_argument('--profile',action='store_true',help='One extra candidate run with per-worker cProfile; excluded from timings')
+    result.add_argument('--profile',action='store_true',help='One extra candidate run with SVF-stage and tile-worker cProfile; excluded from timings')
     result.add_argument('--dataset-label',default='provided_dataset',help='Use synthetic_generated explicitly for generated inputs')
     result.add_argument('--reported-note',help='Literal historical figures/provenance, never used to calculate a cross-machine ratio')
     return result
@@ -677,6 +702,7 @@ def main(argv=None):
                 raise ValueError(f"Input changed while staging: {value['path']}")
         (staging/'met.txt').write_text(selection['text'])
         runtime=dict(cpu_budget=args.threads,workers=1,threads_per_worker=args.threads,
+                     memory_budget_bytes=args.memory_budget_mib*1024*1024,
                      checkpoint_interval=1,cache_enabled=True,cache_dir=str(staged/'.solweig-light/geometry'),resume=False)
         kwargs=dict(base_path=str(staged),selected_date_str=selection['date'],
                     building_dsm_filename=inputs['building']['name'],dem_filename=inputs['dem']['name'],
@@ -703,6 +729,11 @@ def main(argv=None):
         records={}
         for variant in (('reference','candidate') if index%2==0 else ('candidate','reference')):
             records[variant]=run(variant,'measured',index)
+            if records[variant]['result']['status']!='passed':
+                report.update(status='failed',failure=f'{variant} trial {index} workflow failed; later runs not started')
+                write_json(work/'comparison.json',report)
+                (work/'comparison.md').write_text(_markdown(report))
+                return 1
         if all(record['result']['status']=='passed' for record in records.values()):
             scratch=work/f'compare-{index:02d}'
             try:
