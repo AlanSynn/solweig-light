@@ -9,11 +9,36 @@ dispatching patch and direction work, decoding visibility, exporting legacy
 geometry, and copying or serializing arrays. This branch reduces those costs
 while preserving the existing chronological model and public output contract.
 
-[Round 1](ROUND1.md) records three paired, full 600 × 600 synthetic runs and
-the profile used to choose the next small change. The same-host medians were
-91.936602 seconds for pinned main and 31.870904 seconds for the first
-implementation. These are synthetic diagnostic results, not measurements of
-the user's Atlanta rasters. Final follow-up results are recorded separately.
+[Round 2](ROUND2.md) records the final three paired, full 600 × 600 runs.
+Pinned main took a median **91.267964 seconds** and final numerical candidate
+`afa54cb3041e9481ad6691b4c71c1e5ec0362d5a` took **23.965122 seconds**:
+**3.80837× faster**, or **73.7420% less workflow wall time**. All compared
+decoded arrays and the final chronological state matched bitwise. These are
+same-host synthetic diagnostic results, not measurements of the user's
+Atlanta rasters.
+
+| Final comparison, three alternating pairs | Main | Candidate |
+|---|---:|---:|
+| Median complete workflow wall time | 91.267964 s | 23.965122 s |
+| Observed workflow range | 91.124814–94.418598 s | 23.753017–24.496364 s |
+| Median whole-process wall time, including startup/imports | 92.478838 s | 25.222607 s |
+| Median workflow self plus waited-child CPU | 530.353268 s | 112.434316 s |
+| Median complete SVF stage, including legacy exports | 24.183081 s | 7.037012 s |
+| Median TMRT/UTCI stage, including outputs/checkpoints | 68.157562 s | 16.655007 s |
+| Visibility NPZ size | 10,212,358 bytes | 16,835,741 bytes |
+
+The workload is a generated 600 × 600 grid at 4 m, 19 chronological forcing
+rows, 153 sky patches and eight threads. Every measured trial starts with
+fresh geometry and outputs; only each variant's private JIT cache is warmed.
+No process-tree peak-memory comparison is available. Independent stage
+medians do not sum to the median total, and observed ranges are not confidence
+intervals. [Evidence inventory](EVIDENCE.md) identifies the retained raw data.
+
+[Round 1](ROUND1.md) records the first implementation and the profile used to
+choose the small follow-up. Its separate campaign measured main at 91.936602 s
+and the first candidate at 31.870904 s. The final candidate's median is
+24.8% lower than that first candidate's median; the campaigns do not isolate
+the contribution of each individual change.
 
 ## Workload and comparison contract
 
@@ -110,10 +135,34 @@ TIFF comparisons and API/signature checks. These sets overlap and should not
 be added into a unique-test total. The complete 600 comparison independently
 checks all produced arrays, raster schemas, special values and final state.
 
+The final follow-up passed 459 integrated encoder/export/service/native/cache
+tests, 32 fresh-process exporter/block checks after decoder identity binding,
+and eight numerical source-upgrade cases. The eight upgrade cases passed in
+two invocations (seven cases, then the added decoder case). Existing exact JIT
+cache checks also passed. These sets overlap with other focused checks.
+
+The final wheel contains the same 74 Python files, byte for byte, as the
+benchmarked candidate source. Its combined targeted validation recorded
+**166 passes and three failures**. Two failures explicitly reported insufficient
+automatic memory admission; the third reported a worker pause/event timeout,
+whose cause is not established by the traceback. The same three unchanged
+tests then **all passed in isolation against the same installed wheel**, using
+automatic admission and no product admission override. Both the original
+failures and the follow-up are retained. This is not described as one clean
+169-test combined run.
+
+All three final full-workflow pairs compare 31 decoded raster/member entries:
+four copied inputs and 27 produced arrays. Their maximum finite absolute error
+is zero, with exact signed-zero and NaN payload bits. All 19 TMRT/UTCI output
+bands and all eleven final state fields agree. TMRT is entirely finite;
+UTCI retains 1,504,819 identical NaNs among 6,840,000 samples. Internal state
+is compared at the final checkpoint, not claimed independently at every step.
+
 One existing diagnostic test remains a known environment/baseline limitation:
 `test_kernel_primary_matches_full_route_invariance` finds different NaN
 payload bits in column 7 of the unchanged full longwave serial/parallel
-kernels. It also fails on pinned main in this Python/NumPy/Numba environment.
+kernels. It fails on both pinned main and the final candidate in this
+Python/NumPy/Numba environment.
 Its failure is retained in the evidence; its assertion and tolerance are not
 changed. The new primary route and the full 600 outputs have separate exact
 comparisons. This observation does not certify every diagnostic kernel or
@@ -124,6 +173,28 @@ rasters, meteorological rows and `02_CPU_SpeedTest.py`. A reproducible runner
 and its [protocol](../docs/full_compute_benchmark.md) are included so the
 same pinned-main comparison can be made on that server without guessing its
 selected date, time range or data.
+
+## Final profile and stopping decision
+
+After the profile-directed follow-up, the unprofiled thermal stage accounts
+for about 70% of the final workflow median. The extra profile observes 4.44 s
+in the longwave batch, 3.47 s in ground-view work, 3.36 s in shortwave, 1.14 s
+in UTCI and 0.90 s in checkpoint handling. These cumulative profile rows
+overlap with their parents and must not be summed with the workflow stages.
+They do not establish that memory bandwidth is the limiting hardware resource.
+
+The complete visibility append family fell from 2.25 s in the first profile
+to 0.25 s in the final profile; export/decoding/compression remain measurable.
+The first profile's raster reads, delay helper and timezone initialization
+were only hundredths of a second, so no further change was made there.
+The current PR stops after the two complete comparison rounds. Further
+kernel or UTCI scheduling changes require their own exactness evidence and
+complete comparison; they are not bundled into an unmeasured final revision.
+
+For this fixture, the final candidate is preferable when complete-calculation
+latency and CPU work matter. Main produces a smaller visibility NPZ. The
+candidate does not have a demonstrated total-memory advantage in this host,
+and neither the original Atlanta performance nor a 2 m result is established.
 
 ## Verification and performance rounds
 
