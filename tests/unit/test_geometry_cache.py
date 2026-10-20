@@ -369,3 +369,22 @@ def test_each_zip_tiff_metadata_is_validated(tmp_path, kind):
             archive.write(tmp_path / (name + '.tif'), name + '.tif')
     with pytest.raises(ValueError):
         validate_legacy_geometry(zip_path, npz_path, total_path, **validation)
+
+
+def test_producer_arrays_released_before_independent_reopen(tmp_path, monkeypatch):
+    import weakref
+    store = GeometryStore(tmp_path)
+    produced = []
+    original = store._open
+    def producer():
+        fields = fixture()
+        produced.extend(weakref.ref(fields[name]) for name in ARRAY_FIELDS)
+        return fields
+    def checked(*args, **kwargs):
+        if produced:
+            assert all(reference() is None for reference in produced)
+        return original(*args, **kwargs)
+    monkeypatch.setattr(store, '_open', checked)
+    with store.get_or_create({'released_before_reopen': True}, producer) as result:
+        assert not result.hit
+        assert_fields(result.fields, fixture())

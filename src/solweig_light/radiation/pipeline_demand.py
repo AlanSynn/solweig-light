@@ -170,6 +170,10 @@ def _array_range(x):
     Only comparisons run here, so the guard itself can never emit a floating
     point warning.  NaN propagates so every later bound comparison fails.
     """
+    from .static_geometry import owned_range
+    certified = owned_range(x)
+    if certified is not None:
+        return certified
     a = np.asarray(x)
     if a.dtype in _FAST_DTYPES:
         lo, hi = _minmax_1d(a.ravel())

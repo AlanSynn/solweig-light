@@ -20,7 +20,7 @@ from ..runtime import get_runtime_options, plan_admission
 from .recipe import numerical_geometry_recipe
 from .shadows import create_patches
 from .svf import svf_calculator_compact, save_svf_zip_npz_outputs
-from .visibility import import_visibility_npz, DEFAULT_WORKSPACE_BYTES
+from ..cache.legacy import compare_legacy_geometry
 
 RESULT_NAMES = tuple('svf svfaveg svfE svfEaveg svfEveg svfN svfNaveg svfNveg svfS svfSaveg svfSveg svfveg svfW svfWaveg svfWveg vegshmat vbshvegshmat shmat svftotal'.split())
 FORMAT = 'solweig-light-standalone-geometry-exports'
@@ -126,42 +126,13 @@ def _fast_hit(manifest_path, identity, artifacts, schema):
         return None
 
 
-def _compare_tiff(path, expected):
-    from osgeo import gdal
-    ds = gdal.Open(str(path))
-    try:
-        band = ds.GetRasterBand(1)
-        rows, cols = expected.shape
-        width = min(cols, DEFAULT_WORKSPACE_BYTES // 4)
-        height = max(1, DEFAULT_WORKSPACE_BYTES // (width * 4))
-        for y in range(0, rows, height):
-            h = min(height, rows - y)
-            for x in range(0, cols, width):
-                w = min(width, cols - x)
-                data = band.ReadRaster(x, y, w, h, buf_type=gdal.GDT_Float32)
-                actual = np.frombuffer(data, dtype=np.float32).reshape(h, w)
-                if not np.array_equal(actual.view(np.uint32), expected[y:y+h, x:x+w].view(np.uint32)):
-                    raise ValueError(f'Legacy geometry values differ in {path}')
-    finally:
-        ds = None
-
-
 def _compare(artifacts, schema, fields):
-    _validate(artifacts, schema)
-    for name in SVF_FIELDS:
-        _compare_tiff(f'/vsizip/{artifacts["svfs"].resolve()}/{name}.tif', fields[name])
-    _compare_tiff(artifacts['svftotal'], fields['svftotal'])
-    old = import_visibility_npz(artifacts['shadowmats'])
-    for name, legacy in (('shmat', 'shadowmat'), ('vegshmat', 'vegshadowmat'), ('vbshvegshmat', 'vbshmat')):
-        expected, actual = fields[name], old[legacy]
-        pixels = expected.shape[0] * expected.shape[1]
-        chunk = max(1, DEFAULT_WORKSPACE_BYTES // 128)
-        for patch in range(expected.shape[2]):
-            for start in range(0, pixels, chunk):
-                stop = min(pixels, start + chunk)
-                if not np.array_equal(expected.decode_pixels(patch, start, stop).view(np.uint32),
-                                      actual.decode_pixels(patch, start, stop).view(np.uint32)):
-                    raise ValueError(f'Legacy geometry values differ in channel {legacy}, patch {patch}')
+    def metadata_check(dataset):
+        if _export_metadata(dataset) != schema['export_metadata']:
+            raise ValueError('Legacy geometry TIFF metadata differs')
+    compare_legacy_geometry(artifacts['svfs'], artifacts['shadowmats'], artifacts['svftotal'], fields,
+                            metadata_check=metadata_check,
+                            **{key: value for key, value in schema.items() if key != 'export_metadata'})
 
 
 def _publish_manifest(path, identity, artifacts, schema, cache_hit):

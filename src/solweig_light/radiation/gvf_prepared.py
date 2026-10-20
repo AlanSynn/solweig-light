@@ -61,9 +61,11 @@ Fallback: any input outside the admitted domain (dtype profile, nonfinite
 steps, nonpositive second*scale, any gated Tg alias) delegates to
 _gvf_funed's exact route via ``delegate``; no caller-visible memory is
 touched before the guards pass, so failing/unsupported calls behave
-identically. The compiled kernels, ray schedules and _postprocess_block are
-reused verbatim from ground_view; this module adds no numba compilation and
-imports only the existing math profile.
+identically. The compiled ray leaf and exact postprocess pixel graph are reused by the
+bounded block schedule in gvf_batch. It keeps mixed float32 receivers and
+float64 Lup terms, and accumulates every direction into float32 destinations
+in the original order. Unsupported/error profiles keep the retained NumPy
+loop below.
 """
 import os
 
@@ -214,13 +216,20 @@ def prepare_gvf_step(wallsun, walls, buildings, scale, shadow, first, second, di
 
 
 def run_prepared_gvf_step(step, rows, cols, parallel=True, block_rows=32):
-    """The _gvf_fused direction loop consuming the prepared snapshot. Every
-    arithmetic node, cast, comparison and accumulation is copied 1:1 from
-    _gvf_fused; only the once-per-call expressions are replaced by their
-    prepared values."""
+    """Consume one prepared step with compiled block ownership when admitted.
+
+    The retained loop below also owns warning/error fallback and unsupported
+    profiles. Every direction keeps the original receiver arithmetic and
+    float32 destination rounding, including a promoted float64 Lup term.
+    """
     from .engine import _zeros, _operate, _divide
     from .ground_view import _angular_constant, ray_schedule, _gather_block_parallel, _gather_block_serial, _postprocess_block
     block_rows = max(1, int(block_rows))
+    if parallel:
+        from .gvf_batch import run
+        accumulated = run(step, rows, cols, block_rows)
+        if accumulated is not None:
+            return _finish_prepared(step, accumulated)
     gather = _gather_block_parallel if parallel else _gather_block_serial
     gvfLup = _zeros((rows, cols))
     gvfalb = _zeros((rows, cols))
@@ -281,6 +290,18 @@ def run_prepared_gvf_step(step, rows, cols, parallel=True, block_rows=32):
                 gvfLupN[row0:row1] += gvfLup_b
                 gvfalbN[row0:row1] += gvfalb_b
                 gvfalbnoshN[row0:row1] += gvfalbnosh_b
+    return _finish_prepared(step, (
+        gvfLup, gvfalb, gvfalbnosh, gvfLupE, gvfalbE, gvfalbnoshE,
+        gvfLupS, gvfalbS, gvfalbnoshS, gvfLupW, gvfalbW, gvfalbnoshW,
+        gvfLupN, gvfalbN, gvfalbnoshN, gvfSum))
+
+
+def _finish_prepared(step, accumulated):
+    """The retained final NumPy divisions and sky additions."""
+    from .engine import _operate, _divide
+    (gvfLup, gvfalb, gvfalbnosh, gvfLupE, gvfalbE, gvfalbnoshE,
+     gvfLupS, gvfalbS, gvfalbnoshS, gvfLupW, gvfalbW, gvfalbnoshW,
+     gvfLupN, gvfalbN, gvfalbnoshN, gvfSum) = accumulated
     sky = step.sky_emis
     gvfLup = _operate(np.add, _divide(gvfLup, len(step.azimuth_degrees)), sky)
     gvfalb = _divide(gvfalb, len(step.azimuth_degrees))
@@ -299,6 +320,11 @@ def run_prepared_gvf_step(step, rows, cols, parallel=True, block_rows=32):
     gvfalbnoshN = _divide(gvfalbnoshN, _divide(len(step.azimuth_degrees), 2))
     gvfNorm = _divide(gvfSum, len(step.azimuth_degrees))
     gvfNorm[step.buildings == 0] = 1
+    if isinstance(accumulated, np.ndarray):
+        # A single batched owner contains all sixteen accumulated planes.
+        # The other fifteen are replaced above: retaining this final view
+        # would keep their entire allocation alive for the rest of the step.
+        gvfSum = gvfSum.copy()
     return (gvfLup, gvfalb, gvfalbnosh, gvfLupE, gvfalbE, gvfalbnoshE, gvfLupS, gvfalbS, gvfalbnoshS, gvfLupW, gvfalbW, gvfalbnoshW, gvfLupN, gvfalbN, gvfalbnoshN, gvfSum, gvfNorm)
 
 

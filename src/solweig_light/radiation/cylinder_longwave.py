@@ -361,7 +361,8 @@ def define_patch_characteristics_primary(*args,block_pixels=128,parallel=True,**
 
     ``parallel`` tri-state (N8-40b public seam): ``True`` is an explicit
     parallel demand; ``False`` is an explicit serial demand -- the stream
-    route gate stays shut and the serial kernels run, never dispatching;
+    region route gate stays shut; admitted calls use the compiled serial
+    block schedule and unsupported calls retain the serial kernel loop;
     ``None`` is no explicit demand -- serial kernels exactly as ``False``
     when the stream declines, but the single ``_lw_region_route`` consult
     fires so an admitted invocation can take the bounded Numba stream
@@ -398,15 +399,30 @@ def define_patch_characteristics_primary(*args,block_pixels=128,parallel=True,**
     gate=geometry.reflection_cardinal
     difference=np.asarray([np.abs(e._operate(np.subtract,values['solar_azimuth'],value)) for value in azi])
     solar_gate=(difference>90)&(difference<270)&(values['solar_altitude']>0)
-    output=np.empty((7,rows*cols),dtype=np.float32)
     kernel=_lw_kernel(parallel)
     factor=e._operate(np.subtract,1,ewall)[()]
     if block_pixels<1:raise ValueError('block_pixels must be positive')
     prepared=_class_coefficients(values['solar_altitude'],values['solar_azimuth'],geometry,values['asvf'],solar_gate) if rows*cols else None
+    if parallel is False and rows*cols and os.environ.get(_LW_BACKEND_ENV,'').strip().lower() not in ('native','ispc'):
+        # An explicit serial request keeps true serial leaves and no region
+        # submission. The private compiled schedule removes Python block
+        # dispatch without borrowing the runtime parallel thread pool.
+        from .._native_dispatch.lw_stream import plan_invocation
+        from .._native_dispatch.lw_batch import execute
+        serial_plan=plan_invocation('B',values,geometry,solar_gate,prepared,
+            rows*cols,block_pixels,factor,sun_surface,shade_surface)
+        if serial_plan is not None:
+            try:
+                routed=execute(serial_plan,parallel=False)
+            finally:
+                serial_plan.close()
+            if routed is not None:
+                return tuple(field.reshape(rows,cols) for field in routed)
     if parallel is not False and rows*cols:
         routed=_lw_region_route(values,geometry,solar_gate,prepared,rows*cols,block_pixels,factor,sun_surface,shade_surface)
         if routed is not None:
             return tuple(field.reshape(rows,cols) for field in routed)
+    output=np.empty((7,rows*cols),dtype=np.float32)
     for start in range(0,rows*cols,block_pixels):
         stop=min(start+block_pixels,rows*cols)
         sun,shade=_classes(values['solar_altitude'],values['solar_azimuth'],geometry,values['asvf'],start,stop,active=solar_gate,prepared=prepared)

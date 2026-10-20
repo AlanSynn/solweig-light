@@ -16,8 +16,8 @@ import os
 import tempfile
 import zipfile
 import numpy as np
-from numba import njit
-from .shadows import shadow, create_patches
+from numba import njit, prange
+from .shadows import prepare_shadow, create_patches
 
 
 def _annulus_weight_numpy(altitude, aziinterval):
@@ -48,6 +48,56 @@ def annulus_weight(altitude, aziinterval):
     if np.ndim(altitude) or np.ndim(aziinterval):
         return _annulus_weight_numpy(altitude, aziinterval)
     return np.float32(_annulus_weight_scalar(np.float32(altitude), np.float32(aziinterval)))
+
+
+@njit(cache=True, fastmath=False, parallel=True)
+def _accumulate_patch_f32(fields, masks, weights, directional_weights, directions):
+    """Independent pixels retain every annulus product and float32 store.
+
+    Factoring a mask out of the annulus sum changes float32 rounding. Each
+    multiply and each addition rounds independently, including accumulator
+    values held locally between stores. Patch and annulus order are unchanged;
+    there is no cross-pixel reduction or shared output ownership.
+    """
+    rows, cols = masks[0].shape
+    for pixel in prange(rows * cols):
+        row, col = pixel // cols, pixel % cols
+        for channel in range(3):
+            offset = channel * 5
+            mask = masks[channel][row, col]
+            total = fields[offset][row, col]
+            east = fields[offset + 1][row, col]
+            south = fields[offset + 2][row, col]
+            west = fields[offset + 3][row, col]
+            north = fields[offset + 4][row, col]
+            for annulus in range(len(weights)):
+                product = np.float32(weights[annulus] * mask)
+                total = np.float32(total + product)
+                directional_product = np.float32(directional_weights[annulus] * mask)
+                if directions[0]:
+                    east = np.float32(east + directional_product)
+                if directions[1]:
+                    south = np.float32(south + directional_product)
+                if directions[2]:
+                    west = np.float32(west + directional_product)
+                if directions[3]:
+                    north = np.float32(north + directional_product)
+            fields[offset][row, col] = total
+            fields[offset + 1][row, col] = east
+            fields[offset + 2][row, col] = south
+            fields[offset + 3][row, col] = west
+            fields[offset + 4][row, col] = north
+
+
+def _accumulate_patch_numpy(fields, masks, weights, directional_weights, directions):
+    """Legacy array arithmetic for low-level inputs outside float32 admission."""
+    for wt, wd in zip(weights, directional_weights):
+        for channel, mask in enumerate(masks):
+            offset = channel * 5
+            fields[offset] += wt * mask
+            for direction, active in enumerate(directions):
+                if active:
+                    fields[offset + direction + 1] += wd * mask
 
 
 def save_raster_like_gdal(template,path,array):
@@ -125,22 +175,30 @@ def _calculate_svf(patch_option,amaxvalue=None,a=None,vegdem=None,vegdem2=None,b
     else:
         mats=[np.zeros((*shape,sum(counts)),dtype=np.float32) for _ in range(3)]
     anis=np.ceil(counts.astype(np.float32)/np.float32(2))
+    # The scalar weight implementation remains the numerical authority. Its
+    # float32 results are invariant across patches within the same band.
+    weights = [np.array([annulus_weight(k, counts[band])
+                        for k in range(ann[band]+1, ann[band+1]+1)], dtype=np.float32)
+               for band in range(len(alts))]
+    directional_weights = [np.array([annulus_weight(k, anis[band])
+                                    for k in range(ann[band]+1, ann[band+1]+1)], dtype=np.float32)
+                           for band in range(len(alts))]
+    admitted = all(np.asarray(value).dtype == np.dtype(np.float32)
+                   for value in (a, vegdem, vegdem2, bush))
+    accumulate = _accumulate_patch_f32 if admitted else _accumulate_patch_numpy
+    field_arrays = tuple(fields) if admitted else fields
+    cast_shadow = prepare_shadow(a, vegdem, vegdem2, bush)
     index=0
     for band in range(len(alts)):
         for j in range(counts[band]):
             azi=azis[index]
-            masks=shadow(amaxvalue,a,vegdem,vegdem2,bush,azi,alts[band],scale)
+            masks=cast_shadow(amaxvalue,azi,alts[band],scale)
             for mat,mask in zip(mats,masks):
                 if compact: mat.append(mask)
                 else: mat[:,:,index]=mask
             directions=[0<=azi<180,90<=azi<270,180<=azi<360,azi>=270 or azi<90]
-            for k in range(ann[band]+1,ann[band+1]+1):
-                wt=annulus_weight(k,counts[band]);wd=annulus_weight(k,anis[band])
-                for channel,mask in enumerate(masks):
-                    offset=channel*5
-                    fields[offset]+=wt*mask
-                    for d,active in enumerate(directions):
-                        if active:fields[offset+d+1]+=wd*mask
+            accumulate(field_arrays, masks, weights[band], directional_weights[band],
+                       np.asarray(directions, dtype=np.bool_))
             index+=1
     fields[2]+=np.float32(3.0459e-4);fields[3]+=np.float32(3.0459e-4)
     last=np.zeros(shape,dtype=np.float32);last[np.asarray(vegdem2)==0]=np.float32(3.0459e-4)

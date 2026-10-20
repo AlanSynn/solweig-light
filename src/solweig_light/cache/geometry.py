@@ -16,6 +16,7 @@ import uuid
 
 import numpy as np
 
+from .._io import HashingWriter
 from ..geometry.visibility import PackedVisibility, DEFAULT_WORKSPACE_BYTES, _workspace
 from ..geometry.visibility_native import save_native_visibility, open_native_visibility
 
@@ -243,7 +244,8 @@ class GeometryStore:
         for name in ARRAY_FIELDS:
             path = generation / (name + '.npy')
             value = fields[name]
-            with open(path, 'wb') as stream:
+            with open(path, 'wb') as raw_stream:
+                stream = HashingWriter(raw_stream)
                 np.lib.format.write_array_header_1_0(stream, {'descr': '<f4', 'fortran_order': False, 'shape': shape})
                 for chunk in np.nditer(value, flags=['external_loop', 'buffered', 'zerosize_ok'], op_flags=['readonly'],
                                       op_dtypes=[np.dtype('<f4')], order='C', buffersize=max(1, self.max_workspace_bytes // 4)):
@@ -252,7 +254,7 @@ class GeometryStore:
                 os.fsync(stream.fileno())
             os.chmod(path, 0o444)
             manifest['arrays'][name] = {'name': f'{generation.name}/{path.name}', 'shape': list(shape),
-                                       'fingerprint': content_fingerprint(path, max_workspace_bytes=self.max_workspace_bytes)}
+                                       'fingerprint': {'size_bytes': stream.bytes_written, 'sha256': stream.sha256.hexdigest()}}
         for name in VISIBILITY_FIELDS:
             path = generation / (name + '.json')
             native = save_native_visibility(path, fields[name], max_workspace_bytes=self.max_workspace_bytes)
@@ -297,4 +299,6 @@ class GeometryStore:
                 pass  # Invalid or incomplete cache: producer is the only oracle.
             fields = producer()
             self._publish(directory, identity, key, fields)
+            # Producer ownership ends before independent mapped readback begins.
+            del fields
             return self._open(directory, identity, key, False)

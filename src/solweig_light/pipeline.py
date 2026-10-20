@@ -200,6 +200,14 @@ def _run_tile(base_path, preprocess_dir, selected_date_str, tile, paths, flags, 
     with np.errstate(divide="ignore"):
         svfalfa = np.arcsin(np.exp(np.log(1 - tmp) / 2))
 
+    # Static classification and range work has one explicit immutable owner.
+    # Keep source geometry intact for cache/export provenance and use the
+    # owner's snapshots only as thermal inputs for this tile's lifetime.
+    from .radiation.static_geometry import OwnedRadiationGeometry, radiation_geometry_scope
+    static_radiation = OwnedRadiationGeometry(asvf, geometry)
+    resources.enter_context(radiation_geometry_scope(static_radiation))
+    asvf = static_radiation.asvf
+
     geometry_cache = GeometryCache(walls, aspects, geometry, svfbuveg, asvf, diffsh, svfalfa, cache_available)
 
     forcing = {name: met[:, index] for name, index in (("Ta", 11), ("RH", 10), ("radG", 14), ("radD", 21), ("radI", 22), ("P", 12))}
@@ -235,6 +243,7 @@ def _run_tile(base_path, preprocess_dir, selected_date_str, tile, paths, flags, 
         svfalfa=geometry_cache.svfalfa, svfbuveg=geometry_cache.svfbuveg,
         diffsh=geometry_cache.diffsh, anisotropic_sky=1, asvf=geometry_cache.asvf, patch_option=2)
     args.update({name: value for name, value in geometry_cache.svfs.items() if name != "svftotal"})
+    args.update(static_radiation.svf)
     output_dir = Path(base_path) / "output_folder" / tile
     from .persistence import TransactionalOutputs
     identity = simulation_identity(paths, wind_files, selected_date_str, tile, flags, location, utc)

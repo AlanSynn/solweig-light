@@ -558,9 +558,15 @@ def _job_estimate(job: Mapping[str, Any], options: RuntimeOptions, index: int) -
             ) from error
     if rows is None or cols is None:
         raise ResourceAdmissionError(f"tile job {index} must provide both rows and cols")
+    # Keep the public estimator's Integral admission (including NumPy integers)
+    # before passing canonical Python ints to the stricter phase descriptor.
+    rows, cols = _positive_int(rows, "rows"), _positive_int(cols, "cols")
     patches = int(job.get("patches", DEFAULT_PATCHES))
     windchannels = int(job.get("windchannels", DEFAULT_WIND_CHANNELS))
-    return estimate_tile_memory(rows, cols, patches, windchannels, options.block_pixels)
+    from .runtime_memory import TileShapeDescriptor, execution_overhead
+    shape = TileShapeDescriptor(rows, cols, patches, windchannels, options.block_pixels)
+    return (estimate_tile_memory(rows, cols, patches, windchannels, options.block_pixels)
+            + execution_overhead(shape, options.threads_per_worker))
 
 
 def plan_admission(jobs: Sequence[Mapping[str, Any]], options: RuntimeOptions | None = None) -> AdmissionPlan:

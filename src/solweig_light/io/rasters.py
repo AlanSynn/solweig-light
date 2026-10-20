@@ -21,7 +21,9 @@ def read_raster(path):
     dataset = gdal.Open(str(path), gdal.GA_ReadOnly)
     if dataset is None:
         raise FileNotFoundError(path)
-    values = dataset.GetRasterBand(1).ReadAsArray().astype(np.float32)
+    # GDAL has already allocated an independent writable array. Keep that
+    # ownership instead of copying a float32 raster a second time.
+    values = dataset.GetRasterBand(1).ReadAsArray().astype(np.float32, copy=False)
     metadata = RasterMetadata(dataset.RasterYSize, dataset.RasterXSize,
                               dataset.GetGeoTransform(), dataset.GetProjection())
     dataset = None

@@ -8,6 +8,7 @@ import textwrap
 import time
 from concurrent.futures import ThreadPoolExecutor
 
+import numpy as np
 import pytest
 
 from solweig_light.runtime import (
@@ -166,6 +167,21 @@ def test_estimate_components_are_monotonic():
     assert large.total_bytes > small.total_bytes
     assert large.raw_visibility_bytes > small.raw_visibility_bytes
     assert estimate_tile_memory(10, 10) == estimate_memory(10, 10).total_bytes
+
+
+def test_admission_accepts_numpy_integral_dimensions():
+    options = RuntimeOptions()
+    expected = runtime_module._job_estimate({'rows': 12, 'cols': 17}, options, 0)
+    actual = runtime_module._job_estimate(
+        {'rows': np.int64(12), 'cols': np.int32(17)}, options, 0)
+    assert actual == expected
+
+
+@pytest.mark.parametrize('dimension', [True, 12.0, np.float64(12)])
+def test_admission_still_rejects_nonintegral_dimensions(dimension):
+    with pytest.raises(ValueError, match='rows'):
+        runtime_module._job_estimate(
+            {'rows': dimension, 'cols': 17}, RuntimeOptions(), 0)
 
 
 def test_memory_inventory_accounts_full_planes_and_dtype64_reserve():

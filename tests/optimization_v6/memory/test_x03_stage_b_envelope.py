@@ -10,7 +10,9 @@ the priced envelope by construction).  Evidence: Stage-A/A2 (job 14098987,
 to Dropbox ``Alan Synn/Research/solweig-light/campaign_s11/phase2/`` (and in
 git history at the 2026-10-16 main cleanup's parent commit).
 
-Each test here carries one frozen invariant (I1-I6).
+Each test here carries one frozen invariant (I1-I6). Full-compute static
+ownership and concurrent batch scratch postdate these measurements; tests
+retain the frozen base anchors and add those explicit allocation bounds.
 """
 from __future__ import annotations
 
@@ -85,7 +87,8 @@ def test_i3_login_scale_refusal_preserved():
             budget_bytes=int(2.2 * GIB), gdal_cache_bytes=LOGIN_GDAL_BYTES,
         )
     message = str(excinfo.value)
-    assert "needs about 2,760,179,712 B" in message
+    expected = 2_760_179_712 + rm.execution_overhead(TileShapeDescriptor(1024, 1024, 153, 12, 128))
+    assert f"needs about {expected:,} B" in message
     assert "queueing cannot make this phase fit" in message
 
 
@@ -101,8 +104,9 @@ def test_i4_twelve_1024_jobs_fit_36gib_budget():
     assert (plan.status, plan.admissible_workers, plan.deferred_count) == (
         "admitted", 12, 0,
     )
-    assert plan.reservations[0].total_bytes == 2_908_028_928
-    assert 12 * 2_908_028_928 + DEFAULT_PARENT_FOOTPRINT_BYTES <= 36 * GIB
+    expected = 2_908_028_928 + rm.execution_overhead(jobs[0].shape)
+    assert plan.reservations[0].total_bytes == expected
+    assert 12 * expected + DEFAULT_PARENT_FOOTPRINT_BYTES <= 36 * GIB
 
 
 def test_i5_reject_semantics_unchanged():
@@ -145,22 +149,23 @@ def test_hardening_decoded_scratch_beyond_measured_configuration():
     """Stage-B review MAJOR-1: block_pixels is a legal, unbounded knob, and
     the decode scratch (block_pixels x patches x (wind + 4) x 4) beyond the
     measured block-128 configuration must be priced on top of the envelope.
-    At block 128 the residual is exactly zero (the E2E-measured price is
-    byte-identical); at block 1 MiB the ~10.27 GB residual pushes the price
+    At block 128 the historical residual is exactly zero; new full-compute
+    ownership/scratch is added over that frozen base. At block 1 MiB the
+    ~10.27 GB historical residual alone pushes the price
     past a 12 GiB base, so the configuration refuses instead of OOMing."""
     gd32 = (32 * GIB * rm.DEFAULT_GDAL_CACHE_RATIO[0]) // rm.DEFAULT_GDAL_CACHE_RATIO[1]
     at_measured = simulation_reservation(
         TileShapeDescriptor(1024, 1024, 153, 12, 128), gdal_cache_bytes=gd32)
-    assert at_measured.decoded_block_bytes == 0
-    assert at_measured.total_bytes == 2_908_028_928  # E2E byte-identity
+    assert at_measured.decoded_block_bytes == rm._execution_overhead_components(at_measured.shape)[1]
+    assert at_measured.total_bytes == 2_908_028_928 + rm.execution_overhead(at_measured.shape)
     giant = simulation_reservation(
         TileShapeDescriptor(1024, 1024, 153, 12, 1024 * 1024),
         gdal_cache_bytes=gd32)
-    assert giant.decoded_block_bytes == (
+    assert giant.decoded_block_bytes - rm._execution_overhead_components(giant.shape)[1] == (
         1_048_576 * 153 * 16 * 4 - rm._MEASURED_DECODED_SCRATCH_BYTES
     ) == 10_266_402_816
-    assert giant.total_bytes == 13_174_431_744
-    with pytest.raises(rm.ResourceAdmissionError, match="13,174,431,744"):
+    assert giant.total_bytes == 13_174_431_744 + rm.execution_overhead(giant.shape)
+    with pytest.raises(rm.ResourceAdmissionError, match=f"{giant.total_bytes:,}"):
         plan_phase_admission(
             [PhaseJob("simulation", 1024, 1024, 153, 12, 1024 * 1024)],
             budget_bytes=12 * GIB, gdal_cache_bytes=gd32, policy="reject",

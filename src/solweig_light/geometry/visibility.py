@@ -371,3 +371,109 @@ def import_visibility_npz(path, *, max_workspace_bytes=DEFAULT_WORKSPACE_BYTES, 
         if len({channel.shape for channel in result.values()}) != 1:
             raise ValueError('Legacy visibility channels must have matching shapes')
     return result
+
+
+def _compare_visibility_npz(path, channels, *, shape, max_workspace_bytes=DEFAULT_WORKSPACE_BYTES):
+    """Validate and compare legacy channels exactly with bounded working storage.
+
+    C-order members are inflated once, compared as uint32 bits, and consumed to
+    EOF even after a value mismatch so ZIP CRC errors retain precedence. Unusual
+    Fortran members use one temporary NPY mapping, never a dense cube or repack.
+    Return the first value mismatch after every member has passed validation.
+    """
+    from .visibility_native import MappedVisibility
+    budget = _workspace(max_workspace_bytes)
+    mismatches = {}
+
+    def record(name, patch):
+        mismatches[name] = min(patch, mismatches.get(name, patch))
+    with zipfile.ZipFile(path) as archive:
+        names = archive.namelist()
+        members = {name + '.npy' for name in LEGACY_MEMBERS}
+        if len(names) != 3 or set(names) != members:
+            raise ValueError('Legacy visibility NPZ must contain exactly three named channels')
+        for name in sorted(LEGACY_MEMBERS):
+            member = name + '.npy'
+            with archive.open(member) as source:
+                version = np.lib.format.read_magic(source)
+                if version == (1, 0):
+                    array_shape, fortran, dtype = np.lib.format.read_array_header_1_0(source)
+                elif version == (2, 0):
+                    array_shape, fortran, dtype = np.lib.format.read_array_header_2_0(source)
+                else:
+                    raise ValueError('Unsupported legacy visibility NPY version')
+                if array_shape != tuple(shape) or dtype.kind != 'f' or dtype.itemsize != 4:
+                    raise ValueError('Legacy visibility shape/patch count/dtype mismatch')
+                total = shape[0] * shape[1] * shape[2]
+                if archive.getinfo(member).file_size != source.tell() + total * 4:
+                    raise ValueError('Legacy visibility payload length mismatch')
+                channel = channels[name]
+                bits_dtype = np.dtype('u4').newbyteorder(dtype.byteorder)
+                # Four bytes of input plus decoder indices, codes and result
+                # fit the same conservative 64-byte/element reserve as export.
+                elements = max(1, budget // 64)
+                if not fortran:
+                    pixels, patches = shape[0]*shape[1], shape[2]
+                    pixel_chunk = budget // (16*patches + 64) if patches else 0
+                    if pixel_chunk and type(channel) in (PackedVisibility, MappedVisibility):
+                        from .visibility_compiled import decode_block
+                        for start in range(0, pixels, pixel_chunk):
+                            stop = min(pixels, start+pixel_chunk)
+                            count = (stop-start)*patches
+                            data = source.read(count*4)
+                            if len(data) != count*4:
+                                raise ValueError('Legacy visibility payload length mismatch')
+                            actual = np.frombuffer(data, dtype=bits_dtype).reshape(stop-start, patches)
+                            expected = decode_block(channel, start, stop, patches).view(np.uint32)
+                            if not np.array_equal(actual, expected):
+                                patch = int(np.nonzero(np.any(actual != expected, axis=0))[0][0])
+                                record(name, patch)
+                    else:
+                        for start in range(0, total, elements):
+                            count = min(elements, total-start)
+                            data = source.read(count * 4)
+                            if len(data) != count * 4:
+                                raise ValueError('Legacy visibility payload length mismatch')
+                            actual = np.frombuffer(data, dtype=bits_dtype)
+                            patches = shape[2]
+                            for patch in range(patches):
+                                offset = (patch-start) % patches
+                                if offset >= count:
+                                    continue
+                                length = (count-1-offset)//patches+1
+                                pixel = (start+offset)//patches
+                                expected = channel.decode_pixels(patch, pixel, pixel+length).view(np.uint32)
+                                if not np.array_equal(actual[offset::patches], expected):
+                                    record(name, patch)
+                    # ZipExtFile checks its CRC as the final payload is read;
+                    # EOF also handles the zero-sized case explicitly.
+                    if source.read(1):
+                        raise ValueError('Legacy visibility payload length mismatch')
+                else:
+                    with tempfile.TemporaryFile() as temporary:
+                        # Preserve the accepted NPY order and endian layout.
+                        np.lib.format.write_array_header_1_0(temporary, {
+                            'descr': dtype.str, 'fortran_order': True, 'shape': shape})
+                        while data := source.read(budget):
+                            temporary.write(data)
+                        temporary.flush()
+                        temporary.seek(0)
+                        np.lib.format.read_magic(temporary)
+                        np.lib.format.read_array_header_1_0(temporary)
+                        mapping = np.memmap(temporary, dtype=dtype, mode='r', offset=temporary.tell(), shape=shape, order='F')
+                        try:
+                            for patch in range(shape[2]):
+                                plane = mapping[:, :, patch]
+                                for start in range(0, shape[0]*shape[1], elements):
+                                    stop = min(shape[0]*shape[1], start+elements)
+                                    actual = plane.flat[start:stop].view(bits_dtype)
+                                    expected = channel.decode_pixels(patch, start, stop).view(np.uint32)
+                                    if not np.array_equal(actual, expected):
+                                        record(name, patch)
+                                del plane
+                        finally:
+                            mapping._mmap.close()
+    for name in LEGACY_MEMBERS:
+        if name in mismatches:
+            return f'Legacy geometry values differ in channel {name}, patch {mismatches[name]}'
+    return None

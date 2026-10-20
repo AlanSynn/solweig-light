@@ -18,6 +18,7 @@ import threading
 
 import numpy as np
 
+from .._io import HashingWriter
 from .visibility import (PackedVisibility, CODEC_VERSION, CODEBOOK_BITS,
                          DEFAULT_WORKSPACE_BYTES, _shape, _workspace)
 
@@ -115,6 +116,7 @@ class MappedVisibility(PackedVisibility):
             if not self._closed:
                 object.__setattr__(self, '_closed', True)
                 object.__setattr__(self, '_block_descriptor', None)
+                object.__setattr__(self, '_fused_block_descriptor', None)
                 self._mapping._mmap.close()
                 object.__setattr__(self, '_mapping', None)
 
@@ -151,7 +153,8 @@ def save_native_visibility(manifest_path, channel, *, max_workspace_bytes=DEFAUL
             offset = 0
             stream = os.fdopen(fd, 'wb')
             fd_owned = False
-            with stream:
+            with stream as raw_stream:
+                stream = HashingWriter(raw_stream)
                 np.lib.format.write_array_header_1_0(stream, {'descr': '|u1', 'fortran_order': False, 'shape': (channel.nbytes,)})
                 for patch in channel._patches:
                     data = memoryview(patch.payload).cast('B')
@@ -170,8 +173,8 @@ def save_native_visibility(manifest_path, channel, *, max_workspace_bytes=DEFAUL
                     'codec_version': CODEC_VERSION, 'shape': list(channel.shape),
                     'dtype': '<f4', 'codebook_bits': list(CODEBOOK_BITS), 'patches': patches,
                     'payload': {'name': payload.name, 'dtype': '|u1', 'shape': [offset],
-                                'size_bytes': payload.stat().st_size,
-                                'sha256': _hash_file(payload, budget)}}
+                                'size_bytes': stream.bytes_written,
+                                'sha256': stream.sha256.hexdigest()}}
         manifest['manifest_sha256'] = _digest_manifest(manifest)
         fd, manifest_temp = tempfile.mkstemp(prefix=target.name + '.', suffix='.json.tmp', dir=target.parent)
         with os.fdopen(fd, 'wb') as stream:
@@ -241,19 +244,29 @@ def open_native_visibility(manifest_path, *, max_workspace_bytes=DEFAULT_WORKSPA
         for patch in patches:
             if patch['mode'] == 'raw' or not patch['length']:
                 continue
-            stream.seek(data_offset + patch['offset'])
-            remaining = patch['length']
-            last = 0
-            while remaining:
-                data = stream.read(min(remaining, budget // 8))
+            # Hash verification above must precede every semantic-code error.
+            # Binary bytes have no reserved codes; inspect only their tail.
+            if patch['mode'] == 'binary':
+                if pixels % 8 == 0:
+                    continue
+                stream.seek(data_offset + patch['offset'] + patch['length'] - 1)
+                data = stream.read(1)
                 if not data:
                     raise ValueError('Truncated native payload')
-                remaining -= len(data)
-                last = data[-1]
-                if patch['mode'] == 'ternary':
-                    for value in data:
-                        if any(((value >> shift) & 3) == 3 for shift in (0, 2, 4, 6)):
-                            raise ValueError('Reserved native visibility code')
+                last = data[0]
+            else:
+                stream.seek(data_offset + patch['offset'])
+                remaining = patch['length']
+                last = 0
+                while remaining:
+                    data = stream.read(min(remaining, budget // 8))
+                    if not data:
+                        raise ValueError('Truncated native payload')
+                    remaining -= len(data)
+                    last = data[-1]
+                    chunk = np.frombuffer(data, dtype=np.uint8)
+                    if ((chunk & (chunk >> 1)) & 0x55).any():
+                        raise ValueError('Reserved native visibility code')
             used = pixels * (1 if patch['mode'] == 'binary' else 2) % 8
             if used and last >> used:
                 raise ValueError('Nonzero native visibility padding')

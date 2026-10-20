@@ -9,7 +9,6 @@ import datetime
 import errno
 import fcntl
 import hashlib
-import io
 import json
 import os
 from pathlib import Path
@@ -22,6 +21,7 @@ from osgeo import gdal
 
 from .models import SimulationState
 from .io.rasters import StreamingOutputs
+from ._io import HashingWriter
 
 SCHEMA = 1
 
@@ -91,17 +91,17 @@ def _encode(value, directory, counter):
         name = f"array-{counter[0]}.npy"
         counter[0] += 1
         path = directory / name
-        with io.BytesIO() as buffer:
-            np.save(buffer, array, allow_pickle=False)
-            payload = buffer.getvalue()
-        # Hash the exact serialized bytes so the durable file is never
-        # re-read merely to compute its content identity.
+        # NumPy streams the same NPY header and ordered array bytes through
+        # a bounded iterator for a file-like writer. Avoid a second complete
+        # serialized array in memory, while retaining the durable write and
+        # the exact content digest used by independent restart verification.
         with open(path, "xb") as target:
-            target.write(payload)
+            writer = HashingWriter(target)
+            np.save(writer, array, allow_pickle=False)
             target.flush()
             os.fsync(target.fileno())
         return {"type": "scalar" if isinstance(value, np.generic) else "array",
-                "file": name, "sha256": hashlib.sha256(payload).hexdigest()}
+                "file": name, "sha256": writer.sha256.hexdigest()}
     if value is None:
         return {"type": "none"}
     if type(value) is bool:
