@@ -2,7 +2,7 @@
 """Same-interpreter, alternating checkout benchmark of complete own-met runs.
 
 Raw scenes/caches/results belong under --workdir, never in the repository.
-See development/docs/full_compute_benchmark.md for protocol and limitations.
+See development/optimization_full_compute/README.md for protocol and limitations.
 """
 from __future__ import annotations
 
