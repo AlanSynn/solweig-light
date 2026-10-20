@@ -5,14 +5,27 @@ iteration owns one block's scratch and uses exclusively serial leaves; the
 only parallel launch covers the entire invocation. Validation scans blocks
 and channels in the original observable order before any parallel work.
 """
+from functools import partial
+
 import numpy as np
 from numba import njit, prange
+from solweig_light.radiation._jit_cache import bind_cache_identity
 from .direct_aosoa import (_produce_patchmajor, _preflight_packed,
                           _classes_table_masked_aosoa)
 from .lw_b_control import lw_primary_b_serial
 
+_bind_preflight_cache = partial(bind_cache_identity, dependencies=(
+    "_native_dispatch/direct_aosoa.py",
+))
+_bind_batch_cache = partial(bind_cache_identity, dependencies=(
+    "_native_dispatch/direct_aosoa.py",
+    "_native_dispatch/lw_b_control.py",
+    "radiation/_sleef_classifier.py",
+))
+
 
 @njit(cache=True, fastmath=False)
+@_bind_preflight_cache
 def _preflight_blocks(sh, vs, vb, total, capacity, patches):
     for start in range(0, total, capacity):
         stop = min(start + capacity, total)
@@ -22,6 +35,7 @@ def _preflight_blocks(sh, vs, vb, total, capacity, patches):
 
 
 @njit(cache=True, fastmath=False, parallel=True)
+@_bind_batch_cache
 def _batch(sh, vs, vb, heights, coefficients, factor, altitudes, indices,
            solid, sine, cosine, directions, gate, solar_gate, sky_down,
            sky_side, surface_sun, surface_sh, lup, reflection_factor,
@@ -54,6 +68,7 @@ def _batch(sh, vs, vb, heights, coefficients, factor, altitudes, indices,
 
 
 @njit(cache=True, fastmath=False)
+@_bind_batch_cache
 def _batch_serial(sh, vs, vb, heights, coefficients, factor, altitudes, indices,
            solid, sine, cosine, directions, gate, solar_gate, sky_down,
            sky_side, surface_sun, surface_sh, lup, reflection_factor,

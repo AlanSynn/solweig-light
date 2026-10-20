@@ -21,6 +21,7 @@ same accumulators one row block at a time (G03) and is internal until the
 integrator flips dispatch.
 """
 from functools import lru_cache
+from ._jit_cache import bind_cache_identity
 from .gvf_postprocess import gvf_postprocess_block
 import numpy as np
 from numba import njit, prange
@@ -189,6 +190,7 @@ def _gather_block_pixel(row,col,row0,buildings,shadow,sunwall,lup,albshadow,alb,
 
 
 @njit(cache=True,fastmath=False)
+@bind_cache_identity
 def _gather_block_serial(row0,row1,buildings,shadow,sunwall,lup,albshadow,alb,lwall,albedo,bounds,first,output):
     for row in range(row0,row1):
         for col in range(buildings.shape[1]):

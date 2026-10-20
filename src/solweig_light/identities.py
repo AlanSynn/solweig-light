@@ -54,7 +54,8 @@ def geometry_identity(paths, patch_option):
             'identities.py', 'pipeline.py',
             'radiation/_sleef_acos.py', 'radiation/_sleef_classifier.py', 'radiation/_math_profile.py',
             'geometry/svf.py', 'geometry/shadows.py', 'geometry/sky_compiled.py',
-            'geometry/visibility.py', 'geometry/visibility_native.py']),
+            'geometry/visibility.py', 'geometry/visibility_native.py',
+            'geometry/visibility_encode.py', 'geometry/visibility_compiled.py']),
         'dependencies': {name: version(name) for name in ('numpy', 'numba', 'GDAL')},
     }
 

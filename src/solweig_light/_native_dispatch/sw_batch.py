@@ -1,11 +1,20 @@
 """Cylinder shortwave invocation schedule over leased shared diffuse leaves."""
+from functools import partial
+
 import numpy as np
 from numba import njit, prange
+from solweig_light.radiation._jit_cache import bind_cache_identity
 from .direct_aosoa import _produce_patchmajor, _classes_table_masked_aosoa
 from .lw_batch import _preflight_blocks
 
+_bind_batch_cache = partial(bind_cache_identity, dependencies=(
+    "_native_dispatch/direct_aosoa.py",
+    "radiation/_sleef_classifier.py",
+))
+
 
 @njit(cache=True, fastmath=False)
+@_bind_batch_cache
 def _block(block, sh, vs, vb, heights, coefficients, factor, altitudes, indices,
            lum, solid, cosine, surface_sun, surface_sh, total, capacity,
            width, output):
@@ -48,6 +57,7 @@ def _block(block, sh, vs, vb, heights, coefficients, factor, altitudes, indices,
 
 
 @njit(cache=True, fastmath=False, parallel=True)
+@_bind_batch_cache
 def _batch(sh, vs, vb, heights, coefficients, factor, altitudes, indices,
            lum, solid, cosine, surface_sun, surface_sh, total, capacity,
            width, output):
@@ -58,6 +68,7 @@ def _batch(sh, vs, vb, heights, coefficients, factor, altitudes, indices,
 
 
 @njit(cache=True, fastmath=False)
+@_bind_batch_cache
 def _batch_serial(sh, vs, vb, heights, coefficients, factor, altitudes, indices,
            lum, solid, cosine, surface_sun, surface_sh, total, capacity,
            width, output):
@@ -68,6 +79,7 @@ def _batch_serial(sh, vs, vb, heights, coefficients, factor, altitudes, indices,
 
 
 @njit(cache=True, fastmath=False)
+@bind_cache_identity
 def _finite_output(output):
     """No-allocation check before accepting moved NumPy addition results."""
     for component in range(output.shape[0]):

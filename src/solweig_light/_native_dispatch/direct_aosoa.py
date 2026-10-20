@@ -66,6 +66,7 @@ prove end-to-end layout correctness against the frozen reducer graph; it
 is not offered as a backend win.
 """
 from contextlib import ExitStack
+from functools import partial
 
 import numpy as np
 from numba import njit
@@ -74,10 +75,15 @@ from solweig_light.geometry.visibility import LazyDiffVisibility, PackedVisibili
 from solweig_light.geometry.visibility_compiled import _descriptor
 from solweig_light.geometry.visibility_native import MappedVisibility
 from solweig_light.radiation._math_profile import tan32
+from solweig_light.radiation._jit_cache import bind_cache_identity
 from solweig_light.radiation._sleef_classifier import atan_fma
 from solweig_light.radiation.patch_radiation import _class_coefficients
 
 WIDTHS = (8, 4)  # shortlist: current W=8 plus the other native gang width
+
+_bind_classifier_cache = partial(bind_cache_identity, dependencies=(
+    "radiation/_sleef_classifier.py",
+))
 
 
 def _admitted_leaf(leaf):
@@ -86,6 +92,7 @@ def _admitted_leaf(leaf):
 
 
 @njit(cache=True, fastmath=False)
+@bind_cache_identity
 def _produce_patchmajor(payloads, modes, start, stop, patches, out, width):
     """Decode straight into [G,P,W] in _decode's patch-major, pixel-inner order.
 
@@ -183,6 +190,7 @@ def _produce_patchmajor(payloads, modes, start, stop, patches, out, width):
 
 
 @njit(cache=True, fastmath=False)
+@bind_cache_identity
 def _preflight_packed(payloads, modes, start, stop, patches):
     """Reject reserved codes in _decode's exact patch-major, pixel-inner order.
 
@@ -402,6 +410,7 @@ def _classes_table_aosoa(heights, coefficients, radians_to_degrees, altitudes, s
 
 
 @njit(cache=True, fastmath=False, error_model='numpy')
+@_bind_classifier_cache
 def _classes_table_masked_aosoa(heights, coefficients, radians_to_degrees, altitudes,
                                 indices, sun, shade, rows):
     """Masked-column form, mirroring _classes_table_masked's indirection."""

@@ -93,8 +93,11 @@ def test_wall_serial_definitions_are_independent_and_body_identical():
         parallel = function(WALL_SOURCE, parallel_name)
         serial = function(WALL_SOURCE, parallel_name + "_serial")
         assert normalized_function(parallel) == normalized_function(serial)
-        assert decorator_keywords(parallel) == {"fastmath": False, "parallel": True}
+        assert decorator_keywords(parallel) == {
+            "cache": True, "fastmath": False, "parallel": True,
+        }
         assert decorator_keywords(serial) == {"cache": True, "fastmath": False}
+        assert cache_binding(parallel)
         assert cache_binding(serial)
     tree = ast.parse(WALL_SOURCE.read_text())
     assert not any(
@@ -153,7 +156,7 @@ def test_cache_identity_helper_is_metadata_only_and_profiled():
 
 
 def run_probe(source, cache, run, mode, *, order="serial-first", debug=False,
-              inspect_lowering=False):
+              inspect_lowering=False, probe=PROBE):
     run.mkdir(parents=True)
     result = run / "result.json"
     environment = dict(os.environ)
@@ -171,7 +174,7 @@ def run_probe(source, cache, run, mode, *, order="serial-first", debug=False,
     })
     command = [
         sys.executable,
-        str(PROBE),
+        str(probe),
         "--mode", mode,
         "--order", order,
         "--result", str(result),
@@ -214,7 +217,7 @@ def assert_saved(debug, qualname):
 
 
 @pytest.mark.parametrize("order", ["serial-first", "parallel-first"])
-def test_wall_cold_warm_orders_are_exact_and_cache_only_serial(tmp_path, order):
+def test_wall_cold_warm_orders_are_exact_and_cache_both_owners(tmp_path, order):
     cache = tmp_path / "cache"
     cold, cold_debug = run_probe(
         PACKAGE_ROOT, cache, tmp_path / "cold", "wall", order=order, debug=True,
@@ -236,14 +239,11 @@ def test_wall_cold_warm_orders_are_exact_and_cache_only_serial(tmp_path, order):
     assert identity["wall13_parallel_qualname"] != identity["wall13_serial_qualname"]
     assert identity["wall23_parallel_qualname"] != identity["wall23_serial_qualname"]
     files = cache_names(cache)
-    for function_name in ("_wall13_serial", "_wall23_serial"):
+    for function_name in ("_wall13", "_wall13_serial", "_wall23", "_wall23_serial"):
         assert has_artifact(files, function_name, "nbi")
         assert has_artifact(files, function_name, "nbc")
-        assert "saved to" in cold_debug
+        assert_saved(cold_debug, cold["cache_qualnames"][function_name])
         assert_loaded(warm_debug, function_name)
-    for function_name in ("_wall13", "_wall23"):
-        assert not has_artifact(files, function_name, "nbi")
-        assert not has_artifact(files, function_name, "nbc")
 
 
 def test_math_cold_warm_cache_preserves_fma_fallback_and_profile(tmp_path):

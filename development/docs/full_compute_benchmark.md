@@ -62,6 +62,12 @@ Reports separately expose finite maximum absolute error, special-value mask equa
 
 The fifteen SVF rasters inside ZIP files are read through GDAL's `/vsizip/`. Visibility NPZ entries are streamed to temporary NPY files and compared with memory mapping, avoiding simultaneous dense visibility cubes in RAM. Those comparison scratch files are removed afterwards; the original exported artifacts remain available in each trial scene.
 
+Public artifact discovery excludes dot-prefixed private staging/cache paths.
+It still compares all public TIFFs and checks the ZIP/NPZ name sets in both
+directions, so an unexpected public extra fails the comparison. Compressed
+ZIP bytes may differ when a storage compression setting changes; the decoded
+arrays, headers, metadata and integrity requirements above still apply.
+
 ## Results and optional profiling
 
 The work directory contains:

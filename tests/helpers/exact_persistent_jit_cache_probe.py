@@ -77,8 +77,10 @@ def wall(order):
             "wall23": ws._wall23.py_func is not ws._wall23_serial.py_func,
         },
         "cache_qualnames": {
-            "wall13": ws._wall13_serial.py_func.__qualname__,
-            "wall23": ws._wall23_serial.py_func.__qualname__,
+            "_wall13": ws._wall13.py_func.__qualname__,
+            "_wall13_serial": ws._wall13_serial.py_func.__qualname__,
+            "_wall23": ws._wall23.py_func.__qualname__,
+            "_wall23_serial": ws._wall23_serial.py_func.__qualname__,
         },
         "dispatcher_identity": {
             "wall13_parallel_qualname": ws._wall13.py_func.__qualname__,

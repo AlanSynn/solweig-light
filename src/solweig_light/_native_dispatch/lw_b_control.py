@@ -76,6 +76,7 @@ structural twins of the frozen kernels.
 """
 import numpy as np
 from numba import njit, prange
+from solweig_light.radiation._jit_cache import bind_cache_identity
 
 MAX_PATCHES = 609
 
@@ -140,6 +141,7 @@ def lw_primary_b_parallel(sh, vs, vb, sun, shade, solid, sine, cosine,
 
 
 @njit(cache=True, fastmath=False)
+@bind_cache_identity
 def lw_primary_b_serial(sh, vs, vb, sun, shade, solid, sine, cosine,
                         directions, gate, solar_gate, sky_down, sky_side,
                         surface_sun, surface_sh, lup, reflection_factor,
