@@ -1,7 +1,19 @@
 # Full-computation optimization
 
-Work in progress, requested 2026-10-20. Reference: main commit
-`288d70e2b3bd8ca5bba4b65e572048fea37bcc51`.
+Requested 2026-10-20. Reference: main commit
+`288d70e2b3bd8ca5bba4b65e572048fea37bcc51`. Implementation and review are in
+[PR #2](https://github.com/AlanSynn/solweig-light/pull/2).
+
+The complete own-met CPU workflow spends substantial time repeatedly
+dispatching patch and direction work, decoding visibility, exporting legacy
+geometry, and copying or serializing arrays. This branch reduces those costs
+while preserving the existing chronological model and public output contract.
+
+[Round 1](ROUND1.md) records three paired, full 600 × 600 synthetic runs and
+the profile used to choose the next small change. The same-host medians were
+91.936602 seconds for pinned main and 31.870904 seconds for the first
+implementation. These are synthetic diagnostic results, not measurements of
+the user's Atlanta rasters. Final follow-up results are recorded separately.
 
 ## Workload and comparison contract
 
@@ -30,10 +42,88 @@ presented as that production comparison.
 - Reused engine subexpressions, streamed checkpoint serialization, reduced
   raster copies and explicit accounting for added resident/scratch memory.
 
+| Area | Change and purpose | Preserved boundary |
+|---|---|---|
+| SVF | Compile the ordered float32 annulus accumulation; compute invariant bush routing once. | Original rays, patches, scalar/store order and mixed-dtype fallback. |
+| Daylight wall shadows | Select cached parallel receiver kernels for sufficiently large arrays; retain the small-array serial route. | Independently defined serial/parallel kernels and exact output values. |
+| Longwave and shortwave | Move the bounded outer block schedule into compiled code, using serial reduction leaves inside each owner. | Patch reduction order, bounded per-owner scratch and mapped-data leases. |
+| Ground view factors | Batch the parallel direction/postprocessing schedule, retaining float32 accumulators and mixed-dtype behavior. | Eighteen directions, water handling, nonfinite/error fallback and chronological state. |
+| Static radiation data | Own immutable snapshots and cache only proofs and tangents tied to those exact snapshots. | General caller arrays still receive defensive validation. |
+| Native and legacy geometry | Combine compatible validation passes, decode C-order visibility in bounded blocks, hash accepted write bytes and borrow mapped descriptors. | Independent completed-file verification, CRC/schema checks, mutation guards, locking and rollback. |
+| Thermal expressions and input | Reuse selected ordered subexpressions and avoid a redundant copy of already-owned float32 raster data. | Dtype, first failing operation and fallback behavior. |
+| Checkpoints | Stream NumPy serialization into a hashing writer instead of building a complete serialized memory buffer. | Identical payload bytes, flush/fsync, checkpoint interval and publication order. |
+| Admission | Price new resident static data, parallel scratch and GVF finishing overlap explicitly. | Existing conservative reserves and rejection behavior. |
+
+The prepared serial GVF batch was rejected after it was slower in the local
+family comparison (1.35477 versus 1.30413 seconds). The retained serial route
+remains active. Wall parallelism also keeps a size threshold because a small
+64 × 64 case regressed. Family timings support those routing decisions;
+only complete paired workflow timings support an end-to-end speed claim.
+
+## Profile-directed follow-up
+
+The first full profile identified 106,947 Python visibility decode calls
+(2.58 s cumulative), zlib compression (5.13 s self time), and 459 compact
+visibility append operations (2.25 s cumulative). The next change therefore
+reuses the existing bounded compiled decoder for legacy NPZ export and adds
+a small integer-only encoder for exact contiguous native float32 planes.
+Unsupported layouts, subclasses, tiny workspaces and special error paths
+retain their existing implementation. Encoded payload bytes and decoded
+array bits remain exact.
+
+A separate complete export-family experiment compared lossless DEFLATE
+levels 6, 1 and 3 with independent verification and publication included.
+For the generated 600 scene, level 3 reduced median export transaction time
+from 7.1584 to 3.7649 seconds, with NPZ size increasing from 10,212,358 to
+16,835,741 bytes. Level 1 took 3.4163 seconds but needed 24,303,705 bytes.
+Level 3 is selected as a time/size compromise, not a universally best level.
+The public workflow still writes every legacy artifact. Existing valid
+archives at other levels remain valid; no recompression is forced.
+
+An independent numerical review also found that persistent outer JIT
+caches need explicit source identities for their imported compiled helpers.
+The reviewed LW, SW and GVF call chains now declare those dependencies at
+each persistent layer; the new SVF/codec entries bind their own defining
+source. Tiny process-isolated upgrade tests change numerical constants in
+owned copies, including same-size/same-mtime edits, and compare the changed
+warm-cache output with an independent fresh-cache result. These are scoped
+dependency declarations, not automatic repository-wide dependency discovery.
+
 Each accepted implementation must pass its frozen intermediate and final
 numeric contracts, mutation/corruption checks and output/restart behavior.
 No physics, ray, resolution, patch, timestep or tolerance reduction is part
 of this change. Preserve defensive fallback paths and public signatures.
+
+## Review and validation
+
+Independent review found and corrected moved overflow/warning behavior in
+GVF and shortwave assembly, the first-error order of a reused Kup expression,
+NumPy-integer dimension handling in admission, and retention of unused GVF
+accumulator planes. A conservative 64 bytes per pixel finishing allowance
+accounts for the changed GVF lifetime; only the surviving sum plane is copied
+out of the batched owner.
+
+The first implementation passed the focused geometry, visibility/cache,
+radiation and ownership suites, 144 integrated core tests, and 77 tests
+against an installed wheel. The wheel set includes genuine chronological
+TIFF comparisons and API/signature checks. These sets overlap and should not
+be added into a unique-test total. The complete 600 comparison independently
+checks all produced arrays, raster schemas, special values and final state.
+
+One existing diagnostic test remains a known environment/baseline limitation:
+`test_kernel_primary_matches_full_route_invariance` finds different NaN
+payload bits in column 7 of the unchanged full longwave serial/parallel
+kernels. It also fails on pinned main in this Python/NumPy/Numba environment.
+Its failure is retained in the evidence; its assertion and tolerance are not
+changed. The new primary route and the full 600 outputs have separate exact
+comparisons. This observation does not certify every diagnostic kernel or
+every platform.
+
+The original production comparison remains blocked on the four original
+rasters, meteorological rows and `02_CPU_SpeedTest.py`. A reproducible runner
+and its [protocol](../docs/full_compute_benchmark.md) are included so the
+same pinned-main comparison can be made on that server without guessing its
+selected date, time range or data.
 
 ## Verification and performance rounds
 

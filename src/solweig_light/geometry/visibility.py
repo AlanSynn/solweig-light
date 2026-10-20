@@ -31,6 +31,9 @@ FLOAT32 = np.dtype(np.float32)
 CODEBOOK_BITS = (0x00000000, 0x3F800000, 0x40000000)
 LEGACY_MEMBERS = ('shadowmat', 'vegshadowmat', 'vbshmat')
 DEFAULT_WORKSPACE_BYTES = 1024 * 1024
+# Lossless DEFLATE level selected from complete write/verify/publish trials.
+# Private so experiments/tests can compare levels without extending the API.
+_LEGACY_NPZ_COMPRESSION_LEVEL = 3
 
 
 def _shape(shape):
@@ -190,6 +193,11 @@ class VisibilityBuilder:
             raise ValueError('Visibility plane shape differs from builder shape')
         if plane.dtype.kind != 'f' or plane.dtype.itemsize != 4:
             raise TypeError('Visibility planes must contain float32 values')
+        from .visibility_encode import try_encode_native_f32
+        encoded = try_encode_native_f32(plane)
+        if encoded is not None:
+            self._patches.append(_EncodedPatch(*encoded))
+            return
         total = plane.size
         bit_dtype = np.dtype('u4').newbyteorder(plane.dtype.byteorder)
         ternary = False
@@ -288,32 +296,60 @@ def export_visibility_npz(path, shadow, vegetation, vegetation_building, *, max_
     target.parent.mkdir(parents=True, exist_ok=True)
     shape = shadow.shape
     pixels, patches = shape[0]*shape[1], shape[2]
+    # The compiled decoder borrows encoded payloads through O(patches)
+    # descriptor objects; it never builds a flat payload copy. Its uint8 mode
+    # arrays are numeric storage, so reserve all three channels' mode bytes.
+    # Keep duck types, subclasses, tiny workspaces and big-endian hosts on
+    # the original per-patch path (including its error/override behavior).
+    from .visibility_native import MappedVisibility
+    standard_types = (PackedVisibility, MappedVisibility)
+    mode_reserve = 3*patches
+    decode_block = None
+    if (np.little_endian and (budget-mode_reserve)//(4*patches+64) > 0
+            and all(type(channel) in standard_types for channel in channels.values())):
+        from .visibility_compiled import decode_block
+    else:
+        mode_reserve = 0
+    numeric_budget = budget-mode_reserve
     descriptor, temporary = tempfile.mkstemp(prefix='.'+target.name+'.', suffix='.tmp', dir=target.parent)
     os.close(descriptor)
     maximum = 0
     try:
-        with zipfile.ZipFile(temporary, 'w', compression=zipfile.ZIP_DEFLATED, allowZip64=True) as archive:
+        with zipfile.ZipFile(temporary, 'w', compression=zipfile.ZIP_DEFLATED,
+                             compresslevel=_LEGACY_NPZ_COMPRESSION_LEVEL, allowZip64=True) as archive:
             for name, channel in channels.items():
                 with archive.open(name+'.npy', 'w', force_zip64=True) as stream:
                     np.lib.format.write_array_header_1_0(stream, {'descr':'<f4','fortran_order':False,'shape':shape})
                     if not pixels or not patches:
                         continue
-                    pixel_chunk = budget // (4*patches+64)
+                    pixel_chunk = numeric_budget // (4*patches+64)
                     if pixel_chunk:
                         for start in range(0, pixels, pixel_chunk):
                             stop = min(pixels, start+pixel_chunk)
-                            chunk = np.empty((stop-start, patches), dtype='<f4')
-                            maximum = max(maximum, (stop-start)*(4*patches+64))
-                            for patch in range(patches):
-                                chunk[:, patch] = channel.decode_pixels(patch, start, stop)
-                            stream.write(memoryview(chunk).cast('B'))
+                            chunk = None
+                            if decode_block is not None and type(channel) in standard_types:
+                                try:
+                                    chunk = decode_block(channel, start, stop, patches)
+                                except IndexError:
+                                    # Replay the original patch order for malformed
+                                    # reserved codes, preserving its exception text.
+                                    pass
+                            if chunk is None:
+                                chunk = np.empty((stop-start, patches), dtype='<f4')
+                                for patch in range(patches):
+                                    chunk[:, patch] = channel.decode_pixels(patch, start, stop)
+                            maximum = max(maximum, mode_reserve+(stop-start)*(4*patches+64))
+                            with memoryview(chunk).cast('B') as data:
+                                stream.write(data)
+                            # Do not retain an old block while allocating its successor.
+                            del chunk
                     else:
-                        element_chunk = budget // 64
+                        element_chunk = numeric_budget // 64
                         total = pixels*patches
                         for start in range(0, total, element_chunk):
                             count = min(element_chunk, total-start)
                             chunk = np.empty(count, dtype='<f4')
-                            maximum = max(maximum, count*64)
+                            maximum = max(maximum, mode_reserve+count*64)
                             for patch in range(patches):
                                 offset = (patch-start) % patches
                                 if offset >= count:
@@ -321,7 +357,9 @@ def export_visibility_npz(path, shadow, vegetation, vegetation_building, *, max_
                                 length = (count-1-offset)//patches+1
                                 pixel = (start+offset)//patches
                                 chunk[offset::patches] = channel.decode_pixels(patch, pixel, pixel+length)
-                            stream.write(memoryview(chunk).cast('B'))
+                            with memoryview(chunk).cast('B') as data:
+                                stream.write(data)
+                            del chunk
         os.replace(temporary, target)
     finally:
         if os.path.exists(temporary):

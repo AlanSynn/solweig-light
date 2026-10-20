@@ -4,13 +4,22 @@ Each block owns its receiver scratch, gathers with the existing serial ray
 leaf, postprocesses float32 receivers with the original promoted Lup term,
 and rounds each direction into float32 accumulators before moving on.
 """
+from functools import partial
+
 import numpy as np
 from numba import njit, prange
+from ._jit_cache import bind_cache_identity
 from .ground_view import _gather_block_serial
 from .gvf_postprocess import _postprocess_pixel
 
+_bind_batch_cache = partial(bind_cache_identity, dependencies=(
+    "radiation/ground_view.py",
+    "radiation/gvf_postprocess.py",
+))
+
 
 @njit(cache=True, fastmath=False)
+@_bind_batch_cache
 def _run_owner(owner, buildings, shadow, sunwall, lup_first, lup_rest, albshadow, alb,
          lwall, albedo, aspect, wallbol, lup_term, alb_term, nosh_term,
          schedules, lows, highs, modes, first, second, capacity, output):
@@ -69,6 +78,7 @@ def _run_owner(owner, buildings, shadow, sunwall, lup_first, lup_rest, albshadow
 
 
 @njit(cache=True, fastmath=False, parallel=True)
+@_bind_batch_cache
 def _run(buildings, shadow, sunwall, lup_first, lup_rest, albshadow, alb,
          lwall, albedo, aspect, wallbol, lup_term, alb_term, nosh_term,
          schedules, lows, highs, modes, first, second, capacity, output):
@@ -82,6 +92,7 @@ def _run(buildings, shadow, sunwall, lup_first, lup_rest, albshadow, alb,
 
 
 @njit(cache=True, fastmath=False)
+@bind_cache_identity
 def _finite_accumulators(output):
     """Scan all destination sums without allocating an isfinite mask.
 

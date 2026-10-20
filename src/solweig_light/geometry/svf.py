@@ -17,6 +17,7 @@ import tempfile
 import zipfile
 import numpy as np
 from numba import njit, prange
+from ..radiation._jit_cache import bind_cache_identity
 from .shadows import prepare_shadow, create_patches
 
 
@@ -51,6 +52,7 @@ def annulus_weight(altitude, aziinterval):
 
 
 @njit(cache=True, fastmath=False, parallel=True)
+@bind_cache_identity
 def _accumulate_patch_f32(fields, masks, weights, directional_weights, directions):
     """Independent pixels retain every annulus product and float32 store.
 

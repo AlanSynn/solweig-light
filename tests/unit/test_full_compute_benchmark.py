@@ -146,3 +146,27 @@ def test_optional_profiles_cover_svf_stage_and_tile_worker(monkeypatch,tmp_path,
     assert pipeline.run_tile()==43
     assert len(list(tmp_path.glob('profile-svf-*.pstats')))==int(enabled)
     assert len(list(tmp_path.glob('profile-tile-*.pstats')))==int(enabled)
+
+
+@pytest.mark.parametrize('public_extra',['extra.tif','processed_inputs/extra.tif',
+                                       'processed_inputs/SVF/extra.zip','processed_inputs/SVF/extra.npz'])
+def test_public_comparison_ignores_private_staging_but_detects_public_extras(monkeypatch,tmp_path,public_extra):
+    import json
+    roots=[tmp_path/'reference',tmp_path/'candidate']
+    for index,root in enumerate(roots):
+        output=root/'scene/output_folder/0_0';output.mkdir(parents=True)
+        for name in ('TMRT_0_0.tif','UTCI_0_0.tif'):(output/name).touch()
+        staging=root/f'scene/processed_inputs/SVF/.geometry-export-random-{index}'
+        staging.mkdir(parents=True)
+        (staging/'SkyViewFactor_0_0.tif').touch()
+        (root/'inventory.json').write_text(json.dumps({'states':{}}))
+    monkeypatch.setattr(bench,'compare_tiff',lambda *args:{'passed':True})
+    monkeypatch.setattr(bench,'compare_states',lambda *args:{'passed':True})
+    result=bench.compare_runs(*roots,tmp_path/'scratch')
+    assert result['passed'] and not result['missing_artifacts']
+    extra=roots[1]/'scene'/public_extra
+    extra.parent.mkdir(parents=True,exist_ok=True);extra.touch()
+    result=bench.compare_runs(*roots,tmp_path/'scratch')
+    assert not result['passed']
+    assert result['missing_artifacts']
+    assert any(Path(public_extra).name in name for name in result['missing_artifacts'])

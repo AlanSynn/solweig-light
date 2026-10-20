@@ -31,6 +31,13 @@ Export completion manifests and locks live in
 `.solweig-light/export-manifests`. A native cache hit does not establish legacy
 artifact presence or provenance.
 
+New legacy visibility NPZ exports use lossless DEFLATE level 3. This reduces
+export CPU time at the cost of larger archives; decoded float32 values, array
+headers, member names, schemas and integrity checks are unchanged. Existing
+valid exports made at another compression level are still compared by their
+decoded contents and are not rewritten merely to change compression. The
+compression choice is an internal storage setting, not a new public option.
+
 Standalone exports also hold the same per-destination locks as transactional
 thermal output publication, under `.solweig-light-locks`. Both workflows hash
 resolved destination paths and acquire locks in sorted order without waiting

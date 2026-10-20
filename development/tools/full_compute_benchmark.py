@@ -415,41 +415,47 @@ def compare_states(left, right):
     return {'passed': all(item['passed'] for item in results.values()), 'fields': results}
 
 
+
+def public_files(root, suffixes):
+    """Public artifacts exclude dot-prefixed transaction/staging components."""
+    root=Path(root)
+    return {str(path.relative_to(root)):path for path in root.rglob('*')
+            if path.suffix.lower() in suffixes
+            and not any(part.startswith('.') for part in path.relative_to(root).parts)
+            and path.is_file()}
+
+
 def compare_runs(left, right, scratch):
     left, right, scratch = Path(left), Path(right), Path(scratch)
     records = {}
-    def raster_files(root):
-        return {str(path.relative_to(root)):path for path in root.rglob('*.tif')
-                if 'output_folder' in path.parts or 'processed_inputs' in path.parts}
-    a,b=raster_files(left/'scene'),raster_files(right/'scene')
+    a,b=public_files(left/'scene',{'.tif','.tiff'}),public_files(right/'scene',{'.tif','.tiff'})
     missing = sorted(set(a)^set(b))
     for key in sorted(set(a)&set(b)):
         family = Path(key).name.split('_',1)[0].upper()
         tolerance = TOLERANCES.get(family, TOLERANCES['geometry'])
         records[key]=compare_tiff(a[key],b[key],tolerance)
     # Legacy SVF ZIPs contain all fifteen fields; /vsizip/ avoids extracting TIFFs.
-    for path in sorted((left/'scene/processed_inputs/SVF').glob('svfs*.zip')):
-        other=right/'scene'/path.relative_to(left/'scene')
-        if not other.is_file():
-            missing.append(str(path.relative_to(left)))
-            continue
+    geometry_a,geometry_b=left/'scene/processed_inputs/SVF',right/'scene/processed_inputs/SVF'
+    zips_a,zips_b=public_files(geometry_a,{'.zip'}),public_files(geometry_b,{'.zip'})
+    missing.extend('ZIP:'+name for name in sorted(set(zips_a)^set(zips_b)))
+    for archive_key in sorted(set(zips_a)&set(zips_b)):
+        path,other=zips_a[archive_key],zips_b[archive_key]
         with zipfile.ZipFile(path) as archive, zipfile.ZipFile(other) as other_archive:
             names=archive.namelist()
             if sorted(names)!=sorted(other_archive.namelist()):
                 missing.append('SVF zip member set')
                 continue
         for name in names:
-            records[f'{path.name}/{name}']=compare_tiff(f'/vsizip/{path}/{name}',f'/vsizip/{other}/{name}',TOLERANCES['geometry'])
-    for path in sorted((left/'scene/processed_inputs/SVF').glob('shadowmats*.npz')):
-        other=right/'scene'/path.relative_to(left/'scene')
-        if not other.is_file():
-            missing.append(str(path.relative_to(left)))
-            continue
-        members_a=_extract_npz(path,scratch/'reference'/path.stem)
-        members_b=_extract_npz(other,scratch/'candidate'/path.stem)
+            records[f'{archive_key}/{name}']=compare_tiff(f'/vsizip/{path}/{name}',f'/vsizip/{other}/{name}',TOLERANCES['geometry'])
+    npzs_a,npzs_b=public_files(geometry_a,{'.npz'}),public_files(geometry_b,{'.npz'})
+    missing.extend('NPZ:'+name for name in sorted(set(npzs_a)^set(npzs_b)))
+    for archive_key in sorted(set(npzs_a)&set(npzs_b)):
+        path,other=npzs_a[archive_key],npzs_b[archive_key]
+        members_a=_extract_npz(path,scratch/'reference'/archive_key)
+        members_b=_extract_npz(other,scratch/'candidate'/archive_key)
         if set(members_a)!=set(members_b): missing.append('visibility NPZ member set')
         for name in sorted(set(members_a)&set(members_b)):
-            records[f'{path.name}/{name}']=_compare_npy(members_a[name],members_b[name],0.)
+            records[f'{archive_key}/{name}']=_compare_npy(members_a[name],members_b[name],0.)
     for side in (left,right):
         for family in ('TMRT','UTCI'):
             matches=list((side/'scene/output_folder').rglob(f'{family}_*.tif'))

@@ -11,10 +11,12 @@ import numpy as np
 from numba import njit, types
 from numba.typed import List
 
+from ..radiation._jit_cache import bind_cache_identity
 from .visibility import PackedVisibility, LazyDiffVisibility
 
 
 @njit(cache=True, fastmath=False)
+@bind_cache_identity
 def _decode(payloads, modes, start, stop, patches):
     bits = np.empty((stop-start, patches), dtype=np.uint32)
     for patch in range(patches):
@@ -72,6 +74,7 @@ def _decode_at(flat, offsets, modes, patch, pixel):
 
 
 @njit(cache=True, fastmath=False)
+@bind_cache_identity
 def _diff(shadow, vegetation):
     for row in range(shadow.shape[0]):
         for patch in range(shadow.shape[1]):
@@ -82,6 +85,7 @@ def _diff(shadow, vegetation):
 
 
 @njit(cache=True, fastmath=False)
+@bind_cache_identity
 def _decode_diff(sh_payloads, sh_modes, veg_payloads, veg_modes, start, stop, patches):
     return _diff(_decode(sh_payloads, sh_modes, start, stop, patches),
                  _decode(veg_payloads, veg_modes, start, stop, patches))

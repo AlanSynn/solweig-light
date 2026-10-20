@@ -23,8 +23,15 @@ def _framed(hasher, label, value):
     hasher.update(value)
 
 
-def bind_cache_identity(function):
-    """Namespace Numba's cache without wrapping or changing function code."""
+def bind_cache_identity(function, *, dependencies=()):
+    """Namespace Numba's cache without wrapping or changing function code.
+
+    Composed kernels explicitly name their imported compiled dependencies as
+    package-relative source files. Include the complete compiled call chain
+    at every persistent layer: an outer cache can contain an imported leaf's
+    machine code without consulting that leaf's cache during a warm load.
+    This is a scoped declaration, not automatic dependency discovery.
+    """
     runtime = {
         "python_implementation": platform.python_implementation(),
         "python_version": list(sys.version_info[:3]),
@@ -41,6 +48,13 @@ def bind_cache_identity(function):
     hasher = hashlib.sha256()
     _framed(hasher, "defining_module", Path(function.__code__.co_filename).read_bytes())
     _framed(hasher, "namespace_helper", Path(__file__).read_bytes())
+    package_root = Path(__file__).resolve().parents[1]
+    for dependency in sorted(set(dependencies)):
+        relative = Path(dependency)
+        if relative.is_absolute() or ".." in relative.parts:
+            raise ValueError("JIT cache dependencies must be package-relative source files")
+        _framed(hasher, "dependency:" + relative.as_posix(),
+                (package_root / relative).read_bytes())
     _framed(
         hasher,
         "runtime",
