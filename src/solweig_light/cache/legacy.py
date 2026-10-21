@@ -169,12 +169,12 @@ def load_legacy_geometry(zip_path, npz_path, total_path, *, trust=False, logger=
         path = f'/vsizip/{Path(zip_path).resolve()}/{name}.tif'
         dataset = gdal.Open(path)
         try:
-            fields[name] = dataset.GetRasterBand(1).ReadAsArray().astype(np.float32)
+            fields[name] = dataset.GetRasterBand(1).ReadAsArray().astype(np.float32, copy=False)
         finally:
             dataset = None
     dataset = gdal.Open(str(total_path))
     try:
-        fields['svftotal'] = dataset.GetRasterBand(1).ReadAsArray().astype(np.float32)
+        fields['svftotal'] = dataset.GetRasterBand(1).ReadAsArray().astype(np.float32, copy=False)
     finally:
         dataset = None
     channels = import_visibility_npz(npz_path, max_workspace_bytes=validation.get('max_workspace_bytes', DEFAULT_WORKSPACE_BYTES))

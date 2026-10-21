@@ -370,7 +370,7 @@ class TransactionalOutputs(StreamingOutputs):
         _sync_directory(self.staging_directory)
 
     def _validate_dataset(self, dataset, name, hashes):
-        if (dataset.RasterYSize != self.metadata.rows or dataset.RasterXSize != self.metadata.cols
+        if (dataset is None or dataset.RasterYSize != self.metadata.rows or dataset.RasterXSize != self.metadata.cols
                 or dataset.RasterCount != len(self.met)
                 or tuple(dataset.GetGeoTransform()) != tuple(self.metadata.transform)
                 or dataset.GetProjection() != self.metadata.projection):
@@ -405,16 +405,14 @@ class TransactionalOutputs(StreamingOutputs):
             except (KeyError, TypeError) as error:
                 raise PersistenceError("Corrupt checkpoint record") from error
         self.next_band = self._committed
-        if self.completion_path.exists():
+        completed = self.completion_path.exists()
+        if completed:
             self._validate_publication(_read_json(self.completion_path), completed=True)
-            self._completed = True
-            self._prune_state_generations()
-            return
-        publishing = self.publication_path.exists()
-        if publishing:
+        publishing = completed or self.publication_path.exists()
+        if publishing and not completed:
             self._validate_publication(_read_json(self.publication_path), completed=False)
         for name in self.fields:
-            path = self._stage_path(name)
+            path = self.destinations[name] if completed else self._stage_path(name)
             if not path.exists() and publishing:
                 path = self.destinations[name]
             try:
@@ -426,6 +424,7 @@ class TransactionalOutputs(StreamingOutputs):
                     self.datasets[name] = dataset
             except (RuntimeError, AttributeError) as error:
                 raise PersistenceError(f"Missing or corrupt staged TIFF: {path}") from error
+        self._completed = completed
         self._prune_state_generations()
 
     def _prune_state_generations(self):
@@ -564,6 +563,14 @@ class TransactionalOutputs(StreamingOutputs):
             self._flush()
             # Close all TIFF handles before hashing/renaming their durable files.
             self.datasets.clear()
+            # File hashes alone cannot detect writes lost before journal creation.
+            # Reopen durable bands and compare them with checkpointed write intent.
+            for name in self.fields:
+                dataset = gdal.Open(str(self._stage_path(name)), gdal.GA_ReadOnly)
+                try:
+                    self._validate_dataset(dataset, name, self._band_hashes[name])
+                finally:
+                    dataset = None
             artifacts = {path: self._stage_path(name) for name, path in self.destinations.items()}
             for final, staged in (extra_artifacts or {}).items():
                 final, staged = Path(final).resolve(), Path(staged).resolve()

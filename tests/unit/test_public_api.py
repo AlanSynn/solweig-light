@@ -15,7 +15,12 @@ CONTRACT = json.loads((Path(__file__).resolve().parents[2] /
 def test_public_argument_contract(name):
     signature = inspect.signature(getattr(solweig_light, name))
     expected = CONTRACT[name]['parameters']
-    assert list(signature.parameters) == [parameter['name'] for parameter in expected]
+    extensions = ['export_svf'] if name in ('thermal_comfort', 'run_utci_tiles') else []
+    assert list(signature.parameters) == [parameter['name'] for parameter in expected] + extensions
+    for extension in extensions:
+        parameter = signature.parameters[extension]
+        assert parameter.kind is inspect.Parameter.KEYWORD_ONLY
+        assert parameter.default is True
     for record, actual in zip(expected, signature.parameters.values()):
         assert actual.kind.name.lower() == record['kind']
         default = inspect.Parameter.empty if record['default'] is None else record['default_value']

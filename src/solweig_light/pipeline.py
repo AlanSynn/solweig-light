@@ -329,7 +329,7 @@ def _run_tile(base_path, preprocess_dir, selected_date_str, tile, paths, flags, 
         extra = {}
         input_guard.check()
         publishing = writer.publication_path.exists() or writer.completion_path.exists()
-        if not publishing and not cache_available:
+        if not publishing and not cache_available and flags.get('export_svf', True):
             template = gdal.Open(str(paths['Building_DSM']))
             save_svf_zip_npz_outputs(str(writer.staging_directory), template, **geometry, number=tile)
             template = None

@@ -75,6 +75,8 @@ def build_parser():
     # Output options
     parser.add_argument('--save_tmrt', type=str2bool, default=True, help='Save mean radiant temperature output')
     parser.add_argument('--save_svf', type=str2bool, default=False, help='Save sky view factor output')
+    parser.add_argument('--export_svf', type=str2bool, default=True,
+                        help='Write compatibility SVF TIFF/ZIP/NPZ files; False keeps native geometry only')
     parser.add_argument('--save_kup', type=str2bool, default=False, help='Save upward shortwave radiation output')
     parser.add_argument('--save_kdown', type=str2bool, default=False, help='Save downward shortwave radiation output')
     parser.add_argument('--save_lup', type=str2bool, default=False, help='Save upward longwave radiation output')
@@ -135,6 +137,7 @@ def main():
         use_uhi=args.use_uhi,
         save_tmrt=args.save_tmrt,
         save_svf=args.save_svf,
+        export_svf=args.export_svf,
         save_kup=args.save_kup,
         save_kdown=args.save_kdown,
         save_lup=args.save_lup,

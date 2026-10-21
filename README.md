@@ -100,6 +100,12 @@ parameters:
 | `start_time` / `end_time` | `None` | restrict the modeled time window (UTC) |
 | `use_uhi` | `True` | UHI handling from the met file |
 | `save_tmrt` … `save_wind` | `False` (`save_tmrt=True`) | which fields to write |
+| `export_svf` | `True` | write compatibility SVF TIFF/ZIP/NPZ artifacts |
+
+Use `export_svf=False` in `thermal_comfort` or `run_utci_tiles` (CLI:
+`--export_svf False`) to omit compatibility SVF exports. Native geometry,
+cache validation and thermal calculations are unchanged; `save_svf` still
+controls the separate per-tile SVF output. Existing exports are left in place.
 
 Input construction helpers (`build_inputs`, `build_wind_ext_coeff`) and the
 standalone SVF entry points (`run_walls_aspect`, `calculate_svf`,
