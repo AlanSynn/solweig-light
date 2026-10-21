@@ -186,6 +186,10 @@ GEOMETRY_SCENE_PLANES = 40
 GEOMETRY_SVF_PLANES = 15
 GEOMETRY_DERIVED_PLANES = 3
 GEOMETRY_F32_PLANES = GEOMETRY_SCENE_PLANES + GEOMETRY_SVF_PLANES + GEOMETRY_DERIVED_PLANES
+# Compact SVF holds eight uint8 counts for each of fifteen fields. Per-field
+# unique/replay scratch is bounded separately: 128 B/pixel covers uint64 keys,
+# sorting copies/indices, inverse maps, results and the preceding iteration.
+SVF_BINARY_REDUCTION_BYTES_PER_PIXEL = 8 * 15 + 128
 # Dense cube fallback of the non-compact SVF route (svf.py:126; M1: "only
 # non-compact route").  Not charged by default; ``dense_fallback=True`` adds
 # it for callers that know they run the legacy dense route.
@@ -204,13 +208,16 @@ SIMULATION_WRITE_PULSE_PLANES = DIGEST_PULSE_PLANES + CHECKPOINT_PULSE_PLANES
 # OwnedRadiationGeometry owns asvf, tangent and twelve SVF float32 planes.
 STATIC_RADIATION_F32_PLANES = 14
 # LW/SW batch scratch: three uint32 visibility arrays and two bool masks per
-# padded receiver/patch, plus LW's seven-f32 frame and ten-f32 accumulator.
-RADIATION_BATCH_LANE_WIDTH = 8  # production LW/SW; defensive LW also permits 4
+# padded receiver/patch, plus LW's seven-f32 frame and reducer scratch.
+RADIATION_BATCH_LANE_WIDTH = 8  # fallback; private width 32 requires aligned blocks
 RADIATION_BATCH_BYTES_PER_PATCH = 3 * 4 + 2
 RADIATION_BATCH_FRAME_BYTES = 7 * 4
 RADIATION_BATCH_ACCUMULATOR_BYTES = 10 * 4
-# SW's eight-f32 angle vector (32 B/owner) fits the unused LW accumulator
-# allowance above. Group construction uses offsets(P+1,i64), columns(P,i64)
+# Private LW32 retains ten accumulators and the completed reflection field.
+LW_BATCH_ACCUMULATOR_BYTES = 11 * 32 * 4
+# SW128's four-f32 accumulator rows (2048 B/owner) and angle vector
+# (512 B/owner) live in separate phases; both fit LW's frame/scratch allowance.
+# Group construction uses offsets(P+1,i64), columns(P,i64)
 # and seen(P,bool) once per process invocation, including all-unique fallback.
 SW_GROUP_BUILD_BYTES_PER_PATCH = 2 * 8 + 1
 SW_GROUP_OFFSETS_SENTINEL_BYTES = 8
@@ -533,8 +540,14 @@ def _decoded_block_bytes(shape: TileShapeDescriptor) -> int:
     return shape.block_pixels * shape.patches * (shape.windchannels + 4) * 4
 
 
+def _resident_lw_mask_bytes(shape: TileShapeDescriptor) -> int:
+    # One shared uint8 [ceil(pixels / 32), patches, 32] tile owner.
+    return ((shape.pixels + 31) // 32) * 32 * shape.patches
+
+
 def _execution_overhead_components(
     shape: TileShapeDescriptor, threads_per_worker: int = 1,
+    *, resident_lw_masks: bool = False,
 ) -> tuple[int, int]:
     """Return additional (resident static bytes, peak temporary bytes).
 
@@ -547,14 +560,23 @@ def _execution_overhead_components(
     Finishing occurs after the batch workers release their local scratch.
     """
     threads = _positive_int(threads_per_worker, "threads_per_worker")
+    if not isinstance(resident_lw_masks, bool):
+        raise TypeError("resident_lw_masks must be a bool")
     static = STATIC_RADIATION_F32_PLANES * 4 * shape.pixels
+    if resident_lw_masks:
+        static += _resident_lw_mask_bytes(shape)
     block = min(shape.block_pixels, shape.pixels)
     rounded = ((block + RADIATION_BATCH_LANE_WIDTH - 1)
                // RADIATION_BATCH_LANE_WIDTH) * RADIATION_BATCH_LANE_WIDTH
     patch_owners = min(threads, (shape.pixels + shape.block_pixels - 1) // shape.block_pixels)
+    accumulator = RADIATION_BATCH_ACCUMULATOR_BYTES
+    if shape.pixels >= shape.block_pixels and shape.block_pixels % 32 == 0:
+        # Aligned full blocks need no extra payload padding, but their
+        # wider reducer scratch must be reserved for every active owner.
+        accumulator = LW_BATCH_ACCUMULATOR_BYTES
     patch_scratch = patch_owners * (
         RADIATION_BATCH_BYTES_PER_PATCH * rounded * shape.patches
-        + RADIATION_BATCH_FRAME_BYTES * block + RADIATION_BATCH_ACCUMULATOR_BYTES
+        + RADIATION_BATCH_FRAME_BYTES * block + accumulator
     )
     row_block = min(GVF_BATCH_BLOCK_ROWS, shape.rows)
     row_owners = min(threads, (shape.rows + GVF_BATCH_BLOCK_ROWS - 1) // GVF_BATCH_BLOCK_ROWS)
@@ -568,14 +590,18 @@ def _execution_overhead_components(
     return static, max(patch_scratch, gvf_scratch, finish_overlap) + group_build
 
 
-def execution_overhead(shape: TileShapeDescriptor, threads_per_worker: int = 1) -> int:
+def execution_overhead(
+    shape: TileShapeDescriptor, threads_per_worker: int = 1,
+    *, resident_lw_masks: bool = False,
+) -> int:
     """Extra full-compute bytes above preexisting admission calibrations.
 
     Shared by phase admission and runtime's legacy estimate-based admission.
     This deliberately adds the complete new scratch bound, including one
     owner at H=1, without subtracting unmeasured savings from older reserves.
     """
-    return sum(_execution_overhead_components(shape, threads_per_worker))
+    return sum(_execution_overhead_components(
+        shape, threads_per_worker, resident_lw_masks=resident_lw_masks))
 
 
 def _resolved_gdal_cache(gdal_cache_bytes: int | None) -> int:
@@ -698,6 +724,8 @@ def geometry_reservation(
     live = shape.pixels * GEOMETRY_F32_PLANES * 4
     if dense_fallback:
         live += shape.pixels * DENSE_CUBE_FALLBACK_PLANES * 4
+    else:
+        live += shape.pixels * SVF_BINARY_REDUCTION_BYTES_PER_PIXEL
     total = payload + live + gdal_cache + native + stream + mapped
     return Reservation(
         PHASE_GEOMETRY, shape, visibility_mode,
@@ -734,6 +762,7 @@ def simulation_reservation(
     shape: TileShapeDescriptor,
     *,
     threads_per_worker: int = 1,
+    resident_lw_masks: bool = False,
     visibility_mode: str = VISIBILITY_UNKNOWN_COLD,
     export_overlap: bool = True,
     gdal_cache_bytes: int | None = None,
@@ -775,7 +804,8 @@ def simulation_reservation(
         raise ValueError(
             f"visibility_mode must be one of {VISIBILITY_MODES}; got {visibility_mode!r}"
         )
-    static_overhead, batch_overhead = _execution_overhead_components(shape, threads_per_worker)
+    static_overhead, batch_overhead = _execution_overhead_components(
+        shape, threads_per_worker, resident_lw_masks=resident_lw_masks)
     gdal_default = _resolved_gdal_cache(gdal_cache_bytes)
     stream = (
         DEFAULT_EXPORT_STREAM_BYTES
@@ -976,17 +1006,14 @@ class PhaseAdmissionPlan:
         return cls(**data)
 
 
-def admission_inputs_from_options(options: Any) -> dict[str, int]:
-    """JSON-safe admission inputs from an existing ``RuntimeOptions``.
-
-    Uses only the existing ``workers``/``cpu_budget``/``threads_per_worker``
-    memory fields (D04: no public RuntimeOptions signature/default changes).
-    """
+def admission_inputs_from_options(options: Any) -> dict[str, int | bool]:
+    """JSON-safe execution controls for phase admission."""
     cpu_workers = max(1, options.cpu_budget // options.threads_per_worker)
     return {
         "budget_bytes": options.resolved_memory_budget_bytes,
         "active_workers": min(options.workers, cpu_workers),
         "threads_per_worker": options.threads_per_worker,
+        "resident_lw_masks": options.resident_lw_masks,
     }
 
 
@@ -1040,6 +1067,7 @@ def plan_phase_admission(
     gdal_cache_bytes: int | None = None,
     native_bytes: int | None = None,
     threads_per_worker: int = 1,
+    resident_lw_masks: bool = False,
     policy: str = "reject",
 ) -> PhaseAdmissionPlan:
     """Admit phase jobs against the process-tree memory budget.
@@ -1060,6 +1088,8 @@ def plan_phase_admission(
     _non_negative_int(parent_footprint_bytes, "parent_footprint_bytes")
     _non_negative_int(writer_queue_bytes, "writer_queue_bytes")
     _positive_int(threads_per_worker, "threads_per_worker")
+    if not isinstance(resident_lw_masks, bool):
+        raise TypeError("resident_lw_masks must be a bool")
     if policy not in ("reject", "queue"):
         raise ValueError(f"policy must be 'reject' or 'queue'; got {policy!r}")
     jobs = tuple(jobs)
@@ -1099,6 +1129,7 @@ def plan_phase_admission(
             )
         if job.phase == PHASE_SIMULATION:
             kwargs["threads_per_worker"] = threads_per_worker
+            kwargs["resident_lw_masks"] = resident_lw_masks
         reservations.append(builder(job.shape, **kwargs))
 
     infeasible = [

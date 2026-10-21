@@ -191,11 +191,12 @@ def lw_primary_b_serial(sh, vs, vb, sun, shade, solid, sine, cosine,
 
 
 @njit(cache=True, fastmath=False)
+@bind_cache_identity
 def lw_primary_b_lanes_serial(sh, vs, vb, sun, shade, solid, sine, cosine,
                               directions, gate, solar_gate, sky_down, sky_side,
                               surface_sun, surface_sh, lup, reflection_factor,
-                              rows, output):
-    """EXPERIMENTAL gang-major formulation (informational; not dispatched).
+                              rows, output, flags=None):
+    """Gang-major reducer used by the batch schedule for bounded finite inputs.
 
     Same per-lane operation order as the row-major control -- sweep 1
     ``p = 0..P-1``, reflection barrier, sweep 2 ``p = 0..P-1`` -- with the
@@ -204,18 +205,24 @@ def lw_primary_b_lanes_serial(sh, vs, vb, sun, shade, solid, sine, cosine,
     sequence is unchanged while the inner loop trips over contiguous data
     (runtime trip count ``live``, branchless lane predicates; the
     ``solar_gate`` branch stays real, per contract). Only live lanes are
-    visited, so padding lanes are never read. Gated bitwise on the full
-    adversarial grid alongside the row-major control.
+    visited, so padding lanes are never read. One extra scratch row holds
+    the completed reflection field between the two ordered sweeps. Optional
+    tile-owned flags retain exactly the four original visibility predicates.
     """
     gangs, patches, width = sh.shape
+    accum = np.empty((11, width), dtype=np.float32)
     for gang in range(gangs):
         base = gang * width
         live = min(width, rows - base)
-        accum = np.zeros((10, width), dtype=np.float32)
+        accum.fill(np.float32(0))
         for patch in range(patches):
             for lane in range(live):
-                sky = sh[gang, patch, lane] == 1 and vs[gang, patch, lane] == 1
-                veg = vs[gang, patch, lane] == 0 or vb[gang, patch, lane] == 0
+                if flags is None:
+                    sky = sh[gang, patch, lane] == 1 and vs[gang, patch, lane] == 1
+                    veg = vs[gang, patch, lane] == 0 or vb[gang, patch, lane] == 0
+                else:
+                    sky = (flags[gang, patch, lane] & np.uint8(1)) != 0
+                    veg = (flags[gang, patch, lane] & np.uint8(2)) != 0
                 accum[0, lane] = np.float32(accum[0, lane]+np.float32(sky*sky_down[patch]))
                 accum[5, lane] = np.float32(accum[5, lane]+np.float32(sky*sky_side[patch]))
                 vegetation_side = ((surface_sh*solid[patch])*cosine[patch])*veg
@@ -224,7 +231,10 @@ def lw_primary_b_lanes_serial(sh, vs, vb, sun, shade, solid, sine, cosine,
                 accum[1, lane] = np.float32(accum[1, lane]+vegetation_down)
             if solar_gate[patch]:
                 for lane in range(live):
-                    building = np.float32(np.float32(1)-sh[gang, patch, lane])*vb[gang, patch, lane] == 1
+                    if flags is None:
+                        building = np.float32(np.float32(1)-sh[gang, patch, lane])*vb[gang, patch, lane] == 1
+                    else:
+                        building = (flags[gang, patch, lane] & np.uint8(4)) != 0
                     sun_side = ((((surface_sun*sun[gang, patch, lane])*solid[patch])*cosine[patch])*building)
                     shade_side = ((((surface_sh*shade[gang, patch, lane])*solid[patch])*cosine[patch])*building)
                     sun_down = ((((surface_sun*sun[gang, patch, lane])*solid[patch])*sine[patch])*building)
@@ -235,7 +245,10 @@ def lw_primary_b_lanes_serial(sh, vs, vb, sun, shade, solid, sine, cosine,
                     accum[2, lane] = np.float32(accum[2, lane]+shade_down)
             else:
                 for lane in range(live):
-                    building = np.float32(np.float32(1)-sh[gang, patch, lane])*vb[gang, patch, lane] == 1
+                    if flags is None:
+                        building = np.float32(np.float32(1)-sh[gang, patch, lane])*vb[gang, patch, lane] == 1
+                    else:
+                        building = (flags[gang, patch, lane] & np.uint8(4)) != 0
                     shade_side = (((surface_sh*solid[patch])*cosine[patch])*building)
                     shade_down = (((surface_sh*solid[patch])*sine[patch])*building)
                     accum[7, lane] = np.float32(accum[7, lane]+shade_side)
@@ -243,13 +256,20 @@ def lw_primary_b_lanes_serial(sh, vs, vb, sun, shade, solid, sine, cosine,
         for lane in range(live):
             row = base + lane
             # The reflection field depends on the completed ordered sky sweep.
-            reflected = np.float32(np.float32(np.float32(np.float32(accum[0, lane]+lup[row])*reflection_factor)*np.float32(.5))/np.float32(np.pi))
-            for patch in range(patches):
-                mask = sh[gang, patch, lane] == 0 or vs[gang, patch, lane] == 0 or vb[gang, patch, lane] == 0
+            accum[10, lane] = np.float32(np.float32(np.float32(np.float32(accum[0, lane]+lup[row])*reflection_factor)*np.float32(.5))/np.float32(np.pi))
+        for patch in range(patches):
+            for lane in range(live):
+                reflected = accum[10, lane]
+                if flags is None:
+                    mask = sh[gang, patch, lane] == 0 or vs[gang, patch, lane] == 0 or vb[gang, patch, lane] == 0
+                else:
+                    mask = (flags[gang, patch, lane] & np.uint8(8)) != 0
                 side = np.float32(np.float32(np.float32(reflected*solid[patch])*cosine[patch])*mask)
                 down = np.float32(np.float32(np.float32(reflected*solid[patch])*sine[patch])*mask)
                 accum[9, lane] = np.float32(accum[9, lane]+side)
                 accum[4, lane] = np.float32(accum[4, lane]+down)
+        for lane in range(live):
+            row = base + lane
             output[row, 0] = np.float32(np.float32(np.float32(np.float32(accum[0, lane]+accum[1, lane])+accum[2, lane])+accum[3, lane])+accum[4, lane])
             output[row, 1] = np.float32(np.float32(np.float32(np.float32(accum[5, lane]+accum[6, lane])+accum[7, lane])+accum[8, lane])+accum[9, lane])
             for k in range(5, 10):

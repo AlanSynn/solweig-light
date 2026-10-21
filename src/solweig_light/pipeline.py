@@ -207,6 +207,10 @@ def _run_tile(base_path, preprocess_dir, selected_date_str, tile, paths, flags, 
     static_radiation = OwnedRadiationGeometry(asvf, geometry)
     resources.enter_context(radiation_geometry_scope(static_radiation))
     asvf = static_radiation.asvf
+    from ._native_dispatch.lw_batch import _resident_masks_scope
+    resources.enter_context(_resident_masks_scope(
+        (geometry['shmat'], geometry['vegshmat'], geometry['vbshvegshmat'])
+        if runtime.resident_lw_masks else None))
 
     geometry_cache = GeometryCache(walls, aspects, geometry, svfbuveg, asvf, diffsh, svfalfa, cache_available)
 

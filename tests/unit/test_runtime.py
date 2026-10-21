@@ -28,11 +28,14 @@ from solweig_light import runtime as runtime_module
 
 def test_options_are_frozen_and_scoped():
     before = get_runtime_options()
+    assert RuntimeOptions().resident_lw_masks is False
     with pytest.raises(Exception):
         before.workers = 2  # type: ignore[misc]
-    with runtime_options(workers=2, block_pixels=9) as selected:
+    with runtime_options(workers=2, block_pixels=9, resident_lw_masks=True) as selected:
         assert selected.workers == 2
         assert get_runtime_options().block_pixels == 9
+        assert get_runtime_options().resident_lw_masks is True
+        assert RuntimeOptions(**json.loads(json.dumps(selected.as_dict()))) == selected
     assert get_runtime_options() is before
 
 
@@ -57,6 +60,8 @@ def test_cache_policy_and_cpu_validation():
         RuntimeOptions(legacy_cache_policy="use-it")
     with pytest.raises(ValueError, match="threads_per_worker"):
         RuntimeOptions(cpu_budget=1, threads_per_worker=2)
+    with pytest.raises(TypeError, match="resident_lw_masks"):
+        RuntimeOptions(resident_lw_masks=1)
 
 
 def test_cgroup_resource_readers_are_fixture_injectable(tmp_path):
@@ -176,8 +181,9 @@ def test_estimate_components_are_monotonic():
     assert estimate_tile_memory(10, 10) == estimate_memory(10, 10).total_bytes
 
 
-def test_admission_accepts_numpy_integral_dimensions():
-    options = RuntimeOptions()
+@pytest.mark.parametrize('resident_lw_masks', [False, True])
+def test_admission_accepts_numpy_integral_dimensions(resident_lw_masks):
+    options = RuntimeOptions(resident_lw_masks=resident_lw_masks)
     expected = runtime_module._job_estimate({'rows': 12, 'cols': 17}, options, 0)
     actual = runtime_module._job_estimate(
         {'rows': np.int64(12), 'cols': np.int32(17)}, options, 0)
@@ -209,6 +215,24 @@ def test_admission_reduces_workers_and_rejects_oversized_jobs():
         plan_admission([{"memory_estimate_bytes": 131}], options)
     with pytest.raises(ResourceAdmissionError, match="no dimensions"):
         plan_admission([{"tile": "missing-shape"}], options)
+    with pytest.raises(ResourceAdmissionError, match="no dimensions"):
+        plan_admission([{"memory_estimate_bytes": 60}],
+                       RuntimeOptions(resident_lw_masks=True))
+
+
+@pytest.mark.parametrize('override', [None, 100])
+def test_resident_masks_are_added_even_to_explicit_job_estimates(override):
+    job = {"shape": (1, 33), "patches": 7}
+    if override is not None:
+        job["memory_estimate_bytes"] = override
+    base = plan_admission([job], RuntimeOptions(memory_budget_bytes=10*1024**3))
+    # Two 32-lane groups, seven patches, one byte per lane/patch.
+    required = base.estimates[0] + 448
+    options = RuntimeOptions(memory_budget_bytes=required, resident_lw_masks=True)
+    assert plan_admission([job], options).estimates == (required,)
+    with pytest.raises(ResourceAdmissionError, match="increase the memory budget"):
+        plan_admission([job], RuntimeOptions(
+            memory_budget_bytes=required-1, resident_lw_masks=True))
 
 
 def _write_stub(path, marker):

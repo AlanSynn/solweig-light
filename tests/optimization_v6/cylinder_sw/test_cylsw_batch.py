@@ -6,16 +6,22 @@ from solweig_light.radiation import cylinder_shortwave as sw
 from test_cylsw_parity import synthetic_values, assert_bitwise
 
 
-@pytest.mark.parametrize('shape,capacity', [((1,8),128),((7,19),16),((17,19),128)])
+@pytest.mark.parametrize('shape,capacity', [((1,1),128),((1,8),128),((1,33),128),
+                                          ((1,128),128),((1,192),128),
+                                          ((7,19),16),((17,19),128)])
 @pytest.mark.parametrize('surface_dtype',[np.float32,np.float64])
-def test_batch_shared_lazy_bitwise(shape,capacity,surface_dtype,admitted_profile,monkeypatch):
+@pytest.mark.parametrize('binary', [False, True])
+def test_batch_shared_lazy_bitwise(shape,capacity,surface_dtype,binary,admitted_profile,monkeypatch):
     values=synthetic_values(*shape,seed=9)
     for name in ('shmat','vegshmat','vbshvegshmat'):
         dense=values[name]
-        # Include ternary and raw patterns; masks still perform numeric
-        # multiplication, including zero times infinity.
-        dense.reshape(-1,dense.shape[2])[0,0]=np.float32(2)
-        dense.reshape(-1,dense.shape[2])[-1,1]=np.float32(-0.)
+        if binary:
+            dense = (dense > .5).astype(np.float32)
+        else:
+            # Include ternary and raw patterns; masks still perform numeric
+            # multiplication, including zero times infinity.
+            dense.reshape(-1,dense.shape[2])[0,0]=np.float32(2)
+            dense.reshape(-1,dense.shape[2])[-1,1]=np.float32(-0.)
         values[name]=PackedVisibility.from_dense(dense)
     values['diffsh']=LazyDiffVisibility(values['shmat'],values['vegshmat'])
     for name in ('radI','radD','albedo'):
@@ -52,7 +58,7 @@ def _assembly_values(pixels=8):
     return values
 
 
-def _assembly_outcome(values,regime,retained,monkeypatch):
+def _assembly_outcome(values,regime,retained,monkeypatch,capacity=8):
     import warnings
     from solweig_light._native_dispatch import sw_batch
     with monkeypatch.context() as patch:
@@ -61,7 +67,7 @@ def _assembly_outcome(values,regime,retained,monkeypatch):
             warnings.simplefilter('always',RuntimeWarning)
             with np.errstate(divide='ignore',invalid='ignore',over=regime,under='ignore'):
                 try:
-                    result=sw.kside_cylinder_anisotropic(values,block_pixels=8,parallel=False)
+                    result=sw.kside_cylinder_anisotropic(values,block_pixels=capacity,parallel=False)
                     error=None
                 except (FloatingPointError,IndexError) as exc:
                     result=None;error=(type(exc),str(exc))
@@ -69,10 +75,11 @@ def _assembly_outcome(values,regime,retained,monkeypatch):
 
 
 @pytest.mark.parametrize('regime',['warn','raise','ignore'])
-def test_batch_assembly_overflow_replays_numpy(regime,admitted_profile,monkeypatch):
-    values=_assembly_values()
-    expected,error,expected_warnings=_assembly_outcome(values,regime,True,monkeypatch)
-    actual,actual_error,actual_warnings=_assembly_outcome(values,regime,False,monkeypatch)
+@pytest.mark.parametrize('capacity',[8,128])
+def test_batch_assembly_overflow_replays_numpy(regime,capacity,admitted_profile,monkeypatch):
+    values=_assembly_values(capacity)
+    expected,error,expected_warnings=_assembly_outcome(values,regime,True,monkeypatch,capacity)
+    actual,actual_error,actual_warnings=_assembly_outcome(values,regime,False,monkeypatch,capacity)
     assert actual_error==error
     assert actual_warnings==expected_warnings
     if regime=='warn':assert expected_warnings==[(RuntimeWarning,'overflow encountered in add')]
@@ -81,23 +88,26 @@ def test_batch_assembly_overflow_replays_numpy(regime,admitted_profile,monkeypat
 
 
 @pytest.mark.parametrize('regime',['warn','raise','ignore'])
-def test_batch_earlier_assembly_event_precedes_later_reserved_code(regime,admitted_profile,monkeypatch):
+@pytest.mark.parametrize('capacity',[8,128])
+def test_batch_earlier_assembly_event_precedes_later_reserved_code(regime,capacity,admitted_profile,monkeypatch):
     from solweig_light.geometry.visibility import _EncodedPatch
-    values=_assembly_values(16)
+    values=_assembly_values(2*capacity)
     patches=list(values['shmat']._patches)
-    patches[0]=_EncodedPatch('ternary',b'\x55\x55\x57\x55')
-    values['shmat']=PackedVisibility((1,16,6),tuple(patches))
+    payload=bytearray(b'\x55'*(2*capacity//4));payload[capacity//4]=0x57
+    patches[0]=_EncodedPatch('ternary',bytes(payload))
+    values['shmat']=PackedVisibility((1,2*capacity,6),tuple(patches))
     values['diffsh']=LazyDiffVisibility(values['shmat'],values['vegshmat'])
-    _,expected_error,expected_warnings=_assembly_outcome(values,regime,True,monkeypatch)
-    _,actual_error,actual_warnings=_assembly_outcome(values,regime,False,monkeypatch)
+    _,expected_error,expected_warnings=_assembly_outcome(values,regime,True,monkeypatch,capacity)
+    _,actual_error,actual_warnings=_assembly_outcome(values,regime,False,monkeypatch,capacity)
     assert actual_error==expected_error
     assert actual_warnings==expected_warnings
     assert expected_error[0] is (FloatingPointError if regime=='raise' else IndexError)
 
 
 @pytest.mark.parametrize('case',['direct','visibility'])
-def test_batch_nonfinite_ignore_replays_exact_nan_payloads(case,admitted_profile,monkeypatch):
-    values=_assembly_values()
+@pytest.mark.parametrize('capacity',[8,128])
+def test_batch_nonfinite_ignore_replays_exact_nan_payloads(case,capacity,admitted_profile,monkeypatch):
+    values=_assembly_values(capacity)
     values['radI']=np.float32(650)
     values['radD']=np.float32(120)
     first=np.array(0x7fc11111,np.uint32).view(np.float32)
@@ -106,12 +116,12 @@ def test_batch_nonfinite_ignore_replays_exact_nan_payloads(case,admitted_profile
         values['shadow'][:]=first
         values['lv'][0,2]=second
     else:
-        shadow=np.ones((1,8,6),np.float32);shadow[:,:,0]=first
-        vegetation=np.ones((1,8,6),np.float32);vegetation[:,:,0]=second
+        shadow=np.ones((1,capacity,6),np.float32);shadow[:,:,0]=first
+        vegetation=np.ones((1,capacity,6),np.float32);vegetation[:,:,0]=second
         values['shmat']=PackedVisibility.from_dense(shadow)
         values['vegshmat']=PackedVisibility.from_dense(vegetation)
         values['diffsh']=LazyDiffVisibility(values['shmat'],values['vegshmat'])
-    expected,error,_=_assembly_outcome(values,'ignore',True,monkeypatch)
-    actual,actual_error,_=_assembly_outcome(values,'ignore',False,monkeypatch)
+    expected,error,_=_assembly_outcome(values,'ignore',True,monkeypatch,capacity)
+    actual,actual_error,_=_assembly_outcome(values,'ignore',False,monkeypatch,capacity)
     assert error is actual_error is None
     assert_bitwise(actual,expected,'nonfinite assembly payload')
