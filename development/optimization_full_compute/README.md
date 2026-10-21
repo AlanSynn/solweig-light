@@ -1,144 +1,171 @@
 # Full-computation optimization
 
-Implementation: [Draft PR #2](https://github.com/AlanSynn/solweig-light/pull/2).
-Main reference: `288d70e2b3bd8ca5bba4b65e572048fea37bcc51`.
-Accepted source: `af6c27625c6dd71df45d1db7581a5548255497e5`, whose complete Git
-tree is identical to measured local commit `09a08a89`. Publication only
-reparents that tree; subsequent documentation does not change runtime code.
-Source pins, reports and archive verification are in [manifest.json](manifest.json).
+[Draft PR #2](https://github.com/AlanSynn/solweig-light/pull/2) remains unmerged.
+This record replaces the current summary, while [the previous campaign](https://github.com/AlanSynn/solweig-light/blob/230520b784c5aaeffde8f86147a832bc358b723e/development/optimization_full_compute/manifest.json)
+remains in Git history. Its unavailable raw archive is not reconstructed or pooled.
+Source pins, exact statistics and evidence identifiers are in [manifest.json](manifest.json).
 
-## Measured result and scope
+## Decision
 
-The 2026-10-20 reproduction used a **generated 600 × 600, 4 m scene**, 19
-chronological steps, 153 patches, eight threads and one worker. Four balanced
-blocks ran each of four arms once in every order position. Every invocation
-used fresh geometry and outputs, a warmed private JIT cache, all default legacy
-SVF exports, TMRT/UTCI saving, no resume and checkpoint interval 1. The 4096 MiB
-setting was an admission budget, not measured memory. OS/native-build caches
-were not purged. No other local benchmark/test/build overlapped measured runs.
-
-| Four-run median / observed range | Main | Previous PR `de54d448` | Accepted source |
-|---|---:|---:|---:|
-| Workflow wall | 90.081 s | 23.544 s | 22.268 s |
-| Workflow min–max | 87.264–96.449 s | 22.735–24.434 s | 21.632–22.922 s |
-| Whole process including startup/imports | 91.197 s | 24.630 s | 23.504 s |
-| Self + waited-child CPU | 524.499 s | 108.169 s | 100.619 s |
-| SVF including legacy exports | 22.158 s | 6.951 s | 6.697 s |
-| TMRT/UTCI including outputs/checkpoints | 67.541 s | 16.221 s | 15.188 s |
-| Walls/aspect | 0.312 s | 0.329 s | 0.334 s |
-
-Main → accepted is **4.045×**, 75.280% less workflow wall and 80.816% less CPU,
-with four of four paired wall wins. Previous PR → accepted has a descriptive
-5.419% median reduction but only three wins; a stable incremental workflow
-improvement remains **inconclusive**. The intermediate `787cdd24` measured
-22.505 s: its final 1.050% median difference also had only three wins and
-remains inconclusive. Small kernel gains are not promoted to whole-workflow claims. Stage medians do not
-sum to the median total; ranges are not confidence intervals. First-use and
-profile runs are excluded. This campaign does not pool older measurements.
-
-## Accepted changes
-
-- Compile ordered SVF accumulation and bounded LW/SW/GVF schedules while
-  preserving rays, patch/direction order, dtypes and defensive fallbacks.
-- Reuse owned immutable radiation preparations and ordered subexpressions;
-  reduce raster copies and stream checkpoint serialization/hashing.
-- Use bounded compiled visibility export/encoding and exact integer bits.
-  Compare legacy visibility directly against packed bits without allocating
-  a second expected block; specialize binary/ternary indexing in the verifier and preserve
-  unusual-layout fallback, first-error order, CRC and independent readback.
-- Group identical stored float32 SW coefficient bits, preserving each patch's
-  comparisons and reduction order. Hoist masked lane bounds. Keep signed-zero,
-  NaN-payload, all-unique and unsupported-shape fallback behavior.
-- Price grouping metadata explicitly: build scratch is `17 * patches + 8`
-  bytes per worker (2,609 bytes at 153 patches). Retain existing owner reserves,
-  locks, fsync, rollback, source guards and composed JIT source identities.
-- Use lossless NPZ DEFLATE level 3. The canonical visibility NPZ grows from
-  10,212,358 to 16,835,741 bytes; the SVF TIFF/ZIP and thermal output sizes match.
-- Publish benchmark event records atomically. The same harness instruments all
-  arms; this is measurement robustness, not a product speed claim.
-
-No public signature, resolution, ray, patch, timestep or tolerance is reduced.
-
-## Additional UTCI candidate: excluded
-
-A separate frozen four-pair campaign tried an eleven-line production change
-that selects the existing parallel UTCI evaluator only within the active
-runtime thread grant. It preserved all exact gates. The measured workflow
-medians were **22.834 → 21.870 s** (4.221% lower), with **three of four wins**;
-CPU medians were **102.541 → 104.716 s**. One pair regressed by 2.831%.
-
-The preregistered gate required all four wins and at least 2% median reduction.
-It failed, so commit `9fa3cc5b` is **not included**. All eight trials and the
-rejected source are retained outside git; no optional reruns were added. Its
-isolated 600²/eight-thread wrapper result (55.156 → 8.815 ms) is not a workflow
-speedup. Do not combine this campaign's ratio with the main comparison above.
-
-## Verification and limits
-
-All 16 measured four-arm runs passed. Twelve comparisons, plus the excluded
-profile pair, matched all 31 raster/member records (four copied inputs and 27
-produced entries), including all 19 output bands, metadata, validity/special
-masks, signed zeros and NaN payloads. Nine final-state arrays matched bitwise;
-the other two state fields matched canonical typed integer values. Schema and
-timestamps matched. The four UTCI follow-up comparisons passed the same gates.
-
-Focused local selections passed: 910 classifier/LW/layout/memory cases, 150
-verifier cases and 18 harness cases. The installed wheel matched all 74 Python
-source files and passed 580 selected tests, including the genuine upstream
-small-reference 24-step public pipeline at its unchanged tolerances. Selections
-overlap and are not summed. Rejected UTCI routing passed its 112-test selection.
-Earlier verification found the existing full-longwave NaN-payload diagnostic
-failing on pinned main and the earlier PR candidate. It was not rerun in this
-reproduction; these selected tests are not a whole-repository pass.
+Retain the existing optimized runtime. **No new memory experiment is adopted.**
+The five memory candidates and a separate LW/SW lookup follow-up failed the
+frozen incremental acceptance rule. This update changes only this README and
+the existing manifest; raw evidence and rejected patches remain outside Git.
 CI configuration and CI-based acceptance are excluded at the user's request.
 
-Process-tree RSS was unavailable; no memory winner is claimed. Hidden staging
-copies appeared in one run's recursive size inventory. Canonical public sizes
-exclude them; logs show no second SVF production, but the filesystem mechanism
-and any incidental timing impact are unestablished. Failures, including the
-prior partial instrumentation campaign, remain preserved and excluded from
-these timing statistics. A later-phase JIT-copy guard can be hardened; the
-frozen protocol verified its initial copy once; the independent post-run audit
-confirmed both the private copy and original still match that initial digest.
+The retained code compiles ordered SVF and bounded LW/SW/GVF work, reuses owned
+immutable preparations, groups identical stored SW coefficients, streams
+checkpoint hashing, and uses bounded visibility encoding/verification and
+lossless NPZ level 3. Physical grid, rays, patches, timesteps, chronological
+state and existing scientific tolerances are unchanged.
 
-The original Atlanta rasters, forcing selection and `02_CPU_SpeedTest.py` were
-unavailable. The user's 76.1 s / 16-thread result and the 2 m scene are not
-retested or used for a cross-environment speedup. Historical reports remain in
-PR history, but missing historical raw outputs are not reconstructed. The new
-archive is separately labeled; durable upload remains pending explicit
-destination authorization after an automatic approval-review rejection.
+## Current matched main comparison
 
-## Remaining profile-guided directions
+Measured main: `288d70e2b3bd8ca5bba4b65e572048fea37bcc51`.
+Measured public PR: `230520b784c5aaeffde8f86147a832bc358b723e`, full tree
+`eea4fb51213a16aba62ecab1ccfb130e7b20f0a3`; local alias `62dff51438a53001b16ba301519c84fc1cbc2f3a`
+has exactly that full tree. Later evidence documentation changes no runtime code.
 
-An excluded accepted-source profile found LW 3.958 s, GVF 3.310 s, SW 2.125 s
-and UTCI 1.109 s within the thermal tile. SVF included shadow work 1.808 s,
-compression 1.633 s, export decoding 0.769 s and direct verification 0.342 s.
-These are observed buckets, not removable costs; cumulative entries overlap.
-Unchanged costs also moved between profiles, so subtraction is not causality.
-Prioritize internal LW/GVF cost attribution, then an exporter-only literal
-decoder experiment. Buffer reuse shares that decoder budget. Preserve complete
-CRC/readback/hash/fsync work and avoid broad fusion, full-tile decoded caches,
-changed patch/ray counts or parallel chronological timesteps.
+The 2026-10-21 workload is a **generated 600 × 600, 4 m scene**, seed 20261020,
+19 hourly chronological steps, 153 patches, eight threads and one worker.
+Each invocation creates fresh native geometry and outputs, writes all three
+legacy SVF artifacts and TMRT/UTCI, and checkpoints every step without resume.
+Private JIT caches are warmed; OS/native-build caches are not purged. An
+8192 MiB admission budget admits the extra arrays; this is not measured RSS
+or a claim of physically unlimited memory. Local numerical work is serialized.
 
-## Reproduce
+| Four-run median / observed range | Main | Existing PR |
+|---|---:|---:|
+| Full workflow | 173.243 s | 49.435 s |
+| Workflow min–max | 157.336–200.170 s | 43.248–59.004 s |
+| Self + waited-child CPU | 964.932 s | 201.949 s |
+| SVF including legacy exports | 40.041 s | 12.059 s |
+| TMRT/UTCI including outputs/checkpoints | 132.634 s | 35.723 s |
 
-Use matching dependencies and keep data/results outside git. The archive
-contains exact inputs, frozen four-arm/follow-up protocols, drivers, hashes,
-raw reports, representative outputs and a local-source Git bundle. A new
-matched two-arm run can use the public runner below; it is a new experiment,
-not a replay of the archived four-arm ordering:
+The ratio of median runtimes is **3.504×** (main/PR), with
+**71.465% less workflow wall time** and four of four paired wins over main.
+Main/PR full captures match exactly; each completed timed arm is checked
+against its independently audited capture. Stage medians do not sum to the
+median total. Ranges are not confidence intervals.
+
+Original Atlanta rasters, forcing selection and `02_CPU_SpeedTest.py` are
+unavailable. The user's 76.1 s / 16-thread result and 2 m scene are not retested,
+and no cross-environment speed ratio is inferred. Process-tree RSS is unavailable.
+
+## Extra-memory experiments
+
+The prespecified adoption rule requires four valid pairs, all four workflow
+wins and at least 2% reduction in the ratio of medians, plus numerical gates.
+It is a repeatability rule, not a statistical significance test.
+
+| Candidate | Valid runs | Median workflow | Wins versus paired PR | Decision |
+|---|---:|---:|---:|---|
+| Static GVF sums | 4 | 69.527 s | 1/4 | Exclude |
+| Factored LW reflection weights | 4 | 53.029 s | 2/4 | Exclude |
+| GVF + LW | 4 | 46.949 s | 2/4 | Inconclusive improvement; exclude |
+| Decoded LW/SW visibility | 4 | 45.052 s | 2/4 | Inconclusive improvement; exclude |
+| Interleaved SVF shadow bank | 3 | 50.495 s | 1/3 | Incomplete valid pairs; exclude |
+
+The SVF comparator median on its three common successful blocks is 44.638 s.
+One of its four scheduled runs (block 1 / trial 01) failed with `ENOTEMPTY`
+during temporary legacy-export cleanup.
+The failure was retained without retry or imputation; its cause is unestablished.
+All 27 completed workflows in this campaign passed their output checks.
+An earlier interrupted attempt overlapped unrelated payload reads and is
+excluded in full; its records and the continuation amendment are retained.
+
+Extra owned arrays at 600² are about 11.52 MB (GVF), 5.76 MB (LW), 17.28 MB
+(combined), 660.96 MB (decoded visibility), and 667.61 MB of conservative
+SVF-bank admission including schedules. These are array budgets, not RSS.
+At 2400², decoded visibility alone would be 10.58 GB; no such run was measured.
+
+### Separate exact LW/SW lookup follow-up
+
+An experimental table groups identical float32 `tan(acos(sqrt(SVF)))` words,
+then evaluates the same rounded classification expression for each unique word.
+It retains all pixel/patch reductions and exceptional-input fallbacks. The
+fixture has 85,814 unique words among 360,000 pixels; the analytical `atan`
+call count falls from 768,240,000 to 181,754,052 (76.342%). This is not a runtime
+speedup. Its live map is 1.783 MB and largest per-call table is 27.117 MB.
+
+The complete diagnostic capture and 36 focused tests passed. Four fixed pairs
+then ran. Three pairs passed output verification: baseline median **41.130 s**,
+candidate **43.437 s**, **5.607% slower**, zero wins. The fourth candidate
+invocation returned normally in 47.023 s, but failed the output gate and is
+not a valid performance sample. No replacement run was added.
+
+That failure has exact TMRT values in bands 1–3, zero values in bands 4–19,
+and missing time tags in bands 3–19. UTCI and final state matched. All 19
+write-time TMRT digests match the reference, but the publication journal and
+post-run inventory already identify the bad TIFF. The completion path checks
+whole-file hashes against its own journal without independently revalidating
+persisted bands against the write-time digests. This is an observed validation
+gap; the cause remains unresolved. The candidate is excluded,
+and the PR remains a draft. The failure is not dismissed as numerical noise.
+
+## Numerical relaxation and compression
+
+Only the LW factorization and combined candidate alter floating-point order.
+Their maximum observed errors are **0.0000305176°C TMRT** and
+**0.0000686646°C UTCI**. Every carried state value at every step remains exact;
+no UTCI category changes in either boundary convention. The six spatial ROIs
+and all nonempty step/output comparisons pass the frozen provisional Tier A:
+max 0.001°C, p99 0.0002°C, RMSE 0.0001°C, absolute bias 0.00001°C.
+These are engineering gates on this fixture, not universal scientific bounds.
+Neither passing them nor a nonsignificant mean difference establishes a
+use-independent tolerance or a speed gain. No approximate default is enabled.
+
+A separate four-order compression screen includes writing, decoded readback,
+CRC, hashing and fsync. It does not measure the full model workflow.
+
+| NPZ policy | Median export/verify total | File bytes | Paired wins |
+|---|---:|---:|---:|
+| Level 3, 1 MiB chunks | 4.352 s | 16,835,741 | Reference |
+| Level 1, 1 MiB chunks | 4.121 s | 24,303,705 | 3/4 |
+| Level 0, 1 MiB chunks | 3.269 s | 661,013,049 | 4/4 |
+| Level 3, 64 MiB chunks | 6.076 s | 16,835,741 | 0/4 |
+
+Level 0 saves 24.90% in this component at 39.26× the file size. No full-workflow
+compression gain or production policy change is claimed.
+
+## Remaining work
+
+An excluded current-PR profile records LW 13.054 s, GVF 12.358 s and SW 7.065 s;
+SVF includes shadow work 4.088 s, compression 2.836 s and verification 1.779 s.
+Cumulative times overlap. In the separate lookup profile even unchanged GVF
+moved to 8.224 s: subtracting profiles cannot identify a causal improvement.
+The lookup profile is excluded from timing acceptance and its outputs verify.
+
+1. Investigate the persisted-output failure and independently validate saved
+   bands/timestamps against recorded write intent before accepting more speed work.
+2. Consider an explicit native-only geometry output policy. Public split calls
+   already share the native recipe, but a fresh thermal run still publishes the
+   legacy trio even with `save_svf=False`. Omitting those artifacts would change
+   the output contract and needs a separately labeled measurement.
+3. Explore GVF cached-plane copy removal, compact categorical visibility,
+   uint8 shadow banks, and fused ordered SVF accumulation. These are unimplemented
+   directions, with no measured full-workflow gain or universal exactness claim.
+4. A faster shade classifier needs a certified bound on the actual rounded
+   `atan` chain and reference fallback near thresholds. Mathematical inversion
+   alone does not preserve strict comparisons or floating-point plateaus.
+
+## Evidence and reproduction
+
+The artifact named in the manifest contains exact generated inputs, all retained
+capture/timing/profile records, canonical measured outputs, final checkpoints,
+failed artifacts, immutable protocols and rejected candidate patches. It uses
+SHA-256 chunk deduplication. The workspace archive is verified, but durable
+file-saving confirmation is unavailable; the manifest records that limitation.
+Extract its `bundle_tool.py` and run:
 
 ```bash
-git worktree add --detach ../solweig-main-288d70e2 288d70e2
-python development/tools/generate_full_compute_scene.py --output ../synthetic600
-python development/tools/full_compute_benchmark.py \
-  --reference-checkout ../solweig-main-288d70e2 --candidate-checkout . \
-  --scene ../synthetic600 --date 2020-07-18 --threads 8 \
-  --memory-budget-mib 4096 --repeats 4 --expected-size 600 \
-  --expected-steps 19 --dataset-label synthetic_generated --profile \
-  --workdir ../full-compute-new-run
+python bundle_tool.py verify solweig-memory-evidence-20261021.zip
+python bundle_tool.py restore solweig-memory-evidence-20261021.zip NEW_DIRECTORY
 ```
 
-For original data, supply its scene, `--met-file` and actual date/time window.
-The archived campaign adds a strict bit-equality gate to the runner's original
-frozen tolerances; preserve both source/input provenance and complete outputs.
+Whole-archive streaming verification and a miniature build/restore/verify test
+are recorded separately. The full evidence tree was not restored to disk.
+Raw JSON retains original absolute paths; the archive README explains use of
+separate analysis copies and the pinned public harness. The frozen campaigns
+are in `timing_plan_clean.json` and `timing_plan_height.json`; failed slots and
+post-run output failures remain failures. Historical campaigns are not pooled.

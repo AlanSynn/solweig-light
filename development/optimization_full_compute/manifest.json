@@ -1,21 +1,28 @@
 {
-  "schema": 1,
-  "campaign_date_utc": "2026-10-20",
+  "schema": 2,
+  "campaign_date_utc": "2026-10-21",
   "pull_request": "https://github.com/AlanSynn/solweig-light/pull/2",
+  "decision": "Retain the existing PR runtime; publish no additional memory candidate.",
+  "new_runtime_candidates_accepted": [],
+  "current_update": [
+    "development/optimization_full_compute/README.md",
+    "development/optimization_full_compute/manifest.json"
+  ],
   "source_pins": {
-    "before": "de54d4485ab4f7a9b96441b5d4a97b3f51e798ff",
-    "final": "09a08a89dd84bb85fa1de652338d8980fb870295",
+    "height_candidate": "a9be35ad0338976f14335fc6d0263e70de636253",
+    "local_baseline_alias_same_full_tree": "62dff51438a53001b16ba301519c84fc1cbc2f3a",
     "main": "288d70e2b3bd8ca5bba4b65e572048fea37bcc51",
-    "round3": "787cdd2464e46ecf162bda66d864e3176dcd240e"
+    "public_pr_baseline": "230520b784c5aaeffde8f86147a832bc358b723e",
+    "public_pr_full_tree": "eea4fb51213a16aba62ecab1ccfb130e7b20f0a3"
   },
-  "publication": {
-    "accepted_public_source_commit": "af6c27625c6dd71df45d1db7581a5548255497e5",
-    "identical_complete_git_tree": "e1c22c3af7fe2c5292ccefdfa86b79d457440a75",
-    "measured_local_commit": "09a08a89dd84bb85fa1de652338d8980fb870295",
-    "mapping": "Public source commit and measured local commit have exactly the same complete Git tree; only parents differ. Later documentation does not alter runtime source."
+  "runtime_src_git_tree": "f0ba9c6a250d7b149735f1447f3090c5d1808e88",
+  "previous_campaign": {
+    "manifest_at_commit": "230520b784c5aaeffde8f86147a832bc358b723e",
+    "raw_archive_available_in_this_campaign": false,
+    "historical_timings_pooled": false
   },
   "workload": {
-    "dataset": "synthetic_generated_not_original",
+    "dataset": "generated_not_original_Atlanta",
     "size": [
       600,
       600
@@ -26,25 +33,22 @@
     "patches": 153,
     "threads": 8,
     "workers": 1,
-    "memory_admission_mib": 4096,
-    "geometry_and_outputs": "fresh each invocation",
-    "jit": "warmed private caches; first use excluded",
-    "exports": "all default legacy SVF artifacts and TMRT/UTCI",
+    "admission_budget_mib": 8192,
     "checkpoint_interval": 1,
-    "resume": false,
-    "os_and_native_build_caches": "not purged",
-    "rss_available": false
+    "geometry_outputs_each_run": "fresh, all legacy SVF exports and TMRT/UTCI",
+    "jit": "private warmed caches; first-use and profile runs excluded",
+    "os_native_build_caches_purged": false,
+    "process_tree_rss_available": false
   },
-  "versions": {
-    "Python": "3.12.14",
-    "NumPy": "2.4.6",
-    "Numba": "0.67.0",
-    "SciPy": "1.17.1",
+  "dependencies": {
     "GDAL": "3.13.3",
+    "llvmlite": "0.49.0",
+    "numba": "0.67.0",
+    "numpy": "2.4.6",
+    "psutil": "7.2.2",
     "pytz": "2026.5",
-    "timezonefinder": "9.0.0",
-    "pytest": "9.1.1",
-    "psutil": "7.2.2"
+    "scipy": "1.17.1",
+    "timezonefinder": "9.0.0"
   },
   "input_sha256": {
     "Building_DSM.tif": "2cd6dac82db33f864d42e5407aa1c8d0cfd471462ba107bfa9286273fa63c5e9",
@@ -53,154 +57,244 @@
     "Trees.tif": "32bfdb1ec8f13719b2fb610a97dc067fd3a8d28ba0028bebd7d0d1e621235496",
     "met.txt": "ceb3173fab0439e98e7008c699474bedb70fded57ecbd65356d89148de7c73a0"
   },
-  "round4": {
-    "measured_runs": 16,
-    "profile_comparisons_excluded_from_timings": 1,
-    "all_exact_comparisons": 13,
-    "workflow_seconds": {
-      "before": [
-        23.205760135000673,
-        24.434251146998577,
-        22.735331068999585,
-        23.882707140001003
+  "performance_gate": {
+    "valid_pairs": 4,
+    "required_wins": 4,
+    "minimum_median_reduction_percent": 2,
+    "interpretation": "Prespecified repeatability rule, not a significance test; no replacement trials or imputation."
+  },
+  "memory_campaign": {
+    "summary": {
+      "all_five_candidates_fail_incremental_gate": true,
+      "all_four_existing_pr_over_main_paired_wins": true,
+      "execution_failures": [
+        [
+          1,
+          "svf"
+        ]
       ],
-      "final": [
-        21.631747712001015,
-        22.154338009999265,
-        22.92160117200001,
-        22.382464881999113
-      ],
-      "main": [
-        96.44860616199912,
-        89.21937371400054,
-        87.26417962999949,
-        90.94305850500132
-      ],
-      "round3": [
-        22.30852777799919,
-        22.633625503000076,
-        22.375704441999915,
-        22.95942756399927
-      ]
+      "execution_successes": 27,
+      "main_to_existing_pr_ratio_of_medians": 3.5044353010161764,
+      "scheduled_runs": 28,
+      "verified_outputs": 27
     },
-    "workflow_medians": {
-      "before": 23.544233637500838,
-      "final": 22.26840144599919,
-      "main": 90.08121610950093,
-      "round3": 22.504664972499995
-    },
-    "cpu_seconds_medians": {
-      "before": 108.16908749999999,
-      "final": 100.6189685,
-      "main": 524.4990115,
-      "round3": 103.4179575
-    },
-    "main_to_final_speedup_ratio_of_medians": 4.045248435454499,
-    "main_to_final_paired_wins": 4,
-    "before_to_final_paired_wins": 3,
-    "round3_to_final_paired_wins": 3,
-    "incremental_claim": "Descriptive lower medians; stable incremental wall improvement over before/round3 remains inconclusive."
+    "variants": {
+      "baseline": {
+        "valid_runs": 4,
+        "workflow_median_s": 49.43540995300009,
+        "workflow_range_s": [
+          43.247663158999785,
+          59.004167535000306
+        ]
+      },
+      "combined": {
+        "valid_runs": 4,
+        "workflow_median_s": 46.94933141600086,
+        "workflow_range_s": [
+          41.093740005000654,
+          53.20485455800008
+        ],
+        "paired_pr_median_s": 49.43540995300009,
+        "paired_wins": 2,
+        "accepted": false
+      },
+      "gvf": {
+        "valid_runs": 4,
+        "workflow_median_s": 69.52662619249986,
+        "workflow_range_s": [
+          46.749041383000076,
+          137.63976068199918
+        ],
+        "paired_pr_median_s": 49.43540995300009,
+        "paired_wins": 1,
+        "accepted": false
+      },
+      "lw": {
+        "valid_runs": 4,
+        "workflow_median_s": 53.02914672250063,
+        "workflow_range_s": [
+          41.607044381999,
+          72.33796043900111
+        ],
+        "paired_pr_median_s": 49.43540995300009,
+        "paired_wins": 2,
+        "accepted": false
+      },
+      "main": {
+        "valid_runs": 4,
+        "workflow_median_s": 173.24319575949994,
+        "workflow_range_s": [
+          157.3358156659997,
+          200.16969158200118
+        ]
+      },
+      "svf": {
+        "valid_runs": 3,
+        "workflow_median_s": 50.494746956999734,
+        "workflow_range_s": [
+          41.087808845000836,
+          55.83414975800042
+        ],
+        "paired_pr_median_s": 44.63821803099927,
+        "paired_wins": 1,
+        "accepted": false
+      },
+      "vis": {
+        "valid_runs": 4,
+        "workflow_median_s": 45.05244129000039,
+        "workflow_range_s": [
+          37.47529963099987,
+          57.50033253000038
+        ],
+        "paired_pr_median_s": 49.43540995300009,
+        "paired_wins": 2,
+        "accepted": false
+      }
+    }
   },
-  "round5": {
-    "candidate_commit": "9fa3cc5bb416d7948e39a673eb8fae006a397a61",
-    "baseline_commit": "09a08a89dd84bb85fa1de652338d8980fb870295",
-    "workflow_seconds": {
-      "baseline": [
-        22.149488134999046,
-        22.5308661379986,
-        23.137204409000333,
-        24.40000546900046
-      ],
-      "candidate": [
-        21.66885037999964,
-        23.168723520999265,
-        20.974132858000303,
-        22.07142123599988
-      ]
+  "height_campaign": {
+    "completed_invocation_times_are_not_all_valid_performance_samples": true,
+    "execution_successes": 8,
+    "frozen_summary_stopped_on_output_gate_failure": true,
+    "interpretation": "Three matched verified pairs were slower; the fourth candidate output failed verification. The separate full capture passed, but does not certify every timed run.",
+    "output_gate_failures": [
+      "height-finite_height-03"
+    ],
+    "scheduled_runs": 8,
+    "separate_capture_exact": true,
+    "stable_improvement_gate": false,
+    "valid_paired_baseline_s": {
+      "maximum": 47.46978998399936,
+      "median": 41.13040112199997,
+      "minimum": 39.77288529100042
     },
-    "workflow_medians": {
-      "baseline": 22.834035273499467,
-      "candidate": 21.87013580799976
+    "valid_paired_blocks": [
+      0,
+      1,
+      2
+    ],
+    "valid_paired_candidate_s": {
+      "maximum": 58.06742084899997,
+      "median": 43.436673974998484,
+      "minimum": 42.18132654699912
     },
-    "cpu_seconds_medians": {
-      "baseline": 102.54091550000001,
-      "candidate": 104.7161735
+    "valid_paired_wins": 0,
+    "valid_pairs_median_reduction_fraction": -0.05607221884750668,
+    "verified_outputs": 7
+  },
+  "numerical_relaxation": {
+    "scope": "LW reflection factorization and combined candidate only; no approximate default accepted",
+    "provisional_tiers": {
+      "A": {
+        "max_abs_C": 0.001,
+        "p99_abs_C": 0.0002,
+        "rmse_C": 0.0001,
+        "abs_bias_C": 1e-05
+      },
+      "B_exploratory": {
+        "max_abs_C": 0.01,
+        "p99_abs_C": 0.002,
+        "rmse_C": 0.001,
+        "abs_bias_C": 0.0001
+      }
     },
-    "acceptance": {
-      "accepted": false,
-      "exact_outputs": true,
-      "four_of_four_wins": false,
-      "median_reduction_at_least_2_percent": true,
-      "optional_reruns": false
+    "observed_pooled_C": {
+      "Tmrt": {
+        "max_abs": 3.0517578125e-05,
+        "p99_abs": 3.0517578125e-05,
+        "rmse": 3.1981571769119087e-06,
+        "bias": 1.052945677997076e-09,
+        "n": 6840000
+      },
+      "UTCI": {
+        "max_abs": 6.866455078125e-05,
+        "p99_abs": 5.7220458984375e-06,
+        "rmse": 1.4644282792939978e-06,
+        "bias": -9.906436279337922e-10,
+        "n": 5335181
+      }
     },
-    "candidate_disposition": "excluded_by_preregistered_gate",
-    "gate": "Four of four paired workflow wins, at least 2 percent median reduction and exact outputs; no optional reruns.",
-    "baseline_cache_post_audit": "Original and private copy still equal initial frozen digest."
+    "all_nonempty_step_regions_pass_tier_A": true,
+    "all_carried_state_exact": true,
+    "utci_category_flips": 0,
+    "utci_category_flips_alternate_endpoint": 0,
+    "universal_scientific_bound_proven": false
   },
-  "exact_comparison_scope": {
-    "artifact_member_records": 31,
-    "copied_input_records": 4,
-    "produced_records": 27,
-    "output_bands": 19,
-    "state_arrays_bitwise_equal": 9,
-    "state_typed_integer_values_equal": 2,
-    "metadata_masks_nan_payloads_signed_zero_schema_timestamps_equal": true
+  "compression_component": {
+    "scope": "full visibility NPZ export, readback bit validation, CRC, file hash and fsync; geometry computation excluded",
+    "all_exact": true,
+    "full_workflow_improvement_measured": false,
+    "production_policy_changed": false
   },
-  "validation": {
-    "selections_overlap_do_not_sum": true,
-    "classifier_lw_layout_memory_passed": 910,
-    "verifier_selection_passed": 150,
-    "harness_selection_passed": 18,
-    "installed_wheel_selection_passed": 580,
-    "rejected_utci_selection_passed": 112,
-    "wheel_python_source_files_matched": 74,
-    "wheel_sha256": "775da4bd845e1a58d4aea0fd33ce93180d26397a18808542d4a2a4b6fa9e8469",
-    "whole_repository_pass_claimed": false,
-    "known_historical_failure": "Full-longwave NaN-payload diagnostic failed on pinned main and an earlier PR candidate; not rerun in this reproduction.",
-    "ci_configuration_changes": false,
-    "ci_based_acceptance": false
+  "evidence_artifact": {
+    "filename": "solweig-memory-evidence-20261021.zip",
+    "sha256": "b2b73615d810aa1c3d15a1b68badc4ff3b15000a130cbc56c224f7bf20191ab5",
+    "bytes": 1200713407,
+    "files": 3335,
+    "logical_bytes": 19295330596,
+    "unique_chunk_bytes": 2819979647,
+    "archive_stream_verified": true,
+    "miniature_roundtrip_verified": true,
+    "full_evidence_disk_restored": false,
+    "saved_successfully": false,
+    "delivery": "Verified workspace artifact; durable save unconfirmed. No public repository download.",
+    "helper_filename": "solweig-evidence-tool.py",
+    "helper_sha256": "dd011a2aa4307d9346300b195bb8474539fc89780b61b90ff5093183f4b61c36",
+    "save_status": "Official helper first failed before authentication; an escalated attempt exited 120 without a receipt during disk exhaustion. No further upload retry was made because completion was not confirmed."
   },
-  "canonical_visibility_npz_bytes": {
-    "main": 10212358,
-    "accepted": 16835741
-  },
-  "archive": {
-    "filename": "solweig_full_compute_evidence_20261020.zip",
-    "sha256": "b866bc669e702267ddab5bacf38a971760e25bcba44cf48d28c112c20769bd6e",
-    "bytes": 217513553,
-    "file_count": 1129,
-    "uncompressed_file_bytes": 378576406,
-    "crc_and_all_member_sha256_verified": true,
-    "scope": "Selected raw reports, logs, profiles, test evidence and source/protocol records; round4 main/final and round5 candidate block-00 public artifacts and final state; generated input; immutable transaction fixture; tested wheel; local source-history bundle.",
-    "durable_upload_status": "Not performed; explicit destination authorization remains required after earlier automatic approval-review rejection."
+  "evidence_paths": {
+    "final_decisions": "final_decisions.json",
+    "frozen_protocol": "protocol.json",
+    "memory_plan": "timing_plan_clean.json",
+    "memory_summary": "finite_memory_clean_summary.json",
+    "height_plan": "timing_plan_height.json",
+    "height_incomplete_summary": "finite_height_summary.json",
+    "height_output_failure": "height_output_failure_audit.json",
+    "height_publication_audit": "height_output_publication_audit.json",
+    "height_source_review": "height_output_source_review.md",
+    "lw_accuracy": "accuracy/lw-identity.json",
+    "height_capture_accuracy": "accuracy/height-values.json",
+    "compression": "compression/results.json",
+    "baseline_profile": "baseline_profile_summary.json",
+    "height_profile": "height_profile_summary.json",
+    "height_profile_output_verification": "height_profile_output_verification.json",
+    "scientific_qualifications": "science/numerical_error_framework.md",
+    "miniature_roundtrip_test": "archive_roundtrip_test_result.json"
   },
   "reports_sha256": {
-    "round4/round4.lock.json": "bb19414703088101917923609b5690dd9099a3005318fba5b48e0363702bc56a",
-    "round4/protocol.json": "b9be08c5f4a30b76697983cd3b56bc1367edcd6298c0ead848aacc0a7738f487",
-    "round4/run_campaign.py": "97d999e7db403cdee9ee86b53c9d91a6650e0e3ed07b5c2262f10e4585cb41a2",
-    "round4/workflows/campaign.json": "946fbfda29e17bf85a0da4c9b7a164d9e0d417ae2fccf4ab300f7c5271e17429",
-    "round4/workflows/summary.json": "2eed8fd3d9a0a18dcfbedd866ba5c71e95af9554c90c88c56ccbb9a4eee8e59c",
-    "round4/profile-analysis.json": "a96d32d945307e48bf7bb99ef2d17547f34b7a852d340dc06339ef00306ec570",
-    "round5/round5.lock.json": "f17df22a03215a576840eeb2a01ae276afa9141d3fb04a60b4df4fd6030f4b25",
-    "round5/protocol.json": "29412ec3ebcb92d1da87a201953e87628ab18ebed629386cbe0224c9160b504f",
-    "round5/run_campaign.py": "71d3d51ac3f72551d978ce346c70fb8657318b99c2569bdf8644471c7282d922",
-    "round5/workflows/campaign.json": "6e76c5f848f14a135b980da65ccdae56ad8569c08aa51f9cf993099500de622e",
-    "round5/results-audit.json": "ab8d88477a38ed57a62fbda409ec0b6f89af3ef9438abd46dad9d3b3bacd83d7",
-    "round5/independent-review.txt": "4dc20721d47e23619adc5f7926f63c421c19425f7e62307122efa2490e30857e",
-    "sw/round4-budget-subsystem-tests.txt": "72cc9eb4d387e8c1ae5f36b07df256d074a0353c5c67953b3f953bd305105a65",
-    "round4_verify/focused-tests.txt": "8c32f989985b8da8e518cfb414f45c05a83dacfd63357207c58be045397731eb",
-    "hook_diagnostic/revision/unit-tests.txt": "8d730ac27feffbe1eb2a0d15392e7913437888ab5dc654a98e37d97003d961c7",
-    "wheel-final/manifest.json": "ef45fdc077dc902345c5da062998332a0d9f5fa512ec638d9778340fe1e92892",
-    "wheel-final/tests.txt": "35bfa99f32fd9afc881a6a8ad64ea18232eaadab73ac6750f6e92270ebedb0d8",
-    "source_history.bundle": "1d34c712922cac3d28bdaef94aae0252bf135d9d68d9c10aae9d41a0bc1d574c",
-    "final_selection.json": "6f395f5082acae03d7b7caec21eac487b3bdc55102cc4f4591a8e5df201ed12c"
+    "final_decisions.json": "2bf7862a01c3123011d06e992f382f81138726c58e5cebdcb311de2480d07130",
+    "protocol.json": "86cd087b57a8db87f5ba12540bdea7a8139ef3daa9b6678fcc4d2d1a6ac29d07",
+    "timing_plan_clean.json": "980a30517b973ae444238c7b052f488b2e3658cf3303848b6f93c23bb8fa8240",
+    "finite_memory_clean_summary.json": "c2f67bacded908b915415da3d917420c515a64f86decd2338ac95c082b177d0a",
+    "timing_plan_height.json": "f04fcc64755c8a14440157aa71b8f302c8bc7fc06d9937fe931fe47412236173",
+    "finite_height_summary.json": "bfc75097bed0eb7f0c182c2c9218c836387e303e50d7dae9c64a2b729b00f82b",
+    "height_output_failure_audit.json": "d55e0735757eae2309a9ac047132ee7477318c3df192c11b130d59343a4d2455",
+    "height_output_publication_audit.json": "d257c6ae26376e037bc9068b6c5349b018a967f4d661881489244ea67c8aec85",
+    "height_output_source_review.md": "83aa754e1226d68281830f70d816cdeb6fe190b2641aa1754ff3a00105b5b272",
+    "accuracy/lw-identity.json": "9e03b3864e20c7d15d669e00a2b46a579db97f5a88d82ad4b83b44300b43944e",
+    "accuracy/height-values.json": "097ab44fb6656a5c8385339107a81fc939fe297d68a94154eb9f63d5bfb2a214",
+    "compression/results.json": "f2fe70ad09859ff7327645acc231ae7c449a64edca8068e3a4c1e993eb182e32",
+    "baseline_profile_summary.json": "339f71b8dce10ee45ac108710bdd32dce00acc125b708e0070d183812273e093",
+    "height_profile_summary.json": "74094eb78808f36e503cdf3e2b4c1cbdf11371d2b960b8c46af166bf0f96ae34",
+    "height_profile_output_verification.json": "12d5b2f116c983ef72eeb50ade36a623744f223d6a0add2285010c8f8ce81d7c",
+    "science/numerical_error_framework.md": "b771ef54ba5943f1340e231929e7bc8664bb96cfc735792a6ee266d0cb4dd330",
+    "archive_roundtrip_test_result.json": "dfcc0c60b6d1eb012dc53b9a26e71089eea38ef57018606dc59081822aed8a6f"
+  },
+  "validation_limits": {
+    "new_height_focused_tests_passed": 36,
+    "selections_overlap_do_not_sum": true,
+    "whole_repository_pass_claimed": false,
+    "ci_configuration_changed": false,
+    "ci_based_acceptance": false,
+    "ci_queried": false,
+    "returned_success_does_not_establish_output_validity": true
   },
   "limitations": [
-    "Original Atlanta inputs/met/benchmark script were unavailable; do not ratio-compare the historical 76.1 second 16-thread result.",
-    "This is a separate reproduction; missing historical raw evidence was not reconstructed or pooled.",
-    "No process-tree RSS or 2 metre result is available.",
-    "Canonical file sizes exclude hidden staging copies; their reappearance mechanism and incidental timing impact are unestablished.",
-    "Archive contains all selected reports and representative binary outputs, not every duplicate trial binary.",
-    "Durable external archive upload remains pending explicit destination authorization after automatic approval-review rejection."
+    "Single generated scene; original Atlanta files and 2 m case not measured.",
+    "No ratio to the user historical 76.1 s / 16-thread run.",
+    "The seven-arm and height campaigns are separate; their ratios are not multiplied.",
+    "One SVF execution failure and one height persisted-output failure are retained; causes remain unresolved.",
+    "Profiles are excluded and cumulative times overlap; profile subtraction is not causality.",
+    "No physical unlimited-memory, process-tree RSS or universal numerical-error claim."
   ]
 }
