@@ -1,18 +1,18 @@
 """Typed GVF block postprocess kernel (C6-31).
 
 Compiles ``ground_view._postprocess_block`` (base 5e1fab46) into one
-``njit(cache=True, fastmath=False)`` serial kernel over pixels. Every
-arithmetic node, cast, comparison and in-place zeroing of the NumPy original
-is reproduced in the original statement order; no reassociation, no FMA, no
-fastmath.
+``njit(cache=True, fastmath=False)`` serial kernel over pixels. Casts,
+comparisons and in-place zeroing retain the NumPy original's order. A finite
+discarded quotient is replaced by its exact signed zero; no reassociation,
+no FMA, no fastmath.
 
 Exactness contract
 ------------------
-The kernel performs the identical IEEE-754 operations in the identical order
-on identical float32 operands, so its results (including NaN payloads, signed
-zeros and the flag comparisons' masking of later zeroing) are bit-for-bit the
-original's. The module boundary additionally preserves the original's
-observable warning/error behavior under NumPy's default error regime
+The kernel retains the original float32 rounding and ordered sums, including
+the sign of each discarded quotient's zero product. Results (including NaN
+payloads, signed zeros and the flag comparisons' masking of later zeroing)
+are bit-for-bit the original's. The module boundary also preserves the
+original's observable warning/error behavior under NumPy's default regime
 (divide/over/invalid warn, underflow ignored):
 
 * A warning-class floating-point event (overflow/invalid; divide is excluded
@@ -149,6 +149,26 @@ def gvf_postprocess_block(block, buildings_b, facesh_b, lup_term_b, alb_term_b, 
 
 
 @njit(inline='always', fastmath=False)
+def _influence_ratio(wall, shadow, wall_steps, shadow_steps, influenced):
+    """Skip only a finite quotient whose product is an exact signed zero.
+
+    Admitted denominators are positive and >= 1, so division cannot overflow
+    or change the numerator's sign. Retain the rounded sum and the original
+    addition order; nonfinite operands keep both original quotient products.
+    """
+    combined = np.float32(wall + shadow)
+    zero = np.float32(0)
+    one = np.float32(1)
+    if np.isfinite(combined) and np.isfinite(shadow):
+        if influenced:
+            return combined / wall_steps * one + np.copysign(zero, shadow)
+        return np.copysign(zero, combined) + shadow / shadow_steps * one
+    if influenced:
+        return combined / wall_steps * one + shadow / shadow_steps * zero
+    return combined / wall_steps * zero + shadow / shadow_steps * one
+
+
+@njit(inline='always', fastmath=False)
 def _postprocess_pixel(block, buildings_b, facesh_b, lup_term_b, alb_term_b, nosh_term_b,
                        first, second, row, col, gvf, gvfLup, gvfalb, gvfalbnosh, gvf2):
     """One pixel of ground_view._postprocess_block, node by node, in order.
@@ -189,22 +209,14 @@ def _postprocess_pixel(block, buildings_b, facesh_b, lup_term_b, alb_term_b, nos
     if keep == np.float32(-1.0):
         keep = zero
     # gvf1
-    if wallsuninfluence_first:
-        gvf1 = (weightsumwall_first + block[_PL_SH_FIRST, row, col]) / d_first * one \
-            + block[_PL_SH_FIRST, row, col] / f_first * zero
-    else:
-        gvf1 = (weightsumwall_first + block[_PL_SH_FIRST, row, col]) / d_first * zero \
-            + block[_PL_SH_FIRST, row, col] / f_first * one
+    gvf1 = _influence_ratio(weightsumwall_first, block[_PL_SH_FIRST, row, col],
+                            d_first, f_first, wallsuninfluence_first)
     # weightsumwall[keep == 1] = 0, then gvf2 reads the zeroed plane
     if keep == one:
         block[_PL_WALL, row, col] = zero
         weightsumwall = zero
-    if wallsuninfluence_second:
-        gvf2raw = (weightsumwall + block[_PL_SH, row, col]) / d_second * one \
-            + block[_PL_SH, row, col] / f_second * zero
-    else:
-        gvf2raw = (weightsumwall + block[_PL_SH, row, col]) / d_second * zero \
-            + block[_PL_SH, row, col] / f_second * one
+    gvf2raw = _influence_ratio(weightsumwall, block[_PL_SH, row, col],
+                               d_second, f_second, wallsuninfluence_second)
     # gvf2[gvf2 > 1.0] = 1.0 -- only after the raw value is computed and
     # after the raw value has been checked: the clamp is the one operation
     # that can hide an Inf, so the flag must observe the pre-clamp value.
@@ -215,54 +227,30 @@ def _postprocess_pixel(block, buildings_b, facesh_b, lup_term_b, alb_term_b, nos
         gvf2raw = one
     gvf2[row, col] = gvf2raw
     # gvfLup1
-    if wallsuninfluence_first:
-        gvfLup1 = (block[_PL_LWALL_FIRST, row, col] + block[_PL_LUPSH_FIRST, row, col]) / d_first * one \
-            + block[_PL_LUPSH_FIRST, row, col] / f_first * zero
-    else:
-        gvfLup1 = (block[_PL_LWALL_FIRST, row, col] + block[_PL_LUPSH_FIRST, row, col]) / d_first * zero \
-            + block[_PL_LUPSH_FIRST, row, col] / f_first * one
+    gvfLup1 = _influence_ratio(block[_PL_LWALL_FIRST, row, col], block[_PL_LUPSH_FIRST, row, col],
+                               d_first, f_first, wallsuninfluence_first)
     # weightsumLwall[keep == 1] = 0, then gvfLup2
     weightsumLwall = block[_PL_LWALL, row, col]
     if keep == one:
         block[_PL_LWALL, row, col] = zero
         weightsumLwall = zero
-    if wallsuninfluence_second:
-        gvfLup2 = (weightsumLwall + block[_PL_LUPSH, row, col]) / d_second * one \
-            + block[_PL_LUPSH, row, col] / f_second * zero
-    else:
-        gvfLup2 = (weightsumLwall + block[_PL_LUPSH, row, col]) / d_second * zero \
-            + block[_PL_LUPSH, row, col] / f_second * one
+    gvfLup2 = _influence_ratio(weightsumLwall, block[_PL_LUPSH, row, col],
+                               d_second, f_second, wallsuninfluence_second)
     # gvfalb1
-    if wallsuninfluence_first:
-        gvfalb1 = (block[_PL_ALBWALL_FIRST, row, col] + block[_PL_ALBSH_FIRST, row, col]) / d_first * one \
-            + block[_PL_ALBSH_FIRST, row, col] / f_first * zero
-    else:
-        gvfalb1 = (block[_PL_ALBWALL_FIRST, row, col] + block[_PL_ALBSH_FIRST, row, col]) / d_first * zero \
-            + block[_PL_ALBSH_FIRST, row, col] / f_first * one
+    gvfalb1 = _influence_ratio(block[_PL_ALBWALL_FIRST, row, col], block[_PL_ALBSH_FIRST, row, col],
+                               d_first, f_first, wallsuninfluence_first)
     # weightsumalbwall[keep == 1] = 0, then gvfalb2
     weightsumalbwall = block[_PL_ALBWALL, row, col]
     if keep == one:
         block[_PL_ALBWALL, row, col] = zero
         weightsumalbwall = zero
-    if wallsuninfluence_second:
-        gvfalb2 = (weightsumalbwall + block[_PL_ALBSH, row, col]) / d_second * one \
-            + block[_PL_ALBSH, row, col] / f_second * zero
-    else:
-        gvfalb2 = (weightsumalbwall + block[_PL_ALBSH, row, col]) / d_second * zero \
-            + block[_PL_ALBSH, row, col] / f_second * one
+    gvfalb2 = _influence_ratio(weightsumalbwall, block[_PL_ALBSH, row, col],
+                               d_second, f_second, wallsuninfluence_second)
     # gvfalbnosh1 / gvfalbnosh2 (second denominator without the +1)
-    if wallinfluence_first:
-        gvfalbnosh1 = (block[_PL_ALBWALLNOSH_FIRST, row, col] + block[_PL_ALBNOSH_FIRST, row, col]) / d_first * one \
-            + block[_PL_ALBNOSH_FIRST, row, col] / f_first * zero
-    else:
-        gvfalbnosh1 = (block[_PL_ALBWALLNOSH_FIRST, row, col] + block[_PL_ALBNOSH_FIRST, row, col]) / d_first * zero \
-            + block[_PL_ALBNOSH_FIRST, row, col] / f_first * one
-    if wallinfluence_second:
-        gvfalbnosh2 = (weightsumalbwallnosh + block[_PL_ALBNOSH, row, col]) / f_second * one \
-            + block[_PL_ALBNOSH, row, col] / f_second * zero
-    else:
-        gvfalbnosh2 = (weightsumalbwallnosh + block[_PL_ALBNOSH, row, col]) / f_second * zero \
-            + block[_PL_ALBNOSH, row, col] / f_second * one
+    gvfalbnosh1 = _influence_ratio(block[_PL_ALBWALLNOSH_FIRST, row, col], block[_PL_ALBNOSH_FIRST, row, col],
+                                   d_first, f_first, wallinfluence_first)
+    gvfalbnosh2 = _influence_ratio(weightsumalbwallnosh, block[_PL_ALBNOSH, row, col],
+                                   f_second, f_second, wallinfluence_second)
     # Return-path combinations: (gvfX1*0.5 + gvfX2*0.4)/0.9, then the
     # per-field additive terms in the original order.
     gvf_out = (gvf1 * half + gvf2raw * pfour) / pnine

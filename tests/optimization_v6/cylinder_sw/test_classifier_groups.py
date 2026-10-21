@@ -90,10 +90,11 @@ def _batch_case(rows=43, patches=13, unique=False):
 
 
 @pytest.mark.parametrize('unique', [False, True])
-@pytest.mark.parametrize('capacity', [8, 16, 128])
+@pytest.mark.parametrize('capacity', [8, 16, 32, 128])
 @pytest.mark.parametrize('surface_dtype', [np.float32, np.float64])
 def test_sw_batch_exact_at_one_and_several_threads(unique, capacity, surface_dtype, monkeypatch):
-    values, geometry, prepared, lum = _batch_case(unique=unique)
+    rows = 192 if capacity == 128 else 43
+    values, geometry, prepared, lum = _batch_case(rows=rows, unique=unique)
     original = numba.get_num_threads()
     real_groups = sw_batch._coefficient_bit_groups
     groups_seen = []
@@ -103,7 +104,7 @@ def test_sw_batch_exact_at_one_and_several_threads(unique, capacity, surface_dty
         return groups
     monkeypatch.setattr(sw_batch, '_coefficient_bit_groups', tracked)
     def execute(parallel):
-        initial = np.arange(7 * 43, dtype=np.float32).reshape(7, 43) / np.float32(8)
+        initial = np.arange(7 * rows, dtype=np.float32).reshape(7, rows) / np.float32(8)
         return sw_batch.execute(values, geometry, prepared, lum, surface_dtype(2.75),
             surface_dtype(1.25), capacity, initial, parallel=parallel)
     try:

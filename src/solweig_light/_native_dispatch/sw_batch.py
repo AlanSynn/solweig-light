@@ -42,24 +42,29 @@ def _block(block, sh, vs, vb, heights, coefficients, factor, altitudes, indices,
     sf = sh_out.view(np.float32)
     vf = vs_out.view(np.float32)
     bf = vb_out.view(np.float32)
-    for row in range(rows):
-        gang, lane = row // width, row % width
-        a0=a1=a2=a3=np.float32(0)
+    accum = np.empty((4, min(width, rows)), np.float32)
+    for gang in range(gangs):
+        lanes = min(width, rows - gang * width)
+        accum.fill(np.float32(0))
         for patch in range(patches):
-            sh_v, vs_v, vb_v = sf[gang,patch,lane], vf[gang,patch,lane], bf[gang,patch,lane]
-            d_v = np.float32(sh_v - np.float32(np.float32(np.float32(1)-vs_v)*np.float32(1-.03)))
-            veg=vs_v==0 or vb_v==0
-            building=np.float32(np.float32(1)-sh_v)*vb_v==1
-            contribution=np.float32(np.float32(np.float32(d_v*lum[patch])*cosine[patch])*solid[patch])
-            a0=np.float32(a0+contribution)
-            v=((surface_sh*veg)*solid[patch])*cosine[patch]
-            a3=np.float32(a3+v)
-            a=((((surface_sun*sun[gang,patch,lane])*building)*solid[patch])*cosine[patch])
-            b=((((surface_sh*shade[gang,patch,lane])*building)*solid[patch])*cosine[patch])
-            a1=np.float32(a1+a)
-            a2=np.float32(a2+b)
-        output[5,start+row]=a0
-        output[6,start+row]=np.float32(np.float32(np.float32(np.float32(output[4,start+row]+a0)+a1)+a2)+a3)
+            for lane in range(lanes):
+                sh_v, vs_v, vb_v = sf[gang,patch,lane], vf[gang,patch,lane], bf[gang,patch,lane]
+                d_v = np.float32(sh_v - np.float32(np.float32(np.float32(1)-vs_v)*np.float32(1-.03)))
+                veg=vs_v==0 or vb_v==0
+                building=np.float32(np.float32(1)-sh_v)*vb_v==1
+                contribution=np.float32(np.float32(np.float32(d_v*lum[patch])*cosine[patch])*solid[patch])
+                accum[0,lane]=np.float32(accum[0,lane]+contribution)
+                v=((surface_sh*veg)*solid[patch])*cosine[patch]
+                accum[3,lane]=np.float32(accum[3,lane]+v)
+                a=((((surface_sun*sun[gang,patch,lane])*building)*solid[patch])*cosine[patch])
+                b=((((surface_sh*shade[gang,patch,lane])*building)*solid[patch])*cosine[patch])
+                accum[1,lane]=np.float32(accum[1,lane]+a)
+                accum[2,lane]=np.float32(accum[2,lane]+b)
+        for lane in range(lanes):
+            row = gang * width + lane
+            a0, a1, a2, a3 = accum[0,lane], accum[1,lane], accum[2,lane], accum[3,lane]
+            output[5,start+row]=a0
+            output[6,start+row]=np.float32(np.float32(np.float32(np.float32(output[4,start+row]+a0)+a1)+a2)+a3)
 
 
 @njit(cache=True, fastmath=False, parallel=True)
@@ -141,10 +146,13 @@ def execute(values, geometry, prepared, lum, surface_sun, surface_sh, capacity, 
             groups = _coefficient_bit_groups(coefficients)
         group_offsets, group_columns = ((np.empty(0, np.int64), np.empty(0, np.int64))
                                          if groups is None else groups)
+        # Reach the lane reducer's vector loop without exceeding the reserved
+        # block extent, including single-block inputs smaller than capacity.
+        width = 128 if capacity % 128 == 0 and total >= capacity else 8
         kernel = _batch if parallel else _batch_serial
         kernel(sh,vs,vb,heights,coefficients,np.asarray(factor,dtype=field.dtype)[()],
                geometry.altitude[indices],indices,group_offsets,group_columns,lum,geometry.solid_angle,
-               geometry.cosine,surface_sun,surface_sh,total,capacity,8,output)
+               geometry.cosine,surface_sun,surface_sh,total,capacity,width,output)
     # The retained caller overwrites only the candidate-owned components
     # 5 and 6; direct/Kup fields 0..4 were never modified by the kernel.
     # Replaying a nonfinite result restores NumPy warning/raise behavior

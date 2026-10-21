@@ -102,6 +102,66 @@ def _accumulate_patch_numpy(fields, masks, weights, directional_weights, directi
                     fields[offset + direction + 1] += wd * mask
 
 
+@njit(cache=True, fastmath=False, parallel=True)
+@bind_cache_identity
+def _count_binary_patch(counts, masks, directions):
+    """Count exact +0/1 masks; flag other values for the ordered fallback."""
+    rows, cols = masks[0].shape
+    invalid = 0
+    for pixel in prange(rows * cols):
+        row, col = pixel // cols, pixel % cols
+        for channel in range(3):
+            value = masks[channel][row, col]
+            if value == np.float32(1):
+                offset = channel * 5
+                counts[offset, pixel] += 1
+                for direction in range(4):
+                    if directions[direction]:
+                        counts[offset + direction + 1, pixel] += 1
+            elif value != np.float32(0) or np.signbit(value):
+                invalid += 1
+    return invalid
+
+
+@njit(cache=True, fastmath=False, parallel=True)
+@bind_cache_identity
+def _replay_binary_counts(keys, weights, lengths):
+    """Replay each positive annulus update, retaining its float32 rounding.
+
+    Each key stores eight byte counts in band order. Within a band every
+    visible patch applies the same transition. Invisible +0 updates are
+    identities on the nonnegative accumulators; no weights are reassociated.
+    """
+    result = np.empty(keys.size, np.float32)
+    for index in prange(keys.size):
+        value = np.float32(0)
+        key = keys[index]
+        for band in range(8):
+            count = int((key >> np.uint64(8 * band)) & np.uint64(255))
+            for patch in range(count):
+                for annulus in range(lengths[band]):
+                    value = np.float32(value + weights[band, annulus])
+        result[index] = value
+    return result
+
+
+def _finish_binary_counts(fields, counts, weights, directional_weights):
+    lengths = np.array([len(band) for band in weights], dtype=np.int64)
+    tables = []
+    for bands in (weights, directional_weights):
+        table = np.zeros((8, int(lengths.max())), dtype=np.float32)
+        for band, values in enumerate(bands):
+            table[band, :len(values)] = values
+        tables.append(table)
+    # Group one field at a time, bounding sorting and inverse-map scratch.
+    for index, field in enumerate(fields):
+        octets = np.ascontiguousarray(counts[:, index, :].T)
+        keys = octets.view('<u8').reshape(-1).astype(np.uint64, copy=False)
+        unique, inverse = np.unique(keys, return_inverse=True)
+        values = _replay_binary_counts(unique, tables[index % 5 != 0], lengths)
+        field.flat = values[inverse]
+
+
 def save_raster_like_gdal(template,path,array):
     from osgeo import gdal
     gdal.UseExceptions()
@@ -190,6 +250,14 @@ def _calculate_svf(patch_option,amaxvalue=None,a=None,vegdem=None,vegdem2=None,b
     accumulate = _accumulate_patch_f32 if admitted else _accumulate_patch_numpy
     field_arrays = tuple(fields) if admitted else fields
     cast_shadow = prepare_shadow(a, vegdem, vegdem2, bush)
+    # The finite no-bush tracer produces only canonical +0/1/2 masks. Its
+    # rare ternary result uses the original ordered replay below. General
+    # low-level inputs retain the original eager arithmetic and errors.
+    count_masks = (compact and admitted and len(alts) == 8 and max(counts) < 256
+                   and all(np.isfinite(value).all() for value in (a, vegdem, vegdem2, bush))
+                   and not bool(np.max(bush) > 0))
+    band_counts = np.zeros((8, 15, a.size), dtype=np.uint8) if count_masks else None
+    binary = True
     index=0
     for band in range(len(alts)):
         for j in range(counts[band]):
@@ -199,15 +267,33 @@ def _calculate_svf(patch_option,amaxvalue=None,a=None,vegdem=None,vegdem2=None,b
                 if compact: mat.append(mask)
                 else: mat[:,:,index]=mask
             directions=[0<=azi<180,90<=azi<270,180<=azi<360,azi>=270 or azi<90]
-            accumulate(field_arrays, masks, weights[band], directional_weights[band],
-                       np.asarray(directions, dtype=np.bool_))
+            if count_masks:
+                binary = binary and _count_binary_patch(band_counts[band], masks,
+                                               np.asarray(directions, dtype=np.bool_)) == 0
+            else:
+                accumulate(field_arrays, masks, weights[band], directional_weights[band],
+                           np.asarray(directions, dtype=np.bool_))
             index+=1
+    shmat,vegmat,vbmat = [mat.finish() for mat in mats] if compact else mats
+    if count_masks:
+        if binary:
+            _finish_binary_counts(fields, band_counts, weights, directional_weights)
+        else:
+            index = 0
+            for band in range(len(alts)):
+                for _ in range(counts[band]):
+                    azi = azis[index]
+                    masks = tuple(mat.decode_patch(index) for mat in (shmat, vegmat, vbmat))
+                    directions = np.array([0 <= azi < 180, 90 <= azi < 270,
+                                           180 <= azi < 360, azi >= 270 or azi < 90])
+                    accumulate(field_arrays, masks, weights[band], directional_weights[band], directions)
+                    index += 1
+        del band_counts
     fields[2]+=np.float32(3.0459e-4);fields[3]+=np.float32(3.0459e-4)
     last=np.zeros(shape,dtype=np.float32);last[np.asarray(vegdem2)==0]=np.float32(3.0459e-4)
     for i in (7,8,12,13):fields[i]+=last
     for field in fields:field[field>1]=1
     total=fields[0]-(np.float32(1)-fields[5])*(np.float32(1)-np.float32(.03))
-    shmat,vegmat,vbmat = [mat.finish() for mat in mats] if compact else mats
     if save_rasters:save_svf_zip_npz_outputs(output_dir,template,*fields,shmat,vegmat,vbmat,total,number)
     # Preserve the actual executed upstream tuple order (not its stale docstring).
     order=[0,10,1,11,6,4,14,9,2,12,7,5,3,13,8]

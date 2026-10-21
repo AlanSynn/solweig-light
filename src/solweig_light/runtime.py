@@ -327,6 +327,7 @@ class RuntimeOptions:
     block_pixels: int = 128
     checkpoint_interval: int = 1
     resume: bool = False
+    resident_lw_masks: bool = False
 
     def __post_init__(self) -> None:
         if self.cache_dir is not None:
@@ -353,6 +354,8 @@ class RuntimeOptions:
             object.__setattr__(self, name, _positive_int(getattr(self, name), name))
         if not isinstance(self.resume, bool):
             raise TypeError("resume must be a bool")
+        if not isinstance(self.resident_lw_masks, bool):
+            raise TypeError("resident_lw_masks must be a bool")
         cpus = _total_cpus()
         if self.threads_per_worker > cpus:
             raise ValueError(
@@ -532,8 +535,11 @@ class AdmissionPlan:
 
 
 def _job_estimate(job: Mapping[str, Any], options: RuntimeOptions, index: int) -> int:
+    estimate = None
     if "memory_estimate_bytes" in job:
-        return _positive_int(job["memory_estimate_bytes"], "memory_estimate_bytes")
+        estimate = _positive_int(job["memory_estimate_bytes"], "memory_estimate_bytes")
+        if not options.resident_lw_masks:
+            return estimate
     rows, cols = job.get("rows"), job.get("cols")
     shape = job.get("shape")
     if (rows is None or cols is None) and isinstance(shape, (tuple, list)) and len(shape) >= 2:
@@ -565,10 +571,14 @@ def _job_estimate(job: Mapping[str, Any], options: RuntimeOptions, index: int) -
     rows, cols = _positive_int(rows, "rows"), _positive_int(cols, "cols")
     patches = int(job.get("patches", DEFAULT_PATCHES))
     windchannels = int(job.get("windchannels", DEFAULT_WIND_CHANNELS))
-    from .runtime_memory import TileShapeDescriptor, execution_overhead
+    from .runtime_memory import TileShapeDescriptor, _resident_lw_mask_bytes, execution_overhead
     shape = TileShapeDescriptor(rows, cols, patches, windchannels, options.block_pixels)
+    if estimate is not None:
+        # An explicit base estimate must still reserve the opt-in tile owner.
+        return estimate + _resident_lw_mask_bytes(shape)
     return (estimate_tile_memory(rows, cols, patches, windchannels, options.block_pixels)
-            + execution_overhead(shape, options.threads_per_worker))
+            + execution_overhead(shape, options.threads_per_worker,
+                                 resident_lw_masks=options.resident_lw_masks))
 
 
 def plan_admission(jobs: Sequence[Mapping[str, Any]], options: RuntimeOptions | None = None) -> AdmissionPlan:

@@ -41,12 +41,20 @@ def _scene(kind, dtype=np.float32):
         bush[3, 3] = np.inf
     elif kind == 'strided':
         a, canopy, trunk, bush = (value[::-1, ::-1] for value in (a, canopy, trunk, bush))
-    return dict(amaxvalue=8., a=a, vegdem=canopy, vegdem2=trunk, bush=bush, scale=1.)
+    elif kind == 'negative_short_ray':
+        a.fill(-2)
+        a[2:4, 2:5] = -1
+        canopy.fill(0)
+        trunk.fill(0)
+    return dict(amaxvalue=1. if kind == 'negative_short_ray' else 8.,
+                a=a, vegdem=canopy, vegdem2=trunk, bush=bush, scale=1.)
 
 
 def _assert_all_outputs_bitwise(actual, expected):
     assert len(actual) == len(expected) == 19
     for index, (value, reference) in enumerate(zip(actual, expected, strict=True)):
+        if hasattr(value, 'to_dense'):
+            value = value.to_dense()
         assert value.shape == reference.shape
         assert value.dtype == reference.dtype
         np.testing.assert_array_equal(value.view(np.uint32), reference.view(np.uint32),
@@ -54,15 +62,20 @@ def _assert_all_outputs_bitwise(actual, expected):
 
 
 @pytest.mark.parametrize('option', [1, 2, 3])
-@pytest.mark.parametrize('kind', ['clear', 'positive_bush', 'nan_bush', 'nonfinite_inputs', 'strided'])
+@pytest.mark.parametrize('kind', ['clear', 'positive_bush', 'nan_bush', 'nonfinite_inputs', 'strided', 'negative_short_ray'])
 @pytest.mark.parametrize('threads', [1, 4, 8])
-def test_full_svf_bitwise_preceding_array_order(monkeypatch, option, kind, threads):
+@pytest.mark.parametrize('compact', [False, True])
+def test_full_svf_bitwise_preceding_array_order(monkeypatch, option, kind, threads, compact):
     inputs = _scene(kind)
     previous = numba.get_num_threads()
     try:
         numba.set_num_threads(threads)
         with np.errstate(invalid='ignore'):
-            actual = svf.svf_calculator(option, **inputs)
+            calculate = svf.svf_calculator_compact if compact else svf.svf_calculator
+            actual = calculate(option, **inputs)
+            if compact and kind == 'negative_short_ray':
+                assert any('ternary' in value.modes for value in actual
+                           if hasattr(value, 'modes'))
             monkeypatch.setattr(svf, '_accumulate_patch_f32', _legacy_accumulation)
             # Exercise the old per-patch bush dispatch alongside the old
             # accumulator so the whole 19-field comparison covers hoisting.

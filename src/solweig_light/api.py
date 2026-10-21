@@ -303,6 +303,7 @@ def run_utci_tiles(
             active_workers=min(runtime.workers,
                                max(1, runtime.cpu_budget // runtime.threads_per_worker)),
             threads_per_worker=runtime.threads_per_worker,
+            resident_lw_masks=runtime.resident_lw_masks,
             gdal_cache_bytes=default_gdal_cache_bytes(),
             policy='reject',
         )

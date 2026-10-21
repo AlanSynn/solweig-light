@@ -25,6 +25,7 @@ import os
 
 import numpy as np
 from numba import njit, prange
+from ._jit_cache import bind_cache_identity
 
 # Private compiled decode helpers; importing this module is cycle-free
 # (geometry/__init__ is docstring-only) and the kernels need them as globals.
@@ -665,6 +666,49 @@ def _anilum_packed_serial(dsh_flat,dsh_off,dsh_modes,dveg_flat,dveg_off,dveg_mod
         out[pixel]=acc
     return out
 
+
+@njit(cache=True, fastmath=False)
+@bind_cache_identity
+def _anilum_binary_block(dsh_flat,dsh_off,dveg_flat,dveg_off,lum,start,stop,out):
+    acc=np.empty(8,dtype=np.float32)
+    for pixel in range(start,stop,8):
+        lanes=min(8,stop-pixel)
+        acc.fill(np.float32(0))
+        for patch in range(lum.shape[0]):
+            shadow=dsh_flat[dsh_off[patch]+(pixel>>3)]
+            vegetation=dveg_flat[dveg_off[patch]+(pixel>>3)]
+            for lane in range(lanes):
+                d_v=np.float32((shadow>>lane)&1)
+                t_v=np.float32((vegetation>>lane)&1)
+                difference=np.float32(np.float32(1)-t_v)
+                product=np.float32(difference*np.float32(1-.03))
+                d_v=np.float32(d_v-product)
+                acc[lane]=np.float32(acc[lane]+np.float32(d_v*lum[patch]))
+        for lane in range(lanes):
+            out[pixel+lane]=acc[lane]
+
+
+@njit(cache=True, fastmath=False, parallel=True)
+@bind_cache_identity
+def _anilum_binary_parallel(dsh_flat,dsh_off,dveg_flat,dveg_off,lum,total):
+    out=np.empty(total,dtype=np.float32)
+    for block in prange((total+127)//128):
+        start=block*128
+        _anilum_binary_block(dsh_flat,dsh_off,dveg_flat,dveg_off,lum,
+                             start,min(start+128,total),out)
+    return out
+
+
+@njit(cache=True, fastmath=False)
+@bind_cache_identity
+def _anilum_binary_serial(dsh_flat,dsh_off,dveg_flat,dveg_off,lum,total):
+    out=np.empty(total,dtype=np.float32)
+    for start in range(0,total,128):
+        _anilum_binary_block(dsh_flat,dsh_off,dveg_flat,dveg_off,lum,
+                             start,min(start+128,total),out)
+    return out
+
+
 def anilum_packed(diffuse,lv,total,parallel):
     """Ordered packed-stream daytime diffuse sum; None selects the retained loop.
 
@@ -702,6 +746,14 @@ def anilum_packed(diffuse,lv,total,parallel):
         if (dsh[2]==2).any() or (dveg[2]==2).any():
             return None
         lum=np.ascontiguousarray(weights[:,2])
+        # Binary lanes preserve the ordered float32 graph. Keep exceptional
+        # weights on the scalar path; the half-range bound leaves headroom
+        # for every rounded sum over the supported sky-patch tables.
+        if (patches<=609 and (dsh[2]==1).all() and (dveg[2]==1).all()
+                and np.isfinite(lum).all()
+                and (np.abs(lum)<=float(np.finfo(np.float32).max)/(2*patches)).all()):
+            kernel=_anilum_binary_parallel if parallel else _anilum_binary_serial
+            return kernel(dsh[0],dsh[1],dveg[0],dveg[1],lum,total)
         kernel=_anilum_packed_parallel if parallel else _anilum_packed_serial
         return kernel(*dsh,*dveg,lum,total)
 

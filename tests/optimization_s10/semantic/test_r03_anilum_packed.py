@@ -17,16 +17,17 @@ from solweig_light.geometry.visibility_native import save_native_visibility, ope
 from solweig_light.radiation.patch_radiation import anilum_packed
 
 
-def scene(patches=5):
-    """Packed leaf pair: binary/raw mix; NaN payloads preserved in raw mode."""
+def scene(patches=5, *, binary=False):
+    """Binary or mixed leaves; raw mode preserves NaN payloads."""
     rng = np.random.default_rng(57)
-    rows, cols = 9, 13
+    rows, cols = (17, 17) if binary else (9, 13)
     shadow = rng.integers(0, 2, (rows, cols, patches)).astype(np.float32)
     vegetation = rng.integers(0, 2, (rows, cols, patches)).astype(np.float32)
-    vegetation[:, :, 2] = rng.normal(size=(rows, cols)).astype(np.float32)
-    raw_bits = np.array([0x80000000, 0x7fc01234, 0xffc05678, 0x7f800000, 1], np.uint32)
-    shadow.reshape(-1, patches)[:5, 3] = raw_bits.view(np.float32)
-    vegetation.reshape(-1, patches)[:5, 4] = raw_bits.view(np.float32)
+    if not binary:
+        vegetation[:, :, 2] = rng.normal(size=(rows, cols)).astype(np.float32)
+        raw_bits = np.array([0x80000000, 0x7fc01234, 0xffc05678, 0x7f800000, 1], np.uint32)
+        shadow.reshape(-1, patches)[:5, 3] = raw_bits.view(np.float32)
+        vegetation.reshape(-1, patches)[:5, 4] = raw_bits.view(np.float32)
     return (PackedVisibility.from_dense(shadow),
             PackedVisibility.from_dense(vegetation))
 
@@ -45,15 +46,21 @@ def weights(patches, seed=11, dtype=np.float32):
     return table.astype(dtype)
 
 
-@pytest.fixture
-def packed_pair():
-    return scene()
+@pytest.fixture(params=(False, True), ids=('mixed', 'binary'))
+def packed_pair(request):
+    return scene(binary=request.param)
 
 
-def test_admitted_bitwise(packed_pair):
+def test_admitted_bitwise(packed_pair, monkeypatch):
+    from solweig_light.radiation import patch_radiation as pr
     shadow, vegetation = packed_pair
     diffuse = LazyDiffVisibility(shadow, vegetation)
     lv = weights(diffuse.shape[2])
+    binary = all(mode == 'binary' for leaf in packed_pair for mode in leaf.modes)
+    if binary:
+        lv[:3, 2] = np.array([0x80000000, 1, 0xc1000000], np.uint32).view(np.float32)
+        monkeypatch.setattr(pr, '_anilum_packed_serial',
+                            lambda *args: pytest.fail('binary route did not engage'))
     rows, cols = diffuse.shape[:2]
     packed = anilum_packed(diffuse, lv, rows * cols, parallel=False)
     assert packed is not None
@@ -100,7 +107,7 @@ def test_ternary_declines_and_loop_raises_untouched():
         loop_anilum(diffuse, lv, 1, 1)
 
 
-def test_weight_profile_declines(packed_pair):
+def test_weight_profile_declines(packed_pair, monkeypatch):
     shadow, vegetation = packed_pair
     diffuse = LazyDiffVisibility(shadow, vegetation)
     patches = diffuse.shape[2]
@@ -115,6 +122,18 @@ def test_weight_profile_declines(packed_pair):
                          rows * cols, parallel=False) is None
     assert anilum_packed(diffuse, weights(patches), rows * cols + 1,
                          parallel=False) is None
+    from solweig_light.radiation import patch_radiation as pr
+    from solweig_light.geometry.visibility_compiled import _fused_descriptor
+    monkeypatch.setattr(pr, '_anilum_binary_serial',
+                        lambda *args: pytest.fail('exceptional weights reached binary lanes'))
+    descriptors = (*_fused_descriptor(shadow), *_fused_descriptor(vegetation))
+    for word in (0x7fc01234, 0x7f801234, 0x7f800000, 0x7f7fffff):
+        lv = weights(patches)
+        lv.view(np.uint32)[0, 2] = word
+        expected = pr._anilum_packed_serial(*descriptors, lv[:, 2].copy(), rows * cols)
+        with np.errstate(all='raise'):
+            actual = anilum_packed(diffuse, lv, rows * cols, parallel=False)
+        np.testing.assert_array_equal(actual.view(np.uint32), expected.view(np.uint32))
 
 
 def test_non_lazy_decline(packed_pair):
@@ -170,18 +189,19 @@ def test_engine_routes_packed_on_landcover_golden(tmp_path, monkeypatch):
         return result
 
     out = tmp_path / 'run'
-    with mock.patch.object(pr, 'anilum_packed', counted):
+    with np.errstate(), mock.patch.object(pr, 'anilum_packed', counted):
         run_tile(tmp_path, prepared, '2020-07-18', '0_0', paths, flags)
     # 14 daytime steps on the July golden date; every one must engage.
     assert calls['n'] == 14
 
 
-def test_mapped_descriptor_and_kernel_hold_owner_lease(tmp_path, monkeypatch):
+@pytest.mark.parametrize('binary', (False, True))
+def test_mapped_descriptor_and_kernel_hold_owner_lease(tmp_path, monkeypatch, binary):
     """A concurrent close cannot unmap bytes during descriptor or kernel use."""
     import threading
     from solweig_light.radiation import patch_radiation as pr
     from solweig_light.geometry import visibility_compiled as codec
-    shadow, vegetation = scene()
+    shadow, vegetation = scene(binary=binary)
     mapped = []
     for name, channel in [('shadow',shadow),('vegetation',vegetation)]:
         path=tmp_path/(name+'.json')
@@ -219,7 +239,7 @@ def test_mapped_descriptor_and_kernel_hold_owner_lease(tmp_path, monkeypatch):
         assert not closed.is_set()
         assert not mapped[0].closed
         return np.zeros(diffuse.shape[0]*diffuse.shape[1],np.float32)
-    monkeypatch.setattr(pr,'_anilum_packed_serial',kernel)
+    monkeypatch.setattr(pr,'_anilum_binary_serial' if binary else '_anilum_packed_serial',kernel)
     try:
         result=pr.anilum_packed(diffuse,weights(diffuse.shape[2]),
                                diffuse.shape[0]*diffuse.shape[1],parallel=False)

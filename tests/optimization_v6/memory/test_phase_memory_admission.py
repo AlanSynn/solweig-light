@@ -262,17 +262,20 @@ def test_phase_shape_differentiation_corrects_over_admission():
     )
     # exact recalibrated components (Stage-A/A2/B0 measured envelope table)
     assert sim.total_bytes == 2_916_802_560 + rm.execution_overhead(WORST_SHAPE)
-    assert geo.total_bytes == 4_758_857_318
+    assert geo.total_bytes == 4_758_857_318 + 248 * WORST_PIXELS
     assert sim.write_pulse_bytes == (DIGEST_PULSE_PLANES + CHECKPOINT_PULSE_PLANES) * PLANE_F32
     assert sim.gdal_cache_bytes == 256 * MIB  # capped, matches the child GDAL_CACHEMAX
 
 
 def test_default_gdal_cache_derivation(monkeypatch):
     import solweig_light.runtime_memory as rm
+    monkeypatch.setattr(rm, "_container_memory_limit_bytes", lambda: None)
     monkeypatch.setattr(rm, "_physical_memory_bytes", lambda: 32 * GIB)
     assert default_gdal_cache_bytes() == GDAL_32GIB_HOST == 1_717_986_918
     monkeypatch.setattr(rm, "_physical_memory_bytes", lambda: 16 * GIB)
     assert default_gdal_cache_bytes() == 858_993_459  # 5% of 16 GiB, floored
+    monkeypatch.setattr(rm, "_container_memory_limit_bytes", lambda: 8 * GIB)
+    assert default_gdal_cache_bytes() == 429_496_729  # 5% of the tighter cgroup
 
 
 # ---------------------------------------------------------------------------
@@ -397,19 +400,19 @@ def test_writer_queue_shrinks_admissible_width():
     assert (plan.admissible_workers, plan.deferred_count) == (3, 1)
 
 
-def test_admission_inputs_from_existing_options():
-    """Private planning reads the existing RuntimeOptions fields only (D04:
-    no public signature/default/as_dict changes)."""
+@pytest.mark.parametrize('resident_lw_masks', [False, True])
+def test_admission_inputs_from_existing_options(resident_lw_masks):
     from solweig_light.runtime import RuntimeOptions
     options = RuntimeOptions(
         memory_budget_bytes=BUDGET_12GIB, cpu_budget=4,
-        workers=8, threads_per_worker=2,
+        workers=8, threads_per_worker=2, resident_lw_masks=resident_lw_masks,
     )
     inputs = admission_inputs_from_options(options)
     assert inputs == {
         "budget_bytes": BUDGET_12GIB,
         "active_workers": 2,  # min(8, 4 // 2)
         "threads_per_worker": 2,
+        "resident_lw_masks": resident_lw_masks,
     }
     assert inputs == json.loads(json.dumps(inputs))
 
