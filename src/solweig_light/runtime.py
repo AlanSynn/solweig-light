@@ -127,7 +127,9 @@ def _cgroup_paths(resource: str, cgroup_root: str | os.PathLike[str] | None = No
             candidate = Path(mount["mountpoint"]) / suffix.lstrip("/")
             if candidate.exists():
                 add_ancestors(candidate, Path(mount["mountpoint"]))
-    if not paths:
+    # A supplied proc view must not inherit limits from an unrelated host.
+    # Retain the conventional mount fallback only for the default host view.
+    if not paths and Path(proc_root) == Path("/proc"):
         add_ancestors(Path("/sys/fs/cgroup"), Path("/sys/fs/cgroup"))
     return paths
 

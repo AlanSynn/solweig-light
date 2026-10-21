@@ -17,8 +17,9 @@ of ``solweig_light.radiation.cylinder_longwave._longwave_primary`` and
 ``_longwave_primary_serial`` (frozen at HEAD 16cdc56c, kernel bodies identical
 to the B7-02 freeze at dca2035c, reducer blob 27ba6ce4...). It exists so that
 N8-12 (Numba B) and N8-13 (native C) candidates can be gated against the
-exact graph BEFORE any new kernel is written: candidate == oracle, bitwise
-(uint32 view), on every admitted input.
+exact graph BEFORE any new kernel is written. Arithmetic comparisons use
+exact uint32 bits except unspecified NaN signs; storage comparisons remain
+strictly bitwise.
 
 Typed-graph rules encoded here (see
 optimization_v8_native_default/evidence/contract/n8_04_typed_lw_contract.md):
@@ -171,6 +172,23 @@ def bitwise_equal(a, b):
     if a.shape != b.shape:
         return False
     return np.array_equal(a.view(np.uint32), b.view(np.uint32))
+
+
+def arithmetic_equal(a, b):
+    """Exact float32 bits except the sign of an arithmetic NaN.
+
+    Invalid arithmetic does not specify a NaN sign: x86 0*Inf produces
+    0xffc00000, so the original 0x7fc00000 pins are not portable. Propagation can
+    choose either sign when both operands are NaN. Keep payload bits,
+    NaN locations, signed zeros, infinities and every finite bit exact.
+    Raw storage/encoding comparisons must continue using bitwise_equal.
+    """
+    a = np.asarray(a, F32); b = np.asarray(b, F32)
+    if a.shape != b.shape:
+        return False
+    ab = a.view(np.uint32); bb = b.view(np.uint32)
+    same_nan = np.isnan(a) & np.isnan(b) & ((ab ^ bb) == 0x80000000)
+    return bool(np.all((ab == bb) | same_nan))
 
 
 def u32(x):

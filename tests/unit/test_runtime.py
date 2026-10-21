@@ -7,6 +7,7 @@ import os
 import textwrap
 import time
 from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -91,7 +92,7 @@ def test_cgroup_discovery_uses_nested_path_and_ancestor_minimum(tmp_path):
     assert runtime_module._container_memory_limit_bytes(proc_root=tmp_path / "proc") == 2 * 1024**3
 
 
-def test_hybrid_mounts_match_only_the_controlling_v1_hierarchy(tmp_path):
+def test_hybrid_mounts_match_only_the_controlling_v1_hierarchy(tmp_path, monkeypatch):
     unified = tmp_path / "unified"
     cpu_mount = tmp_path / "cpu"
     memory_mount = tmp_path / "memory"
@@ -125,6 +126,12 @@ def test_hybrid_mounts_match_only_the_controlling_v1_hierarchy(tmp_path):
         f"37 25 0:33 / {acct} rw,cpuacct - cgroup cgroup rw,cpuacct\n"
     )
     assert runtime_module._cgroup_cpu_limit(proc_root=tmp_path / "proc") is None
+    assert runtime_module._cgroup_paths("cpu", proc_root=tmp_path / "proc") == []
+
+    # Missing host metadata still permits the conventional mount fallback.
+    monkeypatch.setattr(runtime_module, "_proc_cgroup_entries", lambda _: [])
+    monkeypatch.setattr(runtime_module, "_proc_cgroup_mounts", lambda _: [])
+    assert runtime_module._cgroup_paths("cpu") == [Path("/sys/fs/cgroup")]
 
 
 def test_memory_headroom_uses_current_and_exhausted_ancestor(tmp_path):
