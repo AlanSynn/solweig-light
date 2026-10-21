@@ -69,13 +69,17 @@ def compare_original(destination, tile='0_0', extra_svf=False):
         result = source = None
 
 
-@pytest.mark.parametrize('block_pixels,threads', [(32, 1), (128, 2), (509, 1)])
-def test_real_pipeline_execution_controls(tmp_path, block_pixels, threads):
+@pytest.mark.parametrize('block_pixels,threads,export_svf', [(32, 1, True), (128, 2, False), (509, 1, True)])
+def test_real_pipeline_execution_controls(tmp_path, block_pixels, threads, export_svf):
     prepared = prepare(tmp_path)
+    if not export_svf:
+        shutil.rmtree(prepared / 'SVF')
     options = RuntimeOptions(block_pixels=block_pixels, cpu_budget=threads,
                              threads_per_worker=threads, memory_budget_bytes=4 * 1024**3)
     with runtime_options(options):
-        run_utci_tiles(str(tmp_path), str(prepared), '2020-07-18', **FLAGS)
+        run_utci_tiles(str(tmp_path), str(prepared), '2020-07-18', export_svf=export_svf, **FLAGS)
+    if not export_svf:
+        assert not list((prepared / 'SVF').glob('*'))
     compare_original(tmp_path)
 
 

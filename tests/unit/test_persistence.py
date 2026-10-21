@@ -307,6 +307,50 @@ def test_complete_requires_committed_all_bands_and_corrupt_completion_rejected(s
         create()
 
 
+@pytest.mark.parametrize("kind", ["timestamp", "band"])
+@pytest.mark.parametrize("completed", [False, True])
+def test_completion_checks_persisted_bands_against_write_intent(setup, monkeypatch, kind, completed):
+    _, _, _, create = setup
+
+    def damage(path):
+        dataset = gdal.Open(str(path), gdal.GA_Update)
+        if kind == "timestamp":
+            dataset.GetRasterBand(4).SetMetadata({})
+        else:
+            dataset.GetRasterBand(4).WriteArray(np.zeros((2, 3), dtype=np.float32))
+        dataset = None
+
+    with create() as writer:
+        if completed:
+            finish(writer)
+            path = writer.destinations["TMRT"]
+            damage(path)
+            # A self-consistent old journal must not certify lost write intent.
+            journal = json.loads(writer.completion_path.read_text())
+            for item in journal["artifacts"]:
+                if item["final"] == str(path):
+                    item["sha256"] = persistence._digest(path)
+            writer.completion_path.write_text(json.dumps(journal))
+        else:
+            for i in range(4):
+                writer.write(i, values(i))
+            writer.checkpoint(4, state())
+            flush = writer._flush
+            def lose_write_on_close():
+                flush()
+                writer.datasets.clear()
+                damage(writer._stage_path("TMRT"))
+            monkeypatch.setattr(writer, "_flush", lose_write_on_close)
+            with pytest.raises(PersistenceError, match="TIFF"):
+                writer.complete()
+            assert not writer.publication_path.exists()
+            assert not writer.completion_path.exists()
+            assert not any(path.exists() for path in writer.destinations.values())
+    if completed:
+        with pytest.raises(PersistenceError, match="TIFF"):
+            create(resume=True)
+
+
 def test_nan_python_float_payload_preserved(tmp_path):
     import struct
     original = state()

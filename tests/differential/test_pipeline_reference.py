@@ -15,12 +15,12 @@ REFERENCE = ROOT / 'tests/reference/small_original_cpu/scene'
 PROTOCOL = json.loads((ROOT / 'development/benchmarks/protocols/comparison_v1.json').read_text())
 
 
-@pytest.mark.parametrize('case,cold', [('small', False), ('small', True), ('raw', True)] +
+@pytest.mark.parametrize('case,cold', [('small', False), ('small', True), ('raw', True), ('native', True)] +
                          [(name, False) for name in ('base', 'uhi', 'landcover',
                           'landcover_normalized', 'directional', 'legacy_wrapper')])
 def test_chronological_tiff_pipeline(tmp_path, case, cold):
     assert importlib.util.find_spec('torch') is None, 'Run candidate checks in the isolated CPU environment'
-    reference = REFERENCE if case in ('small', 'raw') else ROOT / 'tests/reference/optional_original_cpu' / case
+    reference = REFERENCE if case in ('small', 'raw', 'native') else ROOT / 'tests/reference/optional_original_cpu' / case
     prepared = tmp_path / 'processed_inputs'
     shutil.copytree(reference / 'processed_inputs', prepared)
     if cold:
@@ -31,13 +31,19 @@ def test_chronological_tiff_pipeline(tmp_path, case, cold):
         paths['Landcover'] = files_by_key(prepared / 'Landcover')['0_0']
     flags = {f'save_{name}': True for name in
              ('tmrt', 'svf', 'kup', 'kdown', 'lup', 'ldown', 'shadow', 'wbgt', 'ta', 'wind')}
-    if case == 'raw':
+    if case in ('raw', 'native'):
         from solweig_light import thermal_comfort
+        from solweig_light.runtime import RuntimeOptions, runtime_options
         shutil.rmtree(prepared)
         for filename in ('Building_DSM.tif', 'Trees.tif', 'DEM.tif', 'met.txt'):
             shutil.copy2(reference / filename, tmp_path / filename)
-        assert thermal_comfort(str(tmp_path), '2020-07-18', own_met_file=str(tmp_path / 'met.txt'),
-                               tile_size=64, overlap=0, ERA_5_z0_find=False, **flags) is None
+        with runtime_options(RuntimeOptions(cpu_budget=2, threads_per_worker=2,
+                                            memory_budget_bytes=4 * 1024**3)):
+            assert thermal_comfort(str(tmp_path), '2020-07-18', own_met_file=str(tmp_path / 'met.txt'),
+                                   tile_size=64, overlap=0, ERA_5_z0_find=False,
+                                   export_svf=case != 'native', **flags) is None
+        if case == 'native':
+            assert not list((prepared / 'SVF').glob('*'))
     else:
         run_tile(tmp_path, prepared, '2020-07-18', '0_0', paths, flags)
     output = tmp_path / 'output_folder/0_0'

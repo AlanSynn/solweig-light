@@ -229,8 +229,10 @@ def run_utci_tiles(
     save_wbgt: bool = False,
     save_ta: bool = False,
     save_wind: bool = False,
+    *,
+    export_svf: bool = True,
 ) -> None:
-    """Run matched logical tiles chronologically with bounded output storage."""
+    """Run matched tiles; export_svf controls compatibility TIFF/ZIP/NPZ files."""
     from .pipeline import files_by_key, run_tile
     from .runtime import get_runtime_options, execute_tiles, plan_admission
 
@@ -263,6 +265,8 @@ def run_utci_tiles(
     flags = dict(save_tmrt=save_tmrt, save_svf=save_svf, save_kup=save_kup, save_kdown=save_kdown,
                  save_lup=save_lup, save_ldown=save_ldown, save_shadow=save_shadow, save_wbgt=save_wbgt,
                  save_ta=save_ta, save_wind=save_wind)
+    if not export_svf:
+        flags['export_svf'] = False
     print('Running Solweig ...')
     jobs = []
     for tile in sorted(common, key=lambda key: tuple(int(value) for value in key.split('_'))):
@@ -334,11 +338,15 @@ def thermal_comfort(
     save_wbgt=False,
     save_ta=False,
     save_wind=False,
+    *,
+    export_svf=True,
 ):
     """Execute the full local own-met TIFF workflow on CPU.
 
     Optional local forcing and roughness-driven wind generation are supported.
     Own-met UHI column 24 is preserved independently of use_uhi, as upstream.
+    Set export_svf=False to omit compatibility SVF TIFF/ZIP/NPZ exports;
+    geometry computation, native caching and save_svf are unchanged.
     """
     windcoeff_folder = None
     if ERA_5_z0_find:
@@ -353,11 +361,12 @@ def thermal_comfort(
         use_own_met=use_own_met, start_time=start_time, end_time=end_time, data_source_type=data_source_type,
         data_folder=data_folder, own_met_file=own_met_file, use_uhi=use_uhi)
     run_walls_aspect(preprocess_dir)
-    _calculate_svf(preprocess_dir, patch_option=2, overwrite=False, validate_existing=False)
+    if export_svf:
+        _calculate_svf(preprocess_dir, patch_option=2, overwrite=False, validate_existing=False)
     run_utci_tiles(base_path=base_path, preprocess_dir=preprocess_dir, selected_date_str=selected_date_str,
         tile_keys=None, save_tmrt=save_tmrt, save_svf=save_svf, save_kup=save_kup, save_kdown=save_kdown,
         save_lup=save_lup, save_ldown=save_ldown, save_shadow=save_shadow, save_wbgt=save_wbgt,
-        save_ta=save_ta, save_wind=save_wind)
+        save_ta=save_ta, save_wind=save_wind, export_svf=export_svf)
 
 
 def build_inputs(lat: float, lon: float, city: Optional[str]=None, km_buffer: float=8.0, km_reduced_lat: float=3.0, km_reduced_lon: float=1.0, base_folder: Optional[str]=None, resolution: float=2.0) -> str:

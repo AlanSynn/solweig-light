@@ -16,7 +16,9 @@ def test_all_pinned_flags_defaults_types_and_requirements():
     parser=cli.build_parser()
     actions={flag:action for action in parser._actions for flag in action.option_strings if flag!='--help' and flag!='-h'}
     expected_flags={flag for record in snapshot for flag in record['flags']}
-    assert set(actions)==expected_flags
+    assert set(actions)==expected_flags | {'--export_svf'}
+    assert actions['--export_svf'].default is True
+    assert actions['--export_svf'].type is cli.str2bool
     assert len(expected_flags)==27
     for record in snapshot:
         action=actions[record['flags'][0]]
@@ -55,14 +57,16 @@ def invoke(monkeypatch,args):
 def test_exact_default_forwarding(monkeypatch,tmp_path):
     met=tmp_path/'met.txt';met.write_text('Parser-only mock forcing file.\n')
     result=invoke(monkeypatch,['--base_path',str(tmp_path),'--date','2020-07-18','--own_metfile',str(met)])
-    assert result==[dict(base_path=str(tmp_path),selected_date_str='2020-07-18',building_dsm_filename='Building_DSM.tif',dem_filename='DEM.tif',trees_filename='Trees.tif',landcover_filename=None,ERA_5_z0_find=False,tile_size=3600,overlap=20,use_own_met=True,own_met_file=str(met),data_source_type=None,data_folder=None,start_time=None,end_time=None,use_uhi=True,save_tmrt=True,save_svf=False,save_kup=False,save_kdown=False,save_lup=False,save_ldown=False,save_shadow=False,save_wbgt=False,save_ta=False,save_wind=False)]
+    assert result==[dict(base_path=str(tmp_path),selected_date_str='2020-07-18',building_dsm_filename='Building_DSM.tif',dem_filename='DEM.tif',trees_filename='Trees.tif',landcover_filename=None,ERA_5_z0_find=False,tile_size=3600,overlap=20,use_own_met=True,own_met_file=str(met),data_source_type=None,data_folder=None,start_time=None,end_time=None,use_uhi=True,save_tmrt=True,save_svf=False,save_kup=False,save_kdown=False,save_lup=False,save_ldown=False,save_shadow=False,save_wbgt=False,save_ta=False,save_wind=False,export_svf=True)]
 
 
 def test_all_explicit_flag_forwarding(monkeypatch,tmp_path):
     met=tmp_path/'met.txt';met.write_text('Parser-only mock forcing file.\n')
     args=['--base_path',str(tmp_path),'--date','2020-07-18','--building_dsm','b.tif','--dem','d.tif','--trees','t.tif','--landcover','lc.tif','--tile_size','64','--overlap','0','--use_own_met','yes','--own_metfile',str(met),'--data_source_type','ERA5','--data_folder',str(tmp_path),'--start','start','--end','end','--era5_z0_find','false','--use_uhi','false']
     for name in ['tmrt','svf','kup','kdown','lup','ldown','shadow','wbgt','ta','wind']:args.extend(['--save_'+name,'true'])
+    args.extend(['--export_svf', 'false'])
     call=invoke(monkeypatch,args)[0]
+    assert call['export_svf'] is False
     assert call['building_dsm_filename']=='b.tif' and call['dem_filename']=='d.tif' and call['trees_filename']=='t.tif' and call['landcover_filename']=='lc.tif'
     assert call['tile_size']==64 and call['overlap']==0
     assert call['start_time']=='start' and call['end_time']=='end'
