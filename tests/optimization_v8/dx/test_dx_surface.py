@@ -1,4 +1,4 @@
-"""N8-01 executable DX gates: the candidate must match the frozen main contract.
+"""Executable DX gates for the frozen surface and explicit current extensions.
 
 The frozen contract lives in
 ``tests/reference/contracts/main_surface.json``
@@ -13,12 +13,10 @@ Package-origin parametrization (reused by N8-23 against an installed wheel):
 * ``subprocess:<python>`` - probe a fresh interpreter (e.g. a clean venv
   with an installed wheel); the main reference is never imported there.
 
-Any asserted-surface drift must either be listed in
-``EXPECTED_BRANCH_DIVERGENCES`` below (with the exact expected branch value
-and a reason, cross-checked against the frozen branch source snapshot) or
-the tests fail.  The allowlist is empty: the captured native-backend work
-diverged only inside private modules and runtime scheduling behavior,
-leaving signatures, defaults and entry points unchanged.
+The current contract adds the supported export_svf option and resident longwave
+default explicitly, without regenerating either historical snapshot from the
+candidate. Runtime comparisons reject every other asserted-surface change.
+The historical main/branch comparison retains its separate, empty allowlist.
 """
 
 from __future__ import annotations
@@ -39,6 +37,7 @@ from dx_snapshot import (  # noqa: E402
     check_forbidden_core_dependencies,
     capture_runtime_surface,
     capture_runtime_surface_subprocess,
+    current_surface_contract,
     load_surface,
     surface_divergences,
 )
@@ -62,25 +61,19 @@ def candidate_surface() -> dict:
 
 
 def drift_failures(drift: dict) -> list[str]:
-    return check_divergences_allowed(
-        drift,
-        EXPECTED_BRANCH_DIVERGENCES,
-        baseline=load_surface(MAIN_SURFACE_PATH),
-        branch_surface=load_surface(BRANCH_SURFACE_PATH),
-        skip_paths=ENVIRONMENT_CONDITIONAL_PATHS,
-    )
+    return check_divergences_allowed(drift, {})
 
 
-def test_candidate_runtime_surface_matches_frozen_main_contract():
-    """Gate: installed/importable candidate equals the frozen main DX surface."""
+def test_candidate_runtime_surface_matches_current_contract():
+    """Gate: installed/importable candidate equals the full current DX contract."""
     candidate = candidate_surface()
     drift = surface_divergences(
-        load_surface(MAIN_SURFACE_PATH), candidate,
+        current_surface_contract(), candidate,
         skip_paths=ENVIRONMENT_CONDITIONAL_PATHS,
     )
     failures = drift_failures(drift)
     failures.extend(check_forbidden_core_dependencies(candidate))
-    assert not failures, "candidate DX surface drifted from the frozen main contract:\n" + "\n".join(failures)
+    assert not failures, "candidate DX surface drifted from the current contract:\n" + "\n".join(failures)
 
 
 def test_frozen_branch_source_divergences_are_allowlisted():
@@ -122,14 +115,15 @@ def import_runtime_module():
     return importlib.import_module("solweig_light.runtime")
 
 
-def test_comparator_detects_default_drift():
+@pytest.mark.parametrize("field", ["block_pixels", "resident_lw_masks"])
+def test_comparator_detects_default_drift(field):
     """Teeth proof: mutating a captured default must fail the comparator."""
     candidate = candidate_surface()
     mutated = copy.deepcopy(candidate)
     fields = mutated["package"]["runtime_options"]["fields"]
-    fields["block_pixels"] = fields["block_pixels"] + 1
+    fields[field] = False if field == "resident_lw_masks" else fields[field] + 1
     drift = surface_divergences(
-        load_surface(MAIN_SURFACE_PATH), mutated,
+        current_surface_contract(), mutated,
         skip_paths=ENVIRONMENT_CONDITIONAL_PATHS,
     )
     failures = drift_failures(drift)
@@ -137,15 +131,16 @@ def test_comparator_detects_default_drift():
     assert any("runtime_options" in failure for failure in failures)
 
 
-def test_comparator_detects_cli_flag_drift():
+@pytest.mark.parametrize("flag", ["--tile_size", "--export_svf"])
+def test_comparator_detects_cli_flag_drift(flag):
     """Teeth proof: removing a CLI flag must fail the comparator."""
     candidate = candidate_surface()
     mutated = copy.deepcopy(candidate)
     options = mutated["package"]["cli"]["options"]
-    removed = options.pop("--tile_size")
+    removed = options.pop(flag)
     assert removed is not None
     drift = surface_divergences(
-        load_surface(MAIN_SURFACE_PATH), mutated,
+        current_surface_contract(), mutated,
         skip_paths=ENVIRONMENT_CONDITIONAL_PATHS,
     )
     failures = drift_failures(drift)
@@ -159,11 +154,39 @@ def test_undeclared_divergence_is_rejected_without_allowlist_entry():
     mutated = copy.deepcopy(candidate)
     mutated["package"]["dunder_version"] = "9.9.9"
     drift = surface_divergences(
-        load_surface(MAIN_SURFACE_PATH), mutated,
+        current_surface_contract(), mutated,
         skip_paths=ENVIRONMENT_CONDITIONAL_PATHS,
     )
     failures = drift_failures(drift)
     assert failures and any("UNDOCUMENTED" in failure for failure in failures)
+
+
+@pytest.mark.parametrize("change", [
+    "api_default", "api_kind", "api_removed", "api_extra", "cli_default", "cli_extra",
+])
+def test_comparator_rejects_extension_drift(change):
+    candidate = candidate_surface()
+    parameters = candidate["package"]["workflows"]["thermal_comfort"]["params"]
+    export = next(parameter for parameter in parameters if parameter["name"] == "export_svf")
+    options = candidate["package"]["cli"]["options"]
+    if change == "api_default":
+        export["default"] = False
+    elif change == "api_kind":
+        export["kind"] = "POSITIONAL_OR_KEYWORD"
+    elif change == "api_removed":
+        parameters.remove(export)
+    elif change == "api_extra":
+        parameters.append({"name": "unexpected", "kind": "KEYWORD_ONLY", "default": None})
+    elif change == "cli_default":
+        options["--export_svf"]["default"] = False
+    else:
+        options["--unexpected"] = dict(options["--export_svf"])
+    drift = surface_divergences(
+        current_surface_contract(), candidate,
+        skip_paths=ENVIRONMENT_CONDITIONAL_PATHS,
+    )
+    expected_path = "package.workflows" if change.startswith("api_") else "package.cli.options"
+    assert any(expected_path in failure for failure in drift_failures(drift))
 
 
 def test_frozen_snapshots_are_labelled_source_observations():

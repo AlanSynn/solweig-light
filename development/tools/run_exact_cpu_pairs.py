@@ -242,12 +242,7 @@ def compare_scenes(left, right, shape, timesteps=24, expected_tiles=("0_0",)):
 
 
 def monitored(command, run, env, runtime):
-    """Run one owned process group and retain measurement/cleanup evidence.
-
-    This is a drop-in replacement for tools/run_exact_cpu_pairs.py::monitored.
-    It relies only on names already imported by that module plus its LIMIT,
-    RESERVE, and base constants/modules.
-    """
+    """Run one owned process group and retain measurement/cleanup evidence."""
     import psutil
 
     sample_interval = .02
@@ -265,20 +260,19 @@ def monitored(command, run, env, runtime):
     pending_traceback = None
     launcher_returncode = None
     process = None
-    started = time.perf_counter()
     worker_finished_at = None
     cleanup_started_at = None
     cleanup_finished_at = None
     cleanup = {
         "timeout_seconds": cleanup_timeout,
         "ownership": None,
-        "launcher_exited_with_live_group": False,
-        "pre_cleanup_owned_pids": [],
-        "pre_cleanup_group_exists": False,
+        "launcher_exited_with_live_group": None,
+        "pre_cleanup_owned_pids": None,
+        "pre_cleanup_group_exists": None,
         "group_signal": "not_attempted",
         "launcher_wait": "not_attempted",
-        "post_cleanup_owned_pids": [],
-        "post_cleanup_group_exists": False,
+        "post_cleanup_owned_pids": None,
+        "post_cleanup_group_exists": None,
         "errors": [],
         "passed": False,
     }
@@ -312,6 +306,22 @@ def monitored(command, run, env, runtime):
                 pass
         return sorted(result)
 
+    # Refuse to launch work when this host cannot supply process measurements.
+    # On restricted Linux hosts Process(pid) can report NoSuchProcess even for
+    # a live child when /proc is unavailable.
+    try:
+        psutil.pids()
+        psutil.Process(os.getpid()).memory_info()
+    except (OSError, psutil.Error) as error:
+        write_json(run / "measurement.json", {
+            "command": command, "launched": False, "returncode": None,
+            "abort_reason": "monitor_unavailable", "monitor_error": error_record(error),
+            "sampled_process_tree_peak_rss_bytes": None, "samples": 0,
+            "rss_valid": False, "monitoring_passed": False, "cleanup": None,
+        })
+        raise RuntimeError("Process-tree monitoring is unavailable; trial was not launched") from error
+
+    started = time.perf_counter()
     with (run / "stdout.log").open("w") as out, (run / "stderr.log").open("w") as err, \
             (run / "rss_samples.jsonl").open("w") as sample_file:
         process = subprocess.Popen(
@@ -411,12 +421,22 @@ def monitored(command, run, env, runtime):
             # live descendants, so group cleanup must not depend on poll().
             launcher_returncode = process.poll()
             try:
-                pre_owned = owned_pids(pgid, sid) if ownership["verified"] else []
+                try:
+                    pre_owned = owned_pids(pgid, sid) if ownership["verified"] else []
+                    cleanup["pre_cleanup_owned_pids"] = pre_owned
+                except BaseException as error:
+                    cleanup["errors"].append(error_record(error))
+                    pre_owned = None
+                    # The unreaped Popen child still proves group ownership
+                    # even when system-wide enumeration stops working.
+                    if (ownership["verified"] and process.poll() is None
+                            and os.getpgid(process.pid) == pgid and os.getsid(process.pid) == sid):
+                        pre_owned = [process.pid]
                 pre_group_exists = group_exists(pgid) if ownership["verified"] else False
-                cleanup["pre_cleanup_owned_pids"] = pre_owned
                 cleanup["pre_cleanup_group_exists"] = pre_group_exists
-                cleanup["launcher_exited_with_live_group"] = bool(
-                    launcher_returncode is not None and pre_owned
+                cleanup["launcher_exited_with_live_group"] = (
+                    bool(launcher_returncode is not None and pre_owned)
+                    if cleanup["pre_cleanup_owned_pids"] is not None else None
                 )
                 if cleanup["launcher_exited_with_live_group"] and abort_reason is None:
                     abort_reason = "launcher_exited_with_descendants"
@@ -435,7 +455,12 @@ def monitored(command, run, env, runtime):
                     cleanup["group_signal"] = "skipped_unattributed_group"
                 else:
                     cleanup["group_signal"] = "skipped_unverified_ownership"
+            except BaseException as error:
+                cleanup["errors"].append(error_record(error))
 
+            # Discovery or group-signalling errors must never prevent reaping
+            # the exact child, whose identity is owned by this Popen instance.
+            try:
                 if process.poll() is None:
                     # Killing the exact Popen child is safe even if group
                     # ownership verification failed.
@@ -451,7 +476,10 @@ def monitored(command, run, env, runtime):
                 else:
                     launcher_returncode = process.wait()
                     cleanup["launcher_wait"] = "already_exited_reaped"
+            except BaseException as error:
+                cleanup["errors"].append(error_record(error))
 
+            try:
                 deadline = time.perf_counter() + cleanup_timeout
                 while ownership["verified"]:
                     remaining_owned = owned_pids(pgid, sid)
@@ -472,8 +500,8 @@ def monitored(command, run, env, runtime):
 
             cleanup["passed"] = bool(
                 ownership["verified"]
-                and not cleanup["post_cleanup_owned_pids"]
-                and not cleanup["post_cleanup_group_exists"]
+                and cleanup["post_cleanup_owned_pids"] == []
+                and cleanup["post_cleanup_group_exists"] is False
                 and not cleanup["errors"]
                 and cleanup["launcher_wait"] in {
                     "reaped", "already_exited_reaped", "killed_after_wait_timeout"

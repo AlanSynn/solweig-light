@@ -91,8 +91,7 @@ def test_noenv_api_readme_call(installed_api_run):
 
 
 def test_noenv_cli_help_matches_documented_surface(wheel_venv):
-    """DX gate 3 (help surface): --help exits 0 with exactly the 27 documented
-    flags of the frozen main surface, no additions, no omissions.
+    """DX gate 3: --help exposes exactly the documented current CLI flags.
 
     Same no-env enforcement as the pipeline runs: read-only installation
     (N1) and the network guard (N2) active for both child invocations.
@@ -110,13 +109,13 @@ def test_noenv_cli_help_matches_documented_surface(wheel_venv):
         assert result.returncode == 0, result.stderr
         _no_backend_chatter(result.stdout, "--help")
         import dx_snapshot as dx
-        frozen = dx.load_surface(dx.MAIN_SURFACE_PATH)["package"]["cli"]["options"]
+        expected = dx.current_surface_contract()["package"]["cli"]["options"]
         help_text = result.stdout
-        missing = [flag for flag in frozen if flag not in help_text]
+        missing = [flag for flag in expected if flag not in help_text]
         assert not missing, f"documented flags missing from --help: {missing}"
         offered = [line.strip().split()[0] for line in help_text.splitlines()
                    if line.strip().startswith("--")]
-        extra = [flag for flag in offered if flag not in frozen]
+        extra = [flag for flag in offered if flag not in expected]
         assert not extra, f"undocumented flags in --help: {extra}"
         version = _run([wheel_venv["console_script"], "--version"], env=env)
         assert version.returncode == 0, version.stderr

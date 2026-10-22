@@ -123,7 +123,84 @@ def _runtime(seconds=30):
     return {"maximum_trial_seconds": seconds}
 
 
-def test_monitored_rejects_and_kills_descendant_after_launcher_exit(tmp_path, monkeypatch):
+@pytest.fixture
+def process_observer(monkeypatch):
+    """Synthetic PID/RSS observations; launching, sessions, signals and waits are real."""
+    import psutil
+
+    processes, pid_files = [], []
+    original_popen = harness.subprocess.Popen
+
+    def popen(*args, **kwargs):
+        process = original_popen(*args, **kwargs)
+        processes.append(process)
+        return process
+
+    def pids():
+        observed = [os.getpid(), *(p.pid for p in processes if p.poll() is None)]
+        for path in pid_files:
+            try:
+                observed.append(int(path.read_text()))
+            except (FileNotFoundError, ValueError):
+                pass  # The launcher may still be publishing its child's PID.
+        return observed
+
+    class ObservedProcess:
+        def __init__(self, pid):
+            self.pid = pid
+            try:
+                os.getpgid(pid)
+            except ProcessLookupError:
+                raise psutil.NoSuchProcess(pid)
+
+        def memory_info(self):
+            return SimpleNamespace(rss=8 << 20)
+
+        def children(self, recursive):
+            children = []
+            for pid in pids():
+                try:
+                    if pid != self.pid and os.getsid(pid) == os.getsid(self.pid):
+                        children.append(ObservedProcess(pid))
+                except ProcessLookupError:
+                    pass
+            return children
+
+    monkeypatch.setattr(harness.subprocess, "Popen", popen)
+    monkeypatch.setattr(psutil, "pids", pids)
+    monkeypatch.setattr(psutil, "Process", ObservedProcess)
+    yield pid_files
+    for process in processes:
+        if process.poll() is None:
+            process.kill()
+            process.wait(timeout=5)
+
+
+def test_monitored_rejects_unavailable_observation_before_launch(tmp_path, monkeypatch):
+    import psutil
+
+    def unavailable():
+        raise FileNotFoundError("process table is unavailable")
+
+    def unexpected_launch(*args, **kwargs):
+        pytest.fail("An unmeasurable trial must not launch a process")
+
+    monkeypatch.setattr(psutil, "pids", unavailable)
+    monkeypatch.setattr(harness.subprocess, "Popen", unexpected_launch)
+    run = tmp_path / "unavailable"
+    with pytest.raises(RuntimeError, match="monitoring is unavailable"):
+        harness.monitored([sys.executable, "-c", "pass"], run, dict(os.environ), _runtime())
+    result = json.loads((run / "measurement.json").read_text())
+    assert result["abort_reason"] == "monitor_unavailable"
+    assert result["launched"] is False
+    assert result["monitoring_passed"] is False
+    assert result["rss_valid"] is False
+    assert result["sampled_process_tree_peak_rss_bytes"] is None
+    assert result["monitor_error"]["type"] == "FileNotFoundError"
+    assert result["cleanup"] is None
+
+
+def test_monitored_rejects_and_kills_descendant_after_launcher_exit(tmp_path, monkeypatch, process_observer):
     monkeypatch.setattr(
         harness.shutil,
         "disk_usage",
@@ -131,6 +208,7 @@ def test_monitored_rejects_and_kills_descendant_after_launcher_exit(tmp_path, mo
     )
     run = tmp_path / "lingering-child"
     child_pid_path = tmp_path / "child.pid"
+    process_observer.append(child_pid_path)
     launcher = (
         "import pathlib,subprocess,sys,time; "
         "child=subprocess.Popen([sys.executable, '-c', "
@@ -160,11 +238,20 @@ def test_monitored_rejects_and_kills_descendant_after_launcher_exit(tmp_path, mo
     assert json.loads((run / "measurement.json").read_text()) == result
 
 
-def test_monitored_exception_retains_partial_samples_and_cleanup(tmp_path, monkeypatch):
+@pytest.mark.parametrize("discovery_failure", [False, True])
+def test_monitored_exception_retains_partial_samples_and_cleanup(tmp_path, monkeypatch, process_observer,
+                                                               discovery_failure):
+    import psutil
+
     class MonitorFailure(RuntimeError):
         pass
 
+    def fail_discovery():
+        raise FileNotFoundError("process table became unavailable")
+
     def fail_disk_check(_path):
+        if discovery_failure:
+            monkeypatch.setattr(psutil, "pids", fail_discovery)
         raise MonitorFailure("injected disk monitor failure")
 
     monkeypatch.setattr(harness.shutil, "disk_usage", fail_disk_check)
@@ -187,13 +274,18 @@ def test_monitored_exception_retains_partial_samples_and_cleanup(tmp_path, monke
     assert result["sampled_process_tree_peak_rss_bytes"] > 0
     assert result["cleanup"]["ownership"]["verified"] is True
     assert result["cleanup"]["group_signal"] == "sent_sigkill"
-    assert result["cleanup"]["post_cleanup_owned_pids"] == []
-    assert result["cleanup"]["post_cleanup_group_exists"] is False
-    assert result["cleanup"]["passed"] is True
+    assert (result["cleanup"]["pre_cleanup_owned_pids"] is None) is discovery_failure
+    assert result["cleanup"]["post_cleanup_owned_pids"] == (None if discovery_failure else [])
+    assert result["cleanup"]["post_cleanup_group_exists"] is (None if discovery_failure else False)
+    assert result["cleanup"]["launcher_wait"] == "reaped"
+    assert result["cleanup"]["passed"] is (not discovery_failure)
+    assert bool(result["cleanup"]["errors"]) is discovery_failure
     assert result["monitoring_passed"] is False
+    with pytest.raises(ProcessLookupError):
+        os.killpg(result["cleanup"]["ownership"]["launcher_pid"], 0)
 
 
-def test_successful_worker_timing_excludes_cleanup_scans(tmp_path, monkeypatch):
+def test_successful_worker_timing_excludes_cleanup_scans(tmp_path, monkeypatch, process_observer):
     import psutil
     import time
 
