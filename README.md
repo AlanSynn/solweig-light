@@ -127,6 +127,7 @@ admission, caches and restart.
 - [Compatibility](docs/compatibility.md): seven APIs, CLI/import compatibility, extras and numerical policy.
 - [Model deviations](docs/model_deviations.md): inherited limitations, explicit repair and reference-profile boundaries.
 - [Provenance](docs/provenance.md): upstream pins, reference evidence and attribution.
+- [Development supplements](development/README.md): validation sources and performance measurement.
 
 A focused local differential check is:
 

@@ -51,7 +51,7 @@ from the later patched reference work.
 ## Validation boundaries
 
 The numerical policy is in
-[comparison_v1.json](../development/benchmarks/protocols/comparison_v1.json).
+[comparison_v1.json](../tests/reference/contracts/comparison_v1.json).
 The portable profile is `solweig-portable-sleef-5a1d179d-v1`, derived from
 SLEEF commit `5a1d179df9cf652951b59010a2d2075372d67f68` and canonical original
 SOLWEIG-GPU on macOS ARM64 (Torch 2.14.0 source
@@ -73,7 +73,7 @@ only repair and must not be described as reruns of the final repaired wheel.
 Full release and renewed benchmark qualification remain incomplete.
 
 The [model ledger](model_deviations.md) and
-[scientific exception policy](../development/reports/scientific_release_exceptions.json)
+[scientific exception policy](../tests/reference/contracts/scientific_exceptions.json)
 retain four failed independent checks. Compatibility agreement is distinct
 from physical correctness. Authenticated acquisition remains unverified.
 
@@ -92,20 +92,12 @@ New checks should use the smallest relevant regression/fixture set. Do not
 loosen numerical gates, replace an inconvenient fixture or silently change
 workload after observing a failure.
 
-## Historical evidence and licensing
+## Development records and licensing
 
-Current documentation describes behavior and decisions rather than maintaining
-phase/campaign status. The predecessor documentation and historical narrative
-are available without keeping duplicate current pages:
-
-```sh
-git show e6a87f9be16beeb4be6f347b2a48760eba5660fc:development/HISTORY.md
-git show e6a87f9be16beeb4be6f347b2a48760eba5660fc:docs/portable_math_profile.md
-```
-
-Some older raw reports/tools were already removed before that commit. Their
-historical pages record archive identities and earlier Git anchors; absence
-from the current tree must not be presented as a newly executed verification.
+The [development supplements](../development/README.md) explain validation and
+measurement and link to historical records. Current guidance describes durable
+behavior; old campaign results remain evidence only for their recorded source
+and workload. Removing an obsolete report does not constitute new validation.
 
 SOLWEIG-light derives from SOLWEIG-GPU and UMEP/SOLWEIG. Preserve original
 copyright and GPL notices in translated code. Upstream Python notices say

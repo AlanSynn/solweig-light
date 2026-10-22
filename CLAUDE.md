@@ -6,12 +6,13 @@ Follow [AGENTS.md](AGENTS.md) for the project contract and
 ## Evidence storage
 
 Keep bulk benchmark outputs, captures, and campaign packets outside Git.
-Retain test-coupled fixtures, frozen protocols, provenance, and archive hashes.
+Retain test-coupled fixtures, frozen protocols and their provenance.
 `tests/reference/` remains in the repository for differential verification.
 Do not rewrite Git history or recreate archived evidence commits.
 
-The existing archive index is
-[development/docs/evidence_storage.md](development/docs/evidence_storage.md).
-Its recorded paths and hashes describe historical snapshots, not a required
-layout for new work. New evidence should use the storage authorized for the
-current task and record a durable location and checksum.
+The [development supplements](development/README.md) cover validation and
+measurement, and link to historical archive locations and checksums. Keep
+current guidance there and reusable reference data in `tests/reference/`;
+remove obsolete campaign records from the current tree. New evidence should
+use storage authorized for the task and record its location and checksum
+with the relevant change or PR.

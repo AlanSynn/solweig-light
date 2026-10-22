@@ -1,7 +1,7 @@
 """N8-01 executable DX gates: the candidate must match the frozen main contract.
 
 The frozen contract lives in
-``optimization_v8_native_default/evidence/dx_baseline/main_surface.json``
+``tests/reference/contracts/main_surface.json``
 (source observation of main pin ``14e888760727583ef782a4dc0e7a5c7c6e6ff9d1``,
 captured by AST inspection without execution).  The candidate surface is
 captured at runtime from whatever ``import solweig_light`` resolves to.
@@ -16,10 +16,9 @@ Package-origin parametrization (reused by N8-23 against an installed wheel):
 Any asserted-surface drift must either be listed in
 ``EXPECTED_BRANCH_DIVERGENCES`` below (with the exact expected branch value
 and a reason, cross-checked against the frozen branch source snapshot) or
-the tests fail.  Today that allowlist is empty: the v7 native-backend work
-diverged only inside private modules and runtime scheduling behavior, which
-is documented in ``evidence/dx_baseline/dx_divergences.md`` and invisible at
-the signature/defaults/entry-point level.
+the tests fail.  The allowlist is empty: the captured native-backend work
+diverged only inside private modules and runtime scheduling behavior,
+leaving signatures, defaults and entry points unchanged.
 """
 
 from __future__ import annotations
@@ -46,7 +45,7 @@ from dx_snapshot import (  # noqa: E402
 
 # Documented, accepted main-vs-branch public-surface divergences.
 # Schema: {"<dotted.path>": {"expected_candidate": <value>, "reason": "<...>",
-#                            "recorded_in": "evidence/dx_baseline/dx_divergences.md#..."}}
+#                            "recorded_in": "<contract change documentation>"}}
 EXPECTED_BRANCH_DIVERGENCES: dict[str, dict[str, object]] = {}
 
 # Paths asserted only when the probed environment can see them.

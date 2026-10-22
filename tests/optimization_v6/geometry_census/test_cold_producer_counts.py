@@ -22,10 +22,10 @@ The fixture is a deterministic 96x96 dense_urban scene (explicit 32-pixel
 motif, no RNG) following the pinned synthetic-input generator
 ``reports/p7_fixture_sources/00318d13e1441c4567b5baa6c7a0bd5bcf04ef5fbf577ff9d4e8f920475c7bf6.py``
 with the reference own-met file copied byte-for-byte.  Run-scoped evidence
-(counts, identities, keys, indicative durations) is persisted into the owned
-evidence tree under new v2 names before any assertion, so a failing
-census still records what actually happened and the v1 evidence stays
-untouched.
+(counts, identities, keys, indicative durations) is persisted into
+``.pytest_cache/evidence/geometry_census/`` under v2 names before any
+assertion, so a failing census still records what actually happened and
+the v1 evidence stays untouched.
 """
 
 from __future__ import annotations
@@ -45,7 +45,7 @@ import pytest
 REPO = Path(__file__).resolve().parents[3]
 SRC = REPO / 'src'
 PROBE_DIR = Path(__file__).resolve().parent
-EVIDENCE = REPO / 'development/optimization_v6_continue' / 'evidence' / 'census'
+EVIDENCE = REPO / '.pytest_cache' / 'evidence' / 'geometry_census'
 COMMIT = 'e7a2d6ec8594b234820e7783e0ca26d821de7f3d'
 MET_SOURCE = REPO / 'tests' / 'reference' / 'small_original_cpu' / 'scene' / 'met.txt'
 DATE = '2020-07-18'

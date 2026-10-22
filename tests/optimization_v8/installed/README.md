@@ -49,7 +49,7 @@ packaging directories.
 ```
 
 Gate results land in
-`optimization_v8_native_default/evidence/installed/installed_gates.json`
+`.pytest_cache/evidence/installed_v8/installed_gates.json`
 (including the built wheel's sha256).
 
 ## Skip labels (never fake passes)

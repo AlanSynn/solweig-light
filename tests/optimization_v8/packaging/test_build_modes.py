@@ -21,10 +21,10 @@ import pytest
 
 import build_native
 
-REPO = Path(build_native.__file__).resolve().parents[3]
+REPO = Path(__file__).resolve().parents[3]
 B7_KERNEL = REPO / "src" / "solweig_light" / "backends" / "native" / \
     "lw_primary.ispc"
-COMPARISON = Path(build_native.__file__).resolve().parent / "stage" / \
+COMPARISON = REPO / "development/experiments/optimization_v8/packaging/stage" / \
     "dylib_comparison.json"
 
 try:

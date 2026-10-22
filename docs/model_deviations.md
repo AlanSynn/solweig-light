@@ -13,7 +13,7 @@ paths in that historical ledger may refer to archived evidence.
 
 ## Approved inherited scientific limitations
 
-Policy [inherited-svf-umep-compatibility-v1](../development/reports/scientific_release_exceptions.json)
+Policy [inherited-svf-umep-compatibility-v1](../tests/reference/contracts/scientific_exceptions.json)
 approves retaining upstream behavior for exactly four independent checks.
 Their outcomes remain **failed**, with approved known-limitation disposition:
 

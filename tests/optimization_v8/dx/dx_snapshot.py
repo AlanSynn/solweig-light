@@ -1,7 +1,7 @@
-"""Public DX surface snapshot and drift comparator for the v8 packet.
+"""Public DX surface snapshot and drift comparator.
 
-N8-01 froze the main DX/API/install contract as JSON evidence
-(``optimization_v8_native_default/evidence/dx_baseline/``).  This module is
+The main DX/API/install contract is frozen as JSON fixtures in
+``tests/reference/contracts/``.  This module is
 the reusable half of that freeze: it can capture the public surface of a
 source tree by AST inspection (no execution; used for the main reference
 pin) or of an installed/importable package by runtime introspection (used
@@ -38,7 +38,7 @@ SOURCE_OBSERVATION = "source_observation"
 RUNTIME_INTROSPECTION = "runtime_introspection"
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-EVIDENCE_DIR = REPO_ROOT / "development/optimization_v8_native_default" / "evidence" / "dx_baseline"
+EVIDENCE_DIR = REPO_ROOT / "tests/reference/contracts"
 MAIN_SURFACE_PATH = EVIDENCE_DIR / "main_surface.json"
 BRANCH_SURFACE_PATH = EVIDENCE_DIR / "branch_surface.json"
 

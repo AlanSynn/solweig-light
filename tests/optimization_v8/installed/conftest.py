@@ -33,7 +33,7 @@ Skip labels (never fake passes):
                             native artifact / companion distribution
 
 Gate results are appended to ``GATE_RECORD`` and written to
-``optimization_v8_native_default/evidence/installed/installed_gates.json``
+``.pytest_cache/evidence/installed_v8/installed_gates.json``
 at session end (best effort; evidence writing never fails the run).
 """
 

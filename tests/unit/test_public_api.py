@@ -7,7 +7,7 @@ import pytest
 import solweig_light
 
 CONTRACT = json.loads((Path(__file__).resolve().parents[2] /
-                       'development/reports/contract_snapshot.json').read_text())['public_functions']
+                       'tests/reference/contracts/public_api.json').read_text())['public_functions']
 
 
 @pytest.mark.parametrize('name', ['thermal_comfort', 'preprocess', 'run_walls_aspect',

@@ -22,7 +22,7 @@ lcyl_arguments = _v6.lcyl_arguments
 bitwise_equal = _v6.bitwise_equal
 
 PROTOCOL = json.loads((Path(__file__).resolve().parents[3] /
-                       'development/benchmarks/protocols/comparison_v1.json').read_text())
+                       'tests/reference/contracts/comparison_v1.json').read_text())
 
 
 def within_budget(function_field, actual, expected):

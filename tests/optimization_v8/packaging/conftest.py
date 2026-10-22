@@ -1,7 +1,7 @@
 """N8-20 packaging tests: shared fixtures.
 
 These tests are fast and local-only (no network, no real wheels). They
-import the build driver directly from experiments/optimization_v8/packaging.
+import the build driver from this test-helper directory.
 
 Skip labels (never fake-pass):
   [ispc-unavailable]      -- the pinned ISPC is not reachable; native-mode
@@ -18,7 +18,7 @@ from pathlib import Path
 import pytest
 
 REPO = Path(__file__).resolve().parents[3]
-PACKAGING = REPO / "development/experiments" / "optimization_v8" / "packaging"
+PACKAGING = Path(__file__).resolve().parent
 B7_KERNEL = REPO / "src" / "solweig_light" / "backends" / "native" / \
     "lw_primary.ispc"
 
@@ -51,7 +51,8 @@ def staged_generation() -> Path:
     return manifests[-1].parent
 
 
-STAGE_DIR = PACKAGING / "stage"
+# Historical optional build inputs are separate from the retained driver.
+STAGE_DIR = REPO / "development/experiments/optimization_v8/packaging/stage"
 
 
 @pytest.fixture()
