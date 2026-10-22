@@ -28,7 +28,6 @@ from installed_test_helpers import run_cmd as _run
 import dx_snapshot  # noqa: E402  (conftest put tests/optimization_v8/dx on sys.path)
 
 MAIN_SURFACE = dx_snapshot.load_surface(dx_snapshot.MAIN_SURFACE_PATH)
-BRANCH_SURFACE = dx_snapshot.load_surface(dx_snapshot.BRANCH_SURFACE_PATH)
 
 
 def _dist_info_path(zf: zipfile.ZipFile, member: str) -> str:
@@ -132,21 +131,15 @@ def test_installed_runtime_is_the_pinned_version(wheel_venv):
 
 
 def test_dx_surface_parity_in_subprocess_origin(wheel_venv):
-    """Frozen-contract parity, probed in the installed venv's interpreter.
-
-    Zero unexpected divergences: any asserted-leaf drift must be an
-    allowlisted, real main-vs-branch source divergence (dx_snapshot
-    self-verifies that cross-check).
-    """
+    """Exact current-contract parity, probed in the installed interpreter."""
     candidate = dx_snapshot.capture_runtime_surface_subprocess(wheel_venv["python"])
     assert candidate["package_path"], "runtime capture lost the package path"
     assert "site-packages" in candidate["package_path"]
     assert candidate["evidence_class"] == dx_snapshot.RUNTIME_INTROSPECTION
     skip = frozenset({"companion_distribution.console_scripts"})
-    drift = dx_snapshot.surface_divergences(MAIN_SURFACE, candidate, skip_paths=skip)
-    failures = dx_snapshot.check_divergences_allowed(
-        drift, {},
-        baseline=MAIN_SURFACE, branch_surface=BRANCH_SURFACE, skip_paths=skip)
+    drift = dx_snapshot.surface_divergences(
+        dx_snapshot.current_surface_contract(), candidate, skip_paths=skip)
+    failures = dx_snapshot.check_divergences_allowed(drift, {})
     failures.extend(dx_snapshot.check_forbidden_core_dependencies(candidate))
     # reviewer note N3: the evidence record must carry this gate's result
     GATE_RECORD["surface_gate"] = {

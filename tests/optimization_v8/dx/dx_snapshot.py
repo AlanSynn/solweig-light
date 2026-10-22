@@ -751,6 +751,26 @@ def load_surface(path: Path) -> dict[str, Any]:
     return json.loads(Path(path).read_text(encoding="utf-8"))
 
 
+def current_surface_contract() -> dict[str, Any]:
+    """Frozen public surface plus the explicit supported API extensions.
+
+    Historical snapshots remain unchanged. These expectations are independent
+    of the package being probed and apply equally to source and installed gates.
+    """
+    surface = load_surface(MAIN_SURFACE_PATH)
+    for name in ("thermal_comfort", "run_utci_tiles"):
+        surface["package"]["workflows"][name]["params"].append({
+            "name": "export_svf", "kind": "KEYWORD_ONLY", "default": True,
+        })
+    surface["package"]["runtime_options"]["fields"]["resident_lw_masks"] = True
+    surface["package"]["cli"]["options"]["--export_svf"] = {
+        "default": True, "required": False, "type": "str2bool",
+        "action": None, "choices": None,
+        "help": "Write compatibility SVF TIFF/ZIP/NPZ files; False keeps native geometry only",
+    }
+    return surface
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     sub = parser.add_subparsers(dest="command", required=True)

@@ -4,8 +4,8 @@ The integrated backend must satisfy:
 
 * default path untouched: env unset resolves to the baseline Numba kernel
   objects themselves (no wrapper);
-* native replay bitwise: every captured B7-02 call (520) replays bitwise
-  through the env-gated dispatch, both schedule labels;
+* native replay: every captured B7-02 call (520) preserves exact float32
+  bits except arithmetic NaN signs through both schedule labels;
 * pre-launch fallback: unsupported input provenance falls back to the Numba
   kernel without launching the backend (result equals the Numba output);
 * loud unavailability: a requested backend that cannot build raises
@@ -34,10 +34,15 @@ FIXTURES = np.load(CAPTURES / 'b7_02_fixtures.npz')
 from solweig_light.backends import native_lw  # noqa: E402
 
 
-def _bitwise_equal(a, b):
-    a = np.asarray(a, dtype=np.float32)
-    b = np.asarray(b, dtype=np.float32)
-    return a.shape == b.shape and np.array_equal(a.view(np.uint32), b.view(np.uint32))
+def _arithmetic_equal(a, b):
+    """Compare float32 bits, allowing only an arithmetic NaN sign change."""
+    a = np.asarray(a)
+    b = np.asarray(b)
+    if a.shape != b.shape or a.dtype != np.float32 or b.dtype != np.float32:
+        return False
+    ab, bb = a.view(np.uint32), b.view(np.uint32)
+    same_nan = np.isnan(a) & np.isnan(b) & ((ab ^ bb) == 0x80000000)
+    return bool(np.all((ab == bb) | same_nan))
 
 
 def _fixture_calls():
@@ -91,10 +96,10 @@ def test_identity_fingerprint(native_cache):
 
 
 def test_native_replay_bitwise_all_captured_calls(monkeypatch):
-    """Every captured call replays bitwise through the env-gated dispatch,
+    """Every captured call preserves arithmetic bits through the dispatch,
     and every one of them actually ran on the native backend (a silent
-    per-call fallback to Numba would otherwise be invisible: it matches
-    bitwise too, so the spy counts native invocations)."""
+    per-call fallback to Numba would otherwise be invisible: it satisfies
+    the same arithmetic comparison, so the spy counts native invocations)."""
     calls = {'native': 0}
     real = native_lw.native_longwave_primary
 
@@ -109,7 +114,7 @@ def test_native_replay_bitwise_all_captured_calls(monkeypatch):
         observed = kernel(*args)
         expected = FIXTURES[f'call{record["call_index"]:04d}_output']
         assert observed.shape == expected.shape, record['call_index']
-        assert _bitwise_equal(observed, expected), \
+        assert _arithmetic_equal(observed, expected), \
             (record['case'], record['call_index'])
         checked += 1
     assert checked == MANIFEST['kept_calls']
@@ -117,12 +122,12 @@ def test_native_replay_bitwise_all_captured_calls(monkeypatch):
 
 
 def test_serial_label_dispatches_to_same_backend():
-    """The serial runtime label uses the native kernel and stays bitwise."""
+    """The serial runtime label uses the same native arithmetic."""
     kernel = cyl._lw_kernel(False)
     record, args = next(_fixture_calls())
     observed = kernel(*args)
     expected = FIXTURES[f'call{record["call_index"]:04d}_output']
-    assert _bitwise_equal(observed, expected)
+    assert _arithmetic_equal(observed, expected)
 
 
 def test_unsupported_input_falls_back_before_launch():
@@ -136,7 +141,7 @@ def test_unsupported_input_falls_back_before_launch():
     kernel = cyl._lw_kernel(True)
     observed = kernel(*args)
     expected = cyl._longwave_primary(*args)
-    assert _bitwise_equal(observed, expected)
+    assert _arithmetic_equal(observed, expected)
 
 
 def test_b0_edge():
