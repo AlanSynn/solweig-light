@@ -22,7 +22,7 @@ from solweig_light.radiation import engine, patch_radiation
 
 LCYL_FIELDS = ('Ldown', 'Lside', 'Least_', 'Lwest_', 'Lnorth_', 'Lsouth_')
 PROTOCOL = json.loads((Path(__file__).resolve().parents[3] /
-                       'development/benchmarks/protocols/comparison_v1.json').read_text())
+                       'tests/reference/contracts/comparison_v1.json').read_text())
 
 
 def within_budget(function_field, actual, expected):

@@ -10,7 +10,7 @@ not active instructions.
 The frozen behavioral reference is `nvnsudharsan/SOLWEIG-GPU` commit
 `0d7fe742abeeddd890dd58fc76ed7f78bd47faec`. Comparing newer upstream source does
 not change that numerical reference. The acceptance authority is
-`development/benchmarks/protocols/comparison_v1.json`; preserve its frozen gates.
+`tests/reference/contracts/comparison_v1.json`; preserve its frozen gates.
 Known limitations belong in [docs/model_deviations.md](docs/model_deviations.md).
 
 ## Public contracts
@@ -109,8 +109,9 @@ CPU or CUDA need measurements of the relevant reference configuration;
 a kernel improvement alone does not establish an end-to-end speedup.
 
 Keep bulk evidence outside Git. Preserve the small manifests, frozen protocols,
-and test-coupled fixtures needed to reproduce or verify claims. See
-[development/README.md](development/README.md) for the retained evidence map.
+and test-coupled fixtures needed to reproduce or verify claims. See the
+[development supplements](development/README.md) for validation and measurement
+guidance.
 Do not rewrite repository history or recreate archived bulk-evidence commits.
 
 ## Working practices
@@ -124,7 +125,7 @@ Delegate independent work with exact file ownership, invariants, and completion
 criteria. Workers should return changed files, commands, results, failures, and
 measurement paths, not transcripts. Avoid repeated broad scans and status
 polling. Keep instructions and documentation about current durable contracts;
-put one-off evidence in its existing archive rather than adding new hierarchies.
+record one-off evidence with its change or PR rather than adding new hierarchies.
 
 Local inspection, edits, isolated environments, fixtures, tests, profiling, and
 repairs are authorized within the assigned task. Remote publication, destructive

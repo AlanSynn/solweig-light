@@ -70,7 +70,7 @@ import assemble_native_wheel  # noqa: E402  (maintainer tool home, stdlib-only)
 
 VENDORED_DRIVER = (REPO_ROOT / "src" / "solweig_light" / "_native_dispatch"
                    / "build_native.py")
-EXPERIMENTS_DRIVER = _PACKAGING / "build_native.py"
+EXPERIMENTS_DRIVER = REPO_ROOT / "tests/optimization_v8/packaging/build_native.py"
 
 
 # ---------------------------------------------------------------------------

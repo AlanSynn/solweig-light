@@ -30,7 +30,7 @@ LCYL_FIELDS = ('Ldown', 'Lside', 'Least_', 'Lwest_', 'Lnorth_', 'Lsouth_')
 DPC_FIELD_INDEX = {'Ldown': 0, 'Lside': 1, 'Least': 7, 'Lwest': 8, 'Lnorth': 9, 'Lsouth': 10}
 
 PROTOCOL = json.loads((Path(__file__).resolve().parents[3] /
-                       'development/benchmarks/protocols/comparison_v1.json').read_text())
+                       'tests/reference/contracts/comparison_v1.json').read_text())
 
 
 def within_budget(function_field, actual, expected):

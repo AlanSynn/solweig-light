@@ -16,7 +16,7 @@ from solweig_light.radiation import ground_view
 
 
 ROOT = Path(__file__).parents[2]
-SOURCE = ROOT / "development/reports" / "characterization" / "p8_umep_source"
+SOURCE = ROOT / "tests/reference/umep"
 MANIFEST_PATH = SOURCE / "manifest.json"
 GVF_PATH = SOURCE / "gvf_2018a.py"
 SUN_PATH = SOURCE / "sunonsurface_2018a.py"

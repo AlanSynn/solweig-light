@@ -8,7 +8,7 @@ and times the original against the fast path and the full fallback.
 
 Timing is a contended development-tier observation (eight sibling workers
 share this host); it is recorded, never claimed.  Evidence is written to
-``optimization_v6_continue/evidence/lside/`` before any failure exits.
+``.pytest_cache/evidence/lside/`` before any failure exits.
 """
 from __future__ import annotations
 
@@ -28,7 +28,7 @@ import numpy as np
 
 REPO = Path(__file__).resolve().parents[3]
 SRC = REPO / 'src'
-EVIDENCE = REPO / 'development/optimization_v6_continue' / 'evidence' / 'lside'
+EVIDENCE = REPO / '.pytest_cache' / 'evidence' / 'lside'
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 

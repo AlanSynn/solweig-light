@@ -96,7 +96,7 @@ if owners have collided; uninstalling one can delete the other's files.
 ## Numerical contract
 
 The authoritative field rules are
-[comparison_v1.json](../development/benchmarks/protocols/comparison_v1.json).
+[comparison_v1.json](../tests/reference/contracts/comparison_v1.json).
 Shape, categorical geometry, patch identity/order, control state, masks,
 timestamps and schemas require exact agreement. Continuous-field gates include:
 

@@ -11,8 +11,8 @@ from solweig_light.radiation.engine import TsWaveDelay_2015a
 
 @pytest.fixture(scope="module")
 def umep_delay():
-    path = (Path(__file__).resolve().parents[2] / "development/reports/characterization/"
-            "p8_umep_source/TsWaveDelay_2015a.py")
+    path = (Path(__file__).resolve().parents[2] / "tests/reference/umep/"
+            "TsWaveDelay_2015a.py")
     assert hashlib.sha256(path.read_bytes()).hexdigest() == (
         "5310481421e5f144e7a813e1ab41873a48cdf47b7e294f481aa59bd0ae9ed034")
     spec = importlib.util.spec_from_file_location("pinned_umep_delay", path)

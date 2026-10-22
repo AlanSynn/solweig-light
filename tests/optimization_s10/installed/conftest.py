@@ -22,13 +22,10 @@ Shared constants and helpers live in the uniquely named
 forbidden in this multi-suite tree because pytest rebinds the bare
 ``conftest`` module name to the last-collected sibling suite's conftest.
 
-Raw artifacts live outside git per the repository evidence-storage policy:
-the offline wheelhouse under
-``/storage/scratch1/1/dsynn6/solweig-light-s10-raw/installed_s31/wheelhouse``,
-the venvs/scenes/scratch on the host's local disk (``/tmp/s10_31_work`` --
-the read-only-site-packages enforcement chmod-walks every installed file,
-which is only tractable off Lustre); git keeps the suite and the distilled
-evidence JSON only.
+Raw artifacts use a fresh pytest temporary directory for each session:
+the offline wheelhouse, venvs, scenes, and scratch share that directory.
+Use ``--basetemp`` to choose a host-local disk when needed for the
+read-only-site-packages checks, which chmod-walk every installed file.
 
 Skip labels (never fake passes):
   [wheelhouse-unavailable]  the local uv cache cannot satisfy the pinned
@@ -40,9 +37,8 @@ Skip labels (never fake passes):
                             retried, then reported with the exact numbers)
 
 Gate results are appended to ``GATE_RECORD`` and written to
-``development/optimization_s10_semantic_systems/evidence/installed/
-installed_results.json`` at session end (best effort; evidence writing
-never fails the run).
+``.pytest_cache/evidence/installed_s10/installed_results.json``
+at session end (best effort; evidence writing never fails the run).
 """
 
 from __future__ import annotations
@@ -51,7 +47,6 @@ import os
 import shutil
 import subprocess
 import sys
-import tempfile
 import time
 from pathlib import Path
 
@@ -77,16 +72,6 @@ from installed_test_helpers import (  # noqa: E402
     run_cmd,
     sha256_of,
 )
-
-# Raw-artifact home outside git (evidence-storage policy).  The wheelhouse
-# lives here (built once, never chmod-walked).  The venvs/scenes/scratch go
-# to LOCAL disk instead: the read-only-site-packages enforcement chmod-walks
-# every installed file, and per-file setattr on Lustre (scratch1) is an
-# order-of-magnitude-too-slow RPC storm under load -- a measured hang, not a
-# style choice.  /tmp is the host's local LVM volume, where the walk is
-# fast.  Nothing writes into the repository either way.
-RAW_AREA = Path("/storage/scratch1/1/dsynn6/solweig-light-s10-raw/installed_s31")
-LOCAL_WORK = Path(tempfile.gettempdir()) / "s10_31_work"
 
 # The frozen candidate whose product source (src + pyproject.toml) this
 # checkout must be identical to for the built wheel to be the campaign's
@@ -116,25 +101,15 @@ def product_source_identity() -> dict:
 
 @pytest.fixture(scope="session")
 def work_dir(tmp_path_factory) -> Path:
-    """Venv/scene/scratch home on LOCAL disk (see LOCAL_WORK above); wiped
-    per session so a stale or half-protected prior run can never leak in."""
-    if LOCAL_WORK.parent.is_dir():
-        work = LOCAL_WORK
-    else:
-        work = tmp_path_factory.mktemp("s10_31_work")
-    shutil.rmtree(work, ignore_errors=True)
-    work.mkdir(parents=True)
+    """Fresh session directory for venvs, scenes, and scratch."""
+    work = tmp_path_factory.mktemp("s10_31_work")
     GATE_RECORD["work_dir"] = str(work)
     return work
 
 
 @pytest.fixture(scope="session")
 def wheel_dir(work_dir) -> Path:
-    wheelhouse_dir = RAW_AREA / "wheelhouse"
-    if not RAW_AREA.is_dir():
-        return work_dir / "wheelhouse"
-    wheelhouse_dir.mkdir(parents=True, exist_ok=True)
-    return wheelhouse_dir
+    return work_dir / "wheelhouse"
 
 
 @pytest.fixture(scope="session")
