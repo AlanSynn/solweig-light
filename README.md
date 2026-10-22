@@ -1,38 +1,63 @@
 # SOLWEIG-light
 
-A CPU-native SOLWEIG implementation for urban thermal comfort — mean radiant
-temperature (Tmrt), UTCI and sky view factor — built on NumPy, SciPy and
-Numba. No GPU, no Torch, no CUDA. Same workflow and API shape as the
-SOLWEIG-GPU era: point it at a scene folder and a date, and it runs.
+SOLWEIG-light runs SOLWEIG urban radiation and thermal-comfort workflows on
+CPU using NumPy, SciPy, Numba and GDAL. The local meteorological-file/TIFF
+workflow does not require Torch, CUDA or network services. It calculates mean
+radiant temperature (TMRT), UTCI and optional radiation, shadow, SVF, WBGT,
+air-temperature and wind outputs.
 
-The compatibility baseline is SOLWEIG-GPU commit
-`0d7fe742abeeddd890dd58fc76ed7f78bd47faec`. This is a correctness-first
-implementation under numerical verification, not a completed release.
+This repository changes the execution of
+[SOLWEIG-GPU](https://github.com/nvnsudharsan/SOLWEIG-GPU), while retaining its
+model workload and seven public workflows. The current source comparison uses
+upstream commit `1fec79a78002f0c7f3f4af817ce34d1952d8b8f3`; numerical references
+remain frozen at `0d7fe742abeeddd890dd58fc76ed7f78bd47faec`. These are different
+purposes, not a claim that the latest upstream revision has been revalidated.
+See [provenance](docs/provenance.md).
 
-## Quick start
+## What changes
 
-Prepare a scene folder with the three input rasters and a meteorological
-file (UMEP-format text):
+| Area | SOLWEIG-light |
+| --- | --- |
+| Numerical execution | CPU arrays and compiled kernels replace Torch tensor execution. |
+| Geometry | Lossless packed visibility, compiled rays and SVF count/replay avoid repeated dense patch work. |
+| Radiation | Pixel-owned, ordered LW/SW and anisotropic reductions use bounded blocks and guarded lane kernels. |
+| Repeated timesteps | Static geometry and longwave visibility predicates are reused; thermal state stays chronological. |
+| Resources and outputs | Explicit CPU/memory admission, controlled workers, streamed bands and resumable transactions. |
+| Cache validity | Content identities and checksums replace reliance on legacy artifact existence. |
+| GPU support | Not implemented. Existing numerical boundaries leave room for a future backend; no CUDA execution is supplied. |
 
-```
-scene/
-├── Building_DSM.tif
-├── DEM.tif
-└── Trees.tif
-└── met.txt
-```
+[Architecture](docs/architecture.md) explains the actual optimization points.
+No universal speedup over SOLWEIG-GPU is claimed. First-use compilation,
+geometry, exports, scene shape and thread configuration all affect runtime.
 
-Install (Python ≥ 3.11; exercised on macOS ARM64 with native GDAL 3.13.3 —
-install GDAL before its Python bindings, and use an environment separate from
-upstream SOLWEIG-GPU):
+## Install and run
+
+Use Python 3.11 or newer in an environment separate from upstream SOLWEIG-GPU.
+Install native GDAL first, with a version matching the Python GDAL bindings
+required by [pyproject.toml](pyproject.toml) (currently GDAL 3.13.x). Then install
+from the repository root:
 
 ```sh
 python3.11 -m venv .venv
-.venv/bin/python -m pip install -r requirements/macos-arm64-py311.txt
 .venv/bin/python -m pip install .
 ```
 
-Run it — Python:
+A pinned macOS ARM64 environment is available in
+[requirements/macos-arm64-py311.txt](requirements/macos-arm64-py311.txt).
+Other platforms need their own matching native GDAL installation.
+
+Prepare aligned GeoTIFFs and meteorological data in a scene directory:
+
+| File | Meaning |
+| --- | --- |
+| `Building_DSM.tif` | Terrain plus buildings, in metres above the elevation datum. |
+| `DEM.tif` | Bare-earth terrain, in metres above the same datum. |
+| `Trees.tif` | Canopy height above ground, in metres; zero without trees. |
+| `met.txt` | Local UMEP-format meteorological text file. |
+
+Rasters must share dimensions, CRS and geotransform. Land cover is optional
+and supplied with `landcover_filename`. Use absolute meteorological paths:
+explicit relative met filenames resolve against the working directory.
 
 ```python
 from solweig_light import thermal_comfort
@@ -45,147 +70,86 @@ thermal_comfort(
 )
 ```
 
-or the command line:
+Or run:
 
 ```sh
-solweig-light --base_path /absolute/path/to/scene \
-              --date 2020-07-18 \
-              --own_metfile /absolute/path/to/scene/met.txt
+.venv/bin/solweig-light --base_path /absolute/path/to/scene \
+    --date 2020-07-18 --own_metfile /absolute/path/to/scene/met.txt \
+    --era5_z0_find False
 ```
 
-That is the whole setup. There is nothing to tune: logical tiling, thread
-use and the compiled kernel routes are chosen by pinned defaults. Per-tile
-outputs (Tmrt by default; SVF, Kdown/Kup, Ldown/Lup, shadow, WBGT, Ta and
-wind fields opt-in via `save_*` flags) are written under
-`<base_path>/output_folder/<tile>/` as GeoTIFFs, streamed band by band.
+`ERA_5_z0_find=False` selects the local setup above. Its API default is `True`
+and attempts ERA5 roughness/wind generation. Optional integrations require the
+[corresponding extras](docs/compatibility.md#optional-integrations).
 
-`landcover` is optional; explicit relative meteorological filenames resolve
-against the working directory, as upstream. ERA5-based roughness/wind
-generation (`ERA_5_z0_find=True`, the default) additionally requires the ERA5
-forcing data described in [optional environment](docs/optional_environment.md).
+UTCI is always written; TMRT is also written by default. Files live under
+`<base_path>/output_folder/<tile>/`, with timestamped GeoTIFF bands. The
+`save_kup`, `save_kdown`, `save_lup`, `save_ldown`, `save_shadow`, `save_wbgt`,
+`save_ta` and `save_wind` flags enable additional fields. `save_svf=True`
+requests a static, single-band `SVF_<tile>.tif` only when no complete legacy
+SVF artifact set already exists. Default compatibility exports usually
+suppress that separate output, preserving upstream behavior.
 
-## Upstream usage guides apply
+`export_svf=False` omits compatibility SVF TIFF/ZIP/NPZ exports without
+skipping model geometry or changing `save_svf`. Existing exports remain in
+place. The default is `True`; CLI syntax is `--export_svf False`.
 
-The workflow, scene layout, meteorological file format and parameter
-semantics mirror upstream SOLWEIG-GPU, so its documentation and tutorials
-apply directly to `solweig_light`:
+## Execution options
 
-- SOLWEIG-GPU documentation: <https://solweig-gpu.readthedocs.io>
-- SOLWEIG-GPU repository: <https://github.com/nvnsudharsan/solweig-gpu>
-- UMEP (met-file format and SOLWEIG model background):
-  <https://github.com/UMEP-dev/UMEP>
-- Papers: [SOLWEIG-GPU (JOSS 2026)](https://doi.org/10.21105/joss.09535) ·
-  [GLIDE-SOL (GMD 2026)](https://doi.org/10.5194/gmd-19-7389-2026) ·
-  [original SOLWEIG (Lindberg et al. 2008)](https://doi.org/10.1007/s00484-008-0162-7)
+CPU controls are separate from the upstream-compatible workflow arguments:
 
-Where this implementation behaves differently from upstream, the difference
-is recorded, not silent: see [model deviations](docs/model_deviations.md).
-For running under the legacy `solweig_gpu` import names, see
-[compatibility](docs/compatibility.md).
+```python
+from solweig_light import RuntimeOptions, runtime_options, thermal_comfort
 
-## Options
+with runtime_options(RuntimeOptions(
+    cpu_budget=4, workers=1, threads_per_worker=4,
+)):
+    thermal_comfort(
+        base_path="/absolute/path/to/scene",
+        selected_date_str="2020-07-18",
+        own_met_file="/absolute/path/to/scene/met.txt",
+        ERA_5_z0_find=False,
+        export_svf=False,
+    )
+```
 
-`thermal_comfort` mirrors the upstream public interface. The commonly used
-parameters:
+Choose a budget within the available CPUs. Defaults use one worker and one
+native thread. Resident longwave predicate reuse is enabled by default; use
+`RuntimeOptions(resident_lw_masks=False)` for the lower-memory route. Its extra
+allocation is about 52.53 MiB for a 600×600 tile with 153 patches, and grows
+with tile area. [Runtime](docs/runtime.md) describes exact accounting,
+admission, caches and restart.
 
-| parameter | default | meaning |
-|---|---|---|
-| `base_path` | required | scene folder containing the input rasters |
-| `selected_date_str` | required | date to model, `YYYY-MM-DD` |
-| `building_dsm_filename` / `dem_filename` / `trees_filename` | `Building_DSM.tif` / `DEM.tif` / `Trees.tif` | input raster names |
-| `landcover_filename` | `None` | optional land cover raster |
-| `own_met_file` | `None` | UMEP-format meteorological file |
-| `ERA_5_z0_find` | `True` | ERA5 roughness lookup for wind generation |
-| `tile_size` / `overlap` | `3600` / `20` | logical tiling of large scenes |
-| `start_time` / `end_time` | `None` | restrict the modeled time window (UTC) |
-| `use_uhi` | `True` | UHI handling from the met file |
-| `save_tmrt` … `save_wind` | `False` (`save_tmrt=True`) | which fields to write |
-| `export_svf` | `True` | write compatibility SVF TIFF/ZIP/NPZ artifacts |
+## Documentation and verification
 
-Use `export_svf=False` in `thermal_comfort` or `run_utci_tiles` (CLI:
-`--export_svf False`) to omit compatibility SVF exports. Native geometry,
-cache validation and thermal calculations are unchanged; `save_svf` still
-controls the separate per-tile SVF output. Existing exports are left in place.
+- [Architecture](docs/architecture.md): source comparison and optimization mechanisms.
+- [Runtime](docs/runtime.md): CPU controls, memory, cache validity and recovery.
+- [Compatibility](docs/compatibility.md): seven APIs, CLI/import compatibility, extras and numerical policy.
+- [Model deviations](docs/model_deviations.md): inherited limitations, explicit repair and reference-profile boundaries.
+- [Provenance](docs/provenance.md): upstream pins, reference evidence and attribution.
 
-Input construction helpers (`build_inputs`, `build_wind_ext_coeff`) and the
-standalone SVF entry points (`run_walls_aspect`, `calculate_svf`,
-`run_utci_tiles`) are importable from `solweig_light` as well.
-
-Legacy `solweig_gpu` imports are supplied separately by the opt-in companion
-distribution; see [compatibility](docs/compatibility.md).
-
-## Expert options
-
-Everything above needs zero configuration. The one opt-in backend switch:
-the cylinder-longwave primary reduction can run on an exact ISPC backend
-(bitwise-identical outputs, ~3.5x faster at the kernel boundary
-single-threaded, ~1.5x on whole small-scene records) — off by default; set
-`SOLWEIG_LIGHT_LW_BACKEND=native` to enable. Inputs outside its reviewed
-admission domain fall back to the Numba kernel before launch; the shared
-library is built on demand into `~/.cache/solweig-light/native` (override
-with `SOLWEIG_LIGHT_NATIVE_CACHE`); a missing ISPC toolchain fails loudly
-rather than silently falling back. Evidence:
-`development/optimization_v7_backends/evidence/`.
-
-## Documentation
-
-| document | contents |
-|---|---|
-| [numerical contract](docs/numerical_contract.md) | what bit-exactness and tolerance claims mean here |
-| [model deviations](docs/model_deviations.md) | documented deviations from upstream physics |
-| [compatibility](docs/compatibility.md) | SOLWEIG-GPU compatibility surface, companion distribution |
-| [runtime](docs/runtime.md), [cache policy](docs/cache_policy.md) | tiling/threads behavior, cache and restart semantics |
-| [optional environment](docs/optional_environment.md) | ERA5/WRF/forcing extras |
-| [provenance](docs/provenance.md) | behavioral reference, evidence storage rules |
-| [history](development/HISTORY.md) | the consolidated development record: vanilla SOLWEIG-GPU vs this port, verification state, performance record, repository/archive state |
-
-## How this was developed
-
-The full development record is consolidated in
-**[development/HISTORY.md](development/HISTORY.md)** — what the vanilla
-SOLWEIG-GPU upstream is and what this port changes (P0–P8), how exactness
-is defined and verified, the shipped optimization inventory with the
-verified performance chain (v4–N9, S10, S11), and the repository/archive
-state, with commit anchors. The per-campaign process documents, packets
-and the earlier campaign-by-campaign narrative were archived (Dropbox
-`repo_closure_20261017/` and `campaign_s11/repo_cleanup_20261016/`;
-deleted trees are also recoverable from git history). The gate tests each
-campaign shipped remain under `tests/optimization_v5/` …
-`tests/optimization_v8/` and `tests/optimization_s10/`.
-
-## Verification
+A focused local differential check is:
 
 ```sh
+.venv/bin/python -m pip install '.[test]'
 .venv/bin/python -m pytest tests/differential/test_pipeline_reference.py -q
 ```
 
-Executes real raw/prepared TIFF cases, checks every output band against
-original upstream CPU artifacts, and requires Torch to be absent. Broader
-source-inspection tests additionally require the exact upstream checkout
-under `.upstream/SOLWEIG-GPU`; no upstream package is imported into the
-candidate runtime.
-
-## Status
-
-Development is **closed** (2026-10-17). The port gates passed independent
-review (P6: 3,029 core, 78 optional, 34 forcing-only installed tests, no
-skips). The optimization campaigns (v4–N9, S10, S11) are terminal and merged
-to main at `cba707db`: on the 24×1024² synthetic-corpus chain (24 steps,
-24-CPU node), the end-to-end wall time went from **6840.4 s** (pre-campaign
-main) to **1483.9 s** = **4.61×**, with TMRT outputs **bitwise identical**
-to the corpus goldens; serial→parallel at the same shape is 7.24×. All
-measurements are on the synthetic corpus (`actual_target_status` unverified)
-and one node class; see `development/HISTORY.md` for the verified numbers,
-rejected directions, and standing caveats. Four approved inherited scientific
-exceptions remain failed and documented
-([model deviations](docs/model_deviations.md)); P8 release qualification was
-never completed, and no further campaign is planned.
+It executes real TIFF workflows against retained upstream CPU artifacts;
+source-inspection tests elsewhere additionally require the frozen upstream
+checkout. Existing tests and manifests provide fixture-specific evidence,
+not proof of every scene or platform. Four inherited independent scientific
+checks remain failed with a documented compatibility exception. Full release
+qualification remains incomplete. There is no shipped GPU backend; historical
+patched-upstream CUDA references are separate evidence, and authenticated
+acquisition remains unverified. See the [ledger](docs/model_deviations.md).
 
 ## Credits and license
 
-SOLWEIG was originally developed by Dr. Fredrik Lindberg's group (Lindberg,
-Holmer & Thorsson 2008, *Int J Biometeorol* 52, 697–713) and is part of
-[UMEP](https://github.com/UMEP-dev/UMEP). The immediate baseline is
-[SOLWEIG-GPU](https://github.com/nvnsudharsan/solweig-gpu) (Kamath,
-Sudharsan et al., JOSS 2026; GLIDE-SOL, GMD 2026). GPL-3.0-or-later; see
-[LICENSE](LICENSE).
+SOLWEIG originates with Fredrik Lindberg, Björn Holmer and Sofia Thorsson,
+[Lindberg et al. (2008)](https://doi.org/10.1007/s00484-008-0162-7), and
+[UMEP](https://github.com/UMEP-dev/UMEP). This implementation derives directly
+from [nvnsudharsan/SOLWEIG-GPU](https://github.com/nvnsudharsan/SOLWEIG-GPU).
+GPL-3.0-or-later; see [LICENSE](LICENSE). Original source notices and the
+vendored [SLEEF Boost license](src/solweig_light/radiation/SLEEF_LICENSE.txt)
+are retained.

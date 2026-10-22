@@ -8,7 +8,7 @@
     "kind": "SYNTHETIC_SCALE_THROUGHPUT_DEMONSTRATION",
     "not_a_real_scene_target": "The corpus is procedurally generated. BENCHMARK_PROTOCOL's 'Actual target' requires 24 distinct REAL spatial tiles; this demo NEVER claims it. 'Repeated synthetic motif performance never proves a real-scene target' applies; FINAL_DECISION.json actual_target_status remains 'unverified' and is NOT modified by this demo.",
     "no_gate_claims": "No performance gate is claimed from this demo. Speedup numbers are observational measurements of one pass per arm. The held-out small-cell gates (1.10 geomean, 1.03 regression, 0.8 coverage) are not re-used here.",
-    "authority": "user decision 2026-10-14 ('가상의 타일이라도 만들어서 한번 진행해볼 것') as supplementary evidence for the human integration decision"
+    "authority": "user decision 2026-10-14 (translated from Korean: 'Run it once, even if synthetic tiles must be created') as supplementary evidence for the human integration decision"
   },
   "corpus": {
     "generator": "/storage/scratch1/1/dsynn6/solweig-light-s10-raw/synthetic_target/gen/generate_corpus.py (sha256 recorded in corpus_manifest.json)",

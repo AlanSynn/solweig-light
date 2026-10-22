@@ -69,15 +69,30 @@ def compare_original(destination, tile='0_0', extra_svf=False):
         result = source = None
 
 
-@pytest.mark.parametrize('block_pixels,threads,export_svf', [(32, 1, True), (128, 2, False), (509, 1, True)])
-def test_real_pipeline_execution_controls(tmp_path, block_pixels, threads, export_svf):
+@pytest.mark.parametrize('block_pixels,threads,export_svf,resident_lw_masks', [
+    (32, 1, True, None), (128, 2, False, False), (509, 1, True, True),
+])
+def test_real_pipeline_execution_controls(tmp_path, monkeypatch, block_pixels, threads,
+                                          export_svf, resident_lw_masks):
     prepared = prepare(tmp_path)
     if not export_svf:
         shutil.rmtree(prepared / 'SVF')
-    options = RuntimeOptions(block_pixels=block_pixels, cpu_budget=threads,
-                             threads_per_worker=threads, memory_budget_bytes=4 * 1024**3)
+    options = RuntimeOptions(
+        block_pixels=block_pixels, cpu_budget=threads,
+        threads_per_worker=threads, memory_budget_bytes=4 * 1024**3,
+        **({} if resident_lw_masks is None else {'resident_lw_masks': resident_lw_masks}))
+    from solweig_light import runtime_memory
+    phase_admission = runtime_memory.plan_phase_admission
+    admitted = []
+
+    def observe_admission(*args, **kwargs):
+        admitted.append(kwargs['resident_lw_masks'])
+        return phase_admission(*args, **kwargs)
+
+    monkeypatch.setattr(runtime_memory, 'plan_phase_admission', observe_admission)
     with runtime_options(options):
         run_utci_tiles(str(tmp_path), str(prepared), '2020-07-18', export_svf=export_svf, **FLAGS)
+    assert admitted == [True if resident_lw_masks is None else resident_lw_masks]
     if not export_svf:
         assert not list((prepared / 'SVF').glob('*'))
     compare_original(tmp_path)

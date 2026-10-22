@@ -283,7 +283,7 @@ DEFAULT_PATCHES = 153
 DEFAULT_WIND_CHANNELS = 12
 # Conservative inventory used for admission.  These are accounting units, not
 # a measured RSS bound: each full-plane equivalent is rows*cols float32
-# values.  The breakdown and rationale live in docs/p6_memory_inventory.md.
+# values.  The breakdown and rationale live in docs/runtime.md.
 LIVE_FULL_PLANE_EQUIVALENTS = 192
 DTYPE64_RESERVED_PLANES = 32
 
@@ -327,7 +327,7 @@ class RuntimeOptions:
     block_pixels: int = 128
     checkpoint_interval: int = 1
     resume: bool = False
-    resident_lw_masks: bool = False
+    resident_lw_masks: bool = True
 
     def __post_init__(self) -> None:
         if self.cache_dir is not None:
@@ -574,7 +574,7 @@ def _job_estimate(job: Mapping[str, Any], options: RuntimeOptions, index: int) -
     from .runtime_memory import TileShapeDescriptor, _resident_lw_mask_bytes, execution_overhead
     shape = TileShapeDescriptor(rows, cols, patches, windchannels, options.block_pixels)
     if estimate is not None:
-        # An explicit base estimate must still reserve the opt-in tile owner.
+        # An explicit base estimate must still reserve the enabled tile owner.
         return estimate + _resident_lw_mask_bytes(shape)
     return (estimate_tile_memory(rows, cols, patches, windchannels, options.block_pixels)
             + execution_overhead(shape, options.threads_per_worker,

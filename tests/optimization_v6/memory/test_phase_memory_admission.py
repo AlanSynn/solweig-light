@@ -400,19 +400,20 @@ def test_writer_queue_shrinks_admissible_width():
     assert (plan.admissible_workers, plan.deferred_count) == (3, 1)
 
 
-@pytest.mark.parametrize('resident_lw_masks', [False, True])
+@pytest.mark.parametrize('resident_lw_masks', [None, False, True])
 def test_admission_inputs_from_existing_options(resident_lw_masks):
     from solweig_light.runtime import RuntimeOptions
     options = RuntimeOptions(
         memory_budget_bytes=BUDGET_12GIB, cpu_budget=4,
-        workers=8, threads_per_worker=2, resident_lw_masks=resident_lw_masks,
+        workers=8, threads_per_worker=2,
+        **({} if resident_lw_masks is None else {"resident_lw_masks": resident_lw_masks}),
     )
     inputs = admission_inputs_from_options(options)
     assert inputs == {
         "budget_bytes": BUDGET_12GIB,
         "active_workers": 2,  # min(8, 4 // 2)
         "threads_per_worker": 2,
-        "resident_lw_masks": resident_lw_masks,
+        "resident_lw_masks": True if resident_lw_masks is None else resident_lw_masks,
     }
     assert inputs == json.loads(json.dumps(inputs))
 

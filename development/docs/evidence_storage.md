@@ -1,5 +1,10 @@
 # Evidence storage
 
+This is an archival index. Paths and validation states below describe the
+recorded snapshots; use [../README.md](../README.md) for the current retained
+files and [../../docs/provenance.md](../../docs/provenance.md) for current
+reference policy. Existing archive locations and checksums are unchanged.
+
 Raw measurement and benchmark evidence is archived externally, not kept in git
 (user decision, 2026-10-13; see the repository `CLAUDE.md` "Evidence storage
 policy"). The repository stays lean; it keeps manifests, provenance records,

@@ -1,28 +1,17 @@
-# CLAUDE.md — solweig-light working policies
+# Repository working policy
 
-The general project contract lives in `AGENTS.md` (imported globally). This file records
-durable working decisions that are not restated there.
+Follow [AGENTS.md](AGENTS.md) for the project contract and
+[README.md](README.md) for current usage and architecture.
 
-## Evidence storage policy (decided 2026-10-13, user decision)
+## Evidence storage
 
-Keep the repository as lean as possible. Raw evidence is archived externally, not kept
-in git:
+Keep bulk benchmark outputs, captures, and campaign packets outside Git.
+Retain test-coupled fixtures, frozen protocols, provenance, and archive hashes.
+`tests/reference/` remains in the repository for differential verification.
+Do not rewrite Git history or recreate archived evidence commits.
 
-- Raw measurement/benchmark/capture evidence (bulk JSON/NPZ/TIF run outputs) is archived
-  to Dropbox via `dbxcli` under `Alan Synn/Research/solweig-light/`.
-- The repository keeps only manifests, provenance records, sha256 lists, and docs that
-  identify and verify the archived artifacts. Operational details and the archive index
-  live in `development/docs/evidence_storage.md`.
-- Campaign-history branches (`handover/campaign-line`, `perf/cpu-optimization`,
-  `perf/native-optimization`, `perf/s10-semantic-systems`,
-  `perf/s11-envelope-headroom`) were archived the same way before branch deletion
-  (the latter two after fast-forwarding main to their tips at `cba707db`,
-  2026-10-16). Do not recreate heavy evidence commits on new branches.
-- History rewriting (`git filter-repo` etc.) and repository re-creation were explicitly
-  rejected — do not propose or perform them.
-- `tests/reference/` goldens stay in the repository: CI differential tests require them
-  (AGENTS.md §11 forbids weakening verification gates). They are not archived
-  external-only.
-
-When producing new evidence, write raw artifacts outside git (or leave them untracked
-per `.gitignore`) and record manifests + provenance in the repository.
+The existing archive index is
+[development/docs/evidence_storage.md](development/docs/evidence_storage.md).
+Its recorded paths and hashes describe historical snapshots, not a required
+layout for new work. New evidence should use the storage authorized for the
+current task and record a durable location and checksum.
