@@ -1,9 +1,8 @@
 # Branch rename: perf/claude-glm53-cpu-v5 → perf/cpu-optimization
 
 Date: 2026-09-21. Operator: integrator. Authorization: EXPLICIT USER
-INSTRUCTION, 2026-09-21 ("현재 v6도 브랜치 이름을 perf/cpu-optimization 이라고
-하면서 원래 있던 브랜치 이름 변경하면서 푸할 것" — rename the existing branch
-to perf/cpu-optimization and push). This is the sole authorization for the
+INSTRUCTION, 2026-09-21 (translated from Korean: 'Rename the existing v6
+branch to perf/cpu-optimization and push'). This is the sole authorization for the
 push; the standing default (no push/PR/merge/release without request)
 otherwise remains.
 

@@ -83,7 +83,8 @@ def records(tmp_path: Path) -> list[tuple[str, str, str]]:
 
 
 def stub_options(**overrides) -> RuntimeOptions:
-    return RuntimeOptions(memory_budget_bytes=1_000_000, **overrides)
+    # Protocol stubs allocate no numerical tile owners.
+    return RuntimeOptions(memory_budget_bytes=1_000_000, resident_lw_masks=False, **overrides)
 
 
 def test_persistent_worker_serves_whole_batch_on_the_admitted_pool(tmp_path, stub_factory):

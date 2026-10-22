@@ -26,15 +26,17 @@ from solweig_light.runtime import (
 from solweig_light import runtime as runtime_module
 
 
-def test_options_are_frozen_and_scoped():
+@pytest.mark.parametrize("resident_lw_masks", [False, True])
+def test_options_are_frozen_and_scoped(resident_lw_masks):
     before = get_runtime_options()
-    assert RuntimeOptions().resident_lw_masks is False
+    assert RuntimeOptions().resident_lw_masks is True
+    assert before.resident_lw_masks is True
     with pytest.raises(Exception):
         before.workers = 2  # type: ignore[misc]
-    with runtime_options(workers=2, block_pixels=9, resident_lw_masks=True) as selected:
+    with runtime_options(workers=2, block_pixels=9, resident_lw_masks=resident_lw_masks) as selected:
         assert selected.workers == 2
         assert get_runtime_options().block_pixels == 9
-        assert get_runtime_options().resident_lw_masks is True
+        assert get_runtime_options().resident_lw_masks is resident_lw_masks
         assert RuntimeOptions(**json.loads(json.dumps(selected.as_dict()))) == selected
     assert get_runtime_options() is before
 
@@ -208,7 +210,8 @@ def test_memory_inventory_accounts_full_planes_and_dtype64_reserve():
 
 def test_admission_reduces_workers_and_rejects_oversized_jobs():
     jobs = [{"tile": str(i), "memory_estimate_bytes": 60} for i in range(4)]
-    options = RuntimeOptions(memory_budget_bytes=130, cpu_budget=4, workers=4)
+    options = RuntimeOptions(memory_budget_bytes=130, cpu_budget=4, workers=4,
+                             resident_lw_masks=False)
     plan = plan_admission(jobs, options)
     assert plan.active_workers == 2
     with pytest.raises(ResourceAdmissionError, match="increase the memory budget"):
@@ -217,7 +220,7 @@ def test_admission_reduces_workers_and_rejects_oversized_jobs():
         plan_admission([{"tile": "missing-shape"}], options)
     with pytest.raises(ResourceAdmissionError, match="no dimensions"):
         plan_admission([{"memory_estimate_bytes": 60}],
-                       RuntimeOptions(resident_lw_masks=True))
+                       RuntimeOptions())
 
 
 @pytest.mark.parametrize('override', [None, 100])
@@ -225,14 +228,15 @@ def test_resident_masks_are_added_even_to_explicit_job_estimates(override):
     job = {"shape": (1, 33), "patches": 7}
     if override is not None:
         job["memory_estimate_bytes"] = override
-    base = plan_admission([job], RuntimeOptions(memory_budget_bytes=10*1024**3))
+    base = plan_admission([job], RuntimeOptions(
+        memory_budget_bytes=10*1024**3, resident_lw_masks=False))
     # Two 32-lane groups, seven patches, one byte per lane/patch.
     required = base.estimates[0] + 448
-    options = RuntimeOptions(memory_budget_bytes=required, resident_lw_masks=True)
+    options = RuntimeOptions(memory_budget_bytes=required)
     assert plan_admission([job], options).estimates == (required,)
     with pytest.raises(ResourceAdmissionError, match="increase the memory budget"):
         plan_admission([job], RuntimeOptions(
-            memory_budget_bytes=required-1, resident_lw_masks=True))
+            memory_budget_bytes=required-1))
 
 
 def _write_stub(path, marker):
@@ -245,7 +249,10 @@ def _write_stub(path, marker):
             p.add_argument('--job'); p.add_argument('--options')
             a = p.parse_args()
             job = json.loads(Path(a.job).read_text())
-            Path({str(marker)!r}).open('a').write(job['tile'] + ':' + os.environ['OMP_NUM_THREADS'] + '\\n')
+            options = json.loads(a.options)
+            Path({str(marker)!r}).open('a').write(
+                job['tile'] + ':' + os.environ['OMP_NUM_THREADS'] + ':' +
+                str(options['resident_lw_masks']) + '\\n')
             if job.get('fail'): raise SystemExit(7)
             """
         ),
@@ -253,18 +260,23 @@ def _write_stub(path, marker):
     )
 
 
-def test_subprocess_scheduler_sets_child_threads_and_cleans_failures(tmp_path, monkeypatch):
+@pytest.mark.parametrize("resident_lw_masks", [False, True])
+def test_subprocess_scheduler_sets_child_threads_and_cleans_failures(
+        tmp_path, monkeypatch, resident_lw_masks):
     marker = tmp_path / "marker.txt"
     module = tmp_path / "runtime_stub.py"
     _write_stub(module, marker)
     monkeypatch.setenv("PYTHONPATH", os.pathsep.join((str(tmp_path), os.environ.get("PYTHONPATH", ""))))
-    options = RuntimeOptions(memory_budget_bytes=1_000_000, cpu_budget=2, workers=2, threads_per_worker=1)
-    jobs = [{"tile": "a", "memory_estimate_bytes": 10}, {"tile": "b", "memory_estimate_bytes": 10}]
+    options = RuntimeOptions(memory_budget_bytes=1_000_000, cpu_budget=2, workers=2,
+                             threads_per_worker=1, resident_lw_masks=resident_lw_masks)
+    jobs = [{"tile": tile, "shape": (1, 1), "patches": 1, "memory_estimate_bytes": 10}
+            for tile in ("a", "b")]
     result = execute_tiles(jobs, options, worker_module="runtime_stub")
     assert [item.tile for item in result] == ["a", "b"]
-    assert sorted(marker.read_text().splitlines()) == ["a:1", "b:1"]
+    assert sorted(marker.read_text().splitlines()) == [
+        f"a:1:{resident_lw_masks}", f"b:1:{resident_lw_masks}"]
     with pytest.raises(TileExecutionError, match="job 1"):
-        execute_tiles(jobs[:1] + [{"tile": "bad", "fail": True, "memory_estimate_bytes": 10}], options,
+        execute_tiles(jobs[:1] + [dict(jobs[1], tile="bad", fail=True)], options,
                       worker_module="runtime_stub")
 
 
@@ -287,7 +299,8 @@ def test_keyboard_interrupt_reaps_live_children(tmp_path, monkeypatch):
         encoding="utf-8",
     )
     monkeypatch.setenv("PYTHONPATH", os.pathsep.join((str(tmp_path), os.environ.get("PYTHONPATH", ""))))
-    options = RuntimeOptions(memory_budget_bytes=1_000_000, cpu_budget=1, workers=1)
+    options = RuntimeOptions(memory_budget_bytes=1_000_000, cpu_budget=1, workers=1,
+                             resident_lw_masks=False)
     interrupted = True
     real_sleep = time.sleep
 
@@ -339,7 +352,7 @@ def test_subprocess_known_failures_restore_types_and_crash_is_generic(tmp_path, 
         encoding="utf-8",
     )
     monkeypatch.setenv("PYTHONPATH", os.pathsep.join((str(tmp_path), os.environ.get("PYTHONPATH", ""))))
-    options = RuntimeOptions(memory_budget_bytes=1_000_000)
+    options = RuntimeOptions(memory_budget_bytes=1_000_000, resident_lw_masks=False)
     with pytest.raises(ValueError, match="bad value"):
         execute_tiles([{"kind": "value", "memory_estimate_bytes": 10}], options,
                       worker_module="runtime_error_stub")

@@ -1,26 +1,62 @@
-# Runtime controls and recovery
+# Runtime, memory and recovery
 
-> **Archived evidence (2026-10-17 note):** the measurement reports cited below
-> (`development/reports/p6_runtime_measurements.md`,
-> `development/reports/local_cpu_optimization.md`) were removed at the
-> 2026-10-16 lean-repo closure and live in Dropbox
-> `Alan Synn/Research/solweig-light/campaign_s11/repo_cleanup_20261016/reports_bulk_20261016.tar.gz`
-> (sha256 `41ca10c4…`); they are also recoverable from git history at
-> `cba707db`. The references are retained as historical.
+## Controls
 
-The seven compatibility signatures are unchanged. CPU execution controls are
-scoped separately. This is the locally measured configuration for an intact
-one-tile `thermal_comfort` call on a machine with at least four available CPUs:
+`RuntimeOptions` is immutable and scoped to the calling context with
+`runtime_options(...)`. It does not change the seven workflow signatures.
+The source of truth is [runtime.py](../src/solweig_light/runtime.py).
+
+| Option | Default | Purpose |
+| --- | --- | --- |
+| `cpu_budget` | `1` | Available CPU slots for admitted work. |
+| `workers` | `1` | Upper bound on independent tile workers. |
+| `threads_per_worker` | `1` | Native threads per tile worker. |
+| `block_pixels` | `128` | Internal radiation buffer/locality size. |
+| `memory_budget_bytes` | `None` | Explicit admission budget, or the conservative automatic budget. |
+| `resident_lw_masks` | `True` | Reuse static longwave predicates across a tile's timesteps. |
+| `cache_dir` | `None` | Override the native geometry cache directory. |
+| `cache_enabled` | `True` | Permit native cache reuse. |
+| `legacy_cache_policy` | `"recompute"` | Recompute when legacy dependency provenance is missing; `"trust"` explicitly accepts that missing provenance. |
+| `checkpoint_interval` | `1` | Number of steps between durable state checkpoints. |
+| `resume` | `False` | Resume a compatible committed transaction. |
+
+Native threads must fit the CPU budget and available CPU count. Admission
+bounds active workers and aggregate reservations; increasing `workers` does
+not guarantee that every requested worker can run concurrently. Independent
+tile jobs use processes with thread settings established before numerical
+imports. Within a tile, blocks/pixels are parallel and timesteps are ordered.
+
+## Resident longwave predicates
+
+This is the fastest validated exact longwave setting from
+[PR #3](https://github.com/AlanSynn/solweig-light/pull/3): on its generated
+600×600, 19-step, 153-patch workload with eight threads and one worker,
+median workflow time fell from 26.79 s to 22.59 s with bitwise-equal results.
+Four interleaved trials per setting used fresh geometry/outputs and warmed
+JIT. This supports the default choice, not a universal speedup guarantee.
+
+The default caches four exact visibility predicates in a single uint8 for each
+padded pixel/patch position. The predicates depend only on the tile's leased
+static visibility channels. They are created lazily, read-only during reuse,
+and released when the tile scope ends. Dynamic thermal values and solar
+classification still run each step.
+
+The extra allocation is exactly `ceil(N / 32) * 32 * P` bytes per tile, where
+`N = rows * columns` and `P` is patch count:
+
+| Tile | Patches | Bytes | MiB |
+| --- | ---: | ---: | ---: |
+| 600×600 | 153 | 55,080,000 | 52.53 |
+| 1200×1200 | 153 | 220,320,000 | 210.11 |
+| 2400×2400 | 153 | 881,280,000 | 840.45 |
+
+This is additional memory, not the total tile reservation. Opt out explicitly
+when the memory/reuse tradeoff is unsuitable:
 
 ```python
 from solweig_light import RuntimeOptions, runtime_options, thermal_comfort
 
-with runtime_options(RuntimeOptions(
-    cpu_budget=4,
-    workers=1,
-    threads_per_worker=4,
-    block_pixels=1024,
-)):
+with runtime_options(RuntimeOptions(resident_lw_masks=False)):
     thermal_comfort(
         base_path="/absolute/path/to/scene",
         selected_date_str="2020-07-18",
@@ -29,67 +65,94 @@ with runtime_options(RuntimeOptions(
     )
 ```
 
-The options object is immutable and the context is local to the calling context.
-The public defaults remain one worker, one native thread and 128 block pixels;
-the measured setting above is explicit and does not change those defaults. The
-promotion workloads retained the same 153 sky patches, all 24 chronological
-timesteps, requested outputs and model physics. `block_pixels` controls internal
-working-buffer locality only.
+Both settings execute the same model. Preflight includes the resident
+allocation when enabled; it does not silently disable it, reduce patches or
+shrink the logical tile to make a job fit.
 
-Public tile execution starts independent processes with native thread settings
-in place before numerical imports, including the one-worker case. Timesteps
-within each tile remain chronological. Block size changes radiation working
-buffers, never logical tile geometry, overlap, forcing or patch count.
+## Memory admission
 
-Memory admission uses a conservative live-array inventory and the available
-CPU/memory limits. It is an estimate, not a hard operating-system RSS limit;
-measured evidence belongs in the P6 resource report. A job exceeding admission
-fails before its numerical tile/geometry computation. No automatic reduction
-of logical tile dimensions is used. See `p6_memory_inventory.md` for the
-inventory and measurement limitations. Wider preprocessing/acquisition-stage
-resource coverage is documented separately in `wind_memory_inventory.md`.
+Admission runs before cold geometry production and before tile execution,
+using raster metadata and the actual patch count. The automatic budget is
+half the smallest available view of physical RAM, available host RAM and
+finite container memory headroom, including cgroup ancestors. Exhausted
+headroom rejects work. Budgets are estimates at admission time; they are not
+operating-system RSS limits and cannot reserve RAM against other processes.
 
-Native geometry is content-addressed and checksummed. Default legacy-cache
-handling recomputes independently when provenance is absent. Standalone SVF
-export conflicts require explicit `overwrite=True`; thermal execution can use
-validated native geometry while preserving unverified legacy files. See
-`cache_policy.md`. `legacy_cache_policy="trust"` explicitly trusts missing
-legacy provenance while still checking schemas, dimensions and spatial
-metadata; the trusted input hashes are included in checkpoint identity.
+[runtime_memory.py](../src/solweig_light/runtime_memory.py) owns phase-aware
+accounting. The conservative inventory includes static scene arrays,
+chronological state, radiation/GVF scratch, dtype promotions, outputs,
+directional wind fields, visibility, native/JIT overhead and active workers.
+Phase-specific reservations account for live buffers; geometry-only
+admission can still be conservative. Detailed allocation formulas belong to
+that source inventory. Resident predicates are an additional explicit term.
+Advanced direct scheduler jobs must provide shape or DSM metadata for
+resident-mask accounting, even when they supply `memory_estimate_bytes`;
+otherwise explicitly opt out with `resident_lw_masks=False`. Public
+`run_utci_tiles` already supplies the required DSM metadata.
 
-Source files must remain stable for a workflow invocation. Content checks
-around reading, computation and publication reject detected changes; these
-checks do not provide atomic filesystem snapshots. Paths, sizes and modification
-times alone are never accepted as scientific content identity.
+Wind generation has its own [resource inventory](../src/solweig_light/wind_resources.py):
+expanded forward and inverse rotations, height-dependent wake ramps, tree
+footprints, smoothing, writer scratch and active directions. It never
+truncates wake support to fit a budget. Only admitted futures are live, one
+writer owns output datasets, and completed direction arrays are released.
+`max_workers` adds a bound to the runtime controls.
 
-Each tile stages output bands and serializes its complete carried state after
-`checkpoint_interval` steps (default 1). Only a flushed, committed boundary can
-be resumed. State includes all delay/temperature maps, scalar values and water
-temperature. Uncommitted bands are replayed, and old state generations are
-removed only after a new checkpoint is durable. Requested TIFF history stays
-on disk; the engine does not retain its completed raster outputs.
+A rejected request needs a suitable budget or an explicit user choice of a
+smaller logical problem. Admission never changes resolution, overlap,
+forcing, rays, patch count or model physics automatically.
 
-After an interrupted call, repeat it with identical inputs, date and output
-options under `RuntimeOptions(resume=True)`. Operational block, CPU and memory
-settings may change. A mismatched or corrupt checkpoint is rejected. A completed
-run with `resume=True` validates its published files; a normal fresh run can
-replace a previously validated complete run. Incomplete work is never silently
-discarded by a fresh invocation.
+## Geometry cache and legacy exports
 
-Transaction data and completion manifests live under
-`<base_path>/.solweig-light/transactions`. Only the completion manifest certifies
-all requested files: individual renames are recoverable but cannot be atomic
-as a set. Per-destination locks exclude competing writers, including standalone
-geometry export and pipeline publication. The final TIFF names, masks,
-timestamps and metadata retain the compatibility contract.
+Native geometry lives under `<preprocess_dir>/.solweig-light/cache` unless
+overridden; the default preprocessing directory is `<base_path>/processed_inputs`.
+Identities hash raster contents and metadata, patch arrays/order,
+normalization, implementation sources, dependencies and the math profile.
+Standalone and thermal geometry share one numerical recipe and native cache
+key; export-operation provenance is separate. Checksummed immutable generations publish via a
+completion manifest; per-key advisory locks coordinate concurrent requests.
+Old generations may remain so active mapped readers stay valid.
 
-P6 passed its installed-wheel and robustness gate. The initial
-process-tree measurements are recorded in
-[`reports/p6_runtime_measurements.md`](../development/reports/p6_runtime_measurements.md);
-they cover the frozen small-scene workloads and do not establish a universal
-memory bound. The later [local CPU optimization report](../development/reports/local_cpu_optimization.md)
-records the independently reviewed warm, geometry-cold and first-use local
-matrix. The exact source is integrated and passed the final installed-wheel
-checks. These settings were selected on the M1 Pro; the fastest configuration
-on other hardware has not been established. Release qualification remains
-pending.
+This differs from latest upstream's [standalone existence check](https://github.com/nvnsudharsan/SOLWEIG-GPU/blob/1fec79a78002f0c7f3f4af817ce34d1952d8b8f3/solweig_gpu/solweig_gpu.py#L362-L374)
+and [thermal legacy cache check/load](https://github.com/nvnsudharsan/SOLWEIG-GPU/blob/1fec79a78002f0c7f3f4af817ce34d1952d8b8f3/solweig_gpu/utci_process.py#L234-L320):
+those paths use the presence of the expected artifact set, which alone cannot
+establish that source geometry is current.
+
+The default `legacy_cache_policy="recompute"` refuses to treat missing
+provenance as validated geometry. `"trust"` explicitly permits loading legacy
+geometry without dependency identity, while retaining schema, dimensions and
+spatial checks. Trusted content hashes enter checkpoint identity.
+
+Standalone `calculate_svf(..., overwrite=False)` validates matching manifests,
+content hashes and schemas. Without provenance it obtains current native
+geometry and compares every decoded legacy value exactly. Equal exports are
+preserved and receive a validation manifest; unequal or malformed complete
+sets are preserved and raise an error requesting `overwrite=True`. A partial
+set is regenerated. Thermal execution can recompute valid native geometry
+while preserving unverified legacy exports.
+
+`overwrite=True` stages and validates the complete TIFF/ZIP/NPZ set before
+replacement. Destination locks exclude competing writers; completion
+manifests publish last. Ordinary failures roll back replaced files. A process
+crash can leave mixed files, which hashes/manifests prevent accepting as a
+complete generation. New NPZ compression is lossless DEFLATE level 3;
+compression bytes are not part of semantic equality.
+
+Sources must stay stable during a call. Content checks around identity,
+computation and publication reject detected mutations; they are not atomic
+filesystem snapshots or locks on external editors.
+
+## Checkpoints and output publication
+
+Transactions live under `<base_path>/.solweig-light/transactions`. Each
+checkpoint commits flushed output progress and complete carried state,
+including thermal/delay maps, scalars and water temperature. After an
+interruption, repeat the same inputs, date and output options under
+`RuntimeOptions(resume=True)`. Only a committed boundary resumes; unfinished
+bands are replayed. Operational CPU, block and memory settings may change.
+
+Mismatched/corrupt checkpoints are rejected, including incompatible math or
+implementation fingerprints. A completed resume validates published files.
+A normal fresh call can replace a validated complete run; it does not silently
+discard incomplete work. Per-destination locks give each writable dataset one
+owner. Only the final completion manifest certifies the complete requested
+file set: individual file renames cannot be atomic as a group.

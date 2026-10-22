@@ -7,7 +7,7 @@
     "kind": "SYNTHETIC_SCALE_THROUGHPUT_DEMONSTRATION (observational)",
     "no_gate_claims": "one timed pass per arm; ratios are observational, not gates; the S10 held-out small-cell gates are not re-used here",
     "actual_target_status": "remains 'unverified' — this corpus is procedurally generated; BENCHMARK_PROTOCOL's real-24-real-tiles target was never claimed or run",
-    "authority": "user decision 2026-10-14 ('가상의 타일이라도 만들어서 한번 진행해볼 것')"
+    "authority": "user decision 2026-10-14 (translated from Korean: 'Run it once, even if synthetic tiles must be created')"
   },
   "slurm_job": {
     "id": 14060057,
